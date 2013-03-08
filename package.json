@@ -1,0 +1,26 @@
+{
+    "name": "vast-client-js",
+    "author": "Olivier Poitrey <rs@dailymotion.com>",
+    "version": "0.0.1",
+    "description": "Javascript VAST Client",
+    "keywords": ["vast", "ad", "advertising", "iab", "in-stream", "video"],
+    "repository": {"type": "git", "url": "https://github.com/rs/vast-client-js"},
+    "licenses": [{"type": "MIT", "url": "https://github.com/rs/vast-client-js/raw/master/LICENSE"}],
+    "engines": {"node": "~0.8.19"},
+    "scripts":
+    {
+        "test": "mocha --compilers coffee:coffee-script --reporter spec test/*.coffee",
+        "bundle": "browserify -c 'coffee -scb' src/client.coffee src/tracker.coffee -o vast-client.js"
+    },
+    "devDependencies":
+    {
+        "mocha": "*",
+        "should": "*",
+        "xmldom": "*"
+    },
+    "dependencies":
+    {
+        "coffee-script": "~1.2.0",
+        "browserify": "*"
+    }
+}

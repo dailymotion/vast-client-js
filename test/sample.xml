@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="2.0">
+  <Error><![CDATA[http://example.com/error]]></Error>
+  <Ad id="41993e28-6f21-4e6b-bbd4-b7de053b0951">
+    <InLine>
+      <AdSystem>AdServer</AdSystem>
+      <AdTitle>Title</AdTitle>
+      <Error><![CDATA[http://example.com/error]]></Error>
+      <Impression><![CDATA[http://example.com/impression1]]></Impression>
+      <Impression><![CDATA[http://example.com/impression2]]></Impression>
+      <Impression><![CDATA[http://example.com/impression3]]></Impression>
+      <Creatives>
+        <Creative id="video">
+          <Linear>
+            <Duration>00:01:30.123</Duration>
+            <TrackingEvents>
+              <Tracking event="midpoint"><![CDATA[http://example.com/midpoint]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/complete]]></Tracking>
+              <Tracking event="start"><![CDATA[http://example.com/start]]></Tracking>
+              <Tracking event="firstQuartile"><![CDATA[http://example.com/firstQuartile]]></Tracking>
+              <Tracking event="close"><![CDATA[http://example.com/close]]></Tracking>
+              <Tracking event="thirdQuartile"><![CDATA[http://example.com/thirdQuartile]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickThrough><![CDATA[http://example.com/clickthrough]]></ClickThrough>
+            </VideoClicks>
+            <MediaFiles>
+              <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/asset.mp4]]></MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>
