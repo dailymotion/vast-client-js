@@ -1,5 +1,8 @@
 # VAST Javascript Client
 
+[![Build Status](https://travis-ci.org/dailymotion/vast-client-js.png)](https://travis-ci.org/dailymotion/vast-client-js)
+
+
 ## Usage
 
 ``` javascript
