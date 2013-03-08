@@ -6,7 +6,7 @@ class URLHandler
         if not window?
             # prevents browserify from including this file
             return require('./urlhandlers/' + 'node.coffee').get(url, cb)
-        else xhr.supported()
+        else if xhr.supported()
             return xhr.get(url, cb)
         else
             return flash.get(url, cb)
