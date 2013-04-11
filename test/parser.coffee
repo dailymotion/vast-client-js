@@ -35,6 +35,9 @@ describe 'VASTParser', ->
         it 'should have 1 media file', =>
             @response.ads[0].creatives[0].mediaFiles.should.have.length 1
 
+        it 'should have a duration of s', =>
+            @response.ads[0].creatives[0].duration.should.equal 90.123
+
         it 'should have parsed media file attributes', =>
             mediaFile = @response.ads[0].creatives[0].mediaFiles[0]
             mediaFile.width.should.equal 512

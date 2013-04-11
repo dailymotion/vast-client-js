@@ -193,10 +193,9 @@ class VASTParser
         if durationComponents.length != 3
             return -1
 
-        seconds = 0
         secondsAndMS = durationComponents[2].split(".")
-        if secondsAndMS == 2
-            seconds = parseInt secondsAndMS[0]
+        seconds = parseInt secondsAndMS[0]
+        if secondsAndMS.length == 2
             seconds += parseFloat "0." + secondsAndMS[1]
 
         minutes = parseInt durationComponents[1] * 60
@@ -204,7 +203,6 @@ class VASTParser
 
         if isNaN hours or isNaN minutes or isNaN seconds or minutes > 60 * 60 or seconds > 60
             return -1
-
         return hours + minutes + seconds
 
 module.exports = VASTParser
