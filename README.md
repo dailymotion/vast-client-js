@@ -10,9 +10,9 @@ DMVAST.client.get(VASTURL, function(response)
 {
     if (response)
     {
-        for (var adIdx = 0, adLen = VASTResponse.ads.length; adIdx < adLen; adIdx++)
+        for (var adIdx = 0, adLen = response.ads.length; adIdx < adLen; adIdx++)
         {
-            var ad = VASTResponse.ads[adIdx];
+            var ad = response.ads[adIdx];
             for (var creaIdx = 0, creaLen = ad.creatives.length; creaIdx < creaLen; creaIdx++)
             {
                 var linearCreative = ad.creatives[creaIdx];
