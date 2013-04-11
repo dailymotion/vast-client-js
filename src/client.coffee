@@ -18,11 +18,8 @@ class VASTClient
             cb(null)
             return
 
-        VASTParser.get url, (response) ->
+        VASTParser.parse url, (response) ->
             @lastSuccessfulAd = new Date().getTime() # TODO: make this persistent across requests
             cb(response)
 
-module.export = VASTClient
-
-if window?
-    window.DMVASTClient = VASTClient
+module.exports = VASTClient

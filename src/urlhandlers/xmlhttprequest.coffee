@@ -8,7 +8,7 @@ class XHRURLHandler
         return !!@xhr
 
     @get: (url, cb) ->
-        xhr = @xhr
+        xhr = @xhr()
         xhr.open('GET', url)
         xhr.send()
         xhr.onreadystatechange = ->

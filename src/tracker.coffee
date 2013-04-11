@@ -1,3 +1,4 @@
+VASTUtil = require('./util.coffee')
 VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
 EventEmitter = require('events').EventEmitter
 
@@ -87,7 +88,7 @@ class VASTTracker extends EventEmitter
         if @clickThroughURLTemplate?
             if @linear
                 variables = CONTENTPLAYHEAD: @progressFormated()
-            clickThroughURL = DMVASTUtil.resolve([@clickThroughURLTemplate], variables)[0]
+            clickThroughURL = VASTUtil.resolve([@clickThroughURLTemplate], variables)[0]
 
             @emit "clickthrough", clickThroughURL
 
@@ -116,6 +117,3 @@ class VASTTracker extends EventEmitter
         return "#{h}:#{m}:#{s}.#{ms}"
 
 module.exports = VASTTracker
-
-if window?
-    window.DMVASTTracker = VASTTracker

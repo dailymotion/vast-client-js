@@ -6,7 +6,7 @@
 ## Usage
 
 ``` javascript
-DMVASTClient.get(VASTURL, function(response)
+DMVAST.client.get(VASTURL, function(response)
 {
     if (response)
     {
@@ -23,7 +23,7 @@ DMVASTClient.get(VASTURL, function(response)
                     var mediaFile = linearCreative.mediaFiles[mfIdx];
                     if (mediaFile.mimeType != "video/mp4") continue;
 
-                    player.vastTracker = new DMVASTTracker(ad, linearCreative);
+                    player.vastTracker = new DMVAST.tracker(ad, linearCreative);
                     player.vastTracker.on('clickthrough', function(url)
                     {
                         document.location.href = url;
@@ -51,7 +51,7 @@ DMVASTClient.get(VASTURL, function(response)
             else
             {
                 // Inform ad server we can't find suitable media file for this ad
-                DMVASTUtil.track(ad.errorURLTemplates, {ERRORCODE: 403});
+                DMVAST.util.track(ad.errorURLTemplates, {ERRORCODE: 403});
             }
         }
     }

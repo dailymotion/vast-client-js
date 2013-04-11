@@ -27,6 +27,3 @@ class VASTUtil
         return URLs
 
 module.exports = VASTUtil
-
-if window?
-    window.VASTUtil = VASTUtil

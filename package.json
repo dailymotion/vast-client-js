@@ -10,7 +10,7 @@
     "scripts":
     {
         "test": "mocha --compilers coffee:coffee-script --reporter spec test/*.coffee",
-        "bundle": "browserify -c 'coffee -scb' src/client.coffee src/tracker.coffee -o vast-client.js"
+        "bundle": "browserify -s DMVAST -c 'coffee -scb' src/index.coffee -o vast-client.js"
     },
     "devDependencies":
     {
