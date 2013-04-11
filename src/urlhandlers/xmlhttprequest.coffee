@@ -5,7 +5,7 @@ class XHRURLHandler
             return xhr
 
     @supported: ->
-        return !!@xhr
+        return !!@xhr()
 
     @get: (url, cb) ->
         xhr = @xhr()
