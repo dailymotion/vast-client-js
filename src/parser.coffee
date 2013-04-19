@@ -150,7 +150,7 @@ class VASTParser
         if creative.duration == -1
             return null # can't parse duration, element is required
 
-        skipOffset = creativeElement.getAttribute("skipOffset")
+        skipOffset = creativeElement.getAttribute("skipoffset")
         if skipOffset? and skipOffset[skipOffset.length - 1] is "%"
             percent = parseInt(skipOffset)
             creative.skipOffset = creative.duration * (percent / 100)
