@@ -28,10 +28,10 @@ DMVAST.client.get(VASTURL, function(response)
                     {
                         document.location.href = url;
                     });
-                    player.on('canplay', function() {self.vastTracker.load();});
-                    player.on('timeupdate', function() {self.vastTracker.setProgress(self.currentTime);});
-                    player.on('play', function() {self.vastTracker.setPaused(false);});
-                    player.on('pause', function() {self.vastTracker.setPaused(true);});
+                    player.on('canplay', function() {this.vastTracker.load();});
+                    player.on('timeupdate', function() {this.vastTracker.setProgress(this.currentTime);});
+                    player.on('play', function() {this.vastTracker.setPaused(false);});
+                    player.on('pause', function() {this.vastTracker.setPaused(true);});
 
                     player.video.href = mediaFile.fileURL;
                     // put player in ad mode
@@ -56,7 +56,7 @@ DMVAST.client.get(VASTURL, function(response)
         }
     }
 
-    if (!self.vastTracker)
+    if (!player.vastTracker)
     {
         // No pre-roll, start video
     }
