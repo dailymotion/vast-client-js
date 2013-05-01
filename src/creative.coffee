@@ -1,6 +1,6 @@
 class VASTCreative
     constructor: ->
-        @trackingEvents = []
+        @trackingEvents = {}
 
 class VASTCreativeLinear extends VASTCreative
     constructor: ->
