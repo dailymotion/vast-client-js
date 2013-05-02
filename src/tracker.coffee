@@ -7,7 +7,10 @@ class VASTTracker extends EventEmitter
         @muted = no
         @impressed = no
         @skipable = no
-        @trackingEvents = creative.trackingEvents.slice(0)
+        @trackingEvents = {}
+        # Duplicate the creative's trackingEvents property so we can alter it
+        for eventName, events of creative.trackingEvents
+            @trackingEvents[eventName] = events.slice(0)
         if creative instanceof VASTCreativeLinear
             @assetDuration = creative.duration
             @skipDelay = creative.skipDelay
