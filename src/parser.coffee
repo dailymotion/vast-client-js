@@ -58,7 +58,7 @@ class VASTParser
                 _nextWrapperURL = "#{ad.nextWrapperURL}"
                 adDict[_nextWrapperURL] = ad
 
-                if parentURLs.length >= 10 or _nextWrapperURL in parentURLs
+                if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
                     # Wrapper limit reached, as defined by the video player.
                     # Too many Wrapper responses have been received with no InLine response.
                     VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 302)
@@ -66,12 +66,12 @@ class VASTParser
                     complete()
                     break
 
-                if _nextWrapperURL.indexOf('://') == -1
+                if ad.nextWrapperURL.indexOf('://') == -1
                     # Resolve relative URLs (mainly for unit testing)
                     baseURL = url.slice(0, url.lastIndexOf('/'))
-                    _nextWrapperURL = "#{baseURL}/#{_nextWrapperURL}"
+                    ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
-                @_parse _nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
                     if err?
                         # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                         # (URI was either unavailable or reached a timeout as defined by the video player.)
