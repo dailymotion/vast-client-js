@@ -90,7 +90,7 @@ class VASTParser
                             wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
                             response.ads.splice index, 0, wrappedAd
 
-                    delete adDict[_nextWrapperURL].nextWrapperURL
+                    delete adDict[_nextWrapperURL]?.nextWrapperURL
                     complete()
 
             complete()
