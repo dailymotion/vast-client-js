@@ -48,10 +48,17 @@ class VASTParser
                     response = null
                 cb(null, response)
 
+            # Keep references of all ad objects, will be useful to delete nextWrapperURL of relevant object
+            # when async parsing is finished
+            adDict = {}
+
             for ad in response.ads
                 continue unless ad.nextWrapperURL?
 
-                if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
+                _nextWrapperURL = "#{ad.nextWrapperURL}"
+                adDict[_nextWrapperURL] = ad
+
+                if parentURLs.length >= 10 or _nextWrapperURL in parentURLs
                     # Wrapper limit reached, as defined by the video player.
                     # Too many Wrapper responses have been received with no InLine response.
                     VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 302)
@@ -59,12 +66,12 @@ class VASTParser
                     complete()
                     break
 
-                if ad.nextWrapperURL.indexOf('://') == -1
+                if _nextWrapperURL.indexOf('://') == -1
                     # Resolve relative URLs (mainly for unit testing)
                     baseURL = url.slice(0, url.lastIndexOf('/'))
-                    ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
+                    _nextWrapperURL = "#{baseURL}/#{_nextWrapperURL}"
 
-                @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                @_parse _nextWrapperURL, parentURLs, (err, wrappedResponse) =>
                     if err?
                         # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                         # (URI was either unavailable or reached a timeout as defined by the video player.)
@@ -83,6 +90,7 @@ class VASTParser
                             wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
                             response.ads.splice index, 0, wrappedAd
 
+                    delete adDict[_nextWrapperURL].nextWrapperURL
                     complete()
 
             complete()
