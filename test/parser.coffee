@@ -48,3 +48,9 @@ describe 'VASTParser', ->
         it 'should have 6 tracking events', =>
             @response.ads[0].creatives[0].trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile'
 
+        it 'should have 2 urls for start event', =>
+            @response.ads[0].creatives[0].trackingEvents['start'].should.eql ['http://example.com/start', 'http://example.com/wrapper-start']
+
+        it 'should have 2 urls for complete event', =>
+            @response.ads[0].creatives[0].trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
+
