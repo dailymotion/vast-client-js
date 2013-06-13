@@ -50,40 +50,41 @@ class VASTParser
 
             for ad in response.ads
                 continue unless ad.nextWrapperURL?
-
-                if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
-                    # Wrapper limit reached, as defined by the video player.
-                    # Too many Wrapper responses have been received with no InLine response.
-                    VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 302)
-                    response.ads.splice(response.ads.indexOf(ad), 1)
-                    complete()
-                    break
-
-                if ad.nextWrapperURL.indexOf('://') == -1
-                    # Resolve relative URLs (mainly for unit testing)
-                    baseURL = url.slice(0, url.lastIndexOf('/'))
-                    ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
-
-                @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
-                    if err?
-                        # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-                        # (URI was either unavailable or reached a timeout as defined by the video player.)
-                        VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 301)
+                do (ad) =>
+                    if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
+                        # Wrapper limit reached, as defined by the video player.
+                        # Too many Wrapper responses have been received with no InLine response.
+                        VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 302)
                         response.ads.splice(response.ads.indexOf(ad), 1)
-                    else if not wrappedResponse?
-                        # No Ads VAST response after one or more Wrappers
-                        VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 303)
-                        response.ads.splice(response.ads.indexOf(ad), 1)
-                    else
-                        response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
-                        index = response.ads.indexOf(ad)
-                        response.ads.splice(index, 1)
-                        for wrappedAd in wrappedResponse.ads
-                            wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
-                            wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
-                            response.ads.splice index, 0, wrappedAd
+                        complete()
+                        return
 
-                    complete()
+                    if ad.nextWrapperURL.indexOf('://') == -1
+                        # Resolve relative URLs (mainly for unit testing)
+                        baseURL = url.slice(0, url.lastIndexOf('/'))
+                        ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
+
+                    @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                        if err?
+                            # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+                            # (URI was either unavailable or reached a timeout as defined by the video player.)
+                            VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 301)
+                            response.ads.splice(response.ads.indexOf(ad), 1)
+                        else if not wrappedResponse?
+                            # No Ads VAST response after one or more Wrappers
+                            VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 303)
+                            response.ads.splice(response.ads.indexOf(ad), 1)
+                        else
+                            response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
+                            index = response.ads.indexOf(ad)
+                            response.ads.splice(index, 1)
+                            for wrappedAd in wrappedResponse.ads
+                                wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
+                                wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
+                                response.ads.splice index, 0, wrappedAd
+
+                        delete ad.nextWrapperURL
+                        complete()
 
             complete()
 
