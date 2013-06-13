@@ -7,6 +7,16 @@
       <VASTAdTagURI>sample.xml</VASTAdTagURI>
       <Error>http://example.com/wrapper-error</Error>
       <Impression>http://example.com/wrapper-impression</Impression>
+      <Creatives>
+        <Creative>
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapper-complete]]></Tracking>
+            </TrackingEvents>
+          </Linear>
+        </Creative>
+      </Creatives>
     </Wrapper>
   </Ad>
 </VAST>
