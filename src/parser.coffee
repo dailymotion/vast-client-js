@@ -81,6 +81,13 @@ class VASTParser
                             for wrappedAd in wrappedResponse.ads
                                 wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
                                 wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
+
+                                if ad.trackingEvents?
+                                    for creative in wrappedAd.creatives
+                                        for eventName in Object.keys ad.trackingEvents
+                                            creative.trackingEvents[eventName] or= []
+                                            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+
                                 response.ads.splice index, 0, wrappedAd
 
                         delete ad.nextWrapperURL
@@ -114,6 +121,9 @@ class VASTParser
         if wrapperURLElement?
             ad.nextWrapperURL = wrapperURLElement.textContent
 
+        wrapperCreativeElement = ad.creatives[0]
+        if wrapperCreativeElement? and wrapperCreativeElement.trackingEvents?
+            ad.trackingEvents = wrapperCreativeElement.trackingEvents
 
         if ad.nextWrapperURL?
             return ad
@@ -148,7 +158,7 @@ class VASTParser
         creative = new VASTCreativeLinear()
 
         creative.duration = @parseDuration @childByName(creativeElement, "Duration")?.textContent
-        if creative.duration == -1
+        if creative.duration == -1 and creativeElement.parentNode.parentNode.parentNode.nodeName != 'Wrapper'
             return null # can't parse duration, element is required
 
         skipOffset = creativeElement.getAttribute("skipoffset")
