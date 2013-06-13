@@ -48,15 +48,11 @@ class VASTParser
                     response = null
                 cb(null, response)
 
-            # Keep references of all ad objects, will be useful to delete nextWrapperURL of relevant object
-            # when async parsing is finished
-            adDict = {}
-
-            for ad in response.ads
+            for ad, index in response.ads
                 continue unless ad.nextWrapperURL?
 
-                _nextWrapperURL = "#{ad.nextWrapperURL}"
-                adDict[_nextWrapperURL] = ad
+                # Keep a trace of current ad index, will be used to delete ad.nextWrapperURL reference of this ad (asynchronously)
+                adIndex = "#{index}"
 
                 if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
                     # Wrapper limit reached, as defined by the video player.
@@ -90,7 +86,7 @@ class VASTParser
                             wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
                             response.ads.splice index, 0, wrappedAd
 
-                    delete adDict[_nextWrapperURL]?.nextWrapperURL
+                    delete response.ads[adIndex].nextWrapperURL
                     complete()
 
             complete()
