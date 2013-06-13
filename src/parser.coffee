@@ -140,17 +140,17 @@ class VASTParser
                     ad.impressionURLTemplates.push node.textContent
 
                 when "Creatives"
-                    creativeElement = @childByName(node, "Creative")
-                    for creativeTypeElement in creativeElement.childNodes
-                        switch creativeTypeElement.nodeName
-                            when "Linear"
-                                creative = @parseCreativeLinearElement creativeTypeElement
-                                if creative
-                                    ad.creatives.push creative
-                            #when "NonLinearAds"
-                                # TODO
-                            #when "CompanionAds"
-                                # TODO
+                    for creativeElement in @childsByName(node, "Creative")
+                        for creativeTypeElement in creativeElement.childNodes
+                            switch creativeTypeElement.nodeName
+                                when "Linear"
+                                    creative = @parseCreativeLinearElement creativeTypeElement
+                                    if creative
+                                        ad.creatives.push creative
+                                #when "NonLinearAds"
+                                    # TODO
+                                #when "CompanionAds"
+                                    # TODO
 
         return ad
 
