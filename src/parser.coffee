@@ -49,9 +49,8 @@ class VASTParser
                 cb(null, response)
 
             for ad in response.ads
+                continue unless ad.nextWrapperURL?
                 do (ad) =>
-                    return unless ad.nextWrapperURL?
-
                     if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
                         # Wrapper limit reached, as defined by the video player.
                         # Too many Wrapper responses have been received with no InLine response.
