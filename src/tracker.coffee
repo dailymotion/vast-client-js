@@ -77,7 +77,7 @@ class VASTTracker extends EventEmitter
         unless @impressed
             @impressed = yes
             @trackURLs @ad.impressionURLTemplates
-            @track "createView"
+            @track "creativeView"
 
     errorWithCode: (errorCode) ->
         @trackURLs @ad.errorURLTemplates, ERRORCODE: errorCode
