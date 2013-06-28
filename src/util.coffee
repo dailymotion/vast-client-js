@@ -26,4 +26,30 @@ class VASTUtil
 
         return URLs
 
+    @storage: do () ->
+        storage = if window? then window.localStorage or window.sessionStorage else null
+
+        if not storage?
+            data = {}
+            storage = {
+                length: 0
+                getItem: (key) ->
+                    return data[key]
+                setItem: (key, value) ->
+                    data[key] = value
+                    @length = Object.keys(data).length
+                    return
+                removeItem: (key) ->
+                    delete data[key]
+                    @length = Object.keys(data).length
+                    return
+                clear: () ->
+                    data = {}
+                    @length = 0
+                    return
+            }
+
+        return storage
+
+
 module.exports = VASTUtil
