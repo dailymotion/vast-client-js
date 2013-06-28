@@ -1,3 +1,4 @@
+VASTClient = require('./client.coffee')
 VASTUtil = require('./util.coffee')
 VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
 EventEmitter = require('events').EventEmitter
@@ -20,6 +21,10 @@ class VASTTracker extends EventEmitter
         else
             @skipDelay = -1
             @linear = no
+
+        @on 'start', ->
+            VASTClient.lastSuccessfullAd = +new Date()
+            return
 
     setProgress: (progress) ->
         if @skipDelay != -1 and not @skipable
@@ -98,6 +103,7 @@ class VASTTracker extends EventEmitter
     track: (eventName) ->
         trackingURLTemplates = @trackingEvents[eventName]
         if trackingURLTemplates?
+            @emit eventName, ''
             @trackURLs trackingURLTemplates
 
     trackURLs: (URLTemplates, variables) ->
