@@ -29,7 +29,20 @@ class VASTUtil
     @storage: do () ->
         storage = if window? then window.localStorage or window.sessionStorage else null
 
-        if not storage?
+        # In Safari (Mac + iOS) when private browsing is ON,
+        # localStorage is read only
+        # http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
+        isDisabled = (store) ->
+            try
+                testValue = '__VASTUtil__'
+                store.setItem testValue, testValue
+                return yes if store.getItem(testValue) isnt testValue
+            catch e
+                return yes
+            return no
+
+
+        if not storage? or isDisabled(storage)
             data = {}
             storage = {
                 length: 0
