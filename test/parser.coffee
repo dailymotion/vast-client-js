@@ -9,10 +9,21 @@ urlfor = (relpath) ->
 describe 'VASTParser', ->
     describe '#parse', ->
         @response = null
+        @templateFilterCalls = []
 
         before (done) =>
+            VASTParser.addURLTemplateFilter (url) =>
+              @templateFilterCalls.push url
+              return url
             VASTParser.parse urlfor('wrapper.xml'), (@response) =>
                 done()
+
+        after () =>
+            VASTParser.removeURLTemplateFilter()
+
+        it 'should have called URLtemplateFilter twice', =>
+            @templateFilterCalls.should.have.length 2
+            @templateFilterCalls.should.eql [urlfor('wrapper.xml'), urlfor('sample.xml')]
 
         it 'should have found 1 ad', =>
             @response.ads.should.have.length 1
