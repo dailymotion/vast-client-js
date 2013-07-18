@@ -27,7 +27,10 @@ class VASTUtil
         return URLs
 
     @storage: do () ->
-        storage = if window? then window.localStorage or window.sessionStorage else null
+        try
+            storage = if window? then window.localStorage or window.sessionStorage else null
+        catch storageError
+            storage = null
 
         # In Safari (Mac + iOS) when private browsing is ON,
         # localStorage is read only
