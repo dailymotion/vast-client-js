@@ -96,7 +96,7 @@ class VASTTracker extends EventEmitter
         if @clickThroughURLTemplate?
             if @linear
                 variables = CONTENTPLAYHEAD: @progressFormated()
-            clickThroughURL = VASTUtil.resolve([@clickThroughURLTemplate], variables)[0]
+            clickThroughURL = VASTUtil.resolveURLTemplates([@clickThroughURLTemplate], variables)[0]
 
             @emit "clickthrough", clickThroughURL
 
