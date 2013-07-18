@@ -19,7 +19,10 @@ describe 'VASTParser', ->
                 done()
 
         after () =>
-            VASTParser.removeURLTemplateFilter()
+            VASTParser.clearUrlTemplateFilters()
+
+        it 'should have 1 filter defined', =>
+            VASTParser.countURLTemplateFilters().should.equal 1
 
         it 'should have called URLtemplateFilter twice', =>
             @templateFilterCalls.should.have.length 2
