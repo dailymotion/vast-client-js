@@ -8,6 +8,7 @@ class VASTTracker extends EventEmitter
         @muted = no
         @impressed = no
         @skipable = no
+        @skipDelayDefault = 5
         @trackingEvents = {}
         # Duplicate the creative's trackingEvents property so we can alter it
         for eventName, events of creative.trackingEvents
@@ -15,6 +16,8 @@ class VASTTracker extends EventEmitter
         if creative instanceof VASTCreativeLinear
             @assetDuration = creative.duration
             @skipDelay = creative.skipDelay
+            if @skipDelay isnt -1
+                if @skipDelay is null then @skipDelay = @skipDelayDefault
             @linear = yes
             @clickThroughURLTemplate = creative.videoClickThroughURLTemplate
             @clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate
@@ -72,6 +75,9 @@ class VASTTracker extends EventEmitter
         if @fullscreen != fullscreen
             @track(if fullscreen then "fullscreen" else "exitFullscreen")
         @fullscreen = fullscreen
+
+    setSkipDelay: (duration) ->
+        @skipDelay = duration if typeof duration is 'number'
 
     load: ->
         unless @impressed
