@@ -8,6 +8,7 @@ class VASTTracker extends EventEmitter
         @muted = no
         @impressed = no
         @skipable = no
+        @skipDelayDefault = -1
         @trackingEvents = {}
         # Duplicate the creative's trackingEvents property so we can alter it
         for eventName, events of creative.trackingEvents
@@ -27,9 +28,11 @@ class VASTTracker extends EventEmitter
             return
 
     setProgress: (progress) ->
-        if @skipDelay != -1 and not @skipable
-            if @skipDelay > progress
-                @emit 'skip-countdown', @skipDelay - progress
+        skipDelay = if @skipDelay is null then @skipDelayDefault else @skipDelay
+
+        if skipDelay != -1 and not @skipable
+            if skipDelay > progress
+                @emit 'skip-countdown', skipDelay - progress
             else
                 @skipable = yes
                 @emit 'skip-countdown', 0
@@ -72,6 +75,9 @@ class VASTTracker extends EventEmitter
         if @fullscreen != fullscreen
             @track(if fullscreen then "fullscreen" else "exitFullscreen")
         @fullscreen = fullscreen
+
+    setSkipDelay: (duration) ->
+        @skipDelay = duration if typeof duration is 'number'
 
     load: ->
         unless @impressed
