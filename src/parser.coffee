@@ -162,11 +162,12 @@ class VASTParser
             return null # can't parse duration, element is required
 
         skipOffset = creativeElement.getAttribute("skipoffset")
-        if skipOffset? and skipOffset[skipOffset.length - 1] is "%"
-            percent = parseInt(skipOffset)
-            creative.skipOffset = creative.duration * (percent / 100)
+        if not skipOffset? then creative.skipDelay = null
+        else if skipOffset.charAt(skipOffset.length - 1) is "%"
+            percent = parseInt(skipOffset, 10)
+            creative.skipDelay = creative.duration * (percent / 100)
         else
-            creative.skipOffset = @parseDuration skipOffset
+            creative.skipDelay = @parseDuration skipOffset
 
         videoClicksElement = @childByName(creativeElement, "VideoClicks")
         if videoClicksElement?
