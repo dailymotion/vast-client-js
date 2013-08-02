@@ -9,8 +9,8 @@ class VASTParser
     URLTemplateFilters = []
 
     @addURLTemplateFilter: (func) ->
-      URLTemplateFilters.push(func) if typeof func is 'function'
-      return
+        URLTemplateFilters.push(func) if typeof func is 'function'
+        return
 
     @removeURLTemplateFilter: () -> URLTemplateFilters.pop()
     @countURLTemplateFilters: () -> URLTemplateFilters.length
