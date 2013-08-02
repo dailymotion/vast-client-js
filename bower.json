@@ -10,6 +10,7 @@
         "components",
         "src",
         "test",
-        "package.json"
+        "package.json",
+        "bower.json"
     ]
 }

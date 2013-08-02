@@ -596,8 +596,27 @@ VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear;
 VASTMediaFile = require('./mediafile.coffee');
 
 VASTParser = (function() {
+  var URLTemplateFilters;
 
   function VASTParser() {}
+
+  URLTemplateFilters = [];
+
+  VASTParser.addURLTemplateFilter = function(func) {
+    if (typeof func === 'function') URLTemplateFilters.push(func);
+  };
+
+  VASTParser.removeURLTemplateFilter = function() {
+    return URLTemplateFilters.pop();
+  };
+
+  VASTParser.countURLTemplateFilters = function() {
+    return URLTemplateFilters.length;
+  };
+
+  VASTParser.clearUrlTemplateFilters = function() {
+    return URLTemplateFilters = [];
+  };
 
   VASTParser.parse = function(url, cb) {
     return this._parse(url, null, function(err, response) {
@@ -606,26 +625,31 @@ VASTParser = (function() {
   };
 
   VASTParser._parse = function(url, parentURLs, cb) {
-    var _this = this;
+    var filter, _i, _len,
+      _this = this;
+    for (_i = 0, _len = URLTemplateFilters.length; _i < _len; _i++) {
+      filter = URLTemplateFilters[_i];
+      url = filter(url);
+    }
     if (parentURLs == null) parentURLs = [];
     parentURLs.push(url);
     return URLHandler.get(url, function(err, xml) {
-      var ad, complete, node, response, _fn, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3;
+      var ad, complete, node, response, _fn, _j, _k, _l, _len2, _len3, _len4, _ref, _ref2, _ref3;
       if (err != null) return cb(err);
       response = new VASTResponse();
       if (!(((xml != null ? xml.documentElement : void 0) != null) && xml.documentElement.nodeName === "VAST")) {
         return cb();
       }
       _ref = xml.documentElement.childNodes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
+      for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+        node = _ref[_j];
         if (node.nodeName === 'Error') {
           response.errorURLTemplates.push(node.textContent);
         }
       }
       _ref2 = xml.documentElement.childNodes;
-      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-        node = _ref2[_j];
+      for (_k = 0, _len3 = _ref2.length; _k < _len3; _k++) {
+        node = _ref2[_k];
         if (node.nodeName === 'Ad') {
           ad = _this.parseAdElement(node);
           if (ad != null) {
@@ -638,11 +662,11 @@ VASTParser = (function() {
         }
       }
       complete = function() {
-        var ad, _k, _len3, _ref3;
+        var ad, _l, _len4, _ref3;
         if (!response) return;
         _ref3 = response.ads;
-        for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-          ad = _ref3[_k];
+        for (_l = 0, _len4 = _ref3.length; _l < _len4; _l++) {
+          ad = _ref3[_l];
           if (ad.nextWrapperURL != null) return;
         }
         if (response.ads.length === 0) {
@@ -669,7 +693,7 @@ VASTParser = (function() {
           ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
         }
         return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
-          var creative, eventName, index, wrappedAd, _base, _l, _len4, _len5, _len6, _m, _n, _ref5, _ref6, _ref7;
+          var creative, eventName, index, wrappedAd, _base, _len5, _len6, _len7, _m, _n, _o, _ref5, _ref6, _ref7;
           if (err != null) {
             VASTUtil.track(ad.errorURLTemplates, {
               ERRORCODE: 301
@@ -685,17 +709,17 @@ VASTParser = (function() {
             index = response.ads.indexOf(ad);
             response.ads.splice(index, 1);
             _ref5 = wrappedResponse.ads;
-            for (_l = 0, _len4 = _ref5.length; _l < _len4; _l++) {
-              wrappedAd = _ref5[_l];
+            for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+              wrappedAd = _ref5[_m];
               wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
               wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
               if (ad.trackingEvents != null) {
                 _ref6 = wrappedAd.creatives;
-                for (_m = 0, _len5 = _ref6.length; _m < _len5; _m++) {
-                  creative = _ref6[_m];
+                for (_n = 0, _len6 = _ref6.length; _n < _len6; _n++) {
+                  creative = _ref6[_n];
                   _ref7 = Object.keys(ad.trackingEvents);
-                  for (_n = 0, _len6 = _ref7.length; _n < _len6; _n++) {
-                    eventName = _ref7[_n];
+                  for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
+                    eventName = _ref7[_o];
                     (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
                     creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
                   }
@@ -708,8 +732,8 @@ VASTParser = (function() {
           return complete();
         });
       };
-      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
-        ad = _ref3[_k];
+      for (_l = 0, _len4 = _ref3.length; _l < _len4; _l++) {
+        ad = _ref3[_l];
         if (ad.nextWrapperURL == null) continue;
         _fn(ad);
       }
@@ -877,7 +901,7 @@ VASTParser = (function() {
 
 module.exports = VASTParser;
 
-},{"./urlhandler.coffee":9,"./ad.coffee":10,"./creative.coffee":7,"./response.coffee":11,"./util.coffee":5,"./mediafile.coffee":12}],7:[function(require,module,exports){
+},{"./urlhandler.coffee":9,"./response.coffee":10,"./ad.coffee":11,"./util.coffee":5,"./creative.coffee":7,"./mediafile.coffee":12}],7:[function(require,module,exports){
 var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLinear,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -940,39 +964,6 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
-},{}],10:[function(require,module,exports){
-var VASTAd;
-
-VASTAd = (function() {
-
-  function VASTAd() {
-    this.errorURLTemplates = [];
-    this.impressionURLTemplates = [];
-    this.creatives = [];
-  }
-
-  return VASTAd;
-
-})();
-
-module.exports = VASTAd;
-
-},{}],11:[function(require,module,exports){
-var VASTResponse;
-
-VASTResponse = (function() {
-
-  function VASTResponse() {
-    this.ads = [];
-    this.errorURLTemplates = [];
-  }
-
-  return VASTResponse;
-
-})();
-
-module.exports = VASTResponse;
-
 },{}],9:[function(require,module,exports){
 var URLHandler, flash, xhr;
 
@@ -1000,7 +991,40 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],12:[function(require,module,exports){
+},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],10:[function(require,module,exports){
+var VASTResponse;
+
+VASTResponse = (function() {
+
+  function VASTResponse() {
+    this.ads = [];
+    this.errorURLTemplates = [];
+  }
+
+  return VASTResponse;
+
+})();
+
+module.exports = VASTResponse;
+
+},{}],11:[function(require,module,exports){
+var VASTAd;
+
+VASTAd = (function() {
+
+  function VASTAd() {
+    this.errorURLTemplates = [];
+    this.impressionURLTemplates = [];
+    this.creatives = [];
+  }
+
+  return VASTAd;
+
+})();
+
+module.exports = VASTAd;
+
+},{}],12:[function(require,module,exports){
 var VASTMediaFile;
 
 VASTMediaFile = (function() {
