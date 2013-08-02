@@ -6,11 +6,25 @@ VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
 VASTMediaFile = require './mediafile.coffee'
 
 class VASTParser
+    URLTemplateFilters = []
+
+    @addURLTemplateFilter: (func) ->
+      URLTemplateFilters.push(func) if typeof func is 'function'
+      return
+
+    @removeURLTemplateFilter: () -> URLTemplateFilters.pop()
+    @countURLTemplateFilters: () -> URLTemplateFilters.length
+    @clearUrlTemplateFilters: () -> URLTemplateFilters = []
+
     @parse: (url, cb) ->
         @_parse url, null, (err, response) ->
             cb(response)
 
     @_parse: (url, parentURLs, cb) ->
+
+        # Process url with defined filter
+        url = filter(url) for filter in URLTemplateFilters
+
         parentURLs ?= []
         parentURLs.push url
 
@@ -218,3 +232,4 @@ class VASTParser
         return hours + minutes + seconds
 
 module.exports = VASTParser
+
