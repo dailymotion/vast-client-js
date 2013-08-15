@@ -109,7 +109,7 @@ class VASTTracker extends EventEmitter
     track: (eventName) ->
         trackingURLTemplates = @trackingEvents[eventName]
         if trackingURLTemplates?
-            @emit eventName, ''
+            @emit eventName, trackingURLTemplates
             @trackURLs trackingURLTemplates
 
     trackURLs: (URLTemplates, variables) ->
