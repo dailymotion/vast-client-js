@@ -1,0 +1,16 @@
+<table class="table">
+    <thead>
+        <tr>
+            <td><strong>Message</strong></td>
+            <td><strong>Duration</strong></td>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr ng-repeat="step in modal.content.stack" ng-class="{ 'success': ($index < modal.content.stack.length - 1), 'danger': ($index == modal.content.stack.length - 1) }">
+            <td>{{ step.message }}</td>
+            <!-- <td>{{ step.time | date:'medium' }}</td> -->
+            <td>{{ step.lastStepDuration }} ms</td>
+        </tr>
+    </tbody>
+</table>

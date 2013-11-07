@@ -1,0 +1,66 @@
+
+<div class="input-group">
+    <input type="text" class="form-control" placeholder="Put your VAST url here"
+        ng-model="vastUrl"/>
+    <span class="input-group-btn">
+        <button class="btn btn-primary" type="button"
+            ng-disabled="!vastUrl"
+            ng-click="runTests()"
+            on-enter="runTests">
+            Go!
+        </button>
+    </span>
+</div>
+
+</br>
+
+<div class="input-group">
+    <label class="radio-inline">
+        <strong>Wanted format:</strong>
+    </label>
+    <label class="radio-inline">
+        <input type="radio" id="inlineCheckbox1" value="video/mp4" ng-model="wantedFormat" checked> video/mp4
+    </label>
+    <label class="radio-inline">
+        <input type="radio" id="inlineCheckbox2" value="video/flv" ng-model="wantedFormat"> video/flv
+    </label>
+    <label class="radio-inline">
+        <input type="radio" id="inlineCheckbox3" value="video/3gp" ng-model="wantedFormat"> video/3gp
+    </label>
+</div>
+
+<div id="checklist" class="well">
+
+    <div class="checkbox"
+        ng-repeat="entry in Tester.list"
+        ng-class="{ 'started': entry.started, 'success': (entry.success == true), 'failed': (entry.success == false), 'error': !!entry.error }">
+        <label>
+            {{ entry.label }}
+        </label>
+        <small class="checklist-error" ng-show="entry.error">
+            <strong>Message:</strong> <code>{{ entry.error.message }}</code>
+        </small>
+        <small class="checklist-error-hint" ng-bind-html-unsafe="entry.error.hint"></small>
+
+        <a data-toggle="modal" class="btn btn-warning btn-xs"
+            ng-click="entry.modal.open()"
+            ng-show="entry.modal"
+            ng-bind-html-unsafe="entry.modal.link">
+        </a>
+
+        <!--
+        <div class="checklist-warning" ng-show="entry.warnings.length > 0">
+            <p ng-repeat="warn in entry.warnings">
+                <span>&#9888;</span>
+                <small>{{ warn }}</small>
+            </p>
+        </div>
+        -->
+    </div>
+</div>
+
+<div class="player-container">
+    <video id="player"></video>
+</div>
+
+<modal></modal>

@@ -1,0 +1,27 @@
+<div class="input-group">
+    <input type="text" class="form-control" placeholder="Put your VAST url here"
+        ng-model="vastUrl"/>
+    <span class="input-group-btn">
+        <button class="btn btn-primary" type="button"
+            ng-disabled="!vastUrl"
+            ng-click="runTests()"
+            on-enter="runTests">
+            Go!
+        </button>
+    </span>
+</div>
+
+<div class="screenshots"></div>
+<canvas id="can" origin-clean="true"></canvas>
+
+<div class="container iphone-ui">
+    <div class="iphone-screenshot" ng-click="takeScreenshot()"></div>
+
+    <div class="iphone-device">
+        <div class="iphone-screen">
+            <div class="player-container">
+                <video id="player"></video>
+            </div>
+        </div>
+    </div>
+</div>

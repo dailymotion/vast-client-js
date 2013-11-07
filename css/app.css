@@ -1,0 +1,230 @@
+/*
+yellow: FED200;
+*/
+
+body
+{
+    font-family: 'Roboto', sans-serif !important;
+}
+footer/*, pre*/
+{
+    font-size: 0.7em;
+}
+
+.navbar
+{
+    background-color: #005D89;
+}
+.navbar-brand
+{
+    color: #f8f8f8 !important;
+}
+
+.container
+{
+    max-width: 480px;
+}
+
+.title-container
+{
+    color: #005D89;
+    margin-bottom: 20px;
+}
+
+.view-container
+{
+    margin-top: 20px;
+}
+
+.player-container
+{
+    text-align: center;
+    margin-top: 20px;
+}
+#player
+{
+    width: 320px;
+    height: 240px;
+    background-color: black;
+    display: inline-block;
+    margin: 0 auto;
+    border-radius: 3px;
+}
+
+#checklist
+{
+    position: relative;
+    padding: 10px 19px;
+    margin-top: 20px;
+}
+#checklist .checkbox
+{
+    position: relative;
+    min-height: 25px;
+    max-height: 25px;
+    line-height: 25px;
+    padding: 0 5px;
+    /*margin: 0;*/
+    background-color: #f8f8f8;
+    color: #aaa;
+    border-radius: 3px;
+    -webkit-transform: translate3d(0,0,0);
+    -webkit-transition: background-color ease 500ms,
+                        color ease 500ms,
+                        max-height ease 1s;
+}
+#checklist .checkbox:before
+{
+    display: inline-block;
+    width: 16px;
+    content: '☐';
+}
+#checklist .checkbox.error
+{
+    max-height: 250px;
+    line-height: auto;
+}
+
+#checklist .checkbox.started
+{
+    background-color: #f8f8f8 !important;
+    color: #222;
+}
+#checklist .checkbox.started:before
+{
+    content: '…';
+}
+#checklist .checkbox.success
+{
+    background-color: #DFF0D8 !important;
+    color: #468847 !important;
+}
+#checklist .checkbox.success:before
+{
+    content: '✔';
+}
+#checklist .checkbox.failed
+{
+    background-color: #F2DEDE !important;
+    color: #B94A48 !important;
+}
+#checklist .checkbox.failed:before
+{
+    content: '✘';
+}
+#checklist .checkbox.warning
+{
+    background-color: #F0AD4E !important;
+    color: #444 !important;
+}
+#checklist .checkbox.warning:before
+{
+    content: ':/';
+}
+.checklist-error
+{
+    display: block;
+}
+/*.checklist-error code
+{
+    white-space: normal;
+}*/
+.checklist-error-hint
+{
+    display: block;
+    line-height: normal;
+    font-style: italic;
+    padding-bottom: 3px;
+}
+#checklist a[data-toggle="modal"]
+{
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    padding: 0 4px !important;
+}
+.url-list
+{
+    padding-right: 15px;
+}
+
+
+/**************
+    IPHONE
+**************/
+
+@-webkit-keyframes blinkOnce
+{
+    0%   { background-color: rgba(255,255,255, 0.7); }
+    100% { background-color: rgba(255,255,255, 0.2); }
+}
+@-webkit-keyframes screenshot
+{
+    0%   { -webkit-transform: scale(1); }
+    100% { -webkit-transform: scale(0.2); }
+}
+
+.iphone-ui
+{
+    position: relative;
+    width: 371px;
+    height: 724px;
+    margin: 20px auto;
+}
+.iphone-device,
+.iphone-screenshot
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.iphone-device
+{
+    background: white url('../images/iphone_background.png');
+}
+.iphone-screen
+{
+    position: absolute;
+    top: 120px;
+    left: 27px;
+    width: 320px;
+    height: 480px;
+    background-color: black;
+}
+.iphone-screenshot
+{
+    z-index: 99;
+    opacity: 0;
+    background: rgba(255,255,255, 0.2) url('../images/photo.w.png') no-repeat 50% 50%;
+    -webkit-transition: opacity ease-in-out 100ms;
+}
+.iphone-screenshot:hover
+{
+    opacity: 1;
+    cursor: pointer;
+}
+.iphone-screenshot.animation
+{
+    -webkit-animation: blinkOnce 350ms ease 0 1 normal;
+}
+.iphone-export
+{
+    position: relative;
+    z-index: 98;
+    width: 320px;
+    height: 240px;
+    /*width: 37.1px;
+    height: 72.4px;*/
+    /*width: 371px;
+    height: 724px;*/
+    /*-webkit-transition: all ease-in-out 100ms;*/
+    /*-webkit-transform: scale(0.1);*/
+}
+#can
+{
+    display: block;
+    width: 320px;
+    height: 240px;
+}

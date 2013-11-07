@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="App">
+    <head>
+        <title>vast-client-js Tester</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>
+
+        <link href="vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="vendor/prism.css" rel="stylesheet" media="screen">
+        <link href="css/app.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <div class="container title-container">
+            <h3>vast-client-js</h3>
+            | <a href="#/test" title="Main Tester Page">Tester</a> | <!--<a href="#/iphone" title="iPhone Simulator Test Page">iPhone Simulator</a> |-->
+        </div>
+        <p class="container lead">
+            Test Interface for the <a href="https://github.com/dailymotion/vast-client-js" onclick="window.open(this.href); return false;">vast-client-js</a> library
+        </p>
+        <div class="container view-container" ng-view></div>
+
+        <!-- <footer class="container">
+            Use <a href="https://github.com/dailymotion/vast-client-js" onclick="window.open(this.href); return false;">vast-client-js</a> developed by <a href="https://github.com/rs">Olivier Poitrey</a>
+        </footer> -->
+
+        <script src="vendor/jquery.min.js"></script>
+        <script src="vendor/angular.min.js"></script>
+        <script src="vendor/angular-route.min.js"></script>
+
+        <script src="vendor/bootstrap.min.js"></script>
+        <script src="vendor/prism.js"></script>
+        <script src="vendor/vast-client.js"></script>
+        <script src="vendor/html2canvas.js"></script>
+
+        <script src="js/app.js"></script>
+
+        <script src="js/directives/modal-directive.js"></script>
+        <script src="js/directives/prism-directive.js"></script>
+        <script src="js/directives/onenter-directive.js"></script>
+
+        <script src="js/controllers/test-controller.js"></script>
+        <script src="js/controllers/iphone-controller.js"></script>
+
+        <script src="js/services/keyboard-service.js"></script>
+        <script src="js/services/player-service.js"></script>
+        <script src="js/services/util-service.js"></script>
+        <script src="js/services/tester-service.js"></script>
+    </body>
+</html>

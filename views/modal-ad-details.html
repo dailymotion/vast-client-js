@@ -1,0 +1,85 @@
+
+<div class="list-group">
+    <a class="list-group-item" data-toggle="collapse" data-target="#ad_errorURLTemplates">
+        <span class="badge">{{ modal.content.errorURLTemplates.length || 0 }}</span>
+        Error URL Templates
+    </a>
+    <div id="ad_errorURLTemplates" class="collapse" ng-show="modal.content.errorURLTemplates.length > 0">
+        <ul class="list-group">
+            <li class="list-group-item url-list" ng-repeat="url in modal.content.errorURLTemplates">
+                <input type="text" class="form-control" value="{{ url }}"/>
+            </li>
+        </ul>
+    </div>
+
+    <a class="list-group-item" data-toggle="collapse" data-target="#ad_impressionURLTemplates">
+        <span class="badge">{{ modal.content.impressionURLTemplates.length || 0 }}</span>
+        Impression URL Templates
+    </a>
+    <div id="ad_impressionURLTemplates" class="collapse" ng-show="modal.content.impressionURLTemplates.length > 0">
+        <ul class="list-group">
+            <li class="list-group-item url-list" ng-repeat="url in modal.content.impressionURLTemplates">
+                <input type="text" class="form-control" value="{{ url }}"/>
+            </li>
+        </ul>
+    </div>
+
+    <a class="list-group-item" data-toggle="collapse" data-target="#ad_creatives">
+        <span class="badge">{{ modal.content.creatives.length || 0 }}</span>
+        Creatives
+    </a>
+    <div id="ad_creatives" class="collapse">
+        <div ng-repeat="ad in modal.content.creatives">
+            <h5>Tracking Events</h5>
+            <!--  -->
+            <small ng-repeat="(name, evts) in ad.trackingEvents">
+                <code>{{ name }}</code>
+                <input type="text" class="form-control" value="{{ url }}"
+                    ng-repeat="url in evts"/>
+            </small>
+
+            <h5>Type</h5>
+            <small>{{ ad.type }}</small>
+
+            <h5>Duration</h5>
+            <small>{{ ad.duration }}</small>
+
+            <h5>Skip Delay</h5>
+            <small>{{ ad.skipdelay }}</small>
+
+            <h5>Media Files</h5>
+            <div ng-repeat="mediaFile in ad.mediaFiles">
+                <input type="text" class="form-control" value="{{ mediaFile.fileURL }}"/>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Delivery Type</td>
+                            <td>Mime Type</td>
+                            <td>Codec</td>
+                            <td>Bitrate</td>
+                            <td>Min Bitrate</td>
+                            <td>Max Bitrate</td>
+                            <td>Width</td>
+                            <td>Height</td>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>{{ mediaFile.deliveryType }}</td>
+                            <td>{{ mediaFile.mimeType }}</td>
+                            <td>{{ mediaFile.codec }}</td>
+                            <td>{{ mediaFile.bitrate }}</td>
+                            <td>{{ mediaFile.minBitrate }}</td>
+                            <td>{{ mediaFile.maxBitrate }}</td>
+                            <td>{{ mediaFile.width }}</td>
+                            <td>{{ mediaFile.height }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
