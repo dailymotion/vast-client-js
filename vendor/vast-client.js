@@ -42,8 +42,8 @@ VASTClient = (function() {
       cb(null);
       return;
     }
-    return VASTParser.parse(url, function(err, response) {
-      return cb(err, response);
+    return VASTParser.parse(url, function(response) {
+      return cb(response);
     });
   };
 
@@ -470,7 +470,6 @@ VASTTracker = (function(_super) {
         events.push("start");
         percent = Math.round(progress / this.assetDuration * 100);
         events.push("progress-" + percent + "%");
-        // console.log(this.assetDuration, progress, percent + "%");
         if (percent >= 25) events.push("firstQuartile");
         if (percent >= 50) events.push("midpoint");
         if (percent >= 75) events.push("thirdQuartile");
@@ -550,7 +549,7 @@ VASTTracker = (function(_super) {
     var trackingURLTemplates;
     trackingURLTemplates = this.trackingEvents[eventName];
     if (trackingURLTemplates != null) {
-      this.emit(eventName, trackingURLTemplates);
+      this.emit(eventName, '');
       return this.trackURLs(trackingURLTemplates);
     }
   };
@@ -581,7 +580,7 @@ VASTTracker = (function(_super) {
 module.exports = VASTTracker;
 
 },{"events":7,"./client.coffee":2,"./util.coffee":5,"./creative.coffee":8}],4:[function(require,module,exports){
-var ParseStack, URLHandler, VASTAd, VASTCreativeLinear, VASTError, VASTMediaFile, VASTParser, VASTResponse, VASTUtil,
+var URLHandler, VASTAd, VASTCreativeLinear, VASTMediaFile, VASTParser, VASTResponse, VASTUtil,
   __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 URLHandler = require('./urlhandler.coffee');
@@ -595,8 +594,6 @@ VASTUtil = require('./util.coffee');
 VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear;
 
 VASTMediaFile = require('./mediafile.coffee');
-
-VASTError = require('./error.coffee');
 
 VASTParser = (function() {
   var URLTemplateFilters;
@@ -623,7 +620,7 @@ VASTParser = (function() {
 
   VASTParser.parse = function(url, cb) {
     return this._parse(url, null, function(err, response) {
-      return cb(err, response);
+      return cb(response);
     });
   };
 
@@ -636,15 +633,12 @@ VASTParser = (function() {
     }
     if (parentURLs == null) parentURLs = [];
     parentURLs.push(url);
-    ParseStack.log("Fetching URL: `" + url + "`");
     return URLHandler.get(url, function(err, xml) {
-      var ad, complete, node, response, _fn, _j, _k, _l, _len2, _len3, _len4, _ref, _ref2, _ref3;
-      if (err != null) return cb(new VASTError(err, xml, ParseStack.getStack()));
-      ParseStack.log("Response received without error");
+      var ad, complete, loopIndex, node, response, _j, _k, _len2, _len3, _ref, _ref2;
+      if (err != null) return cb(err);
       response = new VASTResponse();
       if (!(((xml != null ? xml.documentElement : void 0) != null) && xml.documentElement.nodeName === "VAST")) {
-        return cb(new VASTError('First document tag is not `VAST`', xml, ParseStack.getStack()));
-        ParseStack.log("Document root element is `VAST`");
+        return cb();
       }
       _ref = xml.documentElement.childNodes;
       for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
@@ -668,7 +662,7 @@ VASTParser = (function() {
         }
       }
       complete = function() {
-        var ad, error, _l, _len4, _ref3;
+        var ad, _l, _len4, _ref3;
         if (!response) return;
         _ref3 = response.ads;
         for (_l = 0, _len4 = _ref3.length; _l < _len4; _l++) {
@@ -679,70 +673,68 @@ VASTParser = (function() {
           VASTUtil.track(response.errorURLTemplates, {
             ERRORCODE: 303
           });
-          error = new VASTError('No Ad Response', response, ParseStack.getStack());
           response = null;
         }
-        return cb(error, response);
+        return cb(null, response);
       };
-      _ref3 = response.ads;
-      _fn = function(ad) {
-        var baseURL, _ref4;
-        if (parentURLs.length >= 10 || (_ref4 = ad.nextWrapperURL, __indexOf.call(parentURLs, _ref4) >= 0)) {
-          VASTUtil.track(ad.errorURLTemplates, {
-            ERRORCODE: 302
-          });
-          response.ads.splice(response.ads.indexOf(ad), 1);
-          complete();
-          return;
-        }
-        if (ad.nextWrapperURL.indexOf('://') === -1) {
-          baseURL = url.slice(0, url.lastIndexOf('/'));
-          ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
-        }
-        return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
-          var creative, eventName, index, wrappedAd, _base, _len5, _len6, _len7, _m, _n, _o, _ref5, _ref6, _ref7;
-          if (err != null) {
+      loopIndex = response.ads.length;
+      while (loopIndex--) {
+        ad = response.ads[loopIndex];
+        if (ad.nextWrapperURL == null) continue;
+        (function(ad) {
+          var baseURL, _ref3;
+          if (parentURLs.length >= 10 || (_ref3 = ad.nextWrapperURL, __indexOf.call(parentURLs, _ref3) >= 0)) {
             VASTUtil.track(ad.errorURLTemplates, {
-              ERRORCODE: 301
+              ERRORCODE: 302
             });
             response.ads.splice(response.ads.indexOf(ad), 1);
-          } else if (!(wrappedResponse != null)) {
-            VASTUtil.track(ad.errorURLTemplates, {
-              ERRORCODE: 303
-            });
-            response.ads.splice(response.ads.indexOf(ad), 1);
-          } else {
-            response.errorURLTemplates = response.errorURLTemplates.concat(wrappedResponse.errorURLTemplates);
-            index = response.ads.indexOf(ad);
-            response.ads.splice(index, 1);
-            _ref5 = wrappedResponse.ads;
-            for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
-              wrappedAd = _ref5[_m];
-              wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
-              wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
-              if (ad.trackingEvents != null) {
-                _ref6 = wrappedAd.creatives;
-                for (_n = 0, _len6 = _ref6.length; _n < _len6; _n++) {
-                  creative = _ref6[_n];
-                  _ref7 = Object.keys(ad.trackingEvents);
-                  for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
-                    eventName = _ref7[_o];
-                    (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
-                    creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+            complete();
+            return;
+          }
+          if (ad.nextWrapperURL.indexOf('://') === -1) {
+            baseURL = url.slice(0, url.lastIndexOf('/'));
+            ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
+          }
+          return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
+            var creative, eventName, index, wrappedAd, _base, _l, _len4, _len5, _len6, _m, _n, _ref4, _ref5, _ref6;
+            if (err != null) {
+              VASTUtil.track(ad.errorURLTemplates, {
+                ERRORCODE: 301
+              });
+              response.ads.splice(response.ads.indexOf(ad), 1);
+            } else if (!(wrappedResponse != null)) {
+              VASTUtil.track(ad.errorURLTemplates, {
+                ERRORCODE: 303
+              });
+              response.ads.splice(response.ads.indexOf(ad), 1);
+            } else {
+              response.errorURLTemplates = response.errorURLTemplates.concat(wrappedResponse.errorURLTemplates);
+              index = response.ads.indexOf(ad);
+              response.ads.splice(index, 1);
+              _ref4 = wrappedResponse.ads;
+              for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+                wrappedAd = _ref4[_l];
+                wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
+                wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
+                if (ad.trackingEvents != null) {
+                  _ref5 = wrappedAd.creatives;
+                  for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+                    creative = _ref5[_m];
+                    _ref6 = Object.keys(ad.trackingEvents);
+                    for (_n = 0, _len6 = _ref6.length; _n < _len6; _n++) {
+                      eventName = _ref6[_n];
+                      (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
+                      creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+                    }
                   }
                 }
+                response.ads.splice(index, 0, wrappedAd);
               }
-              response.ads.splice(index, 0, wrappedAd);
             }
-          }
-          delete ad.nextWrapperURL;
-          return complete();
-        });
-      };
-      for (_l = 0, _len4 = _ref3.length; _l < _len4; _l++) {
-        ad = _ref3[_l];
-        if (ad.nextWrapperURL == null) continue;
-        _fn(ad);
+            delete ad.nextWrapperURL;
+            return complete();
+          });
+        })(ad);
       }
       return complete();
     });
@@ -906,36 +898,9 @@ VASTParser = (function() {
 
 })();
 
-ParseStack = (function() {
-  var lastStepTime, stack;
-  stack = [];
-  lastStepTime = 0;
-  return {
-    getStack: function() {
-      return stack;
-    },
-    log: function(message, data) {
-      var lastStepDuration, now;
-      now = +new Date();
-      if (lastStepTime === 0) {
-        lastStepDuration = 0;
-      } else {
-        lastStepDuration = now - lastStepTime;
-      }
-      lastStepTime = now;
-      return stack.push({
-        message: message,
-        data: data,
-        time: now,
-        lastStepDuration: lastStepDuration
-      });
-    }
-  };
-})();
-
 module.exports = VASTParser;
 
-},{"./urlhandler.coffee":9,"./response.coffee":10,"./ad.coffee":11,"./util.coffee":5,"./creative.coffee":8,"./mediafile.coffee":12,"./error.coffee":13}],8:[function(require,module,exports){
+},{"./urlhandler.coffee":9,"./response.coffee":10,"./ad.coffee":11,"./util.coffee":5,"./creative.coffee":8,"./mediafile.coffee":12}],8:[function(require,module,exports){
 var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLinear,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -998,6 +963,22 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
+},{}],10:[function(require,module,exports){
+var VASTResponse;
+
+VASTResponse = (function() {
+
+  function VASTResponse() {
+    this.ads = [];
+    this.errorURLTemplates = [];
+  }
+
+  return VASTResponse;
+
+})();
+
+module.exports = VASTResponse;
+
 },{}],9:[function(require,module,exports){
 var URLHandler, flash, xhr;
 
@@ -1025,40 +1006,7 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/xmlhttprequest.coffee":14,"./urlhandlers/flash.coffee":15}],10:[function(require,module,exports){
-var VASTResponse;
-
-VASTResponse = (function() {
-
-  function VASTResponse() {
-    this.ads = [];
-    this.errorURLTemplates = [];
-  }
-
-  return VASTResponse;
-
-})();
-
-module.exports = VASTResponse;
-
-},{}],11:[function(require,module,exports){
-var VASTAd;
-
-VASTAd = (function() {
-
-  function VASTAd() {
-    this.errorURLTemplates = [];
-    this.impressionURLTemplates = [];
-    this.creatives = [];
-  }
-
-  return VASTAd;
-
-})();
-
-module.exports = VASTAd;
-
-},{}],12:[function(require,module,exports){
+},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],12:[function(require,module,exports){
 var VASTMediaFile;
 
 VASTMediaFile = (function() {
@@ -1081,25 +1029,41 @@ VASTMediaFile = (function() {
 
 module.exports = VASTMediaFile;
 
-},{}],13:[function(require,module,exports){
-var VASTError;
+},{}],11:[function(require,module,exports){
+var VASTAd;
 
-VASTError = (function() {
+VASTAd = (function() {
 
-  function VASTError(message, response, stack) {
-    this.message = message != null ? message : '';
-    this.response = response != null ? response : null;
-    this.stack = stack != null ? stack : [];
-    this.time = +new Date();
+  function VASTAd() {
+    this.errorURLTemplates = [];
+    this.impressionURLTemplates = [];
+    this.creatives = [];
   }
 
-  return VASTError;
+  return VASTAd;
 
 })();
 
-module.exports = VASTError;
+module.exports = VASTAd;
 
 },{}],14:[function(require,module,exports){
+var FlashURLHandler;
+
+FlashURLHandler = (function() {
+
+  function FlashURLHandler() {}
+
+  FlashURLHandler.get = function(url, cb) {
+    return cb('not supported');
+  };
+
+  return FlashURLHandler;
+
+})();
+
+module.exports = FlashURLHandler;
+
+},{}],13:[function(require,module,exports){
 var XHRURLHandler;
 
 XHRURLHandler = (function() {
@@ -1131,23 +1095,6 @@ XHRURLHandler = (function() {
 })();
 
 module.exports = XHRURLHandler;
-
-},{}],15:[function(require,module,exports){
-var FlashURLHandler;
-
-FlashURLHandler = (function() {
-
-  function FlashURLHandler() {}
-
-  FlashURLHandler.get = function(url, cb) {
-    return cb('not supported');
-  };
-
-  return FlashURLHandler;
-
-})();
-
-module.exports = FlashURLHandler;
 
 },{}]},{},[1])(1)
 });
