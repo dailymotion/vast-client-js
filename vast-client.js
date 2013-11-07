@@ -634,7 +634,7 @@ VASTParser = (function() {
     if (parentURLs == null) parentURLs = [];
     parentURLs.push(url);
     return URLHandler.get(url, function(err, xml) {
-      var ad, complete, node, response, _fn, _j, _k, _l, _len2, _len3, _len4, _ref, _ref2, _ref3;
+      var ad, complete, loopIndex, node, response, _j, _k, _len2, _len3, _ref, _ref2;
       if (err != null) return cb(err);
       response = new VASTResponse();
       if (!(((xml != null ? xml.documentElement : void 0) != null) && xml.documentElement.nodeName === "VAST")) {
@@ -677,65 +677,64 @@ VASTParser = (function() {
         }
         return cb(null, response);
       };
-      _ref3 = response.ads;
-      _fn = function(ad) {
-        var baseURL, _ref4;
-        if (parentURLs.length >= 10 || (_ref4 = ad.nextWrapperURL, __indexOf.call(parentURLs, _ref4) >= 0)) {
-          VASTUtil.track(ad.errorURLTemplates, {
-            ERRORCODE: 302
-          });
-          response.ads.splice(response.ads.indexOf(ad), 1);
-          complete();
-          return;
-        }
-        if (ad.nextWrapperURL.indexOf('://') === -1) {
-          baseURL = url.slice(0, url.lastIndexOf('/'));
-          ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
-        }
-        return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
-          var creative, eventName, index, wrappedAd, _base, _len5, _len6, _len7, _m, _n, _o, _ref5, _ref6, _ref7;
-          if (err != null) {
+      loopIndex = response.ads.length;
+      while (loopIndex--) {
+        ad = response.ads[loopIndex];
+        if (ad.nextWrapperURL == null) continue;
+        (function(ad) {
+          var baseURL, _ref3;
+          if (parentURLs.length >= 10 || (_ref3 = ad.nextWrapperURL, __indexOf.call(parentURLs, _ref3) >= 0)) {
             VASTUtil.track(ad.errorURLTemplates, {
-              ERRORCODE: 301
+              ERRORCODE: 302
             });
             response.ads.splice(response.ads.indexOf(ad), 1);
-          } else if (!(wrappedResponse != null)) {
-            VASTUtil.track(ad.errorURLTemplates, {
-              ERRORCODE: 303
-            });
-            response.ads.splice(response.ads.indexOf(ad), 1);
-          } else {
-            response.errorURLTemplates = response.errorURLTemplates.concat(wrappedResponse.errorURLTemplates);
-            index = response.ads.indexOf(ad);
-            response.ads.splice(index, 1);
-            _ref5 = wrappedResponse.ads;
-            for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
-              wrappedAd = _ref5[_m];
-              wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
-              wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
-              if (ad.trackingEvents != null) {
-                _ref6 = wrappedAd.creatives;
-                for (_n = 0, _len6 = _ref6.length; _n < _len6; _n++) {
-                  creative = _ref6[_n];
-                  _ref7 = Object.keys(ad.trackingEvents);
-                  for (_o = 0, _len7 = _ref7.length; _o < _len7; _o++) {
-                    eventName = _ref7[_o];
-                    (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
-                    creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+            complete();
+            return;
+          }
+          if (ad.nextWrapperURL.indexOf('://') === -1) {
+            baseURL = url.slice(0, url.lastIndexOf('/'));
+            ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
+          }
+          return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
+            var creative, eventName, index, wrappedAd, _base, _l, _len4, _len5, _len6, _m, _n, _ref4, _ref5, _ref6;
+            if (err != null) {
+              VASTUtil.track(ad.errorURLTemplates, {
+                ERRORCODE: 301
+              });
+              response.ads.splice(response.ads.indexOf(ad), 1);
+            } else if (!(wrappedResponse != null)) {
+              VASTUtil.track(ad.errorURLTemplates, {
+                ERRORCODE: 303
+              });
+              response.ads.splice(response.ads.indexOf(ad), 1);
+            } else {
+              response.errorURLTemplates = response.errorURLTemplates.concat(wrappedResponse.errorURLTemplates);
+              index = response.ads.indexOf(ad);
+              response.ads.splice(index, 1);
+              _ref4 = wrappedResponse.ads;
+              for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+                wrappedAd = _ref4[_l];
+                wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
+                wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
+                if (ad.trackingEvents != null) {
+                  _ref5 = wrappedAd.creatives;
+                  for (_m = 0, _len5 = _ref5.length; _m < _len5; _m++) {
+                    creative = _ref5[_m];
+                    _ref6 = Object.keys(ad.trackingEvents);
+                    for (_n = 0, _len6 = _ref6.length; _n < _len6; _n++) {
+                      eventName = _ref6[_n];
+                      (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
+                      creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+                    }
                   }
                 }
+                response.ads.splice(index, 0, wrappedAd);
               }
-              response.ads.splice(index, 0, wrappedAd);
             }
-          }
-          delete ad.nextWrapperURL;
-          return complete();
-        });
-      };
-      for (_l = 0, _len4 = _ref3.length; _l < _len4; _l++) {
-        ad = _ref3[_l];
-        if (ad.nextWrapperURL == null) continue;
-        _fn(ad);
+            delete ad.nextWrapperURL;
+            return complete();
+          });
+        })(ad);
       }
       return complete();
     });
@@ -964,6 +963,22 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
+},{}],10:[function(require,module,exports){
+var VASTResponse;
+
+VASTResponse = (function() {
+
+  function VASTResponse() {
+    this.ads = [];
+    this.errorURLTemplates = [];
+  }
+
+  return VASTResponse;
+
+})();
+
+module.exports = VASTResponse;
+
 },{}],9:[function(require,module,exports){
 var URLHandler, flash, xhr;
 
@@ -991,23 +1006,7 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],10:[function(require,module,exports){
-var VASTResponse;
-
-VASTResponse = (function() {
-
-  function VASTResponse() {
-    this.ads = [];
-    this.errorURLTemplates = [];
-  }
-
-  return VASTResponse;
-
-})();
-
-module.exports = VASTResponse;
-
-},{}],11:[function(require,module,exports){
+},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],11:[function(require,module,exports){
 var VASTAd;
 
 VASTAd = (function() {
@@ -1047,6 +1046,23 @@ VASTMediaFile = (function() {
 
 module.exports = VASTMediaFile;
 
+},{}],14:[function(require,module,exports){
+var FlashURLHandler;
+
+FlashURLHandler = (function() {
+
+  function FlashURLHandler() {}
+
+  FlashURLHandler.get = function(url, cb) {
+    return cb('not supported');
+  };
+
+  return FlashURLHandler;
+
+})();
+
+module.exports = FlashURLHandler;
+
 },{}],13:[function(require,module,exports){
 var XHRURLHandler;
 
@@ -1079,23 +1095,6 @@ XHRURLHandler = (function() {
 })();
 
 module.exports = XHRURLHandler;
-
-},{}],14:[function(require,module,exports){
-var FlashURLHandler;
-
-FlashURLHandler = (function() {
-
-  function FlashURLHandler() {}
-
-  FlashURLHandler.get = function(url, cb) {
-    return cb('not supported');
-  };
-
-  return FlashURLHandler;
-
-})();
-
-module.exports = FlashURLHandler;
 
 },{}]},{},[1])(1)
 });
