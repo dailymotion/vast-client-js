@@ -28,8 +28,8 @@ class VASTClient
 
         # TODO: handle request timeout
 
-        VASTParser.parse url, (response) =>
-            cb(response)
+        VASTParser.parse url, (err, response) =>
+            cb(err, response)
 
 
     # 'Fake' static constructor

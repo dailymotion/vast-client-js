@@ -4,6 +4,7 @@ VASTAd = require './ad.coffee'
 VASTUtil = require './util.coffee'
 VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
 VASTMediaFile = require './mediafile.coffee'
+VASTError = require './error.coffee'
 
 class VASTParser
     URLTemplateFilters = []
@@ -18,7 +19,7 @@ class VASTParser
 
     @parse: (url, cb) ->
         @_parse url, null, (err, response) ->
-            cb(response)
+            cb(err, response)
 
     @_parse: (url, parentURLs, cb) ->
 
@@ -28,14 +29,18 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
-        URLHandler.get url, (err, xml) =>
-            return cb(err) if err?
+        ParseStack.log "Fetching URL: `#{url}`"
 
+        URLHandler.get url, (err, xml) =>
+            return cb( new VASTError(err, xml, ParseStack.getStack()) ) if err?
+
+            ParseStack.log "Response received without error"
             response = new VASTResponse()
 
             unless xml?.documentElement? and xml.documentElement.nodeName is "VAST"
-                return cb()
+                return cb( new VASTError('First document tag is not `VAST`', xml, ParseStack.getStack()) )
 
+                ParseStack.log "Document root element is `VAST`"
             for node in xml.documentElement.childNodes
                 if node.nodeName is 'Error'
                     response.errorURLTemplates.push node.textContent
@@ -59,10 +64,13 @@ class VASTParser
                     # provided when the VAST response returns an empty InLine response after a chain of one or more wrapper ads.
                     # If an [ERRORCODE] macro is included, the video player should substitute with error code 303.
                     VASTUtil.track(response.errorURLTemplates, ERRORCODE: 303)
+                    error = new VASTError('No Ad Response', response, ParseStack.getStack())
                     response = null
-                cb(null, response)
+                cb(error, response)
 
-            for ad in response.ads
+            loopIndex = response.ads.length
+            while loopIndex--
+                ad = response.ads[loopIndex]
                 continue unless ad.nextWrapperURL?
                 do (ad) =>
                     if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
@@ -231,5 +239,32 @@ class VASTParser
             return -1
         return hours + minutes + seconds
 
-module.exports = VASTParser
+ParseStack = do ->
+    stack = []
 
+    lastStepTime = 0
+
+    return {
+        getStack: ->
+            return stack
+
+        log: (message, data) ->
+            now = +new Date()
+
+            if lastStepTime is 0
+                lastStepDuration = 0
+            else
+                lastStepDuration = now - lastStepTime
+
+            lastStepTime = now
+
+            stack.push {
+                message: message
+                data: data
+                time: now
+                lastStepDuration: lastStepDuration
+            }
+    }
+
+
+module.exports = VASTParser
