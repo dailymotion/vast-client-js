@@ -62,7 +62,9 @@ class VASTParser
                     response = null
                 cb(null, response)
 
-            for ad in response.ads
+            loopIndex = response.ads.length
+            while loopIndex--
+                ad = response.ads[loopIndex]
                 continue unless ad.nextWrapperURL?
                 do (ad) =>
                     if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
