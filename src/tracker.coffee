@@ -49,7 +49,6 @@ class VASTTracker extends EventEmitter
                 events.push "firstQuartile" if percent >= 25
                 events.push "midpoint" if percent >= 50
                 events.push "thirdQuartile" if percent >= 75
-                events.push "complete" if percent >= 100
 
             for eventName in events
                 @track eventName
@@ -87,6 +86,9 @@ class VASTTracker extends EventEmitter
 
     errorWithCode: (errorCode) ->
         @trackURLs @ad.errorURLTemplates, ERRORCODE: errorCode
+
+    complete: ->
+        @track "complete"
 
     stop: ->
         @track(if @linear then "cloaseLinear" else "close")
