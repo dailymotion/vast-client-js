@@ -91,7 +91,7 @@ class VASTTracker extends EventEmitter
         @track "complete"
 
     stop: ->
-        @track(if @linear then "cloaseLinear" else "close")
+        @track(if @linear then "closeLinear" else "close")
 
     skip: ->
         @track "skip"
@@ -109,6 +109,12 @@ class VASTTracker extends EventEmitter
             @emit "clickthrough", clickThroughURL
 
     track: (eventName) ->
+
+        # closeLinear event was introduced in VAST 3.0
+        # Fallback to vast 2.0 close event if necessary
+        if eventName is 'closeLinear' and (not @trackingEvents[eventName]? and @trackingEvents['close']?)
+            eventName = 'close'
+
         trackingURLTemplates = @trackingEvents[eventName]
         if trackingURLTemplates?
             @emit eventName, ''
