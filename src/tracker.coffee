@@ -10,6 +10,13 @@ class VASTTracker extends EventEmitter
         @skipable = no
         @skipDelayDefault = -1
         @trackingEvents = {}
+        # Tracker listeners should be notified with some events
+        # no matter if there is a tracking URL or not
+        @emitAlwaysEvents = [
+            'creativeView',
+            'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete',
+            'rewind', 'skip', 'closeLinear', 'close'
+        ]
         # Duplicate the creative's trackingEvents property so we can alter it
         for eventName, events of creative.trackingEvents
             @trackingEvents[eventName] = events.slice(0)
@@ -51,8 +58,7 @@ class VASTTracker extends EventEmitter
                 events.push "thirdQuartile" if percent >= 75
 
             for eventName in events
-                @track eventName
-                delete @trackingEvents[eventName]
+                @track eventName, yes
 
             if progress < @progress
                 @track "rewind"
@@ -108,7 +114,7 @@ class VASTTracker extends EventEmitter
 
             @emit "clickthrough", clickThroughURL
 
-    track: (eventName) ->
+    track: (eventName, once=no) ->
 
         # closeLinear event was introduced in VAST 3.0
         # Fallback to vast 2.0 close event if necessary
@@ -116,9 +122,18 @@ class VASTTracker extends EventEmitter
             eventName = 'close'
 
         trackingURLTemplates = @trackingEvents[eventName]
+        idx = @emitAlwaysEvents.indexOf(eventName)
+
         if trackingURLTemplates?
             @emit eventName, ''
             @trackURLs trackingURLTemplates
+        else if idx isnt -1
+            @emit eventName, ''
+
+        if once is yes
+            delete @trackingEvents[eventName]
+            @emitAlwaysEvents.splice idx, 1 if idx > -1
+        return
 
     trackURLs: (URLTemplates, variables) ->
         variables ?= {}
