@@ -167,179 +167,7 @@ VASTUtil = (function() {
 
 module.exports = VASTUtil;
 
-},{}],3:[function(require,module,exports){
-var EventEmitter, VASTClient, VASTCreativeLinear, VASTTracker, VASTUtil,
-  __hasProp = Object.prototype.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-VASTClient = require('./client.coffee');
-
-VASTUtil = require('./util.coffee');
-
-VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear;
-
-EventEmitter = require('events').EventEmitter;
-
-VASTTracker = (function(_super) {
-
-  __extends(VASTTracker, _super);
-
-  function VASTTracker(ad, creative) {
-    var eventName, events, _ref;
-    this.ad = ad;
-    this.creative = creative;
-    this.muted = false;
-    this.impressed = false;
-    this.skipable = false;
-    this.skipDelayDefault = -1;
-    this.trackingEvents = {};
-    _ref = creative.trackingEvents;
-    for (eventName in _ref) {
-      events = _ref[eventName];
-      this.trackingEvents[eventName] = events.slice(0);
-    }
-    if (creative instanceof VASTCreativeLinear) {
-      this.assetDuration = creative.duration;
-      this.skipDelay = creative.skipDelay;
-      this.linear = true;
-      this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
-      this.clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate;
-    } else {
-      this.skipDelay = -1;
-      this.linear = false;
-    }
-    this.on('start', function() {
-      VASTClient.lastSuccessfullAd = +new Date();
-    });
-  }
-
-  VASTTracker.prototype.setProgress = function(progress) {
-    var eventName, events, percent, skipDelay, _i, _len;
-    skipDelay = this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
-    if (skipDelay !== -1 && !this.skipable) {
-      if (skipDelay > progress) {
-        this.emit('skip-countdown', skipDelay - progress);
-      } else {
-        this.skipable = true;
-        this.emit('skip-countdown', 0);
-      }
-    }
-    if (this.linear && this.assetDuration > 0) {
-      events = [];
-      if (progress > 0) {
-        events.push("start");
-        percent = Math.round(progress / this.assetDuration * 100);
-        events.push("progress-" + percent + "%");
-        if (percent >= 25) events.push("firstQuartile");
-        if (percent >= 50) events.push("midpoint");
-        if (percent >= 75) events.push("thirdQuartile");
-        if (percent >= 100) events.push("complete");
-      }
-      for (_i = 0, _len = events.length; _i < _len; _i++) {
-        eventName = events[_i];
-        this.track(eventName);
-        delete this.trackingEvents[eventName];
-      }
-      if (progress < this.progress) this.track("rewind");
-    }
-    return this.progress = progress;
-  };
-
-  VASTTracker.prototype.setMuted = function(muted) {
-    if (this.muted !== muted) this.track(muted ? "muted" : "unmuted");
-    return this.muted = muted;
-  };
-
-  VASTTracker.prototype.setPaused = function(paused) {
-    if (this.paused !== paused) this.track(paused ? "pause" : "resume");
-    return this.paused = paused;
-  };
-
-  VASTTracker.prototype.setFullscreen = function(fullscreen) {
-    if (this.fullscreen !== fullscreen) {
-      this.track(fullscreen ? "fullscreen" : "exitFullscreen");
-    }
-    return this.fullscreen = fullscreen;
-  };
-
-  VASTTracker.prototype.setSkipDelay = function(duration) {
-    if (typeof duration === 'number') return this.skipDelay = duration;
-  };
-
-  VASTTracker.prototype.load = function() {
-    if (!this.impressed) {
-      this.impressed = true;
-      this.trackURLs(this.ad.impressionURLTemplates);
-      return this.track("creativeView");
-    }
-  };
-
-  VASTTracker.prototype.errorWithCode = function(errorCode) {
-    return this.trackURLs(this.ad.errorURLTemplates, {
-      ERRORCODE: errorCode
-    });
-  };
-
-  VASTTracker.prototype.stop = function() {
-    return this.track(this.linear ? "cloaseLinear" : "close");
-  };
-
-  VASTTracker.prototype.skip = function() {
-    this.track("skip");
-    return this.trackingEvents = [];
-  };
-
-  VASTTracker.prototype.click = function() {
-    var clickThroughURL, variables;
-    if (this.clickTrackingURLTemplate != null) {
-      this.trackURLs(this.clickTrackingURLTemplate);
-    }
-    if (this.clickThroughURLTemplate != null) {
-      if (this.linear) {
-        variables = {
-          CONTENTPLAYHEAD: this.progressFormated()
-        };
-      }
-      clickThroughURL = VASTUtil.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
-      return this.emit("clickthrough", clickThroughURL);
-    }
-  };
-
-  VASTTracker.prototype.track = function(eventName) {
-    var trackingURLTemplates;
-    trackingURLTemplates = this.trackingEvents[eventName];
-    if (trackingURLTemplates != null) {
-      this.emit(eventName, '');
-      return this.trackURLs(trackingURLTemplates);
-    }
-  };
-
-  VASTTracker.prototype.trackURLs = function(URLTemplates, variables) {
-    if (variables == null) variables = {};
-    if (this.linear) variables["CONTENTPLAYHEAD"] = this.progressFormated();
-    return VASTUtil.track(URLTemplates, variables);
-  };
-
-  VASTTracker.prototype.progressFormated = function() {
-    var h, m, ms, s, seconds;
-    seconds = parseInt(this.progress);
-    h = seconds / (60 * 60);
-    if (h.length < 2) h = "0" + h;
-    m = seconds / 60 % 60;
-    if (m.length < 2) m = "0" + m;
-    s = seconds % 60;
-    if (s.length < 2) s = "0" + m;
-    ms = parseInt((this.progress - seconds) * 100);
-    return "" + h + ":" + m + ":" + s + "." + ms;
-  };
-
-  return VASTTracker;
-
-})(EventEmitter);
-
-module.exports = VASTTracker;
-
-},{"events":6,"./client.coffee":2,"./util.coffee":5,"./creative.coffee":7}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -393,7 +221,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
 
 var EventEmitter = exports.EventEmitter = process.EventEmitter;
@@ -579,7 +407,193 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":8}],4:[function(require,module,exports){
+},{"__browserify_process":6}],3:[function(require,module,exports){
+var EventEmitter, VASTClient, VASTCreativeLinear, VASTTracker, VASTUtil,
+  __hasProp = Object.prototype.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+VASTClient = require('./client.coffee');
+
+VASTUtil = require('./util.coffee');
+
+VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear;
+
+EventEmitter = require('events').EventEmitter;
+
+VASTTracker = (function(_super) {
+
+  __extends(VASTTracker, _super);
+
+  function VASTTracker(ad, creative) {
+    var eventName, events, _ref;
+    this.ad = ad;
+    this.creative = creative;
+    this.muted = false;
+    this.impressed = false;
+    this.skipable = false;
+    this.skipDelayDefault = -1;
+    this.trackingEvents = {};
+    this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'rewind', 'skip', 'closeLinear', 'close'];
+    _ref = creative.trackingEvents;
+    for (eventName in _ref) {
+      events = _ref[eventName];
+      this.trackingEvents[eventName] = events.slice(0);
+    }
+    if (creative instanceof VASTCreativeLinear) {
+      this.assetDuration = creative.duration;
+      this.skipDelay = creative.skipDelay;
+      this.linear = true;
+      this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
+      this.clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate;
+    } else {
+      this.skipDelay = -1;
+      this.linear = false;
+    }
+    this.on('start', function() {
+      VASTClient.lastSuccessfullAd = +new Date();
+    });
+  }
+
+  VASTTracker.prototype.setProgress = function(progress) {
+    var eventName, events, percent, skipDelay, _i, _len;
+    skipDelay = this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
+    if (skipDelay !== -1 && !this.skipable) {
+      if (skipDelay > progress) {
+        this.emit('skip-countdown', skipDelay - progress);
+      } else {
+        this.skipable = true;
+        this.emit('skip-countdown', 0);
+      }
+    }
+    if (this.linear && this.assetDuration > 0) {
+      events = [];
+      if (progress > 0) {
+        events.push("start");
+        percent = Math.round(progress / this.assetDuration * 100);
+        events.push("progress-" + percent + "%");
+        if (percent >= 25) events.push("firstQuartile");
+        if (percent >= 50) events.push("midpoint");
+        if (percent >= 75) events.push("thirdQuartile");
+      }
+      for (_i = 0, _len = events.length; _i < _len; _i++) {
+        eventName = events[_i];
+        this.track(eventName, true);
+      }
+      if (progress < this.progress) this.track("rewind");
+    }
+    return this.progress = progress;
+  };
+
+  VASTTracker.prototype.setMuted = function(muted) {
+    if (this.muted !== muted) this.track(muted ? "muted" : "unmuted");
+    return this.muted = muted;
+  };
+
+  VASTTracker.prototype.setPaused = function(paused) {
+    if (this.paused !== paused) this.track(paused ? "pause" : "resume");
+    return this.paused = paused;
+  };
+
+  VASTTracker.prototype.setFullscreen = function(fullscreen) {
+    if (this.fullscreen !== fullscreen) {
+      this.track(fullscreen ? "fullscreen" : "exitFullscreen");
+    }
+    return this.fullscreen = fullscreen;
+  };
+
+  VASTTracker.prototype.setSkipDelay = function(duration) {
+    if (typeof duration === 'number') return this.skipDelay = duration;
+  };
+
+  VASTTracker.prototype.load = function() {
+    if (!this.impressed) {
+      this.impressed = true;
+      this.trackURLs(this.ad.impressionURLTemplates);
+      return this.track("creativeView");
+    }
+  };
+
+  VASTTracker.prototype.errorWithCode = function(errorCode) {
+    return this.trackURLs(this.ad.errorURLTemplates, {
+      ERRORCODE: errorCode
+    });
+  };
+
+  VASTTracker.prototype.complete = function() {
+    return this.track("complete");
+  };
+
+  VASTTracker.prototype.stop = function() {
+    return this.track(this.linear ? "closeLinear" : "close");
+  };
+
+  VASTTracker.prototype.skip = function() {
+    this.track("skip");
+    return this.trackingEvents = [];
+  };
+
+  VASTTracker.prototype.click = function() {
+    var clickThroughURL, variables;
+    if (this.clickTrackingURLTemplate != null) {
+      this.trackURLs(this.clickTrackingURLTemplate);
+    }
+    if (this.clickThroughURLTemplate != null) {
+      if (this.linear) {
+        variables = {
+          CONTENTPLAYHEAD: this.progressFormated()
+        };
+      }
+      clickThroughURL = VASTUtil.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
+      return this.emit("clickthrough", clickThroughURL);
+    }
+  };
+
+  VASTTracker.prototype.track = function(eventName, once) {
+    var idx, trackingURLTemplates;
+    if (once == null) once = false;
+    if (eventName === 'closeLinear' && (!(this.trackingEvents[eventName] != null) && (this.trackingEvents['close'] != null))) {
+      eventName = 'close';
+    }
+    trackingURLTemplates = this.trackingEvents[eventName];
+    idx = this.emitAlwaysEvents.indexOf(eventName);
+    if (trackingURLTemplates != null) {
+      this.emit(eventName, '');
+      this.trackURLs(trackingURLTemplates);
+    } else if (idx !== -1) {
+      this.emit(eventName, '');
+    }
+    if (once === true) {
+      delete this.trackingEvents[eventName];
+      if (idx > -1) this.emitAlwaysEvents.splice(idx, 1);
+    }
+  };
+
+  VASTTracker.prototype.trackURLs = function(URLTemplates, variables) {
+    if (variables == null) variables = {};
+    if (this.linear) variables["CONTENTPLAYHEAD"] = this.progressFormated();
+    return VASTUtil.track(URLTemplates, variables);
+  };
+
+  VASTTracker.prototype.progressFormated = function() {
+    var h, m, ms, s, seconds;
+    seconds = parseInt(this.progress);
+    h = seconds / (60 * 60);
+    if (h.length < 2) h = "0" + h;
+    m = seconds / 60 % 60;
+    if (m.length < 2) m = "0" + m;
+    s = seconds % 60;
+    if (s.length < 2) s = "0" + m;
+    ms = parseInt((this.progress - seconds) * 100);
+    return "" + h + ":" + m + ":" + s + "." + ms;
+  };
+
+  return VASTTracker;
+
+})(EventEmitter);
+
+module.exports = VASTTracker;
+
+},{"events":7,"./client.coffee":2,"./util.coffee":5,"./creative.coffee":8}],4:[function(require,module,exports){
 var URLHandler, VASTAd, VASTCreativeLinear, VASTMediaFile, VASTParser, VASTResponse, VASTUtil,
   __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -900,7 +914,7 @@ VASTParser = (function() {
 
 module.exports = VASTParser;
 
-},{"./urlhandler.coffee":9,"./response.coffee":10,"./ad.coffee":11,"./util.coffee":5,"./creative.coffee":7,"./mediafile.coffee":12}],7:[function(require,module,exports){
+},{"./urlhandler.coffee":9,"./response.coffee":10,"./ad.coffee":11,"./util.coffee":5,"./creative.coffee":8,"./mediafile.coffee":12}],8:[function(require,module,exports){
 var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLinear,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -963,6 +977,23 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
+},{}],11:[function(require,module,exports){
+var VASTAd;
+
+VASTAd = (function() {
+
+  function VASTAd() {
+    this.errorURLTemplates = [];
+    this.impressionURLTemplates = [];
+    this.creatives = [];
+  }
+
+  return VASTAd;
+
+})();
+
+module.exports = VASTAd;
+
 },{}],10:[function(require,module,exports){
 var VASTResponse;
 
@@ -1006,24 +1037,7 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],11:[function(require,module,exports){
-var VASTAd;
-
-VASTAd = (function() {
-
-  function VASTAd() {
-    this.errorURLTemplates = [];
-    this.impressionURLTemplates = [];
-    this.creatives = [];
-  }
-
-  return VASTAd;
-
-})();
-
-module.exports = VASTAd;
-
-},{}],12:[function(require,module,exports){
+},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],12:[function(require,module,exports){
 var VASTMediaFile;
 
 VASTMediaFile = (function() {
