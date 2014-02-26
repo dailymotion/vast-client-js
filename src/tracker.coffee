@@ -22,6 +22,12 @@ class VASTTracker extends EventEmitter
             @trackingEvents[eventName] = events.slice(0)
         if creative instanceof VASTCreativeLinear
             @assetDuration = creative.duration
+            # beware of key names, theses are also used as event names
+            @quartiles =
+                'firstQuartile' : Math.round(25 * @assetDuration) / 100
+                'midpoint'      : Math.round(50 * @assetDuration) / 100
+                'thirdQuartile' : Math.round(75 * @assetDuration) / 100
+
             @skipDelay = creative.skipDelay
             @linear = yes
             @clickThroughURLTemplate = creative.videoClickThroughURLTemplate
@@ -53,9 +59,8 @@ class VASTTracker extends EventEmitter
                 percent = Math.round(progress / @assetDuration * 100)
                 events.push "progress-#{percent}%"
 
-                events.push "firstQuartile" if percent >= 25
-                events.push "midpoint" if percent >= 50
-                events.push "thirdQuartile" if percent >= 75
+                for quartile, time of @quartiles
+                    events.push quartile if time <= progress <= (time + 1)
 
             for eventName in events
                 @track eventName, yes
