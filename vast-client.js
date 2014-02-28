@@ -441,6 +441,11 @@ VASTTracker = (function(_super) {
     }
     if (creative instanceof VASTCreativeLinear) {
       this.assetDuration = creative.duration;
+      this.quartiles = {
+        'firstQuartile': Math.round(25 * this.assetDuration) / 100,
+        'midpoint': Math.round(50 * this.assetDuration) / 100,
+        'thirdQuartile': Math.round(75 * this.assetDuration) / 100
+      };
       this.skipDelay = creative.skipDelay;
       this.linear = true;
       this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
@@ -455,7 +460,7 @@ VASTTracker = (function(_super) {
   }
 
   VASTTracker.prototype.setProgress = function(progress) {
-    var eventName, events, percent, skipDelay, _i, _len;
+    var eventName, events, percent, quartile, skipDelay, time, _i, _len, _ref;
     skipDelay = this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
     if (skipDelay !== -1 && !this.skipable) {
       if (skipDelay > progress) {
@@ -471,9 +476,11 @@ VASTTracker = (function(_super) {
         events.push("start");
         percent = Math.round(progress / this.assetDuration * 100);
         events.push("progress-" + percent + "%");
-        if (percent >= 25) events.push("firstQuartile");
-        if (percent >= 50) events.push("midpoint");
-        if (percent >= 75) events.push("thirdQuartile");
+        _ref = this.quartiles;
+        for (quartile in _ref) {
+          time = _ref[quartile];
+          if ((time <= progress && progress <= (time + 1))) events.push(quartile);
+        }
       }
       for (_i = 0, _len = events.length; _i < _len; _i++) {
         eventName = events[_i];
@@ -977,6 +984,45 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
+},{}],10:[function(require,module,exports){
+var VASTResponse;
+
+VASTResponse = (function() {
+
+  function VASTResponse() {
+    this.ads = [];
+    this.errorURLTemplates = [];
+  }
+
+  return VASTResponse;
+
+})();
+
+module.exports = VASTResponse;
+
+},{}],12:[function(require,module,exports){
+var VASTMediaFile;
+
+VASTMediaFile = (function() {
+
+  function VASTMediaFile() {
+    this.fileURL = null;
+    this.deliveryType = "progressive";
+    this.mimeType = null;
+    this.codec = null;
+    this.bitrate = 0;
+    this.minBitrate = 0;
+    this.maxBitrate = 0;
+    this.width = 0;
+    this.height = 0;
+  }
+
+  return VASTMediaFile;
+
+})();
+
+module.exports = VASTMediaFile;
+
 },{}],11:[function(require,module,exports){
 var VASTAd;
 
@@ -993,22 +1039,6 @@ VASTAd = (function() {
 })();
 
 module.exports = VASTAd;
-
-},{}],10:[function(require,module,exports){
-var VASTResponse;
-
-VASTResponse = (function() {
-
-  function VASTResponse() {
-    this.ads = [];
-    this.errorURLTemplates = [];
-  }
-
-  return VASTResponse;
-
-})();
-
-module.exports = VASTResponse;
 
 },{}],9:[function(require,module,exports){
 var URLHandler, flash, xhr;
@@ -1037,30 +1067,7 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],12:[function(require,module,exports){
-var VASTMediaFile;
-
-VASTMediaFile = (function() {
-
-  function VASTMediaFile() {
-    this.fileURL = null;
-    this.deliveryType = "progressive";
-    this.mimeType = null;
-    this.codec = null;
-    this.bitrate = 0;
-    this.minBitrate = 0;
-    this.maxBitrate = 0;
-    this.width = 0;
-    this.height = 0;
-  }
-
-  return VASTMediaFile;
-
-})();
-
-module.exports = VASTMediaFile;
-
-},{}],14:[function(require,module,exports){
+},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],14:[function(require,module,exports){
 var FlashURLHandler;
 
 FlashURLHandler = (function() {
