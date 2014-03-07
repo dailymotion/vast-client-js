@@ -542,7 +542,7 @@ VASTTracker = (function(_super) {
   VASTTracker.prototype.click = function() {
     var clickThroughURL, variables;
     if (this.clickTrackingURLTemplate != null) {
-      this.trackURLs(this.clickTrackingURLTemplate);
+      this.trackURLs([this.clickTrackingURLTemplate]);
     }
     if (this.clickThroughURLTemplate != null) {
       if (this.linear) {
@@ -984,6 +984,23 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
+},{}],11:[function(require,module,exports){
+var VASTAd;
+
+VASTAd = (function() {
+
+  function VASTAd() {
+    this.errorURLTemplates = [];
+    this.impressionURLTemplates = [];
+    this.creatives = [];
+  }
+
+  return VASTAd;
+
+})();
+
+module.exports = VASTAd;
+
 },{}],10:[function(require,module,exports){
 var VASTResponse;
 
@@ -1022,23 +1039,6 @@ VASTMediaFile = (function() {
 })();
 
 module.exports = VASTMediaFile;
-
-},{}],11:[function(require,module,exports){
-var VASTAd;
-
-VASTAd = (function() {
-
-  function VASTAd() {
-    this.errorURLTemplates = [];
-    this.impressionURLTemplates = [];
-    this.creatives = [];
-  }
-
-  return VASTAd;
-
-})();
-
-module.exports = VASTAd;
 
 },{}],9:[function(require,module,exports){
 var URLHandler, flash, xhr;
