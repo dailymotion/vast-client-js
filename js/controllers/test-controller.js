@@ -89,19 +89,18 @@ App.controller('TestCtrl', [
 
         Tester.addTest('Valid VAST Response', function(done, fail)
         {
-            DMVAST.client.get($scope.vastUrl, function(err, response)
+            DMVAST.client.get($scope.vastUrl, function(response)
             {
                 var vastTracker;
-
-                if (err)
-                {
-                    fail(err);
-                }
 
                 if (response)
                 {
                     Tester.set('vastResponse', response);
                     done();
+                }
+                else
+                {
+                    fail({message: 'empty'});
                 }
             });
         });

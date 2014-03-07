@@ -433,6 +433,7 @@ VASTTracker = (function(_super) {
     this.skipable = false;
     this.skipDelayDefault = -1;
     this.trackingEvents = {};
+    this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'rewind', 'skip', 'closeLinear', 'close'];
     _ref = creative.trackingEvents;
     for (eventName in _ref) {
       events = _ref[eventName];
@@ -440,6 +441,11 @@ VASTTracker = (function(_super) {
     }
     if (creative instanceof VASTCreativeLinear) {
       this.assetDuration = creative.duration;
+      this.quartiles = {
+        'firstQuartile': Math.round(25 * this.assetDuration) / 100,
+        'midpoint': Math.round(50 * this.assetDuration) / 100,
+        'thirdQuartile': Math.round(75 * this.assetDuration) / 100
+      };
       this.skipDelay = creative.skipDelay;
       this.linear = true;
       this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
@@ -454,7 +460,7 @@ VASTTracker = (function(_super) {
   }
 
   VASTTracker.prototype.setProgress = function(progress) {
-    var eventName, events, percent, skipDelay, _i, _len;
+    var eventName, events, percent, quartile, skipDelay, time, _i, _len, _ref;
     skipDelay = this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
     if (skipDelay !== -1 && !this.skipable) {
       if (skipDelay > progress) {
@@ -470,15 +476,15 @@ VASTTracker = (function(_super) {
         events.push("start");
         percent = Math.round(progress / this.assetDuration * 100);
         events.push("progress-" + percent + "%");
-        if (percent >= 25) events.push("firstQuartile");
-        if (percent >= 50) events.push("midpoint");
-        if (percent >= 75) events.push("thirdQuartile");
-        if (percent >= 100) events.push("complete");
+        _ref = this.quartiles;
+        for (quartile in _ref) {
+          time = _ref[quartile];
+          if ((time <= progress && progress <= (time + 1))) events.push(quartile);
+        }
       }
       for (_i = 0, _len = events.length; _i < _len; _i++) {
         eventName = events[_i];
-        this.track(eventName);
-        delete this.trackingEvents[eventName];
+        this.track(eventName, true);
       }
       if (progress < this.progress) this.track("rewind");
     }
@@ -520,8 +526,12 @@ VASTTracker = (function(_super) {
     });
   };
 
+  VASTTracker.prototype.complete = function() {
+    return this.track("complete");
+  };
+
   VASTTracker.prototype.stop = function() {
-    return this.track(this.linear ? "cloaseLinear" : "close");
+    return this.track(this.linear ? "closeLinear" : "close");
   };
 
   VASTTracker.prototype.skip = function() {
@@ -545,12 +555,23 @@ VASTTracker = (function(_super) {
     }
   };
 
-  VASTTracker.prototype.track = function(eventName) {
-    var trackingURLTemplates;
+  VASTTracker.prototype.track = function(eventName, once) {
+    var idx, trackingURLTemplates;
+    if (once == null) once = false;
+    if (eventName === 'closeLinear' && (!(this.trackingEvents[eventName] != null) && (this.trackingEvents['close'] != null))) {
+      eventName = 'close';
+    }
     trackingURLTemplates = this.trackingEvents[eventName];
+    idx = this.emitAlwaysEvents.indexOf(eventName);
     if (trackingURLTemplates != null) {
       this.emit(eventName, '');
-      return this.trackURLs(trackingURLTemplates);
+      this.trackURLs(trackingURLTemplates);
+    } else if (idx !== -1) {
+      this.emit(eventName, '');
+    }
+    if (once === true) {
+      delete this.trackingEvents[eventName];
+      if (idx > -1) this.emitAlwaysEvents.splice(idx, 1);
     }
   };
 
@@ -979,34 +1000,7 @@ VASTResponse = (function() {
 
 module.exports = VASTResponse;
 
-},{}],9:[function(require,module,exports){
-var URLHandler, flash, xhr;
-
-xhr = require('./urlhandlers/xmlhttprequest.coffee');
-
-flash = require('./urlhandlers/flash.coffee');
-
-URLHandler = (function() {
-
-  function URLHandler() {}
-
-  URLHandler.get = function(url, cb) {
-    if (!(typeof window !== "undefined" && window !== null)) {
-      return require('./urlhandlers/' + 'node.coffee').get(url, cb);
-    } else if (xhr.supported()) {
-      return xhr.get(url, cb);
-    } else {
-      return flash.get(url, cb);
-    }
-  };
-
-  return URLHandler;
-
-})();
-
-module.exports = URLHandler;
-
-},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],12:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var VASTMediaFile;
 
 VASTMediaFile = (function() {
@@ -1046,7 +1040,34 @@ VASTAd = (function() {
 
 module.exports = VASTAd;
 
-},{}],14:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+var URLHandler, flash, xhr;
+
+xhr = require('./urlhandlers/xmlhttprequest.coffee');
+
+flash = require('./urlhandlers/flash.coffee');
+
+URLHandler = (function() {
+
+  function URLHandler() {}
+
+  URLHandler.get = function(url, cb) {
+    if (!(typeof window !== "undefined" && window !== null)) {
+      return require('./urlhandlers/' + 'node.coffee').get(url, cb);
+    } else if (xhr.supported()) {
+      return xhr.get(url, cb);
+    } else {
+      return flash.get(url, cb);
+    }
+  };
+
+  return URLHandler;
+
+})();
+
+module.exports = URLHandler;
+
+},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],14:[function(require,module,exports){
 var FlashURLHandler;
 
 FlashURLHandler = (function() {
