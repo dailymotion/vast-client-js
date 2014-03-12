@@ -1,18 +1,328 @@
-(function(e){if("function"==typeof bootstrap)bootstrap("dmvast",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeDMVAST=e}else"undefined"!=typeof window?window.DMVAST=e():global.DMVAST=e()})(function(){var define,ses,bootstrap,module,exports;
-return (function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
-module.exports = {
-  client: require('./client.coffee'),
-  tracker: require('./tracker.coffee'),
-  parser: require('./parser.coffee'),
-  util: require('./util.coffee')
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.DMVAST=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
 };
 
-},{"./client.coffee":2,"./tracker.coffee":3,"./parser.coffee":4,"./util.coffee":5}],2:[function(require,module,exports){
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      } else {
+        throw TypeError('Uncaught, unspecified "error" event.');
+      }
+      return false;
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        len = arguments.length;
+        args = new Array(len - 1);
+        for (i = 1; i < len; i++)
+          args[i - 1] = arguments[i];
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    len = arguments.length;
+    args = new Array(len - 1);
+    for (i = 1; i < len; i++)
+      args[i - 1] = arguments[i];
+
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    var m;
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      console.trace();
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  var ret;
+  if (!emitter._events || !emitter._events[type])
+    ret = 0;
+  else if (isFunction(emitter._events[type]))
+    ret = 1;
+  else
+    ret = emitter._events[type].length;
+  return ret;
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],2:[function(_dereq_,module,exports){
+var VASTAd;
+
+VASTAd = (function() {
+
+  function VASTAd() {
+    this.errorURLTemplates = [];
+    this.impressionURLTemplates = [];
+    this.creatives = [];
+  }
+
+  return VASTAd;
+
+})();
+
+module.exports = VASTAd;
+
+},{}],3:[function(_dereq_,module,exports){
 var VASTClient, VASTParser, VASTUtil;
 
-VASTParser = require('./parser.coffee');
+VASTParser = _dereq_('./parser.coffee');
 
-VASTUtil = require('./util.coffee');
+VASTUtil = _dereq_('./util.coffee');
 
 VASTClient = (function() {
 
@@ -73,548 +383,115 @@ VASTClient = (function() {
 
 module.exports = VASTClient;
 
-},{"./parser.coffee":4,"./util.coffee":5}],5:[function(require,module,exports){
-var VASTUtil;
-
-VASTUtil = (function() {
-
-  function VASTUtil() {}
-
-  VASTUtil.track = function(URLTemplates, variables) {
-    var URL, URLs, i, _i, _len, _results;
-    URLs = this.resolveURLTemplates(URLTemplates, variables);
-    _results = [];
-    for (_i = 0, _len = URLs.length; _i < _len; _i++) {
-      URL = URLs[_i];
-      if (typeof window !== "undefined" && window !== null) {
-        i = new Image();
-        _results.push(i.src = URL);
-      } else {
-
-      }
-    }
-    return _results;
-  };
-
-  VASTUtil.resolveURLTemplates = function(URLTemplates, variables) {
-    var URLTemplate, URLs, macro, name, resolveURL, value, _i, _j, _len, _len2, _ref;
-    URLs = [];
-    if (variables == null) variables = {};
-    if (!("CACHEBUSTING" in variables)) {
-      variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+10);
-    }
-    variables["random"] = variables["CACHEBUSTING"];
-    for (_i = 0, _len = URLTemplates.length; _i < _len; _i++) {
-      URLTemplate = URLTemplates[_i];
-      resolveURL = URLTemplate;
-      _ref = ["CACHEBUSTING", "random", "CONTENTPLAYHEAD", "ASSETURI", "ERRORCODE"];
-      for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
-        name = _ref[_j];
-        macro = "[" + name + "]";
-        value = variables[name];
-        resolveURL = resolveURL.replace(macro, value);
-      }
-      URLs.push(resolveURL);
-    }
-    return URLs;
-  };
-
-  VASTUtil.storage = (function() {
-    var data, isDisabled, storage;
-    try {
-      storage = typeof window !== "undefined" && window !== null ? window.localStorage || window.sessionStorage : null;
-    } catch (storageError) {
-      storage = null;
-    }
-    isDisabled = function(store) {
-      var testValue;
-      try {
-        testValue = '__VASTUtil__';
-        store.setItem(testValue, testValue);
-        if (store.getItem(testValue) !== testValue) return true;
-      } catch (e) {
-        return true;
-      }
-      return false;
-    };
-    if (!(storage != null) || isDisabled(storage)) {
-      data = {};
-      storage = {
-        length: 0,
-        getItem: function(key) {
-          return data[key];
-        },
-        setItem: function(key, value) {
-          data[key] = value;
-          this.length = Object.keys(data).length;
-        },
-        removeItem: function(key) {
-          delete data[key];
-          this.length = Object.keys(data).length;
-        },
-        clear: function() {
-          data = {};
-          this.length = 0;
-        }
-      };
-    }
-    return storage;
-  })();
-
-  return VASTUtil;
-
-})();
-
-module.exports = VASTUtil;
-
-},{}],6:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            if (ev.source === window && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],7:[function(require,module,exports){
-(function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
-
-var EventEmitter = exports.EventEmitter = process.EventEmitter;
-var isArray = typeof Array.isArray === 'function'
-    ? Array.isArray
-    : function (xs) {
-        return Object.prototype.toString.call(xs) === '[object Array]'
-    }
-;
-function indexOf (xs, x) {
-    if (xs.indexOf) return xs.indexOf(x);
-    for (var i = 0; i < xs.length; i++) {
-        if (x === xs[i]) return i;
-    }
-    return -1;
-}
-
-// By default EventEmitters will print a warning if more than
-// 10 listeners are added to it. This is a useful default which
-// helps finding memory leaks.
-//
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-var defaultMaxListeners = 10;
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!this._events) this._events = {};
-  this._events.maxListeners = n;
-};
-
-
-EventEmitter.prototype.emit = function(type) {
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events || !this._events.error ||
-        (isArray(this._events.error) && !this._events.error.length))
-    {
-      if (arguments[1] instanceof Error) {
-        throw arguments[1]; // Unhandled 'error' event
-      } else {
-        throw new Error("Uncaught, unspecified 'error' event.");
-      }
-      return false;
-    }
-  }
-
-  if (!this._events) return false;
-  var handler = this._events[type];
-  if (!handler) return false;
-
-  if (typeof handler == 'function') {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        var args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-    return true;
-
-  } else if (isArray(handler)) {
-    var args = Array.prototype.slice.call(arguments, 1);
-
-    var listeners = handler.slice();
-    for (var i = 0, l = listeners.length; i < l; i++) {
-      listeners[i].apply(this, args);
-    }
-    return true;
-
-  } else {
-    return false;
-  }
-};
-
-// EventEmitter is defined in src/node_events.cc
-// EventEmitter.prototype.emit() is also defined there.
-EventEmitter.prototype.addListener = function(type, listener) {
-  if ('function' !== typeof listener) {
-    throw new Error('addListener only takes instances of Function');
-  }
-
-  if (!this._events) this._events = {};
-
-  // To avoid recursion in the case that type == "newListeners"! Before
-  // adding it to the listeners, first emit "newListeners".
-  this.emit('newListener', type, listener);
-
-  if (!this._events[type]) {
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  } else if (isArray(this._events[type])) {
-
-    // Check for listener leak
-    if (!this._events[type].warned) {
-      var m;
-      if (this._events.maxListeners !== undefined) {
-        m = this._events.maxListeners;
-      } else {
-        m = defaultMaxListeners;
-      }
-
-      if (m && m > 0 && this._events[type].length > m) {
-        this._events[type].warned = true;
-        console.error('(node) warning: possible EventEmitter memory ' +
-                      'leak detected. %d listeners added. ' +
-                      'Use emitter.setMaxListeners() to increase limit.',
-                      this._events[type].length);
-        console.trace();
-      }
-    }
-
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  } else {
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  var self = this;
-  self.on(type, function g() {
-    self.removeListener(type, g);
-    listener.apply(this, arguments);
-  });
-
-  return this;
-};
-
-EventEmitter.prototype.removeListener = function(type, listener) {
-  if ('function' !== typeof listener) {
-    throw new Error('removeListener only takes instances of Function');
-  }
-
-  // does not use listeners(), so no side effect of creating _events[type]
-  if (!this._events || !this._events[type]) return this;
-
-  var list = this._events[type];
-
-  if (isArray(list)) {
-    var i = indexOf(list, listener);
-    if (i < 0) return this;
-    list.splice(i, 1);
-    if (list.length == 0)
-      delete this._events[type];
-  } else if (this._events[type] === listener) {
-    delete this._events[type];
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  if (arguments.length === 0) {
-    this._events = {};
-    return this;
-  }
-
-  // does not use listeners(), so no side effect of creating _events[type]
-  if (type && this._events && this._events[type]) this._events[type] = null;
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  if (!this._events) this._events = {};
-  if (!this._events[type]) this._events[type] = [];
-  if (!isArray(this._events[type])) {
-    this._events[type] = [this._events[type]];
-  }
-  return this._events[type];
-};
-
-})(require("__browserify_process"))
-},{"__browserify_process":6}],3:[function(require,module,exports){
-var EventEmitter, VASTClient, VASTCreativeLinear, VASTTracker, VASTUtil,
+},{"./parser.coffee":7,"./util.coffee":13}],4:[function(_dereq_,module,exports){
+var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLinear,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-VASTClient = require('./client.coffee');
+VASTCreative = (function() {
 
-VASTUtil = require('./util.coffee');
-
-VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear;
-
-EventEmitter = require('events').EventEmitter;
-
-VASTTracker = (function(_super) {
-
-  __extends(VASTTracker, _super);
-
-  function VASTTracker(ad, creative) {
-    var eventName, events, _ref;
-    this.ad = ad;
-    this.creative = creative;
-    this.muted = false;
-    this.impressed = false;
-    this.skipable = false;
-    this.skipDelayDefault = -1;
+  function VASTCreative() {
     this.trackingEvents = {};
-    this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'rewind', 'skip', 'closeLinear', 'close'];
-    _ref = creative.trackingEvents;
-    for (eventName in _ref) {
-      events = _ref[eventName];
-      this.trackingEvents[eventName] = events.slice(0);
-    }
-    if (creative instanceof VASTCreativeLinear) {
-      this.assetDuration = creative.duration;
-      this.quartiles = {
-        'firstQuartile': Math.round(25 * this.assetDuration) / 100,
-        'midpoint': Math.round(50 * this.assetDuration) / 100,
-        'thirdQuartile': Math.round(75 * this.assetDuration) / 100
-      };
-      this.skipDelay = creative.skipDelay;
-      this.linear = true;
-      this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
-      this.clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate;
-    } else {
-      this.skipDelay = -1;
-      this.linear = false;
-    }
-    this.on('start', function() {
-      VASTClient.lastSuccessfullAd = +new Date();
-    });
   }
 
-  VASTTracker.prototype.setProgress = function(progress) {
-    var eventName, events, percent, quartile, skipDelay, time, _i, _len, _ref;
-    skipDelay = this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
-    if (skipDelay !== -1 && !this.skipable) {
-      if (skipDelay > progress) {
-        this.emit('skip-countdown', skipDelay - progress);
-      } else {
-        this.skipable = true;
-        this.emit('skip-countdown', 0);
-      }
-    }
-    if (this.linear && this.assetDuration > 0) {
-      events = [];
-      if (progress > 0) {
-        events.push("start");
-        percent = Math.round(progress / this.assetDuration * 100);
-        events.push("progress-" + percent + "%");
-        _ref = this.quartiles;
-        for (quartile in _ref) {
-          time = _ref[quartile];
-          if ((time <= progress && progress <= (time + 1))) events.push(quartile);
-        }
-      }
-      for (_i = 0, _len = events.length; _i < _len; _i++) {
-        eventName = events[_i];
-        this.track(eventName, true);
-      }
-      if (progress < this.progress) this.track("rewind");
-    }
-    return this.progress = progress;
-  };
+  return VASTCreative;
 
-  VASTTracker.prototype.setMuted = function(muted) {
-    if (this.muted !== muted) this.track(muted ? "muted" : "unmuted");
-    return this.muted = muted;
-  };
+})();
 
-  VASTTracker.prototype.setPaused = function(paused) {
-    if (this.paused !== paused) this.track(paused ? "pause" : "resume");
-    return this.paused = paused;
-  };
+VASTCreativeLinear = (function(_super) {
 
-  VASTTracker.prototype.setFullscreen = function(fullscreen) {
-    if (this.fullscreen !== fullscreen) {
-      this.track(fullscreen ? "fullscreen" : "exitFullscreen");
-    }
-    return this.fullscreen = fullscreen;
-  };
+  __extends(VASTCreativeLinear, _super);
 
-  VASTTracker.prototype.setSkipDelay = function(duration) {
-    if (typeof duration === 'number') return this.skipDelay = duration;
-  };
+  function VASTCreativeLinear() {
+    VASTCreativeLinear.__super__.constructor.apply(this, arguments);
+    this.type = "linear";
+    this.duration = 0;
+    this.skipDelay = null;
+    this.mediaFiles = [];
+    this.videoClickThroughURLTemplate = null;
+    this.videoClickTrackingURLTemplate = null;
+  }
 
-  VASTTracker.prototype.load = function() {
-    if (!this.impressed) {
-      this.impressed = true;
-      this.trackURLs(this.ad.impressionURLTemplates);
-      return this.track("creativeView");
-    }
-  };
+  return VASTCreativeLinear;
 
-  VASTTracker.prototype.errorWithCode = function(errorCode) {
-    return this.trackURLs(this.ad.errorURLTemplates, {
-      ERRORCODE: errorCode
-    });
-  };
+})(VASTCreative);
 
-  VASTTracker.prototype.complete = function() {
-    return this.track("complete");
-  };
+VASTCreativeNonLinear = (function(_super) {
 
-  VASTTracker.prototype.stop = function() {
-    return this.track(this.linear ? "closeLinear" : "close");
-  };
+  __extends(VASTCreativeNonLinear, _super);
 
-  VASTTracker.prototype.skip = function() {
-    this.track("skip");
-    return this.trackingEvents = [];
-  };
+  function VASTCreativeNonLinear() {
+    VASTCreativeNonLinear.__super__.constructor.apply(this, arguments);
+  }
 
-  VASTTracker.prototype.click = function() {
-    var clickThroughURL, variables;
-    if (this.clickTrackingURLTemplate != null) {
-      this.trackURLs([this.clickTrackingURLTemplate]);
-    }
-    if (this.clickThroughURLTemplate != null) {
-      if (this.linear) {
-        variables = {
-          CONTENTPLAYHEAD: this.progressFormated()
-        };
-      }
-      clickThroughURL = VASTUtil.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
-      return this.emit("clickthrough", clickThroughURL);
-    }
-  };
+  return VASTCreativeNonLinear;
 
-  VASTTracker.prototype.track = function(eventName, once) {
-    var idx, trackingURLTemplates;
-    if (once == null) once = false;
-    if (eventName === 'closeLinear' && (!(this.trackingEvents[eventName] != null) && (this.trackingEvents['close'] != null))) {
-      eventName = 'close';
-    }
-    trackingURLTemplates = this.trackingEvents[eventName];
-    idx = this.emitAlwaysEvents.indexOf(eventName);
-    if (trackingURLTemplates != null) {
-      this.emit(eventName, '');
-      this.trackURLs(trackingURLTemplates);
-    } else if (idx !== -1) {
-      this.emit(eventName, '');
-    }
-    if (once === true) {
-      delete this.trackingEvents[eventName];
-      if (idx > -1) this.emitAlwaysEvents.splice(idx, 1);
-    }
-  };
+})(VASTCreative);
 
-  VASTTracker.prototype.trackURLs = function(URLTemplates, variables) {
-    if (variables == null) variables = {};
-    if (this.linear) variables["CONTENTPLAYHEAD"] = this.progressFormated();
-    return VASTUtil.track(URLTemplates, variables);
-  };
+VASTCreativeCompanion = (function(_super) {
 
-  VASTTracker.prototype.progressFormated = function() {
-    var h, m, ms, s, seconds;
-    seconds = parseInt(this.progress);
-    h = seconds / (60 * 60);
-    if (h.length < 2) h = "0" + h;
-    m = seconds / 60 % 60;
-    if (m.length < 2) m = "0" + m;
-    s = seconds % 60;
-    if (s.length < 2) s = "0" + m;
-    ms = parseInt((this.progress - seconds) * 100);
-    return "" + h + ":" + m + ":" + s + "." + ms;
-  };
+  __extends(VASTCreativeCompanion, _super);
 
-  return VASTTracker;
+  function VASTCreativeCompanion() {
+    VASTCreativeCompanion.__super__.constructor.apply(this, arguments);
+  }
 
-})(EventEmitter);
+  return VASTCreativeCompanion;
 
-module.exports = VASTTracker;
+})(VASTCreative);
 
-},{"events":7,"./client.coffee":2,"./util.coffee":5,"./creative.coffee":8}],4:[function(require,module,exports){
+module.exports = {
+  VASTCreativeLinear: VASTCreativeLinear,
+  VASTCreativeNonLinear: VASTCreativeNonLinear,
+  VASTCreativeCompanion: VASTCreativeCompanion
+};
+
+},{}],5:[function(_dereq_,module,exports){
+module.exports = {
+  client: _dereq_('./client.coffee'),
+  tracker: _dereq_('./tracker.coffee'),
+  parser: _dereq_('./parser.coffee'),
+  util: _dereq_('./util.coffee')
+};
+
+},{"./client.coffee":3,"./parser.coffee":7,"./tracker.coffee":9,"./util.coffee":13}],6:[function(_dereq_,module,exports){
+var VASTMediaFile;
+
+VASTMediaFile = (function() {
+
+  function VASTMediaFile() {
+    this.fileURL = null;
+    this.deliveryType = "progressive";
+    this.mimeType = null;
+    this.codec = null;
+    this.bitrate = 0;
+    this.minBitrate = 0;
+    this.maxBitrate = 0;
+    this.width = 0;
+    this.height = 0;
+  }
+
+  return VASTMediaFile;
+
+})();
+
+module.exports = VASTMediaFile;
+
+},{}],7:[function(_dereq_,module,exports){
 var URLHandler, VASTAd, VASTCreativeLinear, VASTMediaFile, VASTParser, VASTResponse, VASTUtil,
   __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-URLHandler = require('./urlhandler.coffee');
+URLHandler = _dereq_('./urlhandler.coffee');
 
-VASTResponse = require('./response.coffee');
+VASTResponse = _dereq_('./response.coffee');
 
-VASTAd = require('./ad.coffee');
+VASTAd = _dereq_('./ad.coffee');
 
-VASTUtil = require('./util.coffee');
+VASTUtil = _dereq_('./util.coffee');
 
-VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear;
+VASTCreativeLinear = _dereq_('./creative.coffee').VASTCreativeLinear;
 
-VASTMediaFile = require('./mediafile.coffee');
+VASTMediaFile = _dereq_('./mediafile.coffee');
 
 VASTParser = (function() {
   var URLTemplateFilters;
@@ -921,87 +798,7 @@ VASTParser = (function() {
 
 module.exports = VASTParser;
 
-},{"./urlhandler.coffee":9,"./response.coffee":10,"./ad.coffee":11,"./util.coffee":5,"./creative.coffee":8,"./mediafile.coffee":12}],8:[function(require,module,exports){
-var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLinear,
-  __hasProp = Object.prototype.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-VASTCreative = (function() {
-
-  function VASTCreative() {
-    this.trackingEvents = {};
-  }
-
-  return VASTCreative;
-
-})();
-
-VASTCreativeLinear = (function(_super) {
-
-  __extends(VASTCreativeLinear, _super);
-
-  function VASTCreativeLinear() {
-    VASTCreativeLinear.__super__.constructor.apply(this, arguments);
-    this.type = "linear";
-    this.duration = 0;
-    this.skipDelay = null;
-    this.mediaFiles = [];
-    this.videoClickThroughURLTemplate = null;
-    this.videoClickTrackingURLTemplate = null;
-  }
-
-  return VASTCreativeLinear;
-
-})(VASTCreative);
-
-VASTCreativeNonLinear = (function(_super) {
-
-  __extends(VASTCreativeNonLinear, _super);
-
-  function VASTCreativeNonLinear() {
-    VASTCreativeNonLinear.__super__.constructor.apply(this, arguments);
-  }
-
-  return VASTCreativeNonLinear;
-
-})(VASTCreative);
-
-VASTCreativeCompanion = (function(_super) {
-
-  __extends(VASTCreativeCompanion, _super);
-
-  function VASTCreativeCompanion() {
-    VASTCreativeCompanion.__super__.constructor.apply(this, arguments);
-  }
-
-  return VASTCreativeCompanion;
-
-})(VASTCreative);
-
-module.exports = {
-  VASTCreativeLinear: VASTCreativeLinear,
-  VASTCreativeNonLinear: VASTCreativeNonLinear,
-  VASTCreativeCompanion: VASTCreativeCompanion
-};
-
-},{}],11:[function(require,module,exports){
-var VASTAd;
-
-VASTAd = (function() {
-
-  function VASTAd() {
-    this.errorURLTemplates = [];
-    this.impressionURLTemplates = [];
-    this.creatives = [];
-  }
-
-  return VASTAd;
-
-})();
-
-module.exports = VASTAd;
-
-},{}],10:[function(require,module,exports){
+},{"./ad.coffee":2,"./creative.coffee":4,"./mediafile.coffee":6,"./response.coffee":8,"./urlhandler.coffee":10,"./util.coffee":13}],8:[function(_dereq_,module,exports){
 var VASTResponse;
 
 VASTResponse = (function() {
@@ -1017,35 +814,205 @@ VASTResponse = (function() {
 
 module.exports = VASTResponse;
 
-},{}],12:[function(require,module,exports){
-var VASTMediaFile;
+},{}],9:[function(_dereq_,module,exports){
+var EventEmitter, VASTClient, VASTCreativeLinear, VASTTracker, VASTUtil,
+  __hasProp = Object.prototype.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-VASTMediaFile = (function() {
+VASTClient = _dereq_('./client.coffee');
 
-  function VASTMediaFile() {
-    this.fileURL = null;
-    this.deliveryType = "progressive";
-    this.mimeType = null;
-    this.codec = null;
-    this.bitrate = 0;
-    this.minBitrate = 0;
-    this.maxBitrate = 0;
-    this.width = 0;
-    this.height = 0;
+VASTUtil = _dereq_('./util.coffee');
+
+VASTCreativeLinear = _dereq_('./creative.coffee').VASTCreativeLinear;
+
+EventEmitter = _dereq_('events').EventEmitter;
+
+VASTTracker = (function(_super) {
+
+  __extends(VASTTracker, _super);
+
+  function VASTTracker(ad, creative) {
+    var eventName, events, _ref;
+    this.ad = ad;
+    this.creative = creative;
+    this.muted = false;
+    this.impressed = false;
+    this.skipable = false;
+    this.skipDelayDefault = -1;
+    this.trackingEvents = {};
+    this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'rewind', 'skip', 'closeLinear', 'close'];
+    _ref = creative.trackingEvents;
+    for (eventName in _ref) {
+      events = _ref[eventName];
+      this.trackingEvents[eventName] = events.slice(0);
+    }
+    if (creative instanceof VASTCreativeLinear) {
+      this.assetDuration = creative.duration;
+      this.quartiles = {
+        'firstQuartile': Math.round(25 * this.assetDuration) / 100,
+        'midpoint': Math.round(50 * this.assetDuration) / 100,
+        'thirdQuartile': Math.round(75 * this.assetDuration) / 100
+      };
+      this.skipDelay = creative.skipDelay;
+      this.linear = true;
+      this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
+      this.clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate;
+    } else {
+      this.skipDelay = -1;
+      this.linear = false;
+    }
+    this.on('start', function() {
+      VASTClient.lastSuccessfullAd = +new Date();
+    });
   }
 
-  return VASTMediaFile;
+  VASTTracker.prototype.setProgress = function(progress) {
+    var eventName, events, percent, quartile, skipDelay, time, _i, _len, _ref;
+    skipDelay = this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
+    if (skipDelay !== -1 && !this.skipable) {
+      if (skipDelay > progress) {
+        this.emit('skip-countdown', skipDelay - progress);
+      } else {
+        this.skipable = true;
+        this.emit('skip-countdown', 0);
+      }
+    }
+    if (this.linear && this.assetDuration > 0) {
+      events = [];
+      if (progress > 0) {
+        events.push("start");
+        percent = Math.round(progress / this.assetDuration * 100);
+        events.push("progress-" + percent + "%");
+        _ref = this.quartiles;
+        for (quartile in _ref) {
+          time = _ref[quartile];
+          if ((time <= progress && progress <= (time + 1))) events.push(quartile);
+        }
+      }
+      for (_i = 0, _len = events.length; _i < _len; _i++) {
+        eventName = events[_i];
+        this.track(eventName, true);
+      }
+      if (progress < this.progress) this.track("rewind");
+    }
+    return this.progress = progress;
+  };
 
-})();
+  VASTTracker.prototype.setMuted = function(muted) {
+    if (this.muted !== muted) this.track(muted ? "muted" : "unmuted");
+    return this.muted = muted;
+  };
 
-module.exports = VASTMediaFile;
+  VASTTracker.prototype.setPaused = function(paused) {
+    if (this.paused !== paused) this.track(paused ? "pause" : "resume");
+    return this.paused = paused;
+  };
 
-},{}],9:[function(require,module,exports){
+  VASTTracker.prototype.setFullscreen = function(fullscreen) {
+    if (this.fullscreen !== fullscreen) {
+      this.track(fullscreen ? "fullscreen" : "exitFullscreen");
+    }
+    return this.fullscreen = fullscreen;
+  };
+
+  VASTTracker.prototype.setSkipDelay = function(duration) {
+    if (typeof duration === 'number') return this.skipDelay = duration;
+  };
+
+  VASTTracker.prototype.load = function() {
+    if (!this.impressed) {
+      this.impressed = true;
+      this.trackURLs(this.ad.impressionURLTemplates);
+      return this.track("creativeView");
+    }
+  };
+
+  VASTTracker.prototype.errorWithCode = function(errorCode) {
+    return this.trackURLs(this.ad.errorURLTemplates, {
+      ERRORCODE: errorCode
+    });
+  };
+
+  VASTTracker.prototype.complete = function() {
+    return this.track("complete");
+  };
+
+  VASTTracker.prototype.stop = function() {
+    return this.track(this.linear ? "closeLinear" : "close");
+  };
+
+  VASTTracker.prototype.skip = function() {
+    this.track("skip");
+    return this.trackingEvents = [];
+  };
+
+  VASTTracker.prototype.click = function() {
+    var clickThroughURL, variables;
+    if (this.clickTrackingURLTemplate != null) {
+      this.trackURLs([this.clickTrackingURLTemplate]);
+    }
+    if (this.clickThroughURLTemplate != null) {
+      if (this.linear) {
+        variables = {
+          CONTENTPLAYHEAD: this.progressFormated()
+        };
+      }
+      clickThroughURL = VASTUtil.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
+      return this.emit("clickthrough", clickThroughURL);
+    }
+  };
+
+  VASTTracker.prototype.track = function(eventName, once) {
+    var idx, trackingURLTemplates;
+    if (once == null) once = false;
+    if (eventName === 'closeLinear' && (!(this.trackingEvents[eventName] != null) && (this.trackingEvents['close'] != null))) {
+      eventName = 'close';
+    }
+    trackingURLTemplates = this.trackingEvents[eventName];
+    idx = this.emitAlwaysEvents.indexOf(eventName);
+    if (trackingURLTemplates != null) {
+      this.emit(eventName, '');
+      this.trackURLs(trackingURLTemplates);
+    } else if (idx !== -1) {
+      this.emit(eventName, '');
+    }
+    if (once === true) {
+      delete this.trackingEvents[eventName];
+      if (idx > -1) this.emitAlwaysEvents.splice(idx, 1);
+    }
+  };
+
+  VASTTracker.prototype.trackURLs = function(URLTemplates, variables) {
+    if (variables == null) variables = {};
+    if (this.linear) variables["CONTENTPLAYHEAD"] = this.progressFormated();
+    return VASTUtil.track(URLTemplates, variables);
+  };
+
+  VASTTracker.prototype.progressFormated = function() {
+    var h, m, ms, s, seconds;
+    seconds = parseInt(this.progress);
+    h = seconds / (60 * 60);
+    if (h.length < 2) h = "0" + h;
+    m = seconds / 60 % 60;
+    if (m.length < 2) m = "0" + m;
+    s = seconds % 60;
+    if (s.length < 2) s = "0" + m;
+    ms = parseInt((this.progress - seconds) * 100);
+    return "" + h + ":" + m + ":" + s + "." + ms;
+  };
+
+  return VASTTracker;
+
+})(EventEmitter);
+
+module.exports = VASTTracker;
+
+},{"./client.coffee":3,"./creative.coffee":4,"./util.coffee":13,"events":1}],10:[function(_dereq_,module,exports){
 var URLHandler, flash, xhr;
 
-xhr = require('./urlhandlers/xmlhttprequest.coffee');
+xhr = _dereq_('./urlhandlers/xmlhttprequest.coffee');
 
-flash = require('./urlhandlers/flash.coffee');
+flash = _dereq_('./urlhandlers/flash.coffee');
 
 URLHandler = (function() {
 
@@ -1053,7 +1020,7 @@ URLHandler = (function() {
 
   URLHandler.get = function(url, cb) {
     if (!(typeof window !== "undefined" && window !== null)) {
-      return require('./urlhandlers/' + 'node.coffee').get(url, cb);
+      return _dereq_('./urlhandlers/' + 'node.coffee').get(url, cb);
     } else if (xhr.supported()) {
       return xhr.get(url, cb);
     } else {
@@ -1067,7 +1034,7 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/xmlhttprequest.coffee":13,"./urlhandlers/flash.coffee":14}],14:[function(require,module,exports){
+},{"./urlhandlers/flash.coffee":11,"./urlhandlers/xmlhttprequest.coffee":12}],11:[function(_dereq_,module,exports){
 var FlashURLHandler;
 
 FlashURLHandler = (function() {
@@ -1084,7 +1051,7 @@ FlashURLHandler = (function() {
 
 module.exports = FlashURLHandler;
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var XHRURLHandler;
 
 XHRURLHandler = (function() {
@@ -1117,6 +1084,100 @@ XHRURLHandler = (function() {
 
 module.exports = XHRURLHandler;
 
-},{}]},{},[1])(1)
+},{}],13:[function(_dereq_,module,exports){
+var VASTUtil;
+
+VASTUtil = (function() {
+
+  function VASTUtil() {}
+
+  VASTUtil.track = function(URLTemplates, variables) {
+    var URL, URLs, i, _i, _len, _results;
+    URLs = this.resolveURLTemplates(URLTemplates, variables);
+    _results = [];
+    for (_i = 0, _len = URLs.length; _i < _len; _i++) {
+      URL = URLs[_i];
+      if (typeof window !== "undefined" && window !== null) {
+        i = new Image();
+        _results.push(i.src = URL);
+      } else {
+
+      }
+    }
+    return _results;
+  };
+
+  VASTUtil.resolveURLTemplates = function(URLTemplates, variables) {
+    var URLTemplate, URLs, key, macro1, macro2, resolveURL, value, _i, _len;
+    URLs = [];
+    if (variables == null) variables = {};
+    if (!("CACHEBUSTING" in variables)) {
+      variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+10);
+    }
+    variables["random"] = variables["CACHEBUSTING"];
+    for (_i = 0, _len = URLTemplates.length; _i < _len; _i++) {
+      URLTemplate = URLTemplates[_i];
+      resolveURL = URLTemplate;
+      for (key in variables) {
+        value = variables[key];
+        macro1 = "[" + key + "]";
+        macro2 = "%%" + key + "%%";
+        resolveURL = resolveURL.replace(macro1, value);
+        resolveURL = resolveURL.replace(macro2, value);
+      }
+      URLs.push(resolveURL);
+    }
+    return URLs;
+  };
+
+  VASTUtil.storage = (function() {
+    var data, isDisabled, storage;
+    try {
+      storage = typeof window !== "undefined" && window !== null ? window.localStorage || window.sessionStorage : null;
+    } catch (storageError) {
+      storage = null;
+    }
+    isDisabled = function(store) {
+      var testValue;
+      try {
+        testValue = '__VASTUtil__';
+        store.setItem(testValue, testValue);
+        if (store.getItem(testValue) !== testValue) return true;
+      } catch (e) {
+        return true;
+      }
+      return false;
+    };
+    if (!(storage != null) || isDisabled(storage)) {
+      data = {};
+      storage = {
+        length: 0,
+        getItem: function(key) {
+          return data[key];
+        },
+        setItem: function(key, value) {
+          data[key] = value;
+          this.length = Object.keys(data).length;
+        },
+        removeItem: function(key) {
+          delete data[key];
+          this.length = Object.keys(data).length;
+        },
+        clear: function() {
+          data = {};
+          this.length = 0;
+        }
+      };
+    }
+    return storage;
+  })();
+
+  return VASTUtil;
+
+})();
+
+module.exports = VASTUtil;
+
+},{}]},{},[5])
+(5)
 });
-;
