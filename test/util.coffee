@@ -17,3 +17,6 @@ describe 'VASTUtil', ->
 
         it 'should resolve playhead, with percents', ->
             resolve("http://test.com/%%CONTENTPLAYHEAD%%", CONTENTPLAYHEAD: 120).should.equal "http://test.com/120"
+
+        it 'should resolve weird cases', ->
+            resolve("http://test.com/%%CONTENTPLAYHEAD%%&[CONTENTPLAYHEAD]", CONTENTPLAYHEAD: 120).should.equal "http://test.com/120&120"
