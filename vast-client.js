@@ -383,7 +383,27 @@ VASTClient = (function() {
 
 module.exports = VASTClient;
 
-},{"./parser.coffee":7,"./util.coffee":13}],4:[function(_dereq_,module,exports){
+},{"./parser.coffee":8,"./util.coffee":14}],4:[function(_dereq_,module,exports){
+var VASTCompanionAd;
+
+VASTCompanionAd = (function() {
+
+  function VASTCompanionAd() {
+    this.width = 0;
+    this.height = 0;
+    this.type = null;
+    this.staticResource = null;
+    this.companionClickThroughURLTemplate = null;
+    this.trackingEvents = {};
+  }
+
+  return VASTCompanionAd;
+
+})();
+
+module.exports = VASTCompanionAd;
+
+},{}],5:[function(_dereq_,module,exports){
 var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLinear,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -434,6 +454,9 @@ VASTCreativeCompanion = (function(_super) {
 
   function VASTCreativeCompanion() {
     VASTCreativeCompanion.__super__.constructor.apply(this, arguments);
+    this.type = "companion";
+    this.variations = [];
+    this.trackingEvents = null;
   }
 
   return VASTCreativeCompanion;
@@ -446,7 +469,7 @@ module.exports = {
   VASTCreativeCompanion: VASTCreativeCompanion
 };
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 module.exports = {
   client: _dereq_('./client.coffee'),
   tracker: _dereq_('./tracker.coffee'),
@@ -454,7 +477,7 @@ module.exports = {
   util: _dereq_('./util.coffee')
 };
 
-},{"./client.coffee":3,"./parser.coffee":7,"./tracker.coffee":9,"./util.coffee":13}],6:[function(_dereq_,module,exports){
+},{"./client.coffee":3,"./parser.coffee":8,"./tracker.coffee":10,"./util.coffee":14}],7:[function(_dereq_,module,exports){
 var VASTMediaFile;
 
 VASTMediaFile = (function() {
@@ -477,8 +500,8 @@ VASTMediaFile = (function() {
 
 module.exports = VASTMediaFile;
 
-},{}],7:[function(_dereq_,module,exports){
-var URLHandler, VASTAd, VASTCreativeLinear, VASTMediaFile, VASTParser, VASTResponse, VASTUtil,
+},{}],8:[function(_dereq_,module,exports){
+var URLHandler, VASTAd, VASTCompanionAd, VASTCreativeCompanion, VASTCreativeLinear, VASTMediaFile, VASTParser, VASTResponse, VASTUtil,
   __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 URLHandler = _dereq_('./urlhandler.coffee');
@@ -491,7 +514,11 @@ VASTUtil = _dereq_('./util.coffee');
 
 VASTCreativeLinear = _dereq_('./creative.coffee').VASTCreativeLinear;
 
+VASTCreativeCompanion = _dereq_('./creative.coffee').VASTCreativeCompanion;
+
 VASTMediaFile = _dereq_('./mediafile.coffee');
+
+VASTCompanionAd = _dereq_('./companionad.coffee');
 
 VASTParser = (function() {
   var URLTemplateFilters;
@@ -709,6 +736,10 @@ VASTParser = (function() {
                 case "Linear":
                   creative = this.parseCreativeLinearElement(creativeTypeElement);
                   if (creative) ad.creatives.push(creative);
+                  break;
+                case "CompanionAds":
+                  creative = this.parseCompanionAd(creativeTypeElement);
+                  if (creative) ad.creatives.push(creative);
               }
             }
           }
@@ -776,6 +807,43 @@ VASTParser = (function() {
     return creative;
   };
 
+  VASTParser.parseCompanionAd = function(creativeElement) {
+    var companionAd, companionResource, creative, eventName, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4;
+    creative = new VASTCreativeCompanion();
+    _ref = this.childsByName(creativeElement, "Companion");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      companionResource = _ref[_i];
+      companionAd = new VASTCompanionAd();
+      companionAd.width = companionResource.getAttribute("width");
+      companionAd.height = companionResource.getAttribute("height");
+      _ref2 = this.childsByName(companionResource, "StaticResource");
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        staticElement = _ref2[_j];
+        companionAd.type = staticElement.getAttribute("creativeType") || 0;
+        companionAd.staticResource = staticElement.textContent;
+      }
+      _ref3 = this.childsByName(companionResource, "TrackingEvents");
+      for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+        trackingEventsElement = _ref3[_k];
+        _ref4 = this.childsByName(trackingEventsElement, "Tracking");
+        for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+          trackingElement = _ref4[_l];
+          eventName = trackingElement.getAttribute("event");
+          trackingURLTemplate = trackingElement.textContent;
+          if ((eventName != null) && (trackingURLTemplate != null)) {
+            if ((_base = companionAd.trackingEvents)[eventName] == null) {
+              _base[eventName] = [];
+            }
+            companionAd.trackingEvents[eventName].push(trackingURLTemplate);
+          }
+        }
+      }
+      companionAd.companionClickThroughURLTemplate = this.childByName(companionResource, "CompanionClickThrough").textContent;
+      creative.variations.push(companionAd);
+    }
+    return creative;
+  };
+
   VASTParser.parseDuration = function(durationString) {
     var durationComponents, hours, minutes, seconds, secondsAndMS;
     if (!(durationString != null)) return -1;
@@ -798,7 +866,7 @@ VASTParser = (function() {
 
 module.exports = VASTParser;
 
-},{"./ad.coffee":2,"./creative.coffee":4,"./mediafile.coffee":6,"./response.coffee":8,"./urlhandler.coffee":10,"./util.coffee":13}],8:[function(_dereq_,module,exports){
+},{"./ad.coffee":2,"./companionad.coffee":4,"./creative.coffee":5,"./mediafile.coffee":7,"./response.coffee":9,"./urlhandler.coffee":11,"./util.coffee":14}],9:[function(_dereq_,module,exports){
 var VASTResponse;
 
 VASTResponse = (function() {
@@ -814,7 +882,7 @@ VASTResponse = (function() {
 
 module.exports = VASTResponse;
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var EventEmitter, VASTClient, VASTCreativeLinear, VASTTracker, VASTUtil,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
@@ -1007,7 +1075,7 @@ VASTTracker = (function(_super) {
 
 module.exports = VASTTracker;
 
-},{"./client.coffee":3,"./creative.coffee":4,"./util.coffee":13,"events":1}],10:[function(_dereq_,module,exports){
+},{"./client.coffee":3,"./creative.coffee":5,"./util.coffee":14,"events":1}],11:[function(_dereq_,module,exports){
 var URLHandler, flash, xhr;
 
 xhr = _dereq_('./urlhandlers/xmlhttprequest.coffee');
@@ -1034,7 +1102,7 @@ URLHandler = (function() {
 
 module.exports = URLHandler;
 
-},{"./urlhandlers/flash.coffee":11,"./urlhandlers/xmlhttprequest.coffee":12}],11:[function(_dereq_,module,exports){
+},{"./urlhandlers/flash.coffee":12,"./urlhandlers/xmlhttprequest.coffee":13}],12:[function(_dereq_,module,exports){
 var FlashURLHandler;
 
 FlashURLHandler = (function() {
@@ -1051,7 +1119,7 @@ FlashURLHandler = (function() {
 
 module.exports = FlashURLHandler;
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var XHRURLHandler;
 
 XHRURLHandler = (function() {
@@ -1084,7 +1152,7 @@ XHRURLHandler = (function() {
 
 module.exports = XHRURLHandler;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var VASTUtil;
 
 VASTUtil = (function() {
@@ -1178,6 +1246,6 @@ VASTUtil = (function() {
 
 module.exports = VASTUtil;
 
-},{}]},{},[5])
-(5)
+},{}]},{},[6])
+(6)
 });
