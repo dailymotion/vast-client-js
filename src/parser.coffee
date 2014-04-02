@@ -3,7 +3,9 @@ VASTResponse = require './response.coffee'
 VASTAd = require './ad.coffee'
 VASTUtil = require './util.coffee'
 VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
+VASTCreativeCompanion = require('./creative.coffee').VASTCreativeCompanion
 VASTMediaFile = require './mediafile.coffee'
+VASTCompanionAd = require './companionad.coffee'
 
 class VASTParser
     URLTemplateFilters = []
@@ -165,8 +167,10 @@ class VASTParser
                                         ad.creatives.push creative
                                 #when "NonLinearAds"
                                     # TODO
-                                #when "CompanionAds"
-                                    # TODO
+                                when "CompanionAds"
+                                    creative = @parseCompanionAd creativeTypeElement
+                                    if creative
+                                        ad.creatives.push creative
 
         return ad
 
@@ -211,6 +215,28 @@ class VASTParser
                 mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
                 mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
                 creative.mediaFiles.push mediaFile
+
+        return creative
+
+    @parseCompanionAd: (creativeElement) ->
+        creative = new VASTCreativeCompanion()
+
+        for companionResource in @childsByName(creativeElement, "Companion")
+            companionAd = new VASTCompanionAd()
+            companionAd.width = companionResource.getAttribute("width")
+            companionAd.height = companionResource.getAttribute("height")
+            for staticElement in @childsByName(companionResource, "StaticResource")
+                companionAd.type = staticElement.getAttribute("creativeType") or 0
+                companionAd.staticResource = staticElement.textContent
+            for trackingEventsElement in @childsByName(companionResource, "TrackingEvents")
+                for trackingElement in @childsByName(trackingEventsElement, "Tracking")
+                    eventName = trackingElement.getAttribute("event")
+                    trackingURLTemplate = trackingElement.textContent
+                    if eventName? and trackingURLTemplate?
+                        companionAd.trackingEvents[eventName] ?= []
+                        companionAd.trackingEvents[eventName].push trackingURLTemplate
+            companionAd.companionClickThroughURLTemplate = @childByName(companionResource, "CompanionClickThrough").textContent
+            creative.variations.push companionAd
 
         return creative
 

@@ -16,6 +16,11 @@ class VASTCreativeNonLinear extends VASTCreative
 
 
 class VASTCreativeCompanion extends VASTCreative
+    constructor: ->
+        super
+        @type = "companion"
+        @variations = []
+        @trackingEvents = null
 
 module.exports =
     VASTCreativeLinear: VASTCreativeLinear
