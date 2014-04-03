@@ -2,6 +2,9 @@
 
 [![Build Status](https://travis-ci.org/dailymotion/vast-client-js.png)](https://travis-ci.org/dailymotion/vast-client-js)
 
+## Legacy Support (IE8+)
+
+Include [es5.js](https://github.com/inexorabletash/polyfill/blob/master/es5.js)
 
 ## Build
 

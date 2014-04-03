@@ -569,7 +569,7 @@ VASTParser = (function() {
       for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
         node = _ref[_j];
         if (node.nodeName === 'Error') {
-          response.errorURLTemplates.push(node.textContent);
+          response.errorURLTemplates.push(_this.parseNodeText(node));
         }
       }
       _ref2 = xml.documentElement.childNodes;
@@ -703,7 +703,7 @@ VASTParser = (function() {
     ad = this.parseInLineElement(wrapperElement);
     wrapperURLElement = this.childByName(wrapperElement, "VASTAdTagURI");
     if (wrapperURLElement != null) {
-      ad.nextWrapperURL = wrapperURLElement.textContent;
+      ad.nextWrapperURL = this.parseNodeText(wrapperURLElement);
     }
     wrapperCreativeElement = ad.creatives[0];
     if ((wrapperCreativeElement != null) && (wrapperCreativeElement.trackingEvents != null)) {
@@ -720,10 +720,10 @@ VASTParser = (function() {
       node = _ref[_i];
       switch (node.nodeName) {
         case "Error":
-          ad.errorURLTemplates.push(node.textContent);
+          ad.errorURLTemplates.push(this.parseNodeText(node));
           break;
         case "Impression":
-          ad.impressionURLTemplates.push(node.textContent);
+          ad.impressionURLTemplates.push(this.parseNodeText(node));
           break;
         case "Creatives":
           _ref2 = this.childsByName(node, "Creative");
@@ -749,9 +749,9 @@ VASTParser = (function() {
   };
 
   VASTParser.parseCreativeLinearElement = function(creativeElement) {
-    var creative, eventName, mediaFile, mediaFileElement, mediaFilesElement, percent, skipOffset, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+    var creative, eventName, mediaFile, mediaFileElement, mediaFilesElement, percent, skipOffset, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement, _base, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _ref4;
     creative = new VASTCreativeLinear();
-    creative.duration = this.parseDuration((_ref = this.childByName(creativeElement, "Duration")) != null ? _ref.textContent : void 0);
+    creative.duration = this.parseDuration(this.parseNodeText(this.childByName(creativeElement, "Duration")));
     if (creative.duration === -1 && creativeElement.parentNode.parentNode.parentNode.nodeName !== 'Wrapper') {
       return null;
     }
@@ -766,17 +766,17 @@ VASTParser = (function() {
     }
     videoClicksElement = this.childByName(creativeElement, "VideoClicks");
     if (videoClicksElement != null) {
-      creative.videoClickThroughURLTemplate = (_ref2 = this.childByName(videoClicksElement, "ClickThrough")) != null ? _ref2.textContent : void 0;
-      creative.videoClickTrackingURLTemplate = (_ref3 = this.childByName(videoClicksElement, "ClickTracking")) != null ? _ref3.textContent : void 0;
+      creative.videoClickThroughURLTemplate = this.parseNodeText(this.childByName(videoClicksElement, "ClickThrough"));
+      creative.videoClickTrackingURLTemplate = this.parseNodeText(this.childByName(videoClicksElement, "ClickTracking"));
     }
-    _ref4 = this.childsByName(creativeElement, "TrackingEvents");
-    for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-      trackingEventsElement = _ref4[_i];
-      _ref5 = this.childsByName(trackingEventsElement, "Tracking");
-      for (_j = 0, _len2 = _ref5.length; _j < _len2; _j++) {
-        trackingElement = _ref5[_j];
+    _ref = this.childsByName(creativeElement, "TrackingEvents");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      trackingEventsElement = _ref[_i];
+      _ref2 = this.childsByName(trackingEventsElement, "Tracking");
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        trackingElement = _ref2[_j];
         eventName = trackingElement.getAttribute("event");
-        trackingURLTemplate = trackingElement.textContent;
+        trackingURLTemplate = this.parseNodeText(trackingElement);
         if ((eventName != null) && (trackingURLTemplate != null)) {
           if ((_base = creative.trackingEvents)[eventName] == null) {
             _base[eventName] = [];
@@ -785,14 +785,14 @@ VASTParser = (function() {
         }
       }
     }
-    _ref6 = this.childsByName(creativeElement, "MediaFiles");
-    for (_k = 0, _len3 = _ref6.length; _k < _len3; _k++) {
-      mediaFilesElement = _ref6[_k];
-      _ref7 = this.childsByName(mediaFilesElement, "MediaFile");
-      for (_l = 0, _len4 = _ref7.length; _l < _len4; _l++) {
-        mediaFileElement = _ref7[_l];
+    _ref3 = this.childsByName(creativeElement, "MediaFiles");
+    for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
+      mediaFilesElement = _ref3[_k];
+      _ref4 = this.childsByName(mediaFilesElement, "MediaFile");
+      for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
+        mediaFileElement = _ref4[_l];
         mediaFile = new VASTMediaFile();
-        mediaFile.fileURL = mediaFileElement.textContent;
+        mediaFile.fileURL = this.parseNodeText(mediaFileElement);
         mediaFile.deliveryType = mediaFileElement.getAttribute("delivery");
         mediaFile.codec = mediaFileElement.getAttribute("codec");
         mediaFile.mimeType = mediaFileElement.getAttribute("type");
@@ -820,7 +820,7 @@ VASTParser = (function() {
       for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
         staticElement = _ref2[_j];
         companionAd.type = staticElement.getAttribute("creativeType") || 0;
-        companionAd.staticResource = staticElement.textContent;
+        companionAd.staticResource = this.parseNodeText(staticElement);
       }
       _ref3 = this.childsByName(companionResource, "TrackingEvents");
       for (_k = 0, _len3 = _ref3.length; _k < _len3; _k++) {
@@ -829,7 +829,7 @@ VASTParser = (function() {
         for (_l = 0, _len4 = _ref4.length; _l < _len4; _l++) {
           trackingElement = _ref4[_l];
           eventName = trackingElement.getAttribute("event");
-          trackingURLTemplate = trackingElement.textContent;
+          trackingURLTemplate = this.parseNodeText(trackingElement);
           if ((eventName != null) && (trackingURLTemplate != null)) {
             if ((_base = companionAd.trackingEvents)[eventName] == null) {
               _base[eventName] = [];
@@ -838,7 +838,7 @@ VASTParser = (function() {
           }
         }
       }
-      companionAd.companionClickThroughURLTemplate = this.childByName(companionResource, "CompanionClickThrough").textContent;
+      companionAd.companionClickThroughURLTemplate = this.parseNodeText(this.childByName(companionResource, "CompanionClickThrough"));
       creative.variations.push(companionAd);
     }
     return creative;
@@ -858,6 +858,10 @@ VASTParser = (function() {
       return -1;
     }
     return hours + minutes + seconds;
+  };
+
+  VASTParser.parseNodeText = function(node) {
+    return node && (node.textContent || node.text);
   };
 
   return VASTParser;
@@ -1109,8 +1113,27 @@ FlashURLHandler = (function() {
 
   function FlashURLHandler() {}
 
+  FlashURLHandler.xdr = function() {
+    var xdr;
+    xdr = new XDomainRequest();
+    return xdr;
+  };
+
+  FlashURLHandler.supported = function() {
+    return !!this.xdr();
+  };
+
   FlashURLHandler.get = function(url, cb) {
-    return cb('not supported');
+    var xdr, xmlDocument;
+    xmlDocument = new ActiveXObject('Microsoft.XMLDOM');
+    xmlDocument.async = false;
+    xdr = this.xdr();
+    xdr.open('GET', url);
+    xdr.send();
+    return xdr.onload = function() {
+      xmlDocument.loadXML(xdr.responseText);
+      return cb(null, xmlDocument);
+    };
   };
 
   return FlashURLHandler;
