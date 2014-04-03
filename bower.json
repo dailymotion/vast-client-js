@@ -3,7 +3,7 @@
     "author": ["Olivier Poitrey <rs@dailymotion.com>"],
     "version": "1.1.2",
     "main": "vast-client.js",
-    "licenses": [{"type": "MIT", "url": "https://raw.githubusercontent.com/WeatherChannel/vast-client-js/master/LICENSE"}],
+    "licenses": [{"type": "MIT", "url": "https://github.com/rs/vast-client-js/raw/master/LICENSE"}],
     "ignore": [
         "**/.*",
         "node_modules",
