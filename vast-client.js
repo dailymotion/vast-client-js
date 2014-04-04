@@ -448,20 +448,16 @@ VASTCreativeNonLinear = (function(_super) {
 
 })(VASTCreative);
 
-VASTCreativeCompanion = (function(_super) {
-
-  __extends(VASTCreativeCompanion, _super);
+VASTCreativeCompanion = (function() {
 
   function VASTCreativeCompanion() {
-    VASTCreativeCompanion.__super__.constructor.apply(this, arguments);
     this.type = "companion";
     this.variations = [];
-    this.trackingEvents = null;
   }
 
   return VASTCreativeCompanion;
 
-})(VASTCreative);
+})();
 
 module.exports = {
   VASTCreativeLinear: VASTCreativeLinear,

@@ -13,14 +13,12 @@ class VASTCreativeLinear extends VASTCreative
         @videoClickTrackingURLTemplate = null
 
 class VASTCreativeNonLinear extends VASTCreative
+    # TODO
 
-
-class VASTCreativeCompanion extends VASTCreative
+class VASTCreativeCompanion
     constructor: ->
-        super
         @type = "companion"
         @variations = []
-        @trackingEvents = null
 
 module.exports =
     VASTCreativeLinear: VASTCreativeLinear
