@@ -6,21 +6,23 @@
     "keywords": ["vast", "ad", "advertising", "iab", "in-stream", "video"],
     "repository": {"type": "git", "url": "https://github.com/rs/vast-client-js"},
     "licenses": [{"type": "MIT", "url": "https://github.com/rs/vast-client-js/raw/master/LICENSE"}],
-    "engines": {"node": "~0.8.19"},
+    "engines": {
+        "node": "0.10.26"
+    },
     "scripts":
     {
-        "test": "mocha --compilers coffee:coffee-script --reporter spec test/*.coffee",
+        "test": "mocha --compilers coffee:coffee-script/register --reporter spec test/*.coffee",
         "bundle": "browserify -s DMVAST -c 'coffee -scb' src/index.coffee -o vast-client.js"
     },
     "devDependencies":
     {
-        "mocha": "*",
-        "should": "*",
-        "xmldom": "*"
+        "mocha": "1.18.2",
+        "should": "3.2.0",
+        "xmldom": "0.1.19"
     },
     "dependencies":
     {
-        "coffee-script": "~1.2.0",
-        "browserify": "*"
+        "coffee-script": "~1.7.1",
+        "browserify": "3.38.0"
     }
 }
