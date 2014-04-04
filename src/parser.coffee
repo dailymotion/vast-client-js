@@ -223,6 +223,7 @@ class VASTParser
 
         for companionResource in @childsByName(creativeElement, "Companion")
             companionAd = new VASTCompanionAd()
+            companionAd.id = companionResource.getAttribute("id") or null
             companionAd.width = companionResource.getAttribute("width")
             companionAd.height = companionResource.getAttribute("height")
             for staticElement in @childsByName(companionResource, "StaticResource")

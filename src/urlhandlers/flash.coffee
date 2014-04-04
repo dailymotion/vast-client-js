@@ -1,14 +1,15 @@
 class FlashURLHandler
     @xdr: ->
-	      xdr = new XDomainRequest();
-	      return xdr
+        xdr = new XDomainRequest() if window.XDomainRequest
+        return xdr
 
     @supported: ->
         return !!@xdr()
 
     @get: (url, cb) ->
-        xmlDocument = new ActiveXObject('Microsoft.XMLDOM')
-        xmlDocument.async = false
+        if xmlDocument = new window.ActiveXObject? "Microsoft.XMLDOM"
+          xmlDocument.async = false
+
         xdr = @xdr()
         xdr.open('GET', url)
         xdr.send()

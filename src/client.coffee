@@ -29,7 +29,6 @@ class VASTClient
         # TODO: handle request timeout
 
         VASTParser.parse url, (response) =>
-            # debugger
             cb(response)
 
 

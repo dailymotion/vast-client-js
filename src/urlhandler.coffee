@@ -8,7 +8,9 @@ class URLHandler
             return require('./urlhandlers/' + 'node.coffee').get(url, cb)
         else if xhr.supported()
             return xhr.get(url, cb)
-        else
+        else if flash.supported()
             return flash.get(url, cb)
+        else
+            return cb()
 
 module.exports = URLHandler
