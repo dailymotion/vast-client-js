@@ -146,7 +146,10 @@ EventEmitter.prototype.addListener = function(type, listener) {
                     'leak detected. %d listeners added. ' +
                     'Use emitter.setMaxListeners() to increase limit.',
                     this._events[type].length);
-      console.trace();
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
     }
   }
 
@@ -456,6 +459,7 @@ VASTCreativeCompanion = (function() {
   function VASTCreativeCompanion() {
     this.type = "companion";
     this.variations = [];
+    this.trackingEvents = {};
   }
 
   return VASTCreativeCompanion;

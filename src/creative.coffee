@@ -19,6 +19,7 @@ class VASTCreativeCompanion
     constructor: ->
         @type = "companion"
         @variations = []
+        @trackingEvents = {}
 
 module.exports =
     VASTCreativeLinear: VASTCreativeLinear
