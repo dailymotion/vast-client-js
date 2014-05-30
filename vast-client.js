@@ -455,17 +455,18 @@ VASTCreativeNonLinear = (function(_super) {
 
 })(VASTCreative);
 
-VASTCreativeCompanion = (function() {
+VASTCreativeCompanion = (function(_super) {
+  __extends(VASTCreativeCompanion, _super);
+
   function VASTCreativeCompanion() {
     this.type = "companion";
     this.variations = [];
-    this.trackingEvents = {};
     this.videoClickTrackingURLTemplates = [];
   }
 
   return VASTCreativeCompanion;
 
-})();
+})(VASTCreative);
 
 module.exports = {
   VASTCreativeLinear: VASTCreativeLinear,

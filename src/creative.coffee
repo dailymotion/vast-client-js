@@ -15,11 +15,10 @@ class VASTCreativeLinear extends VASTCreative
 class VASTCreativeNonLinear extends VASTCreative
     # TODO
 
-class VASTCreativeCompanion
+class VASTCreativeCompanion extends VASTCreative
     constructor: ->
         @type = "companion"
         @variations = []
-        @trackingEvents = {}
         @videoClickTrackingURLTemplates = []
 
 module.exports =
