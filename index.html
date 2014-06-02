@@ -7,8 +7,8 @@
 
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>
 
-        <link href="vendor/bootstrap.min.css" rel="stylesheet" media="screen">
-        <link href="vendor/prism.css" rel="stylesheet" media="screen">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.css" rel="stylesheet" media="screen">
         <link href="css/app.css" rel="stylesheet" media="screen">
     </head>
     <body>
@@ -21,15 +21,19 @@
         </p>
         <div class="container view-container" ng-view></div>
 
-        <script src="vendor/jquery.min.js"></script>
-        <script src="vendor/angular.min.js"></script>
-        <script src="vendor/angular-route.min.js"></script>
 
-        <script src="vendor/bootstrap.min.js"></script>
-        <script src="vendor/prism.js"></script>
-        <script src="vendor/html2canvas.js"></script>
+        <!--[if lte IE 10]>
+        <script src="vendor/es5-polyfill.js"></script>
+        <![endif]-->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular-route.min.js"></script>
 
-        <script src="vast-client.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
+        <script src="//cdn.rawgit.com/dailymotion/vast-client-js/1.2.0/vast-client.js"></script>
 
         <script src="js/app.js"></script>
 
