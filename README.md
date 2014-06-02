@@ -2,16 +2,15 @@
 
 [![Build Status](https://travis-ci.org/dailymotion/vast-client-js.png)](https://travis-ci.org/dailymotion/vast-client-js)
 
-## Legacy Support (IE8+)
+## Build / Contribute
 
-Include [es5.js](https://github.com/inexorabletash/polyfill/blob/master/es5.js)
-
-## Build
-
-    $ npm install
-    $ npm run-script bundle
+See [CONTRIBUTING](CONTRIBUTING.md)
 
 ## Usage
+
+If you need to support legacy browsers (e.g. IE8+), don't forget to include [es5.js][es5]
+
+[es5]: https://github.com/inexorabletash/polyfill/blob/master/es5.js
 
 ``` javascript
 DMVAST.client.get(VASTURL, function(response)
