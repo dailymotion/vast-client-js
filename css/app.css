@@ -228,3 +228,9 @@ footer/*, pre*/
     width: 320px;
     height: 240px;
 }
+
+.companion
+{
+    display: inline-block;
+    border: 1px solid #000;
+}

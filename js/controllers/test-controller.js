@@ -115,33 +115,37 @@ App.controller('TestCtrl', [
                 var ad = response.ads[adIdx];
                 for (var creaIdx = 0, creaLen = ad.creatives.length; creaIdx < creaLen; creaIdx++)
                 {
-                    var linearCreative = ad.creatives[creaIdx];
-                    if (linearCreative.type != "linear") continue;
-
-                    for (var mfIdx = 0, mfLen = linearCreative.mediaFiles.length; mfIdx < mfLen; mfIdx++)
+                    creative = ad.creatives[creaIdx];
+                    switch (creative.type)
                     {
-                        var mediaFile = linearCreative.mediaFiles[mfIdx];
-                        if (mediaFile.mimeType != $scope.wantedFormat) continue;
+                        case 'linear':
+                            for (var mfIdx = 0, mfLen = creative.mediaFiles.length; mfIdx < mfLen; mfIdx++)
+                            {
+                                var mediaFile = creative.mediaFiles[mfIdx];
+                                if (mediaFile.mimeType != $scope.wantedFormat) continue;
 
-                        vastTracker = new DMVAST.tracker(ad, linearCreative);
+                                vastTracker = new DMVAST.tracker(ad, creative);
 
-                        self.modal = new Tester.Modal({
-                            link: '+',
-                            title: 'Ad Details',
-                            template: 'views/modal-ad-details.html',
-                            data: ad
-                        });
+                                self.modal = new Tester.Modal({
+                                    link: '+',
+                                    title: 'Ad Details',
+                                    template: 'views/modal-ad-details.html',
+                                    data: ad
+                                });
 
-                        Tester.set('vastTracker', vastTracker);
-                        Tester.set('vastTracker.ad', ad);
-                        Tester.set('vastTracker.linearCreative', linearCreative);
-                        Tester.set('vastTracker.mediaFile', mediaFile);
-                        break;
-                    }
+                                Tester.set('vastTracker', vastTracker);
+                                Tester.set('vastTracker.ad', ad);
+                                Tester.set('vastTracker.linearCreative', creative);
+                                Tester.set('vastTracker.mediaFile', mediaFile);
+                                break;
+                            }
+                            break;
 
-                    if (vastTracker)
-                    {
-                        break;
+                        case 'companion':
+                            Tester.set('vastTracker.companionCreative', creative);
+
+                            break;
+                        default: continue;
                     }
                 }
 
@@ -215,6 +219,24 @@ App.controller('TestCtrl', [
 
             Player.load(mediaFile.fileURL);
             Player.play();
+        });
+
+        Tester.addTest('Companions', function(done, fail)
+        {
+            var vastTracker = Tester.get('vastTracker'),
+                ad = Tester.get('vastTracker.ad'),
+                companion = Tester.get('vastTracker.companionCreative'),
+                self = this;
+
+            if (companion && Array.isArray(companion.variations) && companion.variations.length > 0)
+            {
+                done();
+                $scope.companion = companion;
+            }
+            else {
+                fail();
+            }
+
         });
 
         // Scope properties

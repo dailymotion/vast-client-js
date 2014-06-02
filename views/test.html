@@ -63,4 +63,20 @@
     <video id="player"></video>
 </div>
 
+<div class="companion-container">
+    <div class="companion" ng-repeat="companionAd in companion.variations">
+
+        <a href="{{companionAd.companionClickThroughURLTemplate}}" ng-switch on="companionAd.type">
+            <embed ng-switch-when="application/x-shockwave-flash" type="{{companionAd.type}}"
+                ng-src="{{companionAd.staticResource}}"
+                width="{{companionAd.width}}"
+                height="{{companionAd.height}}"></embed>
+            <img ng-switch-default  alt=""
+                ng-src="{{companionAd.staticResource}}"
+                width="{{companionAd.width}}"
+                height="{{companionAd.height}}"/>
+        </a>
+    </div>
+</div>
+
 <modal></modal>
