@@ -9,6 +9,7 @@ urlfor = (relpath) ->
 describe 'VASTParser', ->
     describe '#parse', ->
         @response = null
+        _response = null
         @templateFilterCalls = []
 
         before (done) =>
@@ -16,6 +17,7 @@ describe 'VASTParser', ->
               @templateFilterCalls.push url
               return url
             VASTParser.parse urlfor('wrapper.xml'), (@response) =>
+                _response = @response
                 done()
 
         after () =>
@@ -43,28 +45,75 @@ describe 'VASTParser', ->
         it 'should have merged impression URLs', =>
             @response.ads[0].impressionURLTemplates.should.eql ["http://example.com/wrapper-impression", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
 
-        it 'should have a single creative', =>
-            @response.ads[0].creatives.should.have.length 1
+        it 'should have a two creatives', =>
+            @response.ads[0].creatives.should.have.length 2
 
-        it 'should have 1 media file', =>
-            @response.ads[0].creatives[0].mediaFiles.should.have.length 1
+        #Linear
+        describe '#Linear', ->
+            linear = null
 
-        it 'should have a duration of s', =>
-            @response.ads[0].creatives[0].duration.should.equal 90.123
+            before (done) =>
+                linear = _response.ads[0].creatives[0]
+                done()
 
-        it 'should have parsed media file attributes', =>
-            mediaFile = @response.ads[0].creatives[0].mediaFiles[0]
-            mediaFile.width.should.equal 512
-            mediaFile.height.should.equal 288
-            mediaFile.mimeType.should.equal "video/mp4"
-            mediaFile.fileURL.should.equal "http://example.com/asset.mp4"
+            it 'should have linear type', =>
+                linear.type.should.equal "linear"
 
-        it 'should have 6 tracking events', =>
-            @response.ads[0].creatives[0].trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile'
+            it 'should have 1 media file', =>
+                linear.mediaFiles.should.have.length 1
 
-        it 'should have 2 urls for start event', =>
-            @response.ads[0].creatives[0].trackingEvents['start'].should.eql ['http://example.com/start', 'http://example.com/wrapper-start']
+            it 'should have a duration of s', =>
+                linear.duration.should.equal 90.123
 
-        it 'should have 2 urls for complete event', =>
-            @response.ads[0].creatives[0].trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
+            it 'should have parsed media file attributes', =>
+                mediaFile = linear.mediaFiles[0]
+                mediaFile.width.should.equal 512
+                mediaFile.height.should.equal 288
+                mediaFile.mimeType.should.equal "video/mp4"
+                mediaFile.fileURL.should.equal "http://example.com/asset.mp4"
+
+            it 'should have 6 tracking events', =>
+                linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile'
+
+            it 'should have 2 urls for start event', =>
+                linear.trackingEvents['start'].should.eql ['http://example.com/start', 'http://example.com/wrapper-start']
+
+            it 'should have 2 urls for complete event', =>
+                linear.trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
+
+        #Companions
+        describe '#Companions', ->
+            companions = null
+
+            before (done) =>
+                companions = _response.ads[0].creatives[1]
+                done()
+
+            it 'should have companion type', =>
+                companions.type.should.equal "companion"
+
+            it 'should have 1 variation', =>
+                companions.variations.should.have.length 1
+
+            #Companion
+            describe '#Companion', ->
+                companion = null
+
+                before (done) =>
+                    companion = companions.variations[0]
+                    done()
+
+                it 'should have parsed size and type attributes', =>
+                    companion.width.should.equal '300'
+                    companion.height.should.equal '60'
+                    companion.type.should.equal 'image/jpeg'
+
+                it 'should have 1 tracking event', =>
+                    companion.trackingEvents.should.have.keys 'creativeView'
+
+                it 'should have 1 url for creativeView event', =>
+                    companion.trackingEvents['creativeView'].should.eql ['http://example.com/creativeview']
+
+                it 'should have 1 companion clickthrough url', =>
+                    companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion-clickthrough'
 

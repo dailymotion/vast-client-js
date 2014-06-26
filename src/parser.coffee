@@ -102,9 +102,10 @@ class VASTParser
 
                                 if ad.trackingEvents?
                                     for creative in wrappedAd.creatives
-                                        for eventName in Object.keys ad.trackingEvents
-                                            creative.trackingEvents[eventName] or= []
-                                            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+                                        if creative.type is 'linear'
+                                            for eventName in Object.keys ad.trackingEvents
+                                                creative.trackingEvents[eventName] or= []
+                                                creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
 
                                 response.ads.splice index, 0, wrappedAd
 
