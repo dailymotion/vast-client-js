@@ -29,6 +29,17 @@
             </MediaFiles>
           </Linear>
         </Creative>
+        <Creative>
+          <CompanionAds>
+            <Companion width="300" height="60">
+              <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/static-resource]]></StaticResource>
+              <TrackingEvents>
+                <Tracking event="creativeView"><![CDATA[http://example.com/creativeview]]></Tracking>
+              </TrackingEvents>
+              <CompanionClickThrough><![CDATA[http://example.com/companion-clickthrough]]></CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
       </Creatives>
     </InLine>
   </Ad>
