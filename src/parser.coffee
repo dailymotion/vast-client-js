@@ -107,6 +107,10 @@ class VASTParser
                                                 creative.trackingEvents[eventName] or= []
                                                 creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
 
+                                if ad.videoClickTrackingURLTemplates?
+                                    for creative in wrappedAd.creatives
+                                        creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
+
                                 response.ads.splice index, 0, wrappedAd
 
                         delete ad.nextWrapperURL
@@ -141,8 +145,11 @@ class VASTParser
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
 
         wrapperCreativeElement = ad.creatives[0]
-        if wrapperCreativeElement? and wrapperCreativeElement.trackingEvents?
-            ad.trackingEvents = wrapperCreativeElement.trackingEvents
+        if wrapperCreativeElement?
+            if wrapperCreativeElement.trackingEvents?
+                ad.trackingEvents = wrapperCreativeElement.trackingEvents
+            if wrapperCreativeElement.videoClickTrackingURLTemplates?
+                ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates
 
         if ad.nextWrapperURL?
             return ad
@@ -193,7 +200,8 @@ class VASTParser
         videoClicksElement = @childByName(creativeElement, "VideoClicks")
         if videoClicksElement?
             creative.videoClickThroughURLTemplate = @parseNodeText(@childByName(videoClicksElement, "ClickThrough"))
-            creative.videoClickTrackingURLTemplate = @parseNodeText(@childByName(videoClicksElement, "ClickTracking"))
+            for clickTrackingElement in @childsByName(videoClicksElement, "ClickTracking")
+                creative.videoClickTrackingURLTemplates.push @parseNodeText(clickTrackingElement)
 
         for trackingEventsElement in @childsByName(creativeElement, "TrackingEvents")
             for trackingElement in @childsByName(trackingEventsElement, "Tracking")
