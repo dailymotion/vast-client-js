@@ -140,7 +140,12 @@ class VASTParser
         if wrapperURLElement?
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
 
-        wrapperCreativeElement = ad.creatives[0]
+        wrapperCreativeElement = null
+        for creative in ad.creatives
+            if creative.type is 'linear'
+                wrapperCreativeElement = creative
+                break
+
         if wrapperCreativeElement? and wrapperCreativeElement.trackingEvents?
             ad.trackingEvents = wrapperCreativeElement.trackingEvents
 
