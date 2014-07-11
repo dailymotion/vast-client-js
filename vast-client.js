@@ -146,10 +146,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
                     'leak detected. %d listeners added. ' +
                     'Use emitter.setMaxListeners() to increase limit.',
                     this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
+      console.trace();
     }
   }
 
@@ -661,11 +658,13 @@ VASTParser = (function() {
                     _ref4 = wrappedAd.creatives;
                     for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
                       creative = _ref4[_m];
-                      _ref5 = Object.keys(ad.trackingEvents);
-                      for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
-                        eventName = _ref5[_n];
-                        (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
-                        creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+                      if (creative.type === 'linear') {
+                        _ref5 = Object.keys(ad.trackingEvents);
+                        for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
+                          eventName = _ref5[_n];
+                          (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
+                          creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+                        }
                       }
                     }
                   }
@@ -720,13 +719,21 @@ VASTParser = (function() {
   };
 
   VASTParser.parseWrapperElement = function(wrapperElement) {
-    var ad, wrapperCreativeElement, wrapperURLElement;
+    var ad, creative, wrapperCreativeElement, wrapperURLElement, _i, _len, _ref;
     ad = this.parseInLineElement(wrapperElement);
     wrapperURLElement = this.childByName(wrapperElement, "VASTAdTagURI");
     if (wrapperURLElement != null) {
       ad.nextWrapperURL = this.parseNodeText(wrapperURLElement);
     }
-    wrapperCreativeElement = ad.creatives[0];
+    wrapperCreativeElement = null;
+    _ref = ad.creatives;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      creative = _ref[_i];
+      if (creative.type === 'linear') {
+        wrapperCreativeElement = creative;
+        break;
+      }
+    }
     if ((wrapperCreativeElement != null) && (wrapperCreativeElement.trackingEvents != null)) {
       ad.trackingEvents = wrapperCreativeElement.trackingEvents;
     }
