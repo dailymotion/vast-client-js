@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="2.0">
+<Ad id="11363">
+    <InLine>
+        <AdSystem>AdServer</AdSystem>
+        <AdTitle><![CDATA[Title]]></AdTitle>
+        <Description><![CDATA[]]></Description>
+        <Impression id="11363"><![CDATA[http://example.com/impression1]]></Impression>
+        <Impression id="11363"><![CDATA[http://example.com/impression2]]></Impression>
+        <Creatives>
+            <Creative sequence="1" skipoffset="25%">
+                <Linear>
+                    <Duration>00:00:22</Duration>
+                    <TrackingEvents>
+                        <Tracking event="start"><![CDATA[http://example.com/start]]></Tracking>
+                        <Tracking event="firstQuartile"><![CDATA[http://example.com/firstQuartile]]></Tracking>
+                        <Tracking event="midpoint"><![CDATA[http://example.com/midpoint]]></Tracking>
+                        <Tracking event="thirdQuartile"><![CDATA[http://example.com/thirdQuartile]]></Tracking>
+                        <Tracking event="complete"><![CDATA[http://example.com/complete]]></Tracking>
+                    </TrackingEvents>
+                    <VideoClicks>
+                        <ClickThrough><![CDATA[http://example.com/clickthrough]]></ClickThrough>
+                    </VideoClicks>
+                    <MediaFiles>
+                        <MediaFile bitrate="785" delivery="progressive" height="" type="video/mp4" width=""><![CDATA[http://example.com/asset.mp4]]></MediaFile>
+                    </MediaFiles>
+                </Linear>
+            </Creative>
+        </Creatives>
+    </InLine>
+</Ad>
+</VAST>

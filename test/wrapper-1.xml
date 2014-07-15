@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<VAST version="3.0">
+  <Ad id="287461" sequence="1">
+    <Wrapper>
+      <AdSystem>VAST</AdSystem>
+      <VASTAdTagURI>sample-1.xml</VASTAdTagURI>
+      <Error>http://example.com/wrapper-error</Error>
+      <Impression>http://example.com/wrapper-impression</Impression>
+      <Creatives>
+        <Creative>
+          <CompanionAds>
+            <Companion id="urn:a2:287461:103" width="0" height="0">
+              <!--Warning: failed to generate Resource, ad 287461, asset 103, no media type, line 1944-->
+              <TrackingEvents>
+                <Tracking event="creativeView"><![CDATA[http://example.com/wrapper-companion-creativeview]]></Tracking>
+              </TrackingEvents>
+              <CompanionClickThrough><![CDATA[http://]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[http://example.com/wrapper-companion-clicktracking]]></CompanionClickTracking>
+              <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+        <Creative>
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="creativeView"><![CDATA[http://example.com/wrapper-creativeview]]></Tracking>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
+              <Tracking event="firstQuartile"><![CDATA[http://example.com/wrapper-firstQuartile]]></Tracking>
+              <Tracking event="midpoint"><![CDATA[http://example.com/wrapper-midpoint]]></Tracking>
+              <Tracking event="thirdQuartile"><![CDATA[http://example.com/wrapper-thirdQuartile]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapper-complete]]></Tracking>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/wrapper-clicktracking]]></ClickTracking>
+            </VideoClicks>
+          </Linear>
+        </Creative>
+      </Creatives>
+      <Extensions>
+        <Extension type="Behavior">
+          <Behavior type="thirdPartyAdServer">unknown</Behavior>
+        </Extension>
+      </Extensions>
+    </Wrapper>
+  </Ad>
+</VAST>
