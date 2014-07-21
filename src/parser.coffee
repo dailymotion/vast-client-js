@@ -18,11 +18,11 @@ class VASTParser
     @countURLTemplateFilters: () -> URLTemplateFilters.length
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
-    @parse: (url, cb) ->
-        @_parse url, null, (err, response) ->
+    @parse: (url, headers, cb) ->
+        @_parse url, headers, null, (err, response) ->
             cb(response)
 
-    @_parse: (url, parentURLs, cb) ->
+    @_parse: (url, headers, parentURLs, cb) ->
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
@@ -30,7 +30,7 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
-        URLHandler.get url, (err, xml) =>
+        URLHandler.get url, headers, (err, xml) =>
             return cb(err) if err?
 
             response = new VASTResponse()
@@ -82,7 +82,7 @@ class VASTParser
                         baseURL = url.slice(0, url.lastIndexOf('/'))
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
-                    @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                    @_parse ad.nextWrapperURL, headers, parentURLs, (err, wrappedResponse) =>
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                             # (URI was either unavailable or reached a timeout as defined by the video player.)

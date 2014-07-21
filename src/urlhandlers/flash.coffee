@@ -6,7 +6,7 @@ class FlashURLHandler
     @supported: ->
         return !!@xdr()
 
-    @get: (url, cb) ->
+    @get: (url, headers, cb) ->
         if xmlDocument = new window.ActiveXObject? "Microsoft.XMLDOM"
           xmlDocument.async = false
         else
