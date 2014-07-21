@@ -9,5 +9,6 @@ class VASTMediaFile
         @maxBitrate = 0
         @width = 0
         @height = 0
+        @apiFramework = null
 
 module.exports = VASTMediaFile

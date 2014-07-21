@@ -3,5 +3,6 @@ class VASTAd
         @errorURLTemplates = []
         @impressionURLTemplates = []
         @creatives = []
+        @sequence = 0
 
 module.exports = VASTAd

@@ -129,12 +129,12 @@ class VASTParser
     @parseAdElement: (adElement) ->
         for adTypeElement in adElement.childNodes
             if adTypeElement.nodeName is "Wrapper"
-                return @parseWrapperElement adTypeElement
+                return @parseWrapperElement(adTypeElement, parseInt adElement.getAttribute("sequence") or 0)
             else if adTypeElement.nodeName is "InLine"
-                return @parseInLineElement adTypeElement
+                return @parseInLineElement(adTypeElement, parseInt adElement.getAttribute("sequence") or 0)
 
-    @parseWrapperElement: (wrapperElement) ->
-        ad = @parseInLineElement wrapperElement
+    @parseWrapperElement: (wrapperElement, sequence) ->
+        ad = @parseInLineElement(wrapperElement,sequence)
         wrapperURLElement = @childByName wrapperElement, "VASTAdTagURI"
         if wrapperURLElement?
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
@@ -146,9 +146,9 @@ class VASTParser
         if ad.nextWrapperURL?
             return ad
 
-    @parseInLineElement: (inLineElement) ->
+    @parseInLineElement: (inLineElement, sequence) ->
         ad = new VASTAd()
-
+        ad.sequence = sequence
         for node in inLineElement.childNodes
             switch node.nodeName
                 when "Error"
@@ -171,7 +171,6 @@ class VASTParser
                                     creative = @parseCompanionAd creativeTypeElement
                                     if creative
                                         ad.creatives.push creative
-
         return ad
 
     @parseCreativeLinearElement: (creativeElement) ->
@@ -214,6 +213,7 @@ class VASTParser
                 mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
                 mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
                 mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
+                mediaFile.apiFramework = mediaFileElement.getAttribute("apiFramework")
                 creative.mediaFiles.push mediaFile
 
         return creative
