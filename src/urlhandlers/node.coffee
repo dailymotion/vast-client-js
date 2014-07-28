@@ -4,7 +4,7 @@ http = require 'http'
 DOMParser = require('xmldom').DOMParser
 
 class NodeURLHandler
-    @get: (url, headers, cb) ->
+    @get: (url, headers, timeout, cb) ->
         url = uri.parse(url)
         if url.protocol is 'file:'
             fs.readFile url.pathname, 'utf8', (err, data) ->
@@ -24,7 +24,9 @@ class NodeURLHandler
                 res.on 'end', ->
                     xml = new DOMParser().parseFromString(data)
                     cb(null, xml)
+            req.setTimeout timeout, () ->
+            	cb('Request timeout')
             req.on 'error', (err) ->
-                cb(err)            
-
+            	cb(err)            
+				
 module.exports = NodeURLHandler
