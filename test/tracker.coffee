@@ -262,6 +262,8 @@ describe 'VASTTracker', ->
                 @Tracker.click()
                 done()
 
-            it 'should have send clickthrought event', =>
-                _eventsSent.should.eql ['clickthrough']
+            it 'should have send clicktracking events', =>
+                _eventsSent[0].should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
 
+            it 'should have send clickthrough event', =>
+                _eventsSent[1].should.eql 'clickthrough'

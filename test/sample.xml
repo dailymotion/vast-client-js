@@ -22,6 +22,7 @@
               <Tracking event="thirdQuartile"><![CDATA[http://example.com/thirdQuartile]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/clicktracking]]></ClickTracking>
               <ClickThrough><![CDATA[http://example.com/clickthrough]]></ClickThrough>
             </VideoClicks>
             <MediaFiles>

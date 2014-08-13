@@ -81,6 +81,9 @@ describe 'VASTParser', ->
             it 'should have 2 urls for complete event', =>
                 linear.trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
 
+            it 'should have 2 urls for clicktracking', =>
+                linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
+
         #Companions
         describe '#Companions', ->
             companions = null
