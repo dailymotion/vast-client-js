@@ -109,7 +109,8 @@ class VASTParser
 
                                 if ad.videoClickTrackingURLTemplates?
                                     for creative in wrappedAd.creatives
-                                        creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
+                                        if creative.type is 'linear'
+                                            creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
 
                                 response.ads.splice index, 0, wrappedAd
 
