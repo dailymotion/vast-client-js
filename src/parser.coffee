@@ -102,9 +102,10 @@ class VASTParser
 
                                 if ad.trackingEvents?
                                     for creative in wrappedAd.creatives
-                                        for eventName in Object.keys ad.trackingEvents
-                                            creative.trackingEvents[eventName] or= []
-                                            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+                                        if creative.type is 'linear'
+                                            for eventName in Object.keys ad.trackingEvents
+                                                creative.trackingEvents[eventName] or= []
+                                                creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
 
                                 if ad.videoClickTrackingURLTemplates?
                                     for creative in wrappedAd.creatives
@@ -143,7 +144,12 @@ class VASTParser
         if wrapperURLElement?
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
 
-        wrapperCreativeElement = ad.creatives[0]
+        wrapperCreativeElement = null
+        for creative in ad.creatives
+            if creative.type is 'linear'
+                wrapperCreativeElement = creative
+                break
+
         if wrapperCreativeElement?
             if wrapperCreativeElement.trackingEvents?
                 ad.trackingEvents = wrapperCreativeElement.trackingEvents

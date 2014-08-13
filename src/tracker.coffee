@@ -15,7 +15,7 @@ class VASTTracker extends EventEmitter
         @emitAlwaysEvents = [
             'creativeView',
             'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete',
-            'rewind', 'skip', 'closeLinear', 'close'
+            'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'
         ]
         # Duplicate the creative's trackingEvents property so we can alter it
         for eventName, events of creative.trackingEvents
