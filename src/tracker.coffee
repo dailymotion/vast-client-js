@@ -109,7 +109,7 @@ class VASTTracker extends EventEmitter
         @trackingEvents = []
 
     click: ->
-        if @clickTrackingURLTemplates?
+        if @clickTrackingURLTemplates?.length
             @trackURLs @clickTrackingURLTemplates
 
         if @clickThroughURLTemplate?
