@@ -146,10 +146,7 @@ EventEmitter.prototype.addListener = function(type, listener) {
                     'leak detected. %d listeners added. ' +
                     'Use emitter.setMaxListeners() to increase limit.',
                     this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
+      console.trace();
     }
   }
 
@@ -437,7 +434,7 @@ VASTCreativeLinear = (function(_super) {
     this.skipDelay = null;
     this.mediaFiles = [];
     this.videoClickThroughURLTemplate = null;
-    this.videoClickTrackingURLTemplates = [];
+    this.videoClickTrackingURLTemplate = null;
   }
 
   return VASTCreativeLinear;
@@ -455,18 +452,15 @@ VASTCreativeNonLinear = (function(_super) {
 
 })(VASTCreative);
 
-VASTCreativeCompanion = (function(_super) {
-  __extends(VASTCreativeCompanion, _super);
-
+VASTCreativeCompanion = (function() {
   function VASTCreativeCompanion() {
     this.type = "companion";
     this.variations = [];
-    this.videoClickTrackingURLTemplates = [];
   }
 
   return VASTCreativeCompanion;
 
-})(VASTCreative);
+})();
 
 module.exports = {
   VASTCreativeLinear: VASTCreativeLinear,
@@ -640,7 +634,7 @@ VASTParser = (function() {
               ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
             }
             return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
-              var creative, eventName, index, wrappedAd, _base, _l, _len3, _len4, _len5, _len6, _m, _n, _o, _ref3, _ref4, _ref5, _ref6;
+              var creative, eventName, index, wrappedAd, _base, _l, _len3, _len4, _len5, _m, _n, _ref3, _ref4, _ref5;
               if (err != null) {
                 VASTUtil.track(ad.errorURLTemplates, {
                   ERRORCODE: 301
@@ -672,13 +666,6 @@ VASTParser = (function() {
                           creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
                         }
                       }
-                    }
-                  }
-                  if (ad.videoClickTrackingURLTemplates != null) {
-                    _ref6 = wrappedAd.creatives;
-                    for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
-                      creative = _ref6[_o];
-                      creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
                     }
                   }
                   response.ads.splice(index, 0, wrappedAd);
@@ -796,7 +783,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseCreativeLinearElement = function(creativeElement) {
-    var clickTrackingElement, creative, eventName, mediaFile, mediaFileElement, mediaFilesElement, percent, skipOffset, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+    var creative, eventName, mediaFile, mediaFileElement, mediaFilesElement, percent, skipOffset, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
     creative = new VASTCreativeLinear();
     creative.duration = this.parseDuration(this.parseNodeText(this.childByName(creativeElement, "Duration")));
     if (creative.duration === -1 && creativeElement.parentNode.parentNode.parentNode.nodeName !== 'Wrapper') {
@@ -814,18 +801,14 @@ VASTParser = (function() {
     videoClicksElement = this.childByName(creativeElement, "VideoClicks");
     if (videoClicksElement != null) {
       creative.videoClickThroughURLTemplate = this.parseNodeText(this.childByName(videoClicksElement, "ClickThrough"));
-      _ref = this.childsByName(videoClicksElement, "ClickTracking");
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        clickTrackingElement = _ref[_i];
-        creative.videoClickTrackingURLTemplates.push(this.parseNodeText(clickTrackingElement));
-      }
+      creative.videoClickTrackingURLTemplate = this.parseNodeText(this.childByName(videoClicksElement, "ClickTracking"));
     }
-    _ref1 = this.childsByName(creativeElement, "TrackingEvents");
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      trackingEventsElement = _ref1[_j];
-      _ref2 = this.childsByName(trackingEventsElement, "Tracking");
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        trackingElement = _ref2[_k];
+    _ref = this.childsByName(creativeElement, "TrackingEvents");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      trackingEventsElement = _ref[_i];
+      _ref1 = this.childsByName(trackingEventsElement, "Tracking");
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        trackingElement = _ref1[_j];
         eventName = trackingElement.getAttribute("event");
         trackingURLTemplate = this.parseNodeText(trackingElement);
         if ((eventName != null) && (trackingURLTemplate != null)) {
@@ -836,12 +819,12 @@ VASTParser = (function() {
         }
       }
     }
-    _ref3 = this.childsByName(creativeElement, "MediaFiles");
-    for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-      mediaFilesElement = _ref3[_l];
-      _ref4 = this.childsByName(mediaFilesElement, "MediaFile");
-      for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
-        mediaFileElement = _ref4[_m];
+    _ref2 = this.childsByName(creativeElement, "MediaFiles");
+    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+      mediaFilesElement = _ref2[_k];
+      _ref3 = this.childsByName(mediaFilesElement, "MediaFile");
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        mediaFileElement = _ref3[_l];
         mediaFile = new VASTMediaFile();
         mediaFile.fileURL = this.parseNodeText(mediaFileElement);
         mediaFile.deliveryType = mediaFileElement.getAttribute("delivery");
@@ -986,7 +969,7 @@ VASTTracker = (function(_super) {
       this.skipDelay = creative.skipDelay;
       this.linear = true;
       this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
-      this.clickTrackingURLTemplates = creative.videoClickTrackingURLTemplates;
+      this.clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate;
     } else {
       this.skipDelay = -1;
       this.linear = false;
@@ -1088,8 +1071,8 @@ VASTTracker = (function(_super) {
 
   VASTTracker.prototype.click = function() {
     var clickThroughURL, variables;
-    if (this.clickTrackingURLTemplates != null) {
-      this.trackURLs(this.clickTrackingURLTemplates);
+    if (this.clickTrackingURLTemplate != null) {
+      this.trackURLs([this.clickTrackingURLTemplate]);
     }
     if (this.clickThroughURLTemplate != null) {
       if (this.linear) {
