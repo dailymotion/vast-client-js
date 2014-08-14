@@ -31,7 +31,7 @@ class VASTTracker extends EventEmitter
             @skipDelay = creative.skipDelay
             @linear = yes
             @clickThroughURLTemplate = creative.videoClickThroughURLTemplate
-            @clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate
+            @clickTrackingURLTemplates = creative.videoClickTrackingURLTemplates
         else
             @skipDelay = -1
             @linear = no
@@ -109,8 +109,8 @@ class VASTTracker extends EventEmitter
         @trackingEvents = []
 
     click: ->
-        if @clickTrackingURLTemplate?
-            @trackURLs [@clickTrackingURLTemplate]
+        if @clickTrackingURLTemplates?.length
+            @trackURLs @clickTrackingURLTemplates
 
         if @clickThroughURLTemplate?
             if @linear

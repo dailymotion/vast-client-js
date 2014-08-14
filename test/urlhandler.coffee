@@ -14,7 +14,7 @@ describe 'URLHandler', ->
                 xml.documentElement.nodeName.should.equal 'VAST'
                 done()
 
-        it 'should return error if not found', (done) =>
+        it 'should return an error if not found', (done) =>
             URLHandler.get urlfor('not-found.xml'), (err, xml) ->
                 should.exists err
                 should.not.exist xml

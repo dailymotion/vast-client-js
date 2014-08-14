@@ -84,13 +84,13 @@ describe 'VASTTracker', ->
                 @Tracker.setMuted yes
                 done()
 
-            it 'should been muted', =>
+            it 'should be muted', =>
                 @Tracker.muted.should.eql yes
 
             it 'should send muted event', =>
                 _eventsSent.should.eql ["muted"]
 
-            it 'should been unmuted', =>
+            it 'should be unmuted', =>
                 _eventsSent = []
                 @Tracker.setMuted no
                 @Tracker.muted.should.eql no
@@ -111,13 +111,13 @@ describe 'VASTTracker', ->
                 @Tracker.setPaused yes
                 done()
 
-            it 'should been pause', =>
+            it 'should be paused', =>
                 @Tracker.paused.should.eql yes
 
             it 'should send pause event', =>
                 _eventsSent.should.eql ["pause"]
 
-            it 'should been resume', =>
+            it 'should be resumed', =>
                 _eventsSent = []
                 @Tracker.setPaused no
                 @Tracker.paused.should.eql no
@@ -140,13 +140,13 @@ describe 'VASTTracker', ->
                 @Tracker.setFullscreen yes
                 done()
 
-            it 'should been in fullscreen mode', =>
+            it 'should be in fullscreen mode', =>
                 @Tracker.fullscreen.should.eql yes
 
             it 'should send fullscreen event', =>
                 _eventsSent.should.eql ["fullscreen"]
 
-            it 'should been in exitFullscreen mode', =>
+            it 'should be in exitFullscreen mode', =>
                 _eventsSent = []
                 @Tracker.setFullscreen no
                 @Tracker.fullscreen.should.eql no
@@ -183,10 +183,10 @@ describe 'VASTTracker', ->
             it 'should have impressed set to true', =>
                 @Tracker.impressed.should.eql yes
 
-            it 'should have call impression urls', =>
+            it 'should have called impression urls', =>
                 _eventsSent[0].should.eql ['http://example.com/wrapper-impression', 'http://example.com/impression1', 'http://example.com/impression2', 'http://example.com/impression3']
 
-            it 'should have send creativeView event', =>
+            it 'should have sent creativeView event', =>
                 _eventsSent[1].should.eql 'creativeView'
 
             it 'should only be called once', =>
@@ -204,7 +204,7 @@ describe 'VASTTracker', ->
                 @Tracker.errorWithCode('errorCode')
                 done()
 
-            it 'should have call error urls', =>
+            it 'should have called error urls', =>
                 _eventsSent[0].should.eql [ 'http://example.com/wrapper-error', 'http://example.com/error']
 
 
@@ -215,7 +215,7 @@ describe 'VASTTracker', ->
                 @Tracker.complete()
                 done()
 
-            it 'should have send complete event and urls', =>
+            it 'should have sent complete event and urls', =>
                 _eventsSent.should.eql ['complete', ["http://example.com/complete", "http://example.com/wrapper-complete"]]
 
             it 'should be called multiples times', =>
@@ -231,10 +231,10 @@ describe 'VASTTracker', ->
                 @Tracker.stop()
                 done()
 
-            it 'should have send close event and urls VAST 2.0', =>
+            it 'should have sent close event and urls VAST 2.0', =>
                 _eventsSent.should.eql ['close', [ 'http://example.com/close']]
 
-            it 'should have send closeLinear event and urls VAST 3.0', =>
+            it 'should have sent closeLinear event and urls VAST 3.0', =>
                 _eventsSent = []
                 @Tracker.trackingEvents['closeLinear'] = ['http://example.com/closelinear']
                 delete @Tracker.trackingEvents['close']
@@ -249,7 +249,7 @@ describe 'VASTTracker', ->
                 @Tracker.skip()
                 done()
 
-            it 'should have send skip event', =>
+            it 'should have sent skip event', =>
                 _eventsSent.should.eql ['skip']
 
 
@@ -262,6 +262,8 @@ describe 'VASTTracker', ->
                 @Tracker.click()
                 done()
 
-            it 'should have send clickthrought event', =>
-                _eventsSent.should.eql ['clickthrough']
+            it 'should have sent clicktracking events', =>
+                _eventsSent[0].should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
 
+            it 'should have sent clickthrough event', =>
+                _eventsSent[1].should.eql 'clickthrough'

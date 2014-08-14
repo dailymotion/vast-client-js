@@ -33,7 +33,7 @@ describe 'VASTParser', ->
         it 'should have found 1 ad', =>
             @response.ads.should.have.length 1
 
-        it 'should return a VAST response object', =>
+        it 'should have returned a VAST response object', =>
             @response.should.be.an.instanceOf(VASTResponse)
 
         it 'should have merged top level error URLs', =>
@@ -45,7 +45,7 @@ describe 'VASTParser', ->
         it 'should have merged impression URLs', =>
             @response.ads[0].impressionURLTemplates.should.eql ["http://example.com/wrapper-impression", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
 
-        it 'should have a two creatives', =>
+        it 'should have two creatives', =>
             @response.ads[0].creatives.should.have.length 2
 
         #Linear
@@ -62,7 +62,7 @@ describe 'VASTParser', ->
             it 'should have 1 media file', =>
                 linear.mediaFiles.should.have.length 1
 
-            it 'should have a duration of s', =>
+            it 'should have a duration of 90.123s', =>
                 linear.duration.should.equal 90.123
 
             it 'should have parsed media file attributes', =>
@@ -80,6 +80,9 @@ describe 'VASTParser', ->
 
             it 'should have 2 urls for complete event', =>
                 linear.trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
+
+            it 'should have 2 urls for clicktracking', =>
+                linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
 
         #Companions
         describe '#Companions', ->

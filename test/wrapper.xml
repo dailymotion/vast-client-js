@@ -23,6 +23,9 @@
               <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
               <Tracking event="complete"><![CDATA[http://example.com/wrapper-complete]]></Tracking>
             </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/wrapper-clicktracking]]></ClickTracking>
+            </VideoClicks>
           </Linear>
         </Creative>
       </Creatives>
