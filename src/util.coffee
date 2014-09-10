@@ -18,6 +18,7 @@ class VASTUtil
 
         for URLTemplate in URLTemplates
             resolveURL = URLTemplate
+            continue unless resolveURL
             for key, value of variables
                 macro1 = "[#{key}]"
                 macro2 = "%%#{key}%%"
