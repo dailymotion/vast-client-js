@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.DMVAST=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.DMVAST=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -146,7 +146,10 @@ EventEmitter.prototype.addListener = function(type, listener) {
                     'leak detected. %d listeners added. ' +
                     'Use emitter.setMaxListeners() to increase limit.',
                     this._events[type].length);
-      console.trace();
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
     }
   }
 
@@ -434,7 +437,7 @@ VASTCreativeLinear = (function(_super) {
     this.skipDelay = null;
     this.mediaFiles = [];
     this.videoClickThroughURLTemplate = null;
-    this.videoClickTrackingURLTemplate = null;
+    this.videoClickTrackingURLTemplates = [];
   }
 
   return VASTCreativeLinear;
@@ -452,15 +455,18 @@ VASTCreativeNonLinear = (function(_super) {
 
 })(VASTCreative);
 
-VASTCreativeCompanion = (function() {
+VASTCreativeCompanion = (function(_super) {
+  __extends(VASTCreativeCompanion, _super);
+
   function VASTCreativeCompanion() {
     this.type = "companion";
     this.variations = [];
+    this.videoClickTrackingURLTemplates = [];
   }
 
   return VASTCreativeCompanion;
 
-})();
+})(VASTCreative);
 
 module.exports = {
   VASTCreativeLinear: VASTCreativeLinear,
@@ -634,7 +640,7 @@ VASTParser = (function() {
               ad.nextWrapperURL = "" + baseURL + "/" + ad.nextWrapperURL;
             }
             return _this._parse(ad.nextWrapperURL, parentURLs, function(err, wrappedResponse) {
-              var creative, eventName, index, wrappedAd, _base, _l, _len3, _len4, _len5, _m, _n, _ref3, _ref4, _ref5;
+              var creative, eventName, index, wrappedAd, _base, _l, _len3, _len4, _len5, _len6, _m, _n, _o, _ref3, _ref4, _ref5, _ref6;
               if (err != null) {
                 VASTUtil.track(ad.errorURLTemplates, {
                   ERRORCODE: 301
@@ -665,6 +671,15 @@ VASTParser = (function() {
                           (_base = creative.trackingEvents)[eventName] || (_base[eventName] = []);
                           creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
                         }
+                      }
+                    }
+                  }
+                  if (ad.videoClickTrackingURLTemplates != null) {
+                    _ref6 = wrappedAd.creatives;
+                    for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
+                      creative = _ref6[_o];
+                      if (creative.type === 'linear') {
+                        creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
                       }
                     }
                   }
@@ -734,8 +749,13 @@ VASTParser = (function() {
         break;
       }
     }
-    if ((wrapperCreativeElement != null) && (wrapperCreativeElement.trackingEvents != null)) {
-      ad.trackingEvents = wrapperCreativeElement.trackingEvents;
+    if (wrapperCreativeElement != null) {
+      if (wrapperCreativeElement.trackingEvents != null) {
+        ad.trackingEvents = wrapperCreativeElement.trackingEvents;
+      }
+      if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
+        ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates;
+      }
     }
     if (ad.nextWrapperURL != null) {
       return ad;
@@ -783,7 +803,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseCreativeLinearElement = function(creativeElement) {
-    var creative, eventName, mediaFile, mediaFileElement, mediaFilesElement, percent, skipOffset, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+    var clickTrackingElement, creative, eventName, mediaFile, mediaFileElement, mediaFilesElement, percent, skipOffset, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
     creative = new VASTCreativeLinear();
     creative.duration = this.parseDuration(this.parseNodeText(this.childByName(creativeElement, "Duration")));
     if (creative.duration === -1 && creativeElement.parentNode.parentNode.parentNode.nodeName !== 'Wrapper') {
@@ -801,14 +821,18 @@ VASTParser = (function() {
     videoClicksElement = this.childByName(creativeElement, "VideoClicks");
     if (videoClicksElement != null) {
       creative.videoClickThroughURLTemplate = this.parseNodeText(this.childByName(videoClicksElement, "ClickThrough"));
-      creative.videoClickTrackingURLTemplate = this.parseNodeText(this.childByName(videoClicksElement, "ClickTracking"));
+      _ref = this.childsByName(videoClicksElement, "ClickTracking");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        clickTrackingElement = _ref[_i];
+        creative.videoClickTrackingURLTemplates.push(this.parseNodeText(clickTrackingElement));
+      }
     }
-    _ref = this.childsByName(creativeElement, "TrackingEvents");
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      trackingEventsElement = _ref[_i];
-      _ref1 = this.childsByName(trackingEventsElement, "Tracking");
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        trackingElement = _ref1[_j];
+    _ref1 = this.childsByName(creativeElement, "TrackingEvents");
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      trackingEventsElement = _ref1[_j];
+      _ref2 = this.childsByName(trackingEventsElement, "Tracking");
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        trackingElement = _ref2[_k];
         eventName = trackingElement.getAttribute("event");
         trackingURLTemplate = this.parseNodeText(trackingElement);
         if ((eventName != null) && (trackingURLTemplate != null)) {
@@ -819,12 +843,12 @@ VASTParser = (function() {
         }
       }
     }
-    _ref2 = this.childsByName(creativeElement, "MediaFiles");
-    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-      mediaFilesElement = _ref2[_k];
-      _ref3 = this.childsByName(mediaFilesElement, "MediaFile");
-      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-        mediaFileElement = _ref3[_l];
+    _ref3 = this.childsByName(creativeElement, "MediaFiles");
+    for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+      mediaFilesElement = _ref3[_l];
+      _ref4 = this.childsByName(mediaFilesElement, "MediaFile");
+      for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+        mediaFileElement = _ref4[_m];
         mediaFile = new VASTMediaFile();
         mediaFile.fileURL = this.parseNodeText(mediaFileElement);
         mediaFile.deliveryType = mediaFileElement.getAttribute("delivery");
@@ -969,7 +993,7 @@ VASTTracker = (function(_super) {
       this.skipDelay = creative.skipDelay;
       this.linear = true;
       this.clickThroughURLTemplate = creative.videoClickThroughURLTemplate;
-      this.clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate;
+      this.clickTrackingURLTemplates = creative.videoClickTrackingURLTemplates;
     } else {
       this.skipDelay = -1;
       this.linear = false;
@@ -1070,9 +1094,9 @@ VASTTracker = (function(_super) {
   };
 
   VASTTracker.prototype.click = function() {
-    var clickThroughURL, variables;
-    if (this.clickTrackingURLTemplate != null) {
-      this.trackURLs([this.clickTrackingURLTemplate]);
+    var clickThroughURL, variables, _ref;
+    if ((_ref = this.clickTrackingURLTemplates) != null ? _ref.length : void 0) {
+      this.trackURLs(this.clickTrackingURLTemplates);
     }
     if (this.clickThroughURLTemplate != null) {
       if (this.linear) {
@@ -1287,6 +1311,9 @@ VASTUtil = (function() {
     for (_i = 0, _len = URLTemplates.length; _i < _len; _i++) {
       URLTemplate = URLTemplates[_i];
       resolveURL = URLTemplate;
+      if (!resolveURL) {
+        continue;
+      }
       for (key in variables) {
         value = variables[key];
         macro1 = "[" + key + "]";

@@ -1,7 +1,7 @@
 {
     "name": "vast-client-js",
     "author": "Olivier Poitrey <rs@dailymotion.com>",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "Javascript VAST Client",
     "keywords": ["vast", "ad", "advertising", "iab", "in-stream", "video"],
     "repository": {"type": "git", "url": "https://github.com/rs/vast-client-js"},
