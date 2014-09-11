@@ -20,3 +20,6 @@ describe 'VASTUtil', ->
 
         it 'should resolve weird cases', ->
             resolve("http://test.com/%%CONTENTPLAYHEAD%%&[CONTENTPLAYHEAD]", CONTENTPLAYHEAD: 120).should.equal "http://test.com/120&120"
+
+        it 'should handle undefined', ->
+            should(resolve(undefined)).equal undefined
