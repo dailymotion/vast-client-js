@@ -10,6 +10,7 @@ class XHRURLHandler
     @get: (url, cb) ->
         xhr = @xhr()
         xhr.open('GET', url)
+        xhr.withCredentials = true
         xhr.send()
         xhr.onreadystatechange = ->
             if xhr.readyState == 4
