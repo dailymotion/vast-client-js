@@ -224,6 +224,7 @@ class VASTParser
                 mediaFile.deliveryType = mediaFileElement.getAttribute("delivery")
                 mediaFile.codec = mediaFileElement.getAttribute("codec")
                 mediaFile.mimeType = mediaFileElement.getAttribute("type")
+                mediaFile.apiFramework = mediaFileElement.getAttribute("apiFramework")
                 mediaFile.bitrate = parseInt mediaFileElement.getAttribute("bitrate") or 0
                 mediaFile.minBitrate = parseInt mediaFileElement.getAttribute("minBitrate") or 0
                 mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
