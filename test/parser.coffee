@@ -120,3 +120,14 @@ describe 'VASTParser', ->
                 it 'should have 1 companion clickthrough url', =>
                     companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion-clickthrough'
 
+        describe '#VAST', ->
+            @response = null
+
+            before (done) =>
+                VASTParser.parse urlfor('vpaid.xml'), (@response) =>
+                    done()
+
+            it 'should have apiFramework set', =>
+                @response.ads[0].creatives[0].mediaFiles[0].apiFramework.should.be.equal "VPAID"
+
+

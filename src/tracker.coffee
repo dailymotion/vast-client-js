@@ -21,12 +21,7 @@ class VASTTracker extends EventEmitter
         for eventName, events of creative.trackingEvents
             @trackingEvents[eventName] = events.slice(0)
         if creative instanceof VASTCreativeLinear
-            @assetDuration = creative.duration
-            # beware of key names, theses are also used as event names
-            @quartiles =
-                'firstQuartile' : Math.round(25 * @assetDuration) / 100
-                'midpoint'      : Math.round(50 * @assetDuration) / 100
-                'thirdQuartile' : Math.round(75 * @assetDuration) / 100
+            @setDuration creative.duration
 
             @skipDelay = creative.skipDelay
             @linear = yes
@@ -39,6 +34,14 @@ class VASTTracker extends EventEmitter
         @on 'start', ->
             VASTClient.lastSuccessfullAd = +new Date()
             return
+
+    setDuration: (duration) ->
+        @assetDuration = duration
+        # beware of key names, theses are also used as event names
+        @quartiles =
+            'firstQuartile' : Math.round(25 * @assetDuration) / 100
+            'midpoint'      : Math.round(50 * @assetDuration) / 100
+            'thirdQuartile' : Math.round(75 * @assetDuration) / 100
 
     setProgress: (progress) ->
         skipDelay = if @skipDelay is null then @skipDelayDefault else @skipDelay
