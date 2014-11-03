@@ -8,11 +8,14 @@ class XHRURLHandler
         return !!@xhr()
 
     @get: (url, cb) ->
-        xhr = @xhr()
-        xhr.open('GET', url)
-        xhr.send()
-        xhr.onreadystatechange = ->
-            if xhr.readyState == 4
-                cb(null, xhr.responseXML)
+        try
+            xhr = @xhr()
+            xhr.open('GET', url)
+            xhr.send()
+            xhr.onreadystatechange = ->
+                if xhr.readyState == 4
+                    cb(null, xhr.responseXML)
+        catch
+            cb()
 
 module.exports = XHRURLHandler
