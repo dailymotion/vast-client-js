@@ -131,3 +131,30 @@ describe 'VASTParser', ->
                 @response.ads[0].creatives[0].mediaFiles[0].apiFramework.should.be.equal "VPAID"
 
 
+    describe '#track', ->
+        errorCallbackCalled = 0
+        errorCode = null
+        errorCallback = (ec) ->
+            errorCallbackCalled++
+            errorCode = ec
+
+        beforeEach =>
+            VASTParser.vent.removeAllListeners()
+            errorCallbackCalled = 0
+
+        #No ads VAST response after one wrapper
+        it 'emits an VAST-error on empty vast directly', (done) ->
+            VASTParser.on 'VAST-error', errorCallback
+            VASTParser.parse urlfor('empty.xml'), =>
+                errorCallbackCalled.should.equal 1
+                errorCode.ERRORCODE.should.eql 303
+                done()
+
+        #No ads VAST response after more than one wrapper
+        it 'emits 3 VAST-error events on empty vast after one wrapper', (done) ->
+            VASTParser.on 'VAST-error', errorCallback
+            VASTParser.parse urlfor('wrapper-empty.xml'), =>
+                errorCallbackCalled.should.equal 3
+                errorCode.ERRORCODE.should.eql 303
+                done()
+
