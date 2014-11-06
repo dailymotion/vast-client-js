@@ -63,7 +63,7 @@ class VASTParser
                         # VAST version of response not supported.
                         @track(response.errorURLTemplates, ERRORCODE: 101)
 
-            complete = =>
+            complete = (errorAlreadyRaised = false) =>
                 return unless response
                 for ad in response.ads
                     return if ad.nextWrapperURL?
@@ -72,7 +72,7 @@ class VASTParser
                     # The VAST <Error> element is optional but if included, the video player must send a request to the URI
                     # provided when the VAST response returns an empty InLine response after a chain of one or more wrapper ads.
                     # If an [ERRORCODE] macro is included, the video player should substitute with error code 303.
-                    @track(response.errorURLTemplates, ERRORCODE: 303)
+                    @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
                     response = null
                 cb(null, response)
 
@@ -95,15 +95,18 @@ class VASTParser
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
                     @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                        errorAlreadyRaised = false
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                             # (URI was either unavailable or reached a timeout as defined by the video player.)
                             @track(ad.errorURLTemplates, ERRORCODE: 301)
                             response.ads.splice(response.ads.indexOf(ad), 1)
+                            errorAlreadyRaised = true
                         else if not wrappedResponse?
                             # No Ads VAST response after one or more Wrappers
                             @track(ad.errorURLTemplates, ERRORCODE: 303)
                             response.ads.splice(response.ads.indexOf(ad), 1)
+                            errorAlreadyRaised = true
                         else
                             response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
                             index = response.ads.indexOf(ad)
@@ -127,7 +130,7 @@ class VASTParser
                                 response.ads.splice index, 0, wrappedAd
 
                         delete ad.nextWrapperURL
-                        complete()
+                        complete errorAlreadyRaised
 
             complete()
 
