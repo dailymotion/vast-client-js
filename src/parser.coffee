@@ -293,7 +293,7 @@ class VASTParser
 
     # Parsing node text for legacy support
     @parseNodeText: (node) ->
-        return node and (node.textContent or node.text)
+        return node and (node.textContent or node.text or '').trim()
 
 module.exports = VASTParser
 
