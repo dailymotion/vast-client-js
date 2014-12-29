@@ -159,6 +159,10 @@ class VASTParser
         wrapperURLElement = @childByName wrapperElement, "VASTAdTagURI"
         if wrapperURLElement?
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
+        else
+            wrapperURLElement = @childByName wrapperElement, "VASTAdTagURL"
+            if wrapperURLElement?
+                ad.nextWrapperURL = @parseNodeText @childByName wrapperURLElement, "URL"
 
         wrapperCreativeElement = null
         for creative in ad.creatives
