@@ -161,3 +161,25 @@ describe 'VASTParser', ->
                 # errorCode.ERRORCODE.should.eql 303
                 done()
 
+    describe '#legacy', ->
+        beforeEach =>
+            VASTParser.vent.removeAllListeners()
+
+        it 'correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', (done) ->
+            VASTParser.parse urlfor('wrapper-legacy.xml'), (response) =>
+                it 'should have found 1 ad', =>
+                    response.ads.should.have.length 1
+
+                it 'should have returned a VAST response object', =>
+                    response.should.be.an.instanceOf(VASTResponse)
+
+                # we just want to make sure that the sample.xml was loaded correctly
+                linear = response.ads[0].creatives[0]
+                it 'should have parsed media file attributes', =>
+                    mediaFile = linear.mediaFiles[0]
+                    mediaFile.width.should.equal 512
+                    mediaFile.height.should.equal 288
+                    mediaFile.mimeType.should.equal "video/mp4"
+                    mediaFile.fileURL.should.equal "http://example.com/asset.mp4"
+
+                done()
