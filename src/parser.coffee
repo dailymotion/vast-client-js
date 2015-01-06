@@ -19,8 +19,12 @@ class VASTParser
     @countURLTemplateFilters: () -> URLTemplateFilters.length
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
-    @parse: (url, cb) ->
-        @_parse url, null, (err, response) ->
+    @parse: (url, options, cb) ->
+        if typeof options is 'function'
+          cb = options
+          options = null
+        
+        @_parse url, null, options, (err, response) ->
             cb(response)
 
     @vent = new EventEmitter()
@@ -34,7 +38,7 @@ class VASTParser
     @once: (eventName, cb) ->
         @vent.once eventName, cb
 
-    @_parse: (url, parentURLs, cb) ->
+    @_parse: (url, parentURLs, options, cb) ->
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
@@ -42,7 +46,13 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
-        URLHandler.get url, (err, xml) =>
+        if typeof options is 'function'
+          cb = options
+          options = {}
+          
+        options = {} if not options
+        
+        URLHandler.get url, options, (err, xml) =>
             return cb(err) if err?
 
             response = new VASTResponse()
