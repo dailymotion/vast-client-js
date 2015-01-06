@@ -4,7 +4,12 @@ http = require 'http'
 DOMParser = require('xmldom').DOMParser
 
 class NodeURLHandler
-    @get: (url, cb) ->
+    @get: (url, options, cb) ->
+        if typeof options is 'function'
+          cb = options
+          options = null
+        
+    
         url = uri.parse(url)
         if url.protocol is 'file:'
             fs.readFile url.pathname, 'utf8', (err, data) ->
