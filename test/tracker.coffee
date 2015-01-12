@@ -79,8 +79,8 @@ describe 'VASTTracker', ->
 
             before (done) =>
                 _eventsSent = []
-                @Tracker.trackingEvents['muted'] = 'http://example.com/muted'
-                @Tracker.trackingEvents['unmuted'] = 'http://example.com/muted'
+                @Tracker.trackingEvents['mute'] = 'http://example.com/muted'
+                @Tracker.trackingEvents['unmute'] = 'http://example.com/muted'
                 @Tracker.setMuted yes
                 done()
 
@@ -88,7 +88,7 @@ describe 'VASTTracker', ->
                 @Tracker.muted.should.eql yes
 
             it 'should send muted event', =>
-                _eventsSent.should.eql ["muted"]
+                _eventsSent.should.eql ["mute"]
 
             it 'should be unmuted', =>
                 _eventsSent = []
@@ -96,7 +96,7 @@ describe 'VASTTracker', ->
                 @Tracker.muted.should.eql no
 
             it 'should send unmuted event', =>
-                _eventsSent.should.eql ["unmuted"]
+                _eventsSent.should.eql ["unmute"]
 
             it 'should send no event', =>
                 _eventsSent = []
