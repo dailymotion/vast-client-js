@@ -76,7 +76,7 @@ class VASTTracker extends EventEmitter
 
     setMuted: (muted) ->
         if @muted != muted
-            @track(if muted then "muted" else "unmuted")
+            @track(if muted then "mute" else "unmute")
         @muted = muted
 
     setPaused: (paused) ->
