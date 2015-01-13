@@ -6,8 +6,13 @@ class VASTClient
     @cappingMinimumTimeInterval: 0
     @timeout: 0
 
-    @get: (url, cb) ->
+    @get: (url, opts, cb) ->
         now = +new Date()
+        options = {}
+        
+        if opts
+          options = opts if typeof opts is 'object'
+          cb = opts if typeof opts is 'function'
 
         # Check totalCallsTimeout (first call + 1 hour), if older than now,
         # reset totalCalls number, by this way the client will be eligible again
@@ -28,7 +33,7 @@ class VASTClient
 
         # TODO: handle request timeout
 
-        VASTParser.parse url, (response) =>
+        VASTParser.parse url, options, (response) =>
             cb(response)
 
 

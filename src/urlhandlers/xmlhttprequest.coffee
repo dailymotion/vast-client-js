@@ -7,10 +7,15 @@ class XHRURLHandler
     @supported: ->
         return !!@xhr()
 
-    @get: (url, cb) ->
+    @get: (url, options, cb) ->
+        if typeof options is 'function'
+          cb = options
+          options = null
+        
         try
             xhr = @xhr()
             xhr.open('GET', url)
+            xhr.withCredentials = true if options and options.withCredentials is true
             xhr.send()
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4
