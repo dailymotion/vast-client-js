@@ -337,9 +337,18 @@ VASTClient = (function() {
 
   VASTClient.timeout = 0;
 
-  VASTClient.get = function(url, cb) {
-    var now;
+  VASTClient.get = function(url, opts, cb) {
+    var now, options;
     now = +new Date();
+    options = {};
+    if (opts) {
+      if (typeof opts === 'object') {
+        options = opts;
+      }
+      if (typeof opts === 'function') {
+        cb = opts;
+      }
+    }
     if (this.totalCallsTimeout < now) {
       this.totalCalls = 1;
       this.totalCallsTimeout = now + (60 * 60 * 1000);
@@ -354,7 +363,7 @@ VASTClient = (function() {
       cb(null);
       return;
     }
-    return VASTParser.parse(url, (function(_this) {
+    return VASTParser.parse(url, options, (function(_this) {
       return function(response) {
         return cb(response);
       };
@@ -555,8 +564,12 @@ VASTParser = (function() {
     return URLTemplateFilters = [];
   };
 
-  VASTParser.parse = function(url, cb) {
-    return this._parse(url, null, function(err, response) {
+  VASTParser.parse = function(url, options, cb) {
+    if (typeof options === 'function') {
+      cb = options;
+      options = null;
+    }
+    return this._parse(url, null, options, function(err, response) {
       return cb(response);
     });
   };
@@ -576,7 +589,7 @@ VASTParser = (function() {
     return this.vent.once(eventName, cb);
   };
 
-  VASTParser._parse = function(url, parentURLs, cb) {
+  VASTParser._parse = function(url, parentURLs, options, cb) {
     var filter, _i, _len;
     for (_i = 0, _len = URLTemplateFilters.length; _i < _len; _i++) {
       filter = URLTemplateFilters[_i];
@@ -586,7 +599,14 @@ VASTParser = (function() {
       parentURLs = [];
     }
     parentURLs.push(url);
-    return URLHandler.get(url, (function(_this) {
+    if (typeof options === 'function') {
+      cb = options;
+      options = {};
+    }
+    if (!options) {
+      options = {};
+    }
+    return URLHandler.get(url, options, (function(_this) {
       return function(err, xml) {
         var ad, complete, loopIndex, node, response, _j, _k, _len1, _len2, _ref, _ref1;
         if (err != null) {
@@ -765,6 +785,11 @@ VASTParser = (function() {
     wrapperURLElement = this.childByName(wrapperElement, "VASTAdTagURI");
     if (wrapperURLElement != null) {
       ad.nextWrapperURL = this.parseNodeText(wrapperURLElement);
+    } else {
+      wrapperURLElement = this.childByName(wrapperElement, "VASTAdTagURL");
+      if (wrapperURLElement != null) {
+        ad.nextWrapperURL = this.parseNodeText(this.childByName(wrapperURLElement, "URL"));
+      }
     }
     wrapperCreativeElement = null;
     _ref = ad.creatives;
@@ -796,10 +821,14 @@ VASTParser = (function() {
       node = _ref[_i];
       switch (node.nodeName) {
         case "Error":
-          ad.errorURLTemplates.push(this.parseNodeText(node));
+          if (this.isUrl(node)) {
+            ad.errorURLTemplates.push(this.parseNodeText(node));
+          }
           break;
         case "Impression":
-          ad.impressionURLTemplates.push(this.parseNodeText(node));
+          if (this.isUrl(node)) {
+            ad.impressionURLTemplates.push(this.parseNodeText(node));
+          }
           break;
         case "Creatives":
           _ref1 = this.childsByName(node, "Creative");
@@ -953,7 +982,11 @@ VASTParser = (function() {
   };
 
   VASTParser.parseNodeText = function(node) {
-    return node && (node.textContent || node.text);
+    return node && (node.textContent || node.text || '').trim();
+  };
+
+  VASTParser.isUrl = function(node) {
+    return /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?//=]*)/i.test(this.parseNodeText(node));
   };
 
   return VASTParser;
@@ -1072,7 +1105,7 @@ VASTTracker = (function(_super) {
 
   VASTTracker.prototype.setMuted = function(muted) {
     if (this.muted !== muted) {
-      this.track(muted ? "muted" : "unmuted");
+      this.track(muted ? "mute" : "unmute");
     }
     return this.muted = muted;
   };
@@ -1210,13 +1243,13 @@ flash = _dereq_('./urlhandlers/flash.coffee');
 URLHandler = (function() {
   function URLHandler() {}
 
-  URLHandler.get = function(url, cb) {
+  URLHandler.get = function(url, options, cb) {
     if (typeof window === "undefined" || window === null) {
-      return _dereq_('./urlhandlers/' + 'node.coffee').get(url, cb);
+      return _dereq_('./urlhandlers/' + 'node.coffee').get(url, options, cb);
     } else if (xhr.supported()) {
-      return xhr.get(url, cb);
+      return xhr.get(url, options, cb);
     } else if (flash.supported()) {
-      return flash.get(url, cb);
+      return flash.get(url, options, cb);
     } else {
       return cb();
     }
@@ -1247,8 +1280,12 @@ FlashURLHandler = (function() {
     return !!this.xdr();
   };
 
-  FlashURLHandler.get = function(url, cb) {
+  FlashURLHandler.get = function(url, options, cb) {
     var xdr, xmlDocument;
+    if (typeof options === 'function') {
+      cb = options;
+      options = null;
+    }
     if (xmlDocument = typeof window.ActiveXObject === "function" ? new window.ActiveXObject("Microsoft.XMLDOM") : void 0) {
       xmlDocument.async = false;
     } else {
@@ -1256,6 +1293,9 @@ FlashURLHandler = (function() {
     }
     xdr = this.xdr();
     xdr.open('GET', url);
+    if (options && options.withCredentials === true) {
+      xdr.withCredentials = true;
+    }
     xdr.send();
     return xdr.onload = function() {
       xmlDocument.loadXML(xdr.responseText);
@@ -1288,11 +1328,18 @@ XHRURLHandler = (function() {
     return !!this.xhr();
   };
 
-  XHRURLHandler.get = function(url, cb) {
+  XHRURLHandler.get = function(url, options, cb) {
     var xhr;
+    if (typeof options === 'function') {
+      cb = options;
+      options = null;
+    }
     try {
       xhr = this.xhr();
       xhr.open('GET', url);
+      if (options && options.withCredentials === true) {
+        xhr.withCredentials = true;
+      }
       xhr.send();
       return xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
