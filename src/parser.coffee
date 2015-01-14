@@ -249,6 +249,7 @@ class VASTParser
         for mediaFilesElement in @childsByName(creativeElement, "MediaFiles")
             for mediaFileElement in @childsByName(mediaFilesElement, "MediaFile")
                 mediaFile = new VASTMediaFile()
+                mediaFile.id = mediaFileElement.getAttribute("id")
                 mediaFile.fileURL = @parseNodeText(mediaFileElement)
                 mediaFile.deliveryType = mediaFileElement.getAttribute("delivery")
                 mediaFile.codec = mediaFileElement.getAttribute("codec")
@@ -259,6 +260,19 @@ class VASTParser
                 mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
                 mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
                 mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
+                
+                scalable = mediaFileElement.getAttribute("scalable")
+                if scalable and typeof scalable is "string"
+                  scalable = scalable.toLowerCase()
+                  if scalable is "true" then mediaFile.scalable = true
+                  else if scalable is "false" then mediaFile.scalable = false
+                
+                maintainAspectRatio = mediaFileElement.getAttribute("maintainAspectRatio")
+                if maintainAspectRatio and typeof maintainAspectRatio is "string"
+                  maintainAspectRatio = maintainAspectRatio.toLowerCase()
+                  if maintainAspectRatio is "true" then mediaFile.maintainAspectRatio = true
+                  else if maintainAspectRatio is "false" then mediaFile.maintainAspectRatio = false
+                
                 creative.mediaFiles.push mediaFile
 
         return creative
