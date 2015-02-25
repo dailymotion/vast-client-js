@@ -184,7 +184,7 @@ describe 'VASTTracker', ->
                 @Tracker.impressed.should.eql yes
 
             it 'should have called impression urls', =>
-                _eventsSent[0].should.eql ['http://example.com/wrapper-impression', 'http://example.com/impression1', 'http://example.com/impression2', 'http://example.com/impression3']
+                _eventsSent[0].should.eql ['http://example.com/wrapper-impression', 'http://127.0.0.1:8080/second/wrapper_impression', 'http://example.com/impression1', 'http://example.com/impression2', 'http://example.com/impression3']
 
             it 'should have sent creativeView event', =>
                 _eventsSent[1].should.eql 'creativeView'

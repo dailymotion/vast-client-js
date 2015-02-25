@@ -7,6 +7,7 @@
       <VASTAdTagURI>sample.xml</VASTAdTagURI>
       <Error>http://example.com/wrapper-error</Error>
       <Impression>http://example.com/wrapper-impression</Impression>
+      <Impression>http://127.0.0.1:8080/second/wrapper_impression</Impression>
       <Creatives>
         <Creative>
           <CompanionAds>
