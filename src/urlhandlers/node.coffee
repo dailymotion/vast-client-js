@@ -4,7 +4,7 @@ http = require 'http'
 DOMParser = require('xmldom').DOMParser
 
 class NodeURLHandler
-    @get: (url, timeout, cb) ->
+    @get: (url, cb) ->
         url = uri.parse(url)
         if url.protocol is 'file:'
             fs.readFile url.pathname, 'utf8', (err, data) ->
@@ -20,7 +20,7 @@ class NodeURLHandler
                 res.on 'data', (chunk) ->
                     data += chunk
                     clearTimeout( timing );
-                    timing = setTimeout( fn, timeout );
+                    timing = setTimeout( fn, VASTClient.timeout );
                 res.on 'end', ->
                     clearTimeout( timing );
                     xml = new DOMParser().parseFromString(data)
@@ -30,6 +30,6 @@ class NodeURLHandler
                 cb(err)
 
             fn = timeout_wrapper req
-            timing = setTimeout( fn, timeout );
+            timing = setTimeout( fn, VASTClient.timeout );
 
 module.exports = NodeURLHandler

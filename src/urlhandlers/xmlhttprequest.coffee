@@ -7,11 +7,11 @@ class XHRURLHandler
     @supported: ->
         return !!@xhr()
 
-    @get: (url, timeout, cb) ->
+    @get: (url, cb) ->
         try
             xhr = @xhr()
             xhr.open('GET', url)
-            xhr.timeout = timeout
+            xhr.timeout = VASTClient.timeout
             xhr.send()
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4
