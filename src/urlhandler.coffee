@@ -1,5 +1,6 @@
 xhr = require './urlhandlers/xmlhttprequest.coffee'
 flash = require './urlhandlers/flash.coffee'
+VASTClient = require './client.coffee'
 
 class URLHandler
     @get: (url, cb) ->
