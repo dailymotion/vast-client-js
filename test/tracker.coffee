@@ -17,7 +17,7 @@ describe 'VASTTracker', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper.xml'), (@response) =>
+            VASTParser.parse urlfor('wrapper.xml'), 5000, (@response) =>
                 # Init tracker
                 ad = @response.ads[0]
                 creative = @response.ads[0].creatives[0]

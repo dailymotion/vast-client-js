@@ -16,7 +16,7 @@ describe 'VASTParser', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper.xml'), (@response) =>
+            VASTParser.parse urlfor('wrapper.xml'), 5000, (@response) =>
                 _response = @response
                 done()
 
@@ -124,7 +124,7 @@ describe 'VASTParser', ->
             @response = null
 
             before (done) =>
-                VASTParser.parse urlfor('vpaid.xml'), (@response) =>
+                VASTParser.parse urlfor('vpaid.xml'), 5000, (@response) =>
                     done()
 
             it 'should have apiFramework set', =>
@@ -145,7 +145,7 @@ describe 'VASTParser', ->
         #No ads VAST response after one wrapper
         it 'emits an VAST-error on empty vast directly', (done) ->
             VASTParser.on 'VAST-error', errorCallback
-            VASTParser.parse urlfor('empty.xml'), =>
+            VASTParser.parse urlfor('empty.xml'), 5000, =>
                 errorCallbackCalled.should.equal 1
                 errorCode.ERRORCODE.should.eql 303
                 done()
@@ -156,7 +156,7 @@ describe 'VASTParser', ->
         # - 1 for no ad response on the wrapper
         it 'emits 2 VAST-error events on empty vast after one wrapper', (done) ->
             VASTParser.on 'VAST-error', errorCallback
-            VASTParser.parse urlfor('wrapper-empty.xml'), =>
+            VASTParser.parse urlfor('wrapper-empty.xml'), 5000, =>
                 # errorCallbackCalled.should.equal 2
                 # errorCode.ERRORCODE.should.eql 303
                 done()
@@ -166,7 +166,7 @@ describe 'VASTParser', ->
             VASTParser.vent.removeAllListeners()
 
         it 'correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', (done) ->
-            VASTParser.parse urlfor('wrapper-legacy.xml'), (response) =>
+            VASTParser.parse urlfor('wrapper-legacy.xml'), 5000, (response) =>
                 it 'should have found 1 ad', =>
                     response.ads.should.have.length 1
 

@@ -19,8 +19,8 @@ class VASTParser
     @countURLTemplateFilters: () -> URLTemplateFilters.length
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
-    @parse: (url, cb) ->
-        @_parse url, null, (err, response) ->
+    @parse: (url, timeout, cb) ->
+        @_parse url, timeout, null, (err, response) ->
             cb(response)
 
     @vent = new EventEmitter()
@@ -34,7 +34,7 @@ class VASTParser
     @once: (eventName, cb) ->
         @vent.once eventName, cb
 
-    @_parse: (url, parentURLs, cb) ->
+    @_parse: (url, timeout, parentURLs, cb) ->
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
@@ -42,7 +42,7 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
-        URLHandler.get url, (err, xml) =>
+        URLHandler.get url, timeout, (err, xml) =>
             return cb(err) if err?
 
             response = new VASTResponse()
@@ -94,7 +94,7 @@ class VASTParser
                         baseURL = url.slice(0, url.lastIndexOf('/'))
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
-                    @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                    @_parse ad.nextWrapperURL, timeout, parentURLs, (err, wrappedResponse) =>
                         errorAlreadyRaised = false
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
