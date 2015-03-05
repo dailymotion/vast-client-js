@@ -8,14 +8,12 @@ class XHRURLHandler
         return !!@xhr()
 
     @get: (url, options, cb) ->
-        if typeof options is 'function'
-          cb = options
-          options = null
-        
+       
         try
             xhr = @xhr()
             xhr.open('GET', url)
-            xhr.withCredentials = true if options and options.withCredentials is true
+            xhr.timeout = options.timeout or 0
+            xhr.withCredentials = options.withCredentials or false
             xhr.send()
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4

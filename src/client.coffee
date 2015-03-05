@@ -4,15 +4,23 @@ VASTUtil = require './util.coffee'
 class VASTClient
     @cappingFreeLunch: 0
     @cappingMinimumTimeInterval: 0
-    @timeout: 0
+    @options: 
+        withCredentials : false,
+        timeout : 0
 
     @get: (url, opts, cb) ->
         now = +new Date()
-        options = {}
-        
-        if opts
-          options = opts if typeof opts is 'object'
-          cb = opts if typeof opts is 'function'
+ 
+        extend = exports.extend = (object, properties) ->
+            for key, val of properties
+                object[key] = val
+            object
+
+        if not cb
+            cb = opts if typeof opts is 'function'
+            options = {}
+
+        options = extend @options, opts
 
         # Check totalCallsTimeout (first call + 1 hour), if older than now,
         # reset totalCalls number, by this way the client will be eligible again
@@ -30,8 +38,6 @@ class VASTClient
         if now - @lastSuccessfullAd < @cappingMinimumTimeInterval
             cb(null)
             return
-
-        # TODO: handle request timeout
 
         VASTParser.parse url, options, (response) =>
             cb(response)
