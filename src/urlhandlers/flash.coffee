@@ -7,9 +7,6 @@ class FlashURLHandler
         return !!@xdr()
 
     @get: (url, options, cb) ->
-        if typeof options is 'function'
-          cb = options
-          options = null
 
         if xmlDocument = new window.ActiveXObject? "Microsoft.XMLDOM"
           xmlDocument.async = false
@@ -18,7 +15,8 @@ class FlashURLHandler
 
         xdr = @xdr()
         xdr.open('GET', url)
-        xdr.withCredentials = true if options and options.withCredentials is true
+        xdr.timeout = options.timeout or 0
+        xdr.withCredentials = options.withCredentials or false
         xdr.send()
         xdr.onload = ->
              xmlDocument.loadXML(xdr.responseText)

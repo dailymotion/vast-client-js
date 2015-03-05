@@ -20,9 +20,9 @@ class VASTParser
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
     @parse: (url, options, cb) ->
-        if typeof options is 'function'
-          cb = options
-          options = null
+        if not cb
+            cb = options if typeof options is 'function'
+            options = {}
         
         @_parse url, null, options, (err, response) ->
             cb(response)
@@ -40,17 +40,16 @@ class VASTParser
 
     @_parse: (url, parentURLs, options, cb) ->
 
+        if not cb
+            cb = options if typeof options is 'function'
+            options = {}
+
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
 
         parentURLs ?= []
         parentURLs.push url
 
-        if typeof options is 'function'
-          cb = options
-          options = {}
-          
-        options = {} if not options
         
         URLHandler.get url, options, (err, xml) =>
             return cb(err) if err?
@@ -104,7 +103,7 @@ class VASTParser
                         baseURL = url.slice(0, url.lastIndexOf('/'))
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
-                    @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                    @_parse ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) =>
                         errorAlreadyRaised = false
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
