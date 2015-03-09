@@ -6,8 +6,11 @@ class URLHandler
         if not cb
             cb = options if typeof options is 'function'
             options = {}
-            
-        if not window?
+
+        if options.urlhandler && options.urlhandler.supported()
+            # explicitly supply your own URLHandler object
+            return options.urlhandler.get(url, options, cb)
+        else if not window?
             # prevents browserify from including this file
             return require('./urlhandlers/' + 'node.coffee').get(url, options, cb)
         else if xhr.supported()

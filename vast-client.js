@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.DMVAST=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.DMVAST=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,10 +58,8 @@ EventEmitter.prototype.emit = function(type) {
       er = arguments[1];
       if (er instanceof Error) {
         throw er; // Unhandled 'error' event
-      } else {
-        throw TypeError('Uncaught, unspecified "error" event.');
       }
-      return false;
+      throw TypeError('Uncaught, unspecified "error" event.');
     }
   }
 
@@ -146,7 +144,10 @@ EventEmitter.prototype.addListener = function(type, listener) {
                     'leak detected. %d listeners added. ' +
                     'Use emitter.setMaxListeners() to increase limit.',
                     this._events[type].length);
-      console.trace();
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
     }
   }
 
@@ -951,7 +952,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseCompanionAd = function(creativeElement) {
-    var companionAd, companionResource, creative, eventName, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
+    var companionAd, companionResource, creative, eventName, htmlElement, iframeElement, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
     creative = new VASTCreativeCompanion();
     _ref = this.childsByName(creativeElement, "Companion");
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -960,18 +961,30 @@ VASTParser = (function() {
       companionAd.id = companionResource.getAttribute("id") || null;
       companionAd.width = companionResource.getAttribute("width");
       companionAd.height = companionResource.getAttribute("height");
-      _ref1 = this.childsByName(companionResource, "StaticResource");
+      _ref1 = this.childsByName(companionResource, "HTMLResource");
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        staticElement = _ref1[_j];
+        htmlElement = _ref1[_j];
+        companionAd.type = htmlElement.getAttribute("creativeType") || 0;
+        companionAd.htmlResource = this.parseNodeText(htmlElement);
+      }
+      _ref2 = this.childsByName(companionResource, "IFrameResource");
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        iframeElement = _ref2[_k];
+        companionAd.type = iframeElement.getAttribute("creativeType") || 0;
+        companionAd.iframeResource = this.parseNodeText(iframeElement);
+      }
+      _ref3 = this.childsByName(companionResource, "StaticResource");
+      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+        staticElement = _ref3[_l];
         companionAd.type = staticElement.getAttribute("creativeType") || 0;
         companionAd.staticResource = this.parseNodeText(staticElement);
       }
-      _ref2 = this.childsByName(companionResource, "TrackingEvents");
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        trackingEventsElement = _ref2[_k];
-        _ref3 = this.childsByName(trackingEventsElement, "Tracking");
-        for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-          trackingElement = _ref3[_l];
+      _ref4 = this.childsByName(companionResource, "TrackingEvents");
+      for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+        trackingEventsElement = _ref4[_m];
+        _ref5 = this.childsByName(trackingEventsElement, "Tracking");
+        for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
+          trackingElement = _ref5[_n];
           eventName = trackingElement.getAttribute("event");
           trackingURLTemplate = this.parseNodeText(trackingElement);
           if ((eventName != null) && (trackingURLTemplate != null)) {
@@ -1279,7 +1292,9 @@ URLHandler = (function() {
       }
       options = {};
     }
-    if (typeof window === "undefined" || window === null) {
+    if (options.urlhandler && options.urlhandler.supported()) {
+      return options.urlhandler.get(url, options, cb);
+    } else if (typeof window === "undefined" || window === null) {
       return _dereq_('./urlhandlers/' + 'node.coffee').get(url, options, cb);
     } else if (xhr.supported()) {
       return xhr.get(url, options, cb);
