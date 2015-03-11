@@ -284,6 +284,12 @@ class VASTParser
             companionAd.id = companionResource.getAttribute("id") or null
             companionAd.width = companionResource.getAttribute("width")
             companionAd.height = companionResource.getAttribute("height")
+            for htmlElement in @childsByName(companionResource, "HTMLResource")
+                companionAd.type = htmlElement.getAttribute("creativeType") or 0
+                companionAd.htmlResource = @parseNodeText(htmlElement)
+            for iframeElement in @childsByName(companionResource, "IFrameResource")
+                companionAd.type = iframeElement.getAttribute("creativeType") or 0
+                companionAd.iframeResource = @parseNodeText(iframeElement)
             for staticElement in @childsByName(companionResource, "StaticResource")
                 companionAd.type = staticElement.getAttribute("creativeType") or 0
                 companionAd.staticResource = @parseNodeText(staticElement)
