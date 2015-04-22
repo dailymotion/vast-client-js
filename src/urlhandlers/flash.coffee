@@ -18,6 +18,8 @@ class FlashURLHandler
         xdr.timeout = options.timeout or 0
         xdr.withCredentials = options.withCredentials or false
         xdr.send()
+        xdr.onprogress = ->
+
         xdr.onload = ->
              xmlDocument.loadXML(xdr.responseText)
              cb(null, xmlDocument)
