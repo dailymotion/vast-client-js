@@ -8,10 +8,11 @@ class XHRURLHandler
         return !!@xhr()
 
     @get: (url, options, cb) ->
-       
+
         try
             xhr = @xhr()
             xhr.open('GET', url)
+            xhr.overrideMimeType('text/xml')
             xhr.timeout = options.timeout or 0
             xhr.withCredentials = options.withCredentials or false
             xhr.send()
