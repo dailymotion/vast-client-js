@@ -61,6 +61,7 @@ class VASTTracker extends EventEmitter
 
                 percent = Math.round(progress / @assetDuration * 100)
                 events.push "progress-#{percent}%"
+                events.push "progress-#{Math.round(progress)}"
 
                 for quartile, time of @quartiles
                     events.push quartile if time <= progress <= (time + 1)

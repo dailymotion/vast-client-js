@@ -21,6 +21,8 @@
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
+              <Tracking event="progress" offset="00:00:30"><![CDATA[http://example.com/wrapper-progress-30sec]]></Tracking>
+              <Tracking event="progress" offset="60%"><![CDATA[http://example.com/wrapper-progress-60%]]></Tracking>
               <Tracking event="complete"><![CDATA[http://example.com/wrapper-complete]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
