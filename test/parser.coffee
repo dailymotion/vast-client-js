@@ -72,8 +72,8 @@ describe 'VASTParser', ->
                 mediaFile.mimeType.should.equal "video/mp4"
                 mediaFile.fileURL.should.equal "http://example.com/asset.mp4"
 
-            it 'should have 6 tracking events', =>
-                linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile'
+            it 'should have 8 tracking events', =>
+                linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%'
 
             it 'should have 2 urls for start event', =>
                 linear.trackingEvents['start'].should.eql ['http://example.com/start', 'http://example.com/wrapper-start']
@@ -83,6 +83,12 @@ describe 'VASTParser', ->
 
             it 'should have 2 urls for clicktracking', =>
                 linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
+
+            it 'should have 2 urls for progress-30 event VAST 3.0', =>
+                linear.trackingEvents['progress-30'].should.eql ['http://example.com/progress-30sec', 'http://example.com/wrapper-progress-30sec']
+
+            it 'should have 2 urls for progress-60% event VAST 3.0', =>
+                linear.trackingEvents['progress-60%'].should.eql ['http://example.com/progress-60%', 'http://example.com/wrapper-progress-60%']
 
         #Companions
         describe '#Companions', ->

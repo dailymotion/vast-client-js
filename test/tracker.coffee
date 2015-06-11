@@ -66,9 +66,17 @@ describe 'VASTTracker', ->
                 @Tracker.setProgress 23
                 _eventsSent.should.eql ["firstQuartile"]
 
+            it 'should send progress-30 event VAST 3.0', =>
+                @Tracker.setProgress 30
+                _eventsSent.should.eql ["progress-30"]
+
             it 'should send midpoint event', =>
                 @Tracker.setProgress 46
                 _eventsSent.should.eql ["midpoint"]
+
+            it 'should send progress-60% event VAST 3.0', =>
+                @Tracker.setProgress 54
+                _eventsSent.should.eql ["progress-60%"]
 
             it 'should send thirdQuartile event', =>
                 @Tracker.setProgress 68

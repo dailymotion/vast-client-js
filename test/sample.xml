@@ -22,6 +22,8 @@
               <Tracking event="firstQuartile"><![CDATA[http://example.com/firstQuartile]]></Tracking>
               <Tracking event="close"><![CDATA[http://example.com/close]]></Tracking>
               <Tracking event="thirdQuartile"><![CDATA[http://example.com/thirdQuartile]]></Tracking>
+              <Tracking event="progress" offset="00:00:30.000"><![CDATA[http://example.com/progress-30sec]]></Tracking>
+              <Tracking event="progress" offset="60%"><![CDATA[http://example.com/progress-60%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
               <ClickTracking><![CDATA[http://example.com/clicktracking]]></ClickTracking>

@@ -247,6 +247,15 @@ class VASTParser
                 eventName = trackingElement.getAttribute("event")
                 trackingURLTemplate = @parseNodeText(trackingElement)
                 if eventName? and trackingURLTemplate?
+                    if eventName == "progress"
+                        offset = trackingElement.getAttribute("offset")
+                        if not offset
+                            continue
+                        if offset.charAt(offset.length - 1) == '%'
+                            eventName = "progress-#{offset}"
+                        else
+                            eventName = "progress-#{Math.round(@parseDuration offset)}"
+
                     creative.trackingEvents[eventName] ?= []
                     creative.trackingEvents[eventName].push trackingURLTemplate
 
