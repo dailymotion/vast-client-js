@@ -4,7 +4,7 @@ VASTUtil = require '../src/util'
 VASTClient = require '../src/client'
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath)
+    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
 
 describe 'VASTClient Storage', ->
     wrapperUrl = urlfor('wrapper.xml')

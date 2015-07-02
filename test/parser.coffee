@@ -4,7 +4,7 @@ VASTParser = require '../src/parser'
 VASTResponse = require '../src/response'
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath)
+    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
 
 describe 'VASTParser', ->
     describe '#parse', ->
