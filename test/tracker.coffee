@@ -5,7 +5,7 @@ VASTUtil = require('../src/util.coffee')
 VASTTracker = require '../src/tracker'
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath)
+    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
 
 describe 'VASTTracker', ->
     describe '#constructor', ->
