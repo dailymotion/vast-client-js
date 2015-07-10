@@ -237,6 +237,8 @@ class VASTParser
             creative.videoClickThroughURLTemplate = @parseNodeText(@childByName(videoClicksElement, "ClickThrough"))
             for clickTrackingElement in @childsByName(videoClicksElement, "ClickTracking")
                 creative.videoClickTrackingURLTemplates.push @parseNodeText(clickTrackingElement)
+            for customClickElement in @childsByName(videoClicksElement, "CustomClick")
+                creative.videoCustomClickURLTemplates.push @parseNodeText(customClickElement)
 
         adParamsElement = @childByName(creativeElement, "AdParameters")
         if adParamsElement?

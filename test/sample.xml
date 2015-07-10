@@ -28,6 +28,7 @@
             <VideoClicks>
               <ClickTracking><![CDATA[http://example.com/clicktracking]]></ClickTracking>
               <ClickThrough><![CDATA[http://example.com/clickthrough]]></ClickThrough>
+              <CustomClick><![CDATA[http://example.com/customclick]]></CustomClick>
             </VideoClicks>
             <MediaFiles>
               <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/asset.mp4]]></MediaFile>
