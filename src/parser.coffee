@@ -23,7 +23,7 @@ class VASTParser
         if not cb
             cb = options if typeof options is 'function'
             options = {}
-        
+
         @_parse url, null, options, (err, response) ->
             cb(response)
 
@@ -50,7 +50,6 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
-        
         URLHandler.get url, options, (err, xml) =>
             return cb(err) if err?
 
@@ -239,11 +238,24 @@ class VASTParser
             for clickTrackingElement in @childsByName(videoClicksElement, "ClickTracking")
                 creative.videoClickTrackingURLTemplates.push @parseNodeText(clickTrackingElement)
 
+        adParamsElement = @childByName(creativeElement, "AdParameters")
+        if adParamsElement?
+            creative.adParameters = @parseNodeText(adParamsElement)
+
         for trackingEventsElement in @childsByName(creativeElement, "TrackingEvents")
             for trackingElement in @childsByName(trackingEventsElement, "Tracking")
                 eventName = trackingElement.getAttribute("event")
                 trackingURLTemplate = @parseNodeText(trackingElement)
                 if eventName? and trackingURLTemplate?
+                    if eventName == "progress"
+                        offset = trackingElement.getAttribute("offset")
+                        if not offset
+                            continue
+                        if offset.charAt(offset.length - 1) == '%'
+                            eventName = "progress-#{offset}"
+                        else
+                            eventName = "progress-#{Math.round(@parseDuration offset)}"
+
                     creative.trackingEvents[eventName] ?= []
                     creative.trackingEvents[eventName].push trackingURLTemplate
 
@@ -261,19 +273,19 @@ class VASTParser
                 mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
                 mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
                 mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
-                
+
                 scalable = mediaFileElement.getAttribute("scalable")
                 if scalable and typeof scalable is "string"
                   scalable = scalable.toLowerCase()
                   if scalable is "true" then mediaFile.scalable = true
                   else if scalable is "false" then mediaFile.scalable = false
-                
+
                 maintainAspectRatio = mediaFileElement.getAttribute("maintainAspectRatio")
                 if maintainAspectRatio and typeof maintainAspectRatio is "string"
                   maintainAspectRatio = maintainAspectRatio.toLowerCase()
                   if maintainAspectRatio is "true" then mediaFile.maintainAspectRatio = true
                   else if maintainAspectRatio is "false" then mediaFile.maintainAspectRatio = false
-                
+
                 creative.mediaFiles.push mediaFile
 
         return creative

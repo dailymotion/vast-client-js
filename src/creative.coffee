@@ -11,6 +11,7 @@ class VASTCreativeLinear extends VASTCreative
         @mediaFiles = []
         @videoClickThroughURLTemplate = null
         @videoClickTrackingURLTemplates = []
+        @adParameters = null
 
 class VASTCreativeNonLinear extends VASTCreative
     # TODO
