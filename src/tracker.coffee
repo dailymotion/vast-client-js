@@ -18,15 +18,15 @@ class VASTTracker extends EventEmitter
             'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'
         ]
         # Duplicate the creative's trackingEvents property so we can alter it
-        for eventName, events of creative.trackingEvents
+        for eventName, events of @creative.trackingEvents
             @trackingEvents[eventName] = events.slice(0)
-        if creative instanceof VASTCreativeLinear
-            @setDuration creative.duration
+        if @creative instanceof VASTCreativeLinear
+            @setDuration @creative.duration
 
-            @skipDelay = creative.skipDelay
+            @skipDelay = @creative.skipDelay
             @linear = yes
-            @clickThroughURLTemplate = creative.videoClickThroughURLTemplate
-            @clickTrackingURLTemplates = creative.videoClickTrackingURLTemplates
+            @clickThroughURLTemplate = @creative.videoClickThroughURLTemplate
+            @clickTrackingURLTemplates = @creative.videoClickTrackingURLTemplates
         else
             @skipDelay = -1
             @linear = no
