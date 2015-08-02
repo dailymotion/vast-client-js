@@ -84,6 +84,9 @@ describe 'VASTParser', ->
             it 'should have 2 urls for clicktracking', =>
                 linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
 
+            it 'should have 1 url for customclick', =>
+                linear.videoCustomClickURLTemplates.should.eql ['http://example.com/customclick']
+
             it 'should have 2 urls for progress-30 event VAST 3.0', =>
                 linear.trackingEvents['progress-30'].should.eql ['http://example.com/progress-30sec', 'http://example.com/wrapper-progress-30sec']
 
