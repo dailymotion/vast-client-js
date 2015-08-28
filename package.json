@@ -1,5 +1,5 @@
 {
-    "name": "vast-client-js",
+    "name": "vast-client",
     "author": "Olivier Poitrey <rs@dailymotion.com>",
     "version": "1.3.3",
     "description": "Javascript VAST Client",
