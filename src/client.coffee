@@ -1,5 +1,5 @@
-VASTParser = require './parser.coffee'
-VASTUtil = require './util.coffee'
+VASTParser = require './parser'
+VASTUtil = require './util'
 
 class VASTClient
     @cappingFreeLunch: 0
