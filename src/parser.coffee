@@ -1,11 +1,11 @@
-URLHandler = require './urlhandler.coffee'
-VASTResponse = require './response.coffee'
-VASTAd = require './ad.coffee'
-VASTUtil = require './util.coffee'
-VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
-VASTCreativeCompanion = require('./creative.coffee').VASTCreativeCompanion
-VASTMediaFile = require './mediafile.coffee'
-VASTCompanionAd = require './companionad.coffee'
+URLHandler = require './urlhandler'
+VASTResponse = require './response'
+VASTAd = require './ad'
+VASTUtil = require './util'
+VASTCreativeLinear = require('./creative').VASTCreativeLinear
+VASTCreativeCompanion = require('./creative').VASTCreativeCompanion
+VASTMediaFile = require './mediafile'
+VASTCompanionAd = require './companionad'
 EventEmitter = require('events').EventEmitter
 
 class VASTParser

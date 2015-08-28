@@ -1,5 +1,5 @@
-xhr = require './urlhandlers/xmlhttprequest.coffee'
-flash = require './urlhandlers/flash.coffee'
+xhr = require './urlhandlers/xmlhttprequest'
+flash = require './urlhandlers/flash'
 
 class URLHandler
     @get: (url, options, cb) ->
@@ -12,7 +12,7 @@ class URLHandler
             return options.urlhandler.get(url, options, cb)
         else if not window?
             # prevents browserify from including this file
-            return require('./urlhandlers/' + 'node.coffee').get(url, options, cb)
+            return require('./urlhandlers/' + 'node').get(url, options, cb)
         else if xhr.supported()
             return xhr.get(url, options, cb)
         else if flash.supported()
