@@ -44,6 +44,24 @@
               </TrackingEvents>
               <CompanionClickThrough><![CDATA[http://example.com/companion-clickthrough]]></CompanionClickThrough>
             </Companion>
+            <Companion width="300" height="60">
+              <IFrameResource>
+                <![CDATA[http://www.example.com/example.php]]>
+              </IFrameResource>
+              <CompanionClickThrough>
+                http://www.example.com
+              </CompanionClickThrough>
+            </Companion>
+            <Companion width="300" height="60">
+              <HTMLResource>
+                <![CDATA[
+                <a href="http://www.example.com" target="_blank">Some call to action HTML!</a>
+                ]]>
+              </HTMLResource>
+              <CompanionClickThrough>
+                http://www.example.com
+              </CompanionClickThrough>
+            </Companion>
           </CompanionAds>
         </Creative>
       </Creatives>
