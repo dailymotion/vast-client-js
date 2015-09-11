@@ -99,7 +99,6 @@ describe 'VASTParser', ->
 
             before (done) =>
                 companions = _response.ads[0].creatives[1]
-                console.log(companions)
                 done()
 
             it 'should have companion type', =>
