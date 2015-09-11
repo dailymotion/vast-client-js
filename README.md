@@ -55,21 +55,38 @@ DMVAST.client.get(VASTURL, function(response)
                         {
                             var companionAd = creative.variations[cpIdx];
                             var docElement = document.createElement("div");
-                            var aElement = document.createElement('a');
-                            var companionAsset = new Image();
-                            aElement.setAttribute('target', '_blank');
 
-                            if (companionAd.type != "image/jpeg") continue;
+                            switch(companionAd.type) {
+                                case 'image/jpeg':
+                                    var aElement = document.createElement('a');
+                                    var companionAsset = new Image();
+                                    aElement.setAttribute('target', '_blank');
+                                    companionAsset.src = companionAd.staticResource;
+                                    companionAsset.width = companionAd.width;
+                                    companionAsset.height = companionAd.height;
 
-                            companionAsset.src = creative.variations[cpIdx].staticResource;
-                            companionAsset.width = creative.variations[cpIdx].width;
-                            companionAsset.height = creative.variations[cpIdx].height;
+                                    aElement.href = companionAd.companionClickThroughURLTemplate;
+                                    aElement.appendChild(companionAsset);
 
-                            aElement.href = creative.variations[cpIdx].companionClickThroughURLTemplate;
-                            aElement.appendChild(companionAsset);
-
-                            docElement.appendChild(aElement);
-                            document.body.appendChild(docElement);
+                                    docElement.appendChild(aElement);
+                                    document.body.appendChild(docElement);
+                                    break;
+                                case 'text/html':
+                                    docElement.innerHTML = companionAd.htmlResource;
+                                    document.body.appendChild(docElement);
+                                    break;
+                                default:
+                                    if (companionAd.iframeResource) {
+                                        var aElement = document.createElement('iframe');
+                                        aElement.src = companionAd.staticResource;
+                                        aElement.width = companionAd.width;
+                                        aElement.height = companionAd.height;
+                                        docElement.appendChild(aElement);
+                                        document.body.appendChild(docElement);
+                                        break;
+                                    }
+                                break;
+                            }
                         }
 
                     break;
