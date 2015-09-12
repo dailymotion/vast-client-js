@@ -43,7 +43,7 @@ describe 'VASTParser', ->
             @response.ads[0].errorURLTemplates.should.eql ["http://example.com/wrapper-error", "http://example.com/error"]
 
         it 'should have merged impression URLs', =>
-            @response.ads[0].impressionURLTemplates.should.eql ["http://example.com/wrapper-impression", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
+            @response.ads[0].impressionURLTemplates.should.eql ["http://example.com/wrapper-impression", "http://127.0.0.1:8080/second/wrapper_impression", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
 
         it 'should have two creatives', =>
             @response.ads[0].creatives.should.have.length 2
