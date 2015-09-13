@@ -5,6 +5,8 @@ class VASTCompanionAd
         @height = 0
         @type = null
         @staticResource = null
+        @htmlResource = null
+        @iframeResource = null
         @companionClickThroughURLTemplate = null
         @trackingEvents = {}
 

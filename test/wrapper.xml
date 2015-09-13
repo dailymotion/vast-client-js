@@ -16,6 +16,14 @@
               <CompanionClickTracking><![CDATA[http://example.com/companion-click-tracking]]></CompanionClickTracking>
               <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
             </Companion>
+            <Companion width="300" height="60">
+              <IFrameResource>
+                <![CDATA[http://www.example.com/example.php]]>
+              </IFrameResource>
+              <CompanionClickThrough>
+                http://www.example.com
+              </CompanionClickThrough>
+            </Companion>
           </CompanionAds>
         </Creative>
         <Creative>
