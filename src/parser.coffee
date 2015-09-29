@@ -105,6 +105,9 @@ class VASTParser
                                         for eventName in Object.keys ad.trackingEvents
                                             creative.trackingEvents[eventName] or= []
                                             creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+                                            
+                                if ad.sequence?
+                                    wrappedAd.sequence = ad.sequence
 
                                 response.ads.splice index, 0, wrappedAd
 
