@@ -13,7 +13,7 @@
     "scripts":
     {
         "test": "mocha --compilers coffee:coffee-script/register --reporter spec test/*.coffee",
-        "bundle": "browserify -s DMVAST -c 'coffee -scb' src/index.coffee -o vast-client.js",
+        "bundle": "browserify -s DMVAST -c 'coffee -scb' --extension=.coffee src/index.coffee -o vast-client.js",
         "postinstall": "coffee --compile --output dist/ src/"
     },
     "devDependencies":
