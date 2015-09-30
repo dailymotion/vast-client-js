@@ -1,6 +1,7 @@
 URLHandler = require './urlhandler'
 VASTResponse = require './response'
 VASTAd = require './ad'
+VASTAdExtension = require './extension'
 VASTUtil = require './util'
 VASTCreativeLinear = require('./creative').VASTCreativeLinear
 VASTCreativeCompanion = require('./creative').VASTCreativeCompanion
@@ -214,6 +215,17 @@ class VASTParser
                                     creative = @parseCompanionAd creativeTypeElement
                                     if creative
                                         ad.creatives.push creative
+                when "Extensions"
+                    for extNode in node.childNodes
+                        if extNode.nodeName != '#text'
+                            ext = new VASTAdExtension()
+                            ad.extensions.push ext
+                            ext.name = extNode.nodeName
+                            ext.value = extNode.nodeValue
+                            if extNode.attributes
+                                for extNodeAttr in extNode.attributes
+                                    ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+
 
         return ad
 
