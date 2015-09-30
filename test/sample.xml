@@ -65,6 +65,10 @@
           </CompanionAds>
         </Creative>
       </Creatives>
+      <Extensions>
+        <Price>100</Price>
+        <Extra attr1="MyValue">SomeExtra</Extra>
+      </Extensions>
     </InLine>
   </Ad>
 </VAST>

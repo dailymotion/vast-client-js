@@ -48,6 +48,19 @@ describe 'VASTParser', ->
         it 'should have two creatives', =>
             @response.ads[0].creatives.should.have.length 2
 
+        it 'should have two extentions', =>
+            @response.ads[0].extensions.should.have.length 2
+
+        it 'first extension should be price with value of 100', =>
+            @response.ads[0].extensions[0].name.should.eql "Price"
+            @response.ads[0].extensions[0].value.should.eql "100"
+
+        it 'second extension should be Extra with value of SomeExtra', =>
+            @response.ads[0].extensions[1].name.should.eql "Extra"
+            @response.ads[0].extensions[1].value.should.eql "SomeExtra"
+
+        it 'second extension should have one attribute of attr1 with value MyValue', =>
+            @response.ads[0].extensions[1].attributes['attr1'].should.eql "MyValue"
         #Linear
         describe '#Linear', ->
             linear = null

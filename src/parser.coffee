@@ -219,12 +219,14 @@ class VASTParser
                     for extNode in node.childNodes
                         if extNode.nodeName != '#text'
                             ext = new VASTAdExtension()
-                            ad.extensions.push ext
                             ext.name = extNode.nodeName
-                            ext.value = extNode.nodeValue
+                            ext.value = @parseNodeText(extNode)
+
                             if extNode.attributes
                                 for extNodeAttr in extNode.attributes
                                     ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+
+                            ad.extensions.push ext
 
 
         return ad
