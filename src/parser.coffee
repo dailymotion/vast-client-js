@@ -106,7 +106,7 @@ class VASTParser
                                             creative.trackingEvents[eventName] or= []
                                             creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
                                             
-                                if ad.sequence?
+                                if ad.sequence? and ad.sequence > 0
                                     wrappedAd.sequence = ad.sequence
 
                                 response.ads.splice index, 0, wrappedAd
