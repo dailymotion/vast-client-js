@@ -66,8 +66,16 @@
         </Creative>
       </Creatives>
       <Extensions>
-        <Price>100</Price>
-        <Extra attr1="MyValue">SomeExtra</Extra>
+        <Extension type="Pricing">
+          <Price model="CPM" currency="USD" source="someone">
+            <![CDATA[ 0 ]]>
+          </Price>
+        </Extension>
+        <Extension type="Count">
+          <total_available>
+            <![CDATA[ 4 ]]>
+          </total_available>
+        </Extension>
       </Extensions>
     </InLine>
   </Ad>

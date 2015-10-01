@@ -1,7 +1,6 @@
 class VASTAdExtension
     constructor: ->
-        @name = null
         @attributes = {}
-        @value = null
+        @children = []
 
 module.exports = VASTAdExtension

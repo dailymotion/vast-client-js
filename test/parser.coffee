@@ -51,16 +51,21 @@ describe 'VASTParser', ->
         it 'should have two extentions', =>
             @response.ads[0].extensions.should.have.length 2
 
-        it 'first extension should be price with value of 100', =>
-            @response.ads[0].extensions[0].name.should.eql "Price"
-            @response.ads[0].extensions[0].value.should.eql "100"
+        it 'validate first extension', =>
+            @response.ads[0].extensions[0].attributes['type'].should.eql "Pricing"
+            @response.ads[0].extensions[0].children.should.have.length 1
+            @response.ads[0].extensions[0].children[0].name.should.eql "Price"
+            @response.ads[0].extensions[0].children[0].value.should.eql "0"
+            @response.ads[0].extensions[0].children[0].attributes['model'].should.eql "CPM"
+            @response.ads[0].extensions[0].children[0].attributes['currency'].should.eql "USD"
+            @response.ads[0].extensions[0].children[0].attributes['source'].should.eql "someone"
 
-        it 'second extension should be Extra with value of SomeExtra', =>
-            @response.ads[0].extensions[1].name.should.eql "Extra"
-            @response.ads[0].extensions[1].value.should.eql "SomeExtra"
+        it 'validate second extension', =>
+            @response.ads[0].extensions[1].attributes['type'].should.eql "Count"
+            @response.ads[0].extensions[1].children.should.have.length 1
+            @response.ads[0].extensions[1].children[0].name.should.eql "total_available"
+            @response.ads[0].extensions[1].children[0].value.should.eql "4"
 
-        it 'second extension should have one attribute of attr1 with value MyValue', =>
-            @response.ads[0].extensions[1].attributes['attr1'].should.eql "MyValue"
         #Linear
         describe '#Linear', ->
             linear = null
