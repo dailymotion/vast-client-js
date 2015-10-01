@@ -3,11 +3,15 @@ flash = require './urlhandlers/flash'
 
 class URLHandler
     @get: (url, options, cb) ->
+        # Allow skip of the options param
         if not cb
             cb = options if typeof options is 'function'
             options = {}
 
-        if options.urlhandler && options.urlhandler.supported()
+        if options.response?
+            # Trick: the VAST response XML document is passed as an option
+            cb(null, options.response)
+        else if options.urlhandler && options.urlhandler.supported()
             # explicitly supply your own URLHandler object
             return options.urlhandler.get(url, options, cb)
         else if not window?
