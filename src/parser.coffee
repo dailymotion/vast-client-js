@@ -39,7 +39,7 @@ class VASTParser
         @vent.once eventName, cb
 
     @_parse: (url, parentURLs, options, cb) ->
-
+        # Options param can be skipped
         if not cb
             cb = options if typeof options is 'function'
             options = {}
@@ -191,7 +191,7 @@ class VASTParser
     @parseInLineElement: (inLineElement) ->
         ad = new VASTAd()
         ad.id = inLineElement.id
-        
+
         for node in inLineElement.childNodes
             switch node.nodeName
                 when "Error"
@@ -349,4 +349,3 @@ class VASTParser
         /^https?:\/\/[^\s\/$\.\?#].*$/i.test (@parseNodeText node)
 
 module.exports = VASTParser
-

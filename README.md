@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/dailymotion/vast-client-js.png)](https://travis-ci.org/dailymotion/vast-client-js)
 
-Complies with [VAST 3.0 spec](http://www.iab.net/media/file/VASTv3.0.pdf). Ad pods are not implemented yet though (PR welcome).
+Complies with [VAST 3.0 spec](http://www.iab.net/media/file/VASTv3.0.pdf).
 
 ## Build / Contribute
 
