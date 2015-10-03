@@ -97,7 +97,10 @@ class VASTParser
                         complete()
                         return
 
-                    if ad.nextWrapperURL.indexOf('://') == -1
+                    if ad.nextWrapperURL.indexOf('//') == 0
+                      protocol = location.protocol
+                      ad.nextWrapperURL = "#{protocol}#{ad.nextWrapperURL}"
+                    else if ad.nextWrapperURL.indexOf('://') == -1
                         # Resolve relative URLs (mainly for unit testing)
                         baseURL = url.slice(0, url.lastIndexOf('/'))
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
