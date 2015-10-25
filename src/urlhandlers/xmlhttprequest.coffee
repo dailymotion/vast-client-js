@@ -7,7 +7,7 @@ class XHRURLHandler
     @supported: ->
         return !!@xhr()
 
-    @get: (url, cb) ->
+    @get: (url, headers, timeout, cb) ->
         xhr = @xhr()
         xhr.open('GET', url)
         xhr.send()

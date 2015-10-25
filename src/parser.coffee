@@ -18,11 +18,11 @@ class VASTParser
     @countURLTemplateFilters: () -> URLTemplateFilters.length
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
-    @parse: (url, cb) ->
-        @_parse url, null, (err, response) ->
+    @parse: (url, headers, timeout, cb) ->
+        @_parse url, headers, timeout, null, (err, response) ->
             cb(response)
 
-    @_parse: (url, parentURLs, cb) ->
+    @_parse: (url, headers, timeout, parentURLs, cb) ->
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
@@ -30,7 +30,7 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
-        URLHandler.get url, (err, xml) =>
+        URLHandler.get url, headers, timeout, (err, xml) =>
             return cb(err) if err?
 
             response = new VASTResponse()
@@ -82,7 +82,7 @@ class VASTParser
                         baseURL = url.slice(0, url.lastIndexOf('/'))
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
-                    @_parse ad.nextWrapperURL, parentURLs, (err, wrappedResponse) =>
+                    @_parse ad.nextWrapperURL, headers, timeout, parentURLs, (err, wrappedResponse) =>
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                             # (URI was either unavailable or reached a timeout as defined by the video player.)
@@ -105,6 +105,9 @@ class VASTParser
                                         for eventName in Object.keys ad.trackingEvents
                                             creative.trackingEvents[eventName] or= []
                                             creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+                                            
+                                if ad.sequence? and ad.sequence > 0
+                                    wrappedAd.sequence = ad.sequence
 
                                 response.ads.splice index, 0, wrappedAd
 
@@ -129,12 +132,12 @@ class VASTParser
     @parseAdElement: (adElement) ->
         for adTypeElement in adElement.childNodes
             if adTypeElement.nodeName is "Wrapper"
-                return @parseWrapperElement adTypeElement
+                return @parseWrapperElement(adTypeElement, parseInt adElement.getAttribute("sequence") or 0)
             else if adTypeElement.nodeName is "InLine"
-                return @parseInLineElement adTypeElement
+                return @parseInLineElement(adTypeElement, parseInt adElement.getAttribute("sequence") or 0)
 
-    @parseWrapperElement: (wrapperElement) ->
-        ad = @parseInLineElement wrapperElement
+    @parseWrapperElement: (wrapperElement, sequence) ->
+        ad = @parseInLineElement(wrapperElement,sequence)
         wrapperURLElement = @childByName wrapperElement, "VASTAdTagURI"
         if wrapperURLElement?
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
@@ -146,9 +149,9 @@ class VASTParser
         if ad.nextWrapperURL?
             return ad
 
-    @parseInLineElement: (inLineElement) ->
+    @parseInLineElement: (inLineElement, sequence) ->
         ad = new VASTAd()
-
+        ad.sequence = sequence
         for node in inLineElement.childNodes
             switch node.nodeName
                 when "Error"
@@ -171,7 +174,6 @@ class VASTParser
                                     creative = @parseCompanionAd creativeTypeElement
                                     if creative
                                         ad.creatives.push creative
-
         return ad
 
     @parseCreativeLinearElement: (creativeElement) ->
@@ -214,6 +216,7 @@ class VASTParser
                 mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
                 mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
                 mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
+                mediaFile.apiFramework = mediaFileElement.getAttribute("apiFramework")
                 creative.mediaFiles.push mediaFile
 
         return creative
