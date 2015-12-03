@@ -93,28 +93,35 @@ class VASTTracker extends EventEmitter
     setSkipDelay: (duration) ->
         @skipDelay = duration if typeof duration is 'number'
 
+    # To be called when the video started to log the impression
     load: ->
         unless @impressed
             @impressed = yes
             @trackURLs @ad.impressionURLTemplates
             @track "creativeView"
 
+    # To be called when an error happen with the proper error code
     errorWithCode: (errorCode) ->
         @trackURLs @ad.errorURLTemplates, ERRORCODE: errorCode
 
+    # To be called when the user watched the creative until it's end
     complete: ->
         @track "complete"
 
+    # To be called when the player or the window is closed during the ad
     close: ->
         @track(if @linear then "closeLinear" else "close")
 
+    # Deprecated
     stop: ->
     	# noop for backward compat
 
+    # To be called when the skip button is clicked
     skip: ->
         @track "skip"
         @trackingEvents = []
 
+    # To be called when the user clicks on the creative
     click: ->
         if @clickTrackingURLTemplates?.length
             @trackURLs @clickTrackingURLTemplates
