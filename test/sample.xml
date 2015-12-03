@@ -9,8 +9,6 @@
       <Impression><![CDATA[http://example.com/impression1]]></Impression>
       <Impression><![CDATA[http://example.com/impression2]]></Impression>
       <Impression><![CDATA[http://example.com/impression3]]></Impression>
-      <Impression><![CDATA[ImNotAnUrl]]></Impression>
-      <Impression><![CDATA[ ]]></Impression>
       <Creatives>
         <Creative id="video">
           <Linear>

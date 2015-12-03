@@ -198,10 +198,10 @@ class VASTParser
         for node in inLineElement.childNodes
             switch node.nodeName
                 when "Error"
-                    ad.errorURLTemplates.push (@parseNodeText node) if @isUrl node
+                    ad.errorURLTemplates.push (@parseNodeText node)
 
                 when "Impression"
-                    ad.impressionURLTemplates.push (@parseNodeText node) if @isUrl node
+                    ad.impressionURLTemplates.push (@parseNodeText node)
 
                 when "Creatives"
                     for creativeElement in @childsByName(node, "Creative")
@@ -346,9 +346,5 @@ class VASTParser
     # Parsing node text for legacy support
     @parseNodeText: (node) ->
         return node and (node.textContent or node.text or '').trim()
-
-    # Validate url
-    @isUrl: (node) ->
-        /^https?:\/\/[^\s\/$\.\?#].*$/i.test (@parseNodeText node)
 
 module.exports = VASTParser

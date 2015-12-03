@@ -842,14 +842,10 @@ VASTParser = (function() {
       node = _ref[_i];
       switch (node.nodeName) {
         case "Error":
-          if (this.isUrl(node)) {
-            ad.errorURLTemplates.push(this.parseNodeText(node));
-          }
+          ad.errorURLTemplates.push(this.parseNodeText(node));
           break;
         case "Impression":
-          if (this.isUrl(node)) {
-            ad.impressionURLTemplates.push(this.parseNodeText(node));
-          }
+          ad.impressionURLTemplates.push(this.parseNodeText(node));
           break;
         case "Creatives":
           _ref1 = this.childsByName(node, "Creative");
@@ -1055,10 +1051,6 @@ VASTParser = (function() {
 
   VASTParser.parseNodeText = function(node) {
     return node && (node.textContent || node.text || '').trim();
-  };
-
-  VASTParser.isUrl = function(node) {
-    return /^https?:\/\/[^\s\/$\.\?#].*$/i.test(this.parseNodeText(node));
   };
 
   return VASTParser;
