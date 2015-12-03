@@ -232,11 +232,11 @@ describe 'VASTTracker', ->
                 _eventsSent.should.eql ['complete', ["http://example.com/complete", "http://example.com/wrapper-complete"]]
 
 
-        describe '#stop', =>
+        describe '#close', =>
 
             before (done) =>
                 _eventsSent = []
-                @Tracker.stop()
+                @Tracker.close()
                 done()
 
             it 'should have sent close event and urls VAST 2.0', =>
@@ -246,7 +246,7 @@ describe 'VASTTracker', ->
                 _eventsSent = []
                 @Tracker.trackingEvents['closeLinear'] = ['http://example.com/closelinear']
                 delete @Tracker.trackingEvents['close']
-                @Tracker.stop()
+                @Tracker.close()
                 _eventsSent.should.eql ['closeLinear', [ 'http://example.com/closelinear']]
 
 

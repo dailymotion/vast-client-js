@@ -1213,9 +1213,11 @@ VASTTracker = (function(_super) {
     return this.track("complete");
   };
 
-  VASTTracker.prototype.stop = function() {
+  VASTTracker.prototype.close = function() {
     return this.track(this.linear ? "closeLinear" : "close");
   };
+
+  VASTTracker.prototype.stop = function() {};
 
   VASTTracker.prototype.skip = function() {
     this.track("skip");

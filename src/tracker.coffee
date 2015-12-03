@@ -105,8 +105,11 @@ class VASTTracker extends EventEmitter
     complete: ->
         @track "complete"
 
-    stop: ->
+    close: ->
         @track(if @linear then "closeLinear" else "close")
+
+    stop: ->
+    	# noop for backward compat
 
     skip: ->
         @track "skip"
