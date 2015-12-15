@@ -140,6 +140,14 @@ class VASTTracker extends EventEmitter
         if eventName is 'closeLinear' and (not @trackingEvents[eventName]? and @trackingEvents['close']?)
             eventName = 'close'
 
+        if eventName is "addClick" and @ad.extensionTemplate and @ad.extensionTemplate["addClick"]
+            trackingURLTemplates = []
+            trackingURLTemplates[0] = @ad.extensionTemplate["addClick"]            
+
+        if eventName is "skipAd" and @ad.extensionTemplate and @ad.extensionTemplate["skipAd"]
+            trackingURLTemplates = []
+            trackingURLTemplates[0] = @ad.extensionTemplate["skipAd"]            
+
         trackingURLTemplates = @trackingEvents[eventName]
         idx = @emitAlwaysEvents.indexOf(eventName)
 

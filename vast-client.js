@@ -317,6 +317,8 @@ VASTAd = (function() {
 
 })();
 
+this.extensionTemplate = [];
+
 module.exports = VASTAd;
 
 },{}],3:[function(_dereq_,module,exports){
@@ -834,7 +836,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseInLineElement = function(inLineElement) {
-    var ad, creative, creativeElement, creativeTypeElement, node, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+    var ad, creative, creativeElement, creativeTypeElement, eventName, extensionElement, node, trackingURLTemplate, _base, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
     ad = new VASTAd();
     ad.id = inLineElement.id;
     _ref = inLineElement.childNodes;
@@ -847,13 +849,34 @@ VASTParser = (function() {
         case "Impression":
           ad.impressionURLTemplates.push(this.parseNodeText(node));
           break;
-        case "Creatives":
-          _ref1 = this.childsByName(node, "Creative");
+        case "Extensions":
+          _ref1 = this.childsByName(node, "Extension");
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            creativeElement = _ref1[_j];
-            _ref2 = creativeElement.childNodes;
-            for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-              creativeTypeElement = _ref2[_k];
+            extensionElement = _ref1[_j];
+            eventName = extensionElement.getAttribute("type");
+            if (extensionElement.children && extensionElement.children.length > 0) {
+              trackingURLTemplate = extensionElement;
+            } else {
+              trackingURLTemplate = this.parseNodeText(extensionElement);
+            }
+            if ((eventName != null) && (trackingURLTemplate != null)) {
+              if (ad.extensionTemplate == null) {
+                ad.extensionTemplate = [];
+              }
+              if ((_base = ad.extensionTemplate)[eventName] == null) {
+                _base[eventName] = [];
+              }
+              ad.extensionTemplate[eventName] = trackingURLTemplate;
+            }
+          }
+          break;
+        case "Creatives":
+          _ref2 = this.childsByName(node, "Creative");
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            creativeElement = _ref2[_k];
+            _ref3 = creativeElement.childNodes;
+            for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+              creativeTypeElement = _ref3[_l];
               switch (creativeTypeElement.nodeName) {
                 case "Linear":
                   creative = this.parseCreativeLinearElement(creativeTypeElement);
@@ -1247,6 +1270,14 @@ VASTTracker = (function(_super) {
     }
     if (eventName === 'closeLinear' && ((this.trackingEvents[eventName] == null) && (this.trackingEvents['close'] != null))) {
       eventName = 'close';
+    }
+    if (eventName === "addClick" && this.ad.extensionTemplate && this.ad.extensionTemplate["addClick"]) {
+      trackingURLTemplates = [];
+      trackingURLTemplates[0] = this.ad.extensionTemplate["addClick"];
+    }
+    if (eventName === "skipAd" && this.ad.extensionTemplate && this.ad.extensionTemplate["skipAd"]) {
+      trackingURLTemplates = [];
+      trackingURLTemplates[0] = this.ad.extensionTemplate["skipAd"];
     }
     trackingURLTemplates = this.trackingEvents[eventName];
     idx = this.emitAlwaysEvents.indexOf(eventName);

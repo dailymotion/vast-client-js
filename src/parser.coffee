@@ -203,6 +203,18 @@ class VASTParser
                 when "Impression"
                     ad.impressionURLTemplates.push (@parseNodeText node)
 
+                when "Extensions"
+                    for extensionElement in @childsByName(node, "Extension")
+                        eventName = extensionElement.getAttribute("type")
+                        if extensionElement.children and extensionElement.children.length > 0
+                            trackingURLTemplate = (extensionElement)
+                        else 
+                            trackingURLTemplate = @parseNodeText(extensionElement)
+                        if eventName? and trackingURLTemplate?
+                            ad.extensionTemplate ?= []
+                            ad.extensionTemplate[eventName] ?= []                            
+                            ad.extensionTemplate[eventName] = trackingURLTemplate                    
+
                 when "Creatives"
                     for creativeElement in @childsByName(node, "Creative")
                         for creativeTypeElement in creativeElement.childNodes
