@@ -1401,6 +1401,9 @@ XHRURLHandler = (function() {
 
   XHRURLHandler.get = function(url, options, cb) {
     var xhr;
+    if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
+      return cb(new Error('Cannot go from HTTPS to HTTP.'));
+    }
     try {
       xhr = this.xhr();
       xhr.open('GET', url);
