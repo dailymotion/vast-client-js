@@ -4,8 +4,10 @@ VASTAd = require './ad'
 VASTUtil = require './util'
 VASTCreativeLinear = require('./creative').VASTCreativeLinear
 VASTCreativeCompanion = require('./creative').VASTCreativeCompanion
+VASTCreativeNonLinear = require('./creative').VASTCreativeNonLinear
 VASTMediaFile = require './mediafile'
 VASTCompanionAd = require './companionad'
+VASTNonLinear = require './nonlinear'
 EventEmitter = require('events').EventEmitter
 
 class VASTParser
@@ -128,14 +130,14 @@ class VASTParser
 
                                 if ad.trackingEvents?
                                     for creative in wrappedAd.creatives
-                                        if creative.type is 'linear'
+                                        if creative.type is 'linear' || creative.type is 'nonlinear'
                                             for eventName in Object.keys ad.trackingEvents
                                                 creative.trackingEvents[eventName] or= []
                                                 creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
 
                                 if ad.videoClickTrackingURLTemplates?
                                     for creative in wrappedAd.creatives
-                                        if creative.type is 'linear'
+                                        if creative.type is 'linear' || creative.type is 'nonlinear'
                                             creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
 
                                 response.ads.splice index, 0, wrappedAd
@@ -176,17 +178,16 @@ class VASTParser
             if wrapperURLElement?
                 ad.nextWrapperURL = @parseNodeText @childByName wrapperURLElement, "URL"
 
-        wrapperCreativeElement = null
-        for creative in ad.creatives
-            if creative.type is 'linear'
-                wrapperCreativeElement = creative
-                break
 
-        if wrapperCreativeElement?
-            if wrapperCreativeElement.trackingEvents?
-                ad.trackingEvents = wrapperCreativeElement.trackingEvents
-            if wrapperCreativeElement.videoClickTrackingURLTemplates?
-                ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates
+        for creative in ad.creatives
+            wrapperCreativeElement = null
+            if creative.type is 'linear' || creative.type is 'nonlinear'
+                wrapperCreativeElement = creative
+                if wrapperCreativeElement?
+                    if wrapperCreativeElement.trackingEvents?
+                        ad.trackingEvents = wrapperCreativeElement.trackingEvents
+                    if wrapperCreativeElement.videoClickTrackingURLTemplates?
+                        ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates
 
         if ad.nextWrapperURL?
             return ad
@@ -211,8 +212,10 @@ class VASTParser
                                     creative = @parseCreativeLinearElement creativeTypeElement
                                     if creative
                                         ad.creatives.push creative
-                                #when "NonLinearAds"
-                                    # TODO
+                                when "NonLinearAds"
+                                    creative = @parseNonLinear creativeTypeElement
+                                    if creative
+                                        ad.creatives.push creative
                                 when "CompanionAds"
                                     creative = @parseCompanionAd creativeTypeElement
                                     if creative
@@ -292,6 +295,42 @@ class VASTParser
                   else if maintainAspectRatio is "false" then mediaFile.maintainAspectRatio = false
 
                 creative.mediaFiles.push mediaFile
+
+        return creative
+
+    @parseNonLinear: (creativeElement) ->
+        creative = new VASTCreativeNonLinear()
+
+        for trackingEventsElement in @childsByName(creativeElement, "TrackingEvents")
+          for trackingElement in @childsByName(trackingEventsElement, "Tracking")
+            eventName = trackingElement.getAttribute("event")
+            trackingURLTemplate = @parseNodeText(trackingElement)
+            if eventName? and trackingURLTemplate?
+              creative.trackingEvents[eventName] ?= []
+              creative.trackingEvents[eventName].push trackingURLTemplate
+
+        for nonlinearResource in @childsByName(creativeElement, "NonLinear")
+            nonlinearAd = new VASTNonLinear()
+            nonlinearAd.id = nonlinearResource.getAttribute("id") or null
+            nonlinearAd.width = nonlinearResource.getAttribute("width")
+            nonlinearAd.height = nonlinearResource.getAttribute("height")
+            nonlinearAd.minSuggestedDuration = nonlinearResource.getAttribute("minSuggestedDuration")
+            nonlinearAd.apiFramework = nonlinearResource.getAttribute("apiFramework")
+
+            for htmlElement in @childsByName(nonlinearResource, "HTMLResource")
+                nonlinearAd.type = htmlElement.getAttribute("creativeType") or 'text/html'
+                nonlinearAd.htmlResource = @parseNodeText(htmlElement)
+
+            for iframeElement in @childsByName(nonlinearResource, "IFrameResource")
+                nonlinearAd.type = iframeElement.getAttribute("creativeType") or 0
+                nonlinearAd.iframeResource = @parseNodeText(iframeElement)
+
+            for staticElement in @childsByName(nonlinearResource, "StaticResource")
+                nonlinearAd.type = staticElement.getAttribute("creativeType") or 0
+                nonlinearAd.staticResource = @parseNodeText(staticElement)
+
+            nonlinearAd.nonlinearClickThroughURLTemplate = @parseNodeText(@childByName(nonlinearResource, "NonLinearClickThrough"))
+            creative.variations.push nonlinearAd
 
         return creative
 
