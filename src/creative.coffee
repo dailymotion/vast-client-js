@@ -15,7 +15,11 @@ class VASTCreativeLinear extends VASTCreative
         @adParameters = null
 
 class VASTCreativeNonLinear extends VASTCreative
-    # TODO
+    constructor: ->
+        super
+        @type = "nonlinear"
+        @variations = []
+        @videoClickTrackingURLTemplates = []
 
 class VASTCreativeCompanion extends VASTCreative
     constructor: ->
