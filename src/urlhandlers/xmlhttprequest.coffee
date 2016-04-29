@@ -12,6 +12,7 @@ class XHRURLHandler
         try
             xhr = @xhr()
             xhr.open('GET', url)
+            xhr.setRequestHeader('Referer', options.referer) if options.referer
             xhr.timeout = options.timeout or 0
             xhr.withCredentials = options.withCredentials or false
             xhr.send()

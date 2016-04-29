@@ -1435,6 +1435,9 @@ XHRURLHandler = (function() {
     try {
       xhr = this.xhr();
       xhr.open('GET', url);
+      if (options.referer) {
+        xhr.setRequestHeader('Referer', options.referer);
+      }
       xhr.timeout = options.timeout || 0;
       xhr.withCredentials = options.withCredentials || false;
       xhr.send();
