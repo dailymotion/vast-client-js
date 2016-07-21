@@ -821,7 +821,7 @@ VASTParser = (function() {
     _ref = adElement.childNodes;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       adTypeElement = _ref[_i];
-      adTypeElement.id = adElement.getAttribute("id");
+      adTypeElement.setAttribute('id', adElement.getAttribute("id"));
       if (adTypeElement.nodeName === "Wrapper") {
         return this.parseWrapperElement(adTypeElement);
       } else if (adTypeElement.nodeName === "InLine") {
