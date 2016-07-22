@@ -7,6 +7,13 @@ urlfor = (relpath) ->
 
 describe 'URLHandler', ->
     describe '#get', ->
+        it 'should return options.response when it\'s provided', (done) =>
+            URLHandler.get urlfor('sample.xml'), {response: 'response'}, (err, xml) ->
+                should.not.exist err
+                should.exists xml
+                xml.should.equal 'response'
+                done()
+
         it 'should return a VAST XML DOM object', (done) =>
             URLHandler.get urlfor('sample.xml'), (err, xml) ->
                 should.not.exist err

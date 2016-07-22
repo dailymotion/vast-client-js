@@ -11,7 +11,7 @@ class URLHandler
         if options.response?
             # Trick: the VAST response XML document is passed as an option
             cb(null, options.response)
-        else if options.urlhandler && options.urlhandler.supported()
+        else if options.urlhandler?.supported()
             # explicitly supply your own URLHandler object
             return options.urlhandler.get(url, options, cb)
         else if not window?
