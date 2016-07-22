@@ -63,6 +63,18 @@
           </CompanionAds>
         </Creative>
       </Creatives>
+      <Extensions>
+        <Extension type="Pricing">
+          <Price model="CPM" currency="USD" source="someone">
+            <![CDATA[ 0 ]]>
+          </Price>
+        </Extension>
+        <Extension type="Count">
+          <total_available>
+            <![CDATA[ 4 ]]>
+          </total_available>
+        </Extension>
+      </Extensions>
     </InLine>
   </Ad>
 </VAST>
