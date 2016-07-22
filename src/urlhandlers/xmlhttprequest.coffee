@@ -16,6 +16,7 @@ class XHRURLHandler
             xhr.open('GET', url)
             xhr.timeout = options.timeout or 0
             xhr.withCredentials = options.withCredentials or false
+            xhr.overrideMimeType('text/xml');
             xhr.send()
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4
