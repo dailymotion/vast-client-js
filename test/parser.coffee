@@ -148,6 +148,9 @@ describe 'VASTParser', ->
                     it 'should have 1 companion clickthrough url', =>
                         companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion-clickthrough'
 
+                    it 'should have 1 companion clicktracking url', =>
+                        companion.companionClickTrackingURLTemplate.should.equal  'http://example.com/companion-clicktracking'
+
                 describe 'as IFrameResource', ->
                   before (done) =>
                       companion = companions.variations[1]
