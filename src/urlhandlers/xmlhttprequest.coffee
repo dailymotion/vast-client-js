@@ -17,10 +17,10 @@ class XHRURLHandler
             xhr.timeout = options.timeout or 0
             xhr.withCredentials = options.withCredentials or false
             xhr.overrideMimeType('text/xml');
-            xhr.send()
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4
                     cb(null, xhr.responseXML)
+            xhr.send()
         catch
             cb()
 
