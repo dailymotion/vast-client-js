@@ -77,12 +77,12 @@ class VASTParser
 
             complete = (errorAlreadyRaised = false) =>
                 return unless response
-                hasAdWithCreative = false
+                noCreatives = true
                 for ad in response.ads
                     return if ad.nextWrapperURL?
                     if ad.creatives.length > 0
-                        hasAdWithCreative = true
-                if not hasAdWithCreative
+                        noCreatives = false
+                if noCreatives
                     # No Ad Response
                     # The VAST <Error> element is optional but if included, the video player must send a request to the URI
                     # provided when the VAST response returns an empty InLine response after a chain of one or more wrapper ads.
