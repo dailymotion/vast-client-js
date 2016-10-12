@@ -77,14 +77,18 @@ class VASTParser
 
             complete = (errorAlreadyRaised = false) =>
                 return unless response
+                hasAdWithCreative = false
                 for ad in response.ads
                     return if ad.nextWrapperURL?
-                if response.ads.length == 0
+                    if ad.creatives.length > 0
+                        hasAdWithCreative = true
+                if not hasAdWithCreative
                     # No Ad Response
                     # The VAST <Error> element is optional but if included, the video player must send a request to the URI
                     # provided when the VAST response returns an empty InLine response after a chain of one or more wrapper ads.
                     # If an [ERRORCODE] macro is included, the video player should substitute with error code 303.
                     @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
+                if response.ads.length == 0
                     response = null
                 cb(null, response)
 

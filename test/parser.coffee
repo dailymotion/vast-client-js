@@ -216,6 +216,14 @@ describe 'VASTParser', ->
                 errorCode.ERRORCODE.should.eql 303
                 done()
 
+        # VAST response with Ad but no Creative
+        it 'emits a VAST-error on response with no Creative', (done) ->
+            VASTParser.on 'VAST-error', errorCallback
+            VASTParser.parse urlfor('empty-no-creative.xml'), =>
+                errorCallbackCalled.should.equal 1
+                errorCode.ERRORCODE.should.eql 303
+                done()
+
         #No ads VAST response after more than one wrapper
         # Two events should be emits :
         # - 1 for the empty vast file
