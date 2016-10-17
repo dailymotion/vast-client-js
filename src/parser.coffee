@@ -29,7 +29,7 @@ class VASTParser
             options = {}
 
         @_parse url, null, options, (err, response) ->
-            cb(response)
+            cb(response, err)
 
     @vent = new EventEmitter()
     @track: (templates, errorCode) ->
@@ -60,7 +60,7 @@ class VASTParser
             response = new VASTResponse()
 
             unless xml?.documentElement? and xml.documentElement.nodeName is "VAST"
-                return cb()
+                return cb(new Error('Invalid VAST XMLDocument'))
 
             for node in xml.documentElement.childNodes
                 if node.nodeName is 'Error'

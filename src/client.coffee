@@ -32,15 +32,15 @@ class VASTClient
             @totalCalls++
 
         if @cappingFreeLunch >= @totalCalls
-            cb(null)
+            cb(null, new Error("VAST call canceled – FreeLunch capping not reached yet #{@totalCalls}/#{@cappingFreeLunch}"))
             return
 
         if now - @lastSuccessfullAd < @cappingMinimumTimeInterval
-            cb(null)
+            cb(null, new Error("VAST call canceled – (#{@cappingMinimumTimeInterval})ms minimum interval reached"))
             return
 
-        VASTParser.parse url, options, (response) =>
-            cb(response)
+        VASTParser.parse url, options, (response, err) =>
+            cb(response, err)
 
 
     # 'Fake' static constructor
