@@ -1,4 +1,7 @@
 [![Build Status](https://travis-ci.org/dailymotion/vast-client-js.png)](https://travis-ci.org/dailymotion/vast-client-js)
+[![npm version](https://img.shields.io/npm/v/vast-client.svg)](https://www.npmjs.com/package/vast-client)
+[![Dependency Status](https://david-dm.org/dailymotion/vast-client-js.svg)](https://david-dm.org/dailymotion/vast-client-js)
+[![devDependency Status](https://david-dm.org/dailymotion/vast-client-js/dev-status.svg)](https://david-dm.org/dailymotion/vast-client-js#info=devDependencies)
 
 # VAST Javascript Client
 Vast Client JS is a Javascript library for parsing Digital Video Ad Serving Template (VAST) documents as close as possible to the Interactive Advertising Bureau (IAB) specification.
