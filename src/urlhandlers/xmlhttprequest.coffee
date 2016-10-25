@@ -19,9 +19,10 @@ class XHRURLHandler
             xhr.overrideMimeType && xhr.overrideMimeType('text/xml');
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4
-                    cb(null, xhr.responseXML)
-                else
-                    cb(new Error("XHRURLHandler: #{xhr.statusText}"))
+                    if xhr.status == 200
+                        cb(null, xhr.responseXML)
+                    else
+                        cb(new Error("XHRURLHandler: #{xhr.statusText}"))
             xhr.send()
         catch
             cb(new Error('XHRURLHandler: Unexpected error'))
