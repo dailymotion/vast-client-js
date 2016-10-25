@@ -10,7 +10,9 @@ class URLHandler
 
         if options.response?
             # Trick: the VAST response XML document is passed as an option
-            cb(null, options.response)
+            tempResponse = options.response
+            options.response = undefined
+            cb(null, tempResponse)
         else if options.urlhandler?.supported()
             # explicitly supply your own URLHandler object
             return options.urlhandler.get(url, options, cb)
