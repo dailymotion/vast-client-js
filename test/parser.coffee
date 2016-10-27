@@ -39,6 +39,36 @@ describe 'VASTParser', ->
         it 'should have merged top level error URLs', =>
             @response.errorURLTemplates.should.eql ["http://example.com/wrapper-error", "http://example.com/error"]
 
+        it 'should have retrieved Ad id attribute', =>
+            @response.ads[0].id.should.eql "41993e28-6f21-4e6b-bbd4-b7de053b0951"
+
+        it 'should have retrieved Ad sequence attribute', =>
+            @response.ads[0].sequence.should.eql "0"
+
+        it 'should have retrieved AdSystem value', =>
+            @response.ads[0].system.value.should.eql "AdServer"
+
+        it 'should have retrieved AdSystem version attribute', =>
+            @response.ads[0].system.version.should.eql "2.0"
+
+        it 'should have retrieved AdTitle value', =>
+            @response.ads[0].title.should.eql "Ad title"
+
+        it 'should have retrieved Advertiser value', =>
+            @response.ads[0].advertiser.should.eql "Advertiser name"
+
+        it 'should have retrieved Description value', =>
+            @response.ads[0].description.should.eql "Description text"
+
+        it 'should have retrieved Pricing value', =>
+            @response.ads[0].pricing.value.should.eql "1.09"
+
+        it 'should have retrieved Pricing model attribute', =>
+            @response.ads[0].pricing.model.should.eql "CPM"
+
+        it 'should have retrieved Pricing currency attribute', =>
+            @response.ads[0].pricing.currency.should.eql "USD"
+
         it 'should have merged wrapped ad error URLs', =>
             @response.ads[0].errorURLTemplates.should.eql ["http://example.com/wrapper-error", "http://example.com/error"]
 

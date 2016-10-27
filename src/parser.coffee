@@ -171,6 +171,8 @@ class VASTParser
             continue unless adTypeElement.nodeName in ["Wrapper", "InLine"]
 
             adTypeElement.setAttribute "id", adElement.getAttribute("id")
+            adTypeElement.setAttribute "sequence", adElement.getAttribute("sequence")
+
             if adTypeElement.nodeName is "Wrapper"
                 return @parseWrapperElement adTypeElement
             else if adTypeElement.nodeName is "InLine"
@@ -202,7 +204,8 @@ class VASTParser
 
     @parseInLineElement: (inLineElement) ->
         ad = new VASTAd()
-        ad.id = inLineElement.id
+        ad.id = inLineElement.getAttribute("id") || null
+        ad.sequence = inLineElement.getAttribute("sequence") || null
 
         for node in inLineElement.childNodes
             switch node.nodeName
@@ -231,6 +234,28 @@ class VASTParser
                 when "Extensions"
                     @parseExtension(ad.extensions, @childsByName(node, "Extension"))
 
+                when "AdSystem"
+                    ad.system =
+                        value : @parseNodeText node
+                        version : node.getAttribute("version") || null
+
+                when "AdTitle"
+                    ad.title = @parseNodeText node
+
+                when "Description"
+                    ad.description = @parseNodeText node
+
+                when "Advertiser"
+                    ad.advertiser = @parseNodeText node
+
+                when "Pricing"
+                    ad.pricing =
+                        value    : @parseNodeText node
+                        model    : node.getAttribute("model") || null
+                        currency : node.getAttribute("currency") || null
+
+                when "Survey"
+                    ad.survey = @parseNodeText node
 
         return ad
 
