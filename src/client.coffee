@@ -35,7 +35,12 @@ class VASTClient
             cb(null, new Error("VAST call canceled – FreeLunch capping not reached yet #{@totalCalls}/#{@cappingFreeLunch}"))
             return
 
-        if now - @lastSuccessfullAd < @cappingMinimumTimeInterval
+        timeSinceLastCall = now - @lastSuccessfullAd
+        # Check timeSinceLastCall to be a positive number. If not, this mean the
+        # previous was made in the future. We reset lastSuccessfullAd value
+        if timeSinceLastCall < 0
+            @lastSuccessfullAd = 0
+        else if timeSinceLastCall < @cappingMinimumTimeInterval
             cb(null, new Error("VAST call canceled – (#{@cappingMinimumTimeInterval})ms minimum interval reached"))
             return
 
@@ -63,6 +68,7 @@ class VASTClient
             return
 
         # Init values if not already set
+        VASTClient.lastSuccessfullAd ?= 0
         VASTClient.totalCalls ?= 0
         VASTClient.totalCallsTimeout ?= 0
         return
