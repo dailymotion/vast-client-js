@@ -11,7 +11,6 @@ describe 'URLHandler', ->
             options = {response: 'response'}
             URLHandler.get urlfor('sample.xml'), options, (err, xml) ->
                 should.not.exist err
-                console.log xml
                 should.exists xml
                 xml.should.equal 'response'
                 should.not.exist(options.response)
