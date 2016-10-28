@@ -8,6 +8,7 @@ VASTCreativeLinear = require('./creative').VASTCreativeLinear
 VASTCreativeCompanion = require('./creative').VASTCreativeCompanion
 VASTCreativeNonLinear = require('./creative').VASTCreativeNonLinear
 VASTMediaFile = require './mediafile'
+VASTIcon = require './icon'
 VASTCompanionAd = require './companionad'
 VASTNonLinear = require './nonlinear'
 EventEmitter = require('events').EventEmitter
@@ -171,6 +172,8 @@ class VASTParser
             continue unless adTypeElement.nodeName in ["Wrapper", "InLine"]
 
             adTypeElement.setAttribute "id", adElement.getAttribute("id")
+            adTypeElement.setAttribute "sequence", adElement.getAttribute("sequence")
+
             if adTypeElement.nodeName is "Wrapper"
                 return @parseWrapperElement adTypeElement
             else if adTypeElement.nodeName is "InLine"
@@ -202,7 +205,8 @@ class VASTParser
 
     @parseInLineElement: (inLineElement) ->
         ad = new VASTAd()
-        ad.id = inLineElement.id
+        ad.id = inLineElement.getAttribute("id") || null
+        ad.sequence = inLineElement.getAttribute("sequence") || null
 
         for node in inLineElement.childNodes
             switch node.nodeName
@@ -231,6 +235,28 @@ class VASTParser
                 when "Extensions"
                     @parseExtension(ad.extensions, @childsByName(node, "Extension"))
 
+                when "AdSystem"
+                    ad.system =
+                        value : @parseNodeText node
+                        version : node.getAttribute("version") || null
+
+                when "AdTitle"
+                    ad.title = @parseNodeText node
+
+                when "Description"
+                    ad.description = @parseNodeText node
+
+                when "Advertiser"
+                    ad.advertiser = @parseNodeText node
+
+                when "Pricing"
+                    ad.pricing =
+                        value    : @parseNodeText node
+                        model    : node.getAttribute("model") || null
+                        currency : node.getAttribute("currency") || null
+
+                when "Survey"
+                    ad.survey = @parseNodeText node
 
         return ad
 
@@ -329,6 +355,41 @@ class VASTParser
 
                 creative.mediaFiles.push mediaFile
 
+        iconsElement = @childByName(creativeElement, "Icons")
+        if iconsElement?
+            for iconElement in @childsByName(iconsElement, "Icon")
+                icon = new VASTIcon()
+                icon.program = iconElement.getAttribute("program")
+                icon.height = parseInt iconElement.getAttribute("height") or 0
+                icon.width = parseInt iconElement.getAttribute("width") or 0
+                icon.xPosition = @parseXPosition iconElement.getAttribute("xPosition")
+                icon.yPosition = @parseYPosition iconElement.getAttribute("yPosition")
+                icon.apiFramework = iconElement.getAttribute("apiFramework")
+                icon.offset = @parseDuration iconElement.getAttribute("offset")
+                icon.duration = @parseDuration iconElement.getAttribute("duration")
+
+                for htmlElement in @childsByName(iconElement, "HTMLResource")
+                    icon.type = htmlElement.getAttribute("creativeType") or 'text/html'
+                    icon.htmlResource = @parseNodeText(htmlElement)
+
+                for iframeElement in @childsByName(iconElement, "IFrameResource")
+                    icon.type = iframeElement.getAttribute("creativeType") or 0
+                    icon.iframeResource = @parseNodeText(iframeElement)
+
+                for staticElement in @childsByName(iconElement, "StaticResource")
+                    icon.type = staticElement.getAttribute("creativeType") or 0
+                    icon.staticResource = @parseNodeText(staticElement)
+
+                iconClicksElement = @childByName(iconElement, "IconClicks")
+                if iconClicksElement?
+                    icon.iconClickThroughURLTemplate = @parseNodeText(@childByName(iconClicksElement, "IconClickThrough"))
+                    for iconClickTrackingElement in @childsByName(iconClicksElement, "IconClickTracking")
+                        icon.iconClickTrackingURLTemplates.push @parseNodeText(iconClickTrackingElement)
+
+                icon.iconViewTrackingURLTemplate = @parseNodeText(@childByName(iconElement, "IconViewTracking"))
+
+                creative.icons.push icon
+
         return creative
 
     @parseNonLinear: (creativeElement) ->
@@ -415,6 +476,18 @@ class VASTParser
         if isNaN hours or isNaN minutes or isNaN seconds or minutes > 60 * 60 or seconds > 60
             return -1
         return hours + minutes + seconds
+
+    @parseXPosition: (xPosition) ->
+        if xPosition in ["left", "right"]
+            return xPosition
+
+        return parseInt xPosition or 0
+
+    @parseYPosition: (yPosition) ->
+        if yPosition in ["top", "bottom"]
+            return yPosition
+
+        return parseInt yPosition or 0
 
     # Parsing node text for legacy support
     @parseNodeText: (node) ->

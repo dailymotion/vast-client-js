@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VAST version="2.0">
   <Error><![CDATA[http://example.com/error]]></Error>
-  <Ad id="41993e28-6f21-4e6b-bbd4-b7de053b0951">
+  <Ad id="41993e28-6f21-4e6b-bbd4-b7de053b0951" sequence="0">
     <InLine>
-      <AdSystem>AdServer</AdSystem>
-      <AdTitle>Title</AdTitle>
+      <AdSystem version="2.0" ><![CDATA[AdServer]]></AdSystem>
+      <AdTitle><![CDATA[Ad title]]></AdTitle>
+      <Advertiser><![CDATA[Advertiser name]]></Advertiser>
+      <Description><![CDATA[Description text]]></Description>
+      <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
+      <Survey><![CDATA[http://example.com/survey]]></Survey>
       <Error><![CDATA[http://example.com/error]]></Error>
       <Impression><![CDATA[http://example.com/impression1]]></Impression>
       <Impression><![CDATA[http://example.com/impression2]]></Impression>
@@ -31,6 +35,17 @@
             <MediaFiles>
               <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/asset.mp4]]></MediaFile>
             </MediaFiles>
+            <Icons>
+              <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID">
+                <StaticResource creativeType="image/gif"><![CDATA[http://example.com/icon.gif]]></StaticResource>
+                <IconViewTracking><![CDATA[http://example.com/viewtracking]]></IconViewTracking>
+                <IconClicks>
+                  <IconClickThrough><![CDATA[http://example.com/clickthrough]]></IconClickThrough>
+                  <IconClickTracking><![CDATA[http://example.com/clicktracking1]]></IconClickTracking>
+                  <IconClickTracking><![CDATA[http://example.com/clicktracking2]]></IconClickTracking>
+                </IconClicks>
+              </Icon>
+            </Icons>
           </Linear>
         </Creative>
         <Creative>
