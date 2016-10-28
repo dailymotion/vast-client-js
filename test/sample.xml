@@ -35,6 +35,17 @@
             <MediaFiles>
               <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/asset.mp4]]></MediaFile>
             </MediaFiles>
+            <Icons>
+              <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID">
+                <StaticResource creativeType="image/gif"><![CDATA[http://example.com/icon.gif]]></StaticResource>
+                <IconViewTracking><![CDATA[http://example.com/viewtracking]]></IconViewTracking>
+                <IconClicks>
+                  <IconClickThrough><![CDATA[http://example.com/clickthrough]]></IconClickThrough>
+                  <IconClickTracking><![CDATA[http://example.com/clicktracking1]]></IconClickTracking>
+                  <IconClickTracking><![CDATA[http://example.com/clicktracking2]]></IconClickTracking>
+                </IconClicks>
+              </Icon>
+            </Icons>
           </Linear>
         </Creative>
         <Creative>

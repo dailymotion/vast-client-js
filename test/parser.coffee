@@ -141,6 +141,22 @@ describe 'VASTParser', ->
             it 'should have 2 urls for progress-60% event VAST 3.0', =>
                 linear.trackingEvents['progress-60%'].should.eql ['http://example.com/progress-60%', 'http://example.com/wrapper-progress-60%']
 
+            it 'should have parsed icons element', =>
+                icon = linear.icons[0]
+                icon.program.should.equal "ad1"
+                icon.height.should.equal 20
+                icon.width.should.equal 60
+                icon.xPosition.should.equal "left"
+                icon.yPosition.should.equal "bottom"
+                icon.apiFramework.should.equal "VPAID"
+                icon.offset.should.equal 15
+                icon.duration.should.equal 90
+                icon.type.should.equal "image/gif"
+                icon.staticResource.should.equal "http://example.com/icon.gif"
+                icon.iconClickThroughURLTemplate.should.equal "http://example.com/clickthrough"
+                icon.iconClickTrackingURLTemplates.should.eql ["http://example.com/clicktracking1", "http://example.com/clicktracking2"]
+                icon.iconViewTrackingURLTemplate.should.equal "http://example.com/viewtracking"
+
         #Companions
         describe '#Companions', ->
             companions = null

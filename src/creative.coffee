@@ -13,6 +13,7 @@ class VASTCreativeLinear extends VASTCreative
         @videoClickTrackingURLTemplates = []
         @videoCustomClickURLTemplates = []
         @adParameters = null
+        @icons = []
 
 class VASTCreativeNonLinear extends VASTCreative
     constructor: ->
