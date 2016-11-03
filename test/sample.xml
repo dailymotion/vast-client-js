@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VAST version="2.0">
   <Error><![CDATA[http://example.com/error]]></Error>
-  <Ad id="41993e28-6f21-4e6b-bbd4-b7de053b0951" sequence="0">
+  <Ad id="ad_id_0001" sequence="1">
     <InLine>
       <AdSystem version="2.0" ><![CDATA[AdServer]]></AdSystem>
       <AdTitle><![CDATA[Ad title]]></AdTitle>
