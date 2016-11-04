@@ -389,7 +389,7 @@ class VASTParser
             for clickTrackingElement in @childsByName(companionResource, "CompanionClickTracking")
               companionAd.companionClickTrackingURLTemplates.push @parseNodeText(clickTrackingElement)
             companionAd.companionClickThroughURLTemplate = @parseNodeText(@childByName(companionResource, "CompanionClickThrough"))
-
+            companionAd.companionClickTrackingURLTemplate = @parseNodeText(@childByName(companionResource, "CompanionClickTracking"))
             creative.variations.push companionAd
 
         return creative
