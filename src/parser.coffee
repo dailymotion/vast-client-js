@@ -171,8 +171,8 @@ class VASTParser
         for adTypeElement in adElement.childNodes
             continue unless adTypeElement.nodeName in ["Wrapper", "InLine"]
 
-            adTypeElement.setAttribute "id", adElement.getAttribute("id")
-            adTypeElement.setAttribute "sequence", adElement.getAttribute("sequence")
+            @copyNodeAttribute "id", adElement, adTypeElement
+            @copyNodeAttribute "sequence", adElement, adTypeElement
 
             if adTypeElement.nodeName is "Wrapper"
                 return @parseWrapperElement adTypeElement
@@ -492,5 +492,10 @@ class VASTParser
     # Parsing node text for legacy support
     @parseNodeText: (node) ->
         return node and (node.textContent or node.text or '').trim()
+
+    @copyNodeAttribute: (attributeName, nodeSource, nodeDestination) ->
+        attributeValue = nodeSource.getAttribute attributeName
+        if attributeValue
+            nodeDestination.setAttribute attributeName, attributeValue
 
 module.exports = VASTParser
