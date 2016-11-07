@@ -56,7 +56,8 @@
                 <Tracking event="creativeView"><![CDATA[http://example.com/creativeview]]></Tracking>
               </TrackingEvents>
               <CompanionClickThrough><![CDATA[http://example.com/companion-clickthrough]]></CompanionClickThrough>
-              <CompanionClickTracking><![CDATA[http://example.com/companion-clicktracking]]></CompanionClickTracking>
+              <CompanionClickTracking><![CDATA[http://example.com/companion-clicktracking-first]]></CompanionClickTracking>
+              <CompanionClickTracking><![CDATA[http://example.com/companion-clicktracking-second]]></CompanionClickTracking>
             </Companion>
             <Companion width="300" height="60">
               <IFrameResource>
