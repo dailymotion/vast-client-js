@@ -144,10 +144,16 @@ class VASTParser
 
                                 if ad.videoClickTrackingURLTemplates?
                                     for creative in wrappedAd.creatives
-                                        if creative.type is 'linear' || creative.type is 'nonlinear'
+                                        if creative.type is 'linear'
                                             creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
 
-                                response.ads.splice index, 0, wrappedAd
+                                # VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+                                if ad.videoClickThroughURLTemplate?
+                                    for creative in wrappedAd.creatives
+                                        if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
+                                            creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
+
+                                response.ads.splice ++index, 0, wrappedAd
 
                         delete ad.nextWrapperURL
                         complete errorAlreadyRaised
@@ -199,6 +205,8 @@ class VASTParser
                         ad.trackingEvents = wrapperCreativeElement.trackingEvents
                     if wrapperCreativeElement.videoClickTrackingURLTemplates?
                         ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates
+                    if wrapperCreativeElement.videoClickThroughURLTemplate?
+                        ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate
 
         if ad.nextWrapperURL?
             return ad

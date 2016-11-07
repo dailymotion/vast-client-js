@@ -39,7 +39,7 @@ describe 'VASTParser', ->
         it 'should have merged top level error URLs', =>
             @response.errorURLTemplates.should.eql ["http://example.com/wrapper-error", "http://example.com/error"]
 
-        describe '#For the 1st ad (Wrapped)', ->
+        describe '#For the 1st ad', ->
 
             it 'should have retrieved Ad attributes', =>
                 _response.ads[0].id.should.eql "ad_id_0001"
@@ -65,6 +65,9 @@ describe 'VASTParser', ->
             it 'should have two creatives', =>
                 _response.ads[0].creatives.should.have.length 2
 
+            it 'should have the inline clickthrough URL', =>
+                _response.ads[0].creatives[0].videoClickThroughURLTemplate.should.eql "http://example.com/linear-clickthrough"
+
             it 'should have two extentions', =>
                 _response.ads[0].extensions.should.have.length 2
 
@@ -83,7 +86,7 @@ describe 'VASTParser', ->
                 _response.ads[0].extensions[1].children[0].name.should.eql "total_available"
                 _response.ads[0].extensions[1].children[0].value.should.eql "4"
 
-        describe '#For the 2nd ad (Non wrapped)', ->
+        describe '#For the 2nd ad', ->
 
             it 'should have retrieved Ad attributes', =>
                 _response.ads[1].id.should.eql "ad_id_0002"
@@ -98,14 +101,17 @@ describe 'VASTParser', ->
                 should.equal _response.ads[1].pricing, null
                 should.equal _response.ads[1].survey, null
 
-            it 'should have 0 error URL', =>
-                _response.ads[1].errorURLTemplates.should.eql []
+            it 'should have 1 error URL', =>
+                _response.ads[1].errorURLTemplates.should.eql ["http://example.com/wrapper-error"]
 
-            it 'should have 1 impression URL', =>
-                _response.ads[1].impressionURLTemplates.should.eql ["http://example.com/impression1"]
+            it 'should have 2 impression URLs', =>
+                _response.ads[1].impressionURLTemplates.should.eql ["http://example.com/wrapper-impression", "http://127.0.0.1:8080/second/wrapper_impression", "http://example.com/impression1"]
 
             it 'should have 1 creative', =>
                 _response.ads[1].creatives.should.have.length 1
+
+            it 'should have wrapper clickthrough URL', =>
+                _response.ads[1].creatives[0].videoClickThroughURLTemplate.should.eql "http://example.com/wrapper-linear-clickthrough"
 
             it 'should have 0 extentions', =>
                 _response.ads[1].extensions.should.eql []
@@ -133,31 +139,31 @@ describe 'VASTParser', ->
                 mediaFile.width.should.equal 512
                 mediaFile.height.should.equal 288
                 mediaFile.mimeType.should.equal "video/mp4"
-                mediaFile.fileURL.should.equal "http://example.com/asset.mp4"
+                mediaFile.fileURL.should.equal "http://example.com/linear-asset.mp4"
 
             it 'should have 8 tracking events', =>
                 linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%'
 
             it 'should have 2 urls for start event', =>
-                linear.trackingEvents['start'].should.eql ['http://example.com/start', 'http://example.com/wrapper-start']
+                linear.trackingEvents['start'].should.eql ['http://example.com/linear-start', 'http://example.com/wrapper-linear-start']
 
             it 'should have 2 urls for complete event', =>
-                linear.trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
+                linear.trackingEvents['complete'].should.eql ['http://example.com/linear-complete', 'http://example.com/wrapper-linear-complete']
 
             it 'should have 1 url for clickthrough', =>
-                linear.videoClickThroughURLTemplate.should.eql 'http://example.com/clickthrough'
+                linear.videoClickThroughURLTemplate.should.eql 'http://example.com/linear-clickthrough'
 
             it 'should have 2 urls for clicktracking', =>
-                linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
+                linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking', 'http://example.com/wrapper-linear-clicktracking']
 
             it 'should have 1 url for customclick', =>
-                linear.videoCustomClickURLTemplates.should.eql ['http://example.com/customclick']
+                linear.videoCustomClickURLTemplates.should.eql ['http://example.com/linear-customclick']
 
             it 'should have 2 urls for progress-30 event VAST 3.0', =>
-                linear.trackingEvents['progress-30'].should.eql ['http://example.com/progress-30sec', 'http://example.com/wrapper-progress-30sec']
+                linear.trackingEvents['progress-30'].should.eql ['http://example.com/linear-progress-30sec', 'http://example.com/wrapper-linear-progress-30sec']
 
             it 'should have 2 urls for progress-60% event VAST 3.0', =>
-                linear.trackingEvents['progress-60%'].should.eql ['http://example.com/progress-60%', 'http://example.com/wrapper-progress-60%']
+                linear.trackingEvents['progress-60%'].should.eql ['http://example.com/linear-progress-60%', 'http://example.com/wrapper-linear-progress-60%']
 
             it 'should have parsed icons element', =>
                 icon = linear.icons[0]
@@ -170,10 +176,10 @@ describe 'VASTParser', ->
                 icon.offset.should.equal 15
                 icon.duration.should.equal 90
                 icon.type.should.equal "image/gif"
-                icon.staticResource.should.equal "http://example.com/icon.gif"
-                icon.iconClickThroughURLTemplate.should.equal "http://example.com/clickthrough"
-                icon.iconClickTrackingURLTemplates.should.eql ["http://example.com/clicktracking1", "http://example.com/clicktracking2"]
-                icon.iconViewTrackingURLTemplate.should.equal "http://example.com/viewtracking"
+                icon.staticResource.should.equal "http://example.com/linear-icon.gif"
+                icon.iconClickThroughURLTemplate.should.equal "http://example.com/linear-clickthrough"
+                icon.iconClickTrackingURLTemplates.should.eql ["http://example.com/linear-clicktracking1", "http://example.com/linear-clicktracking2"]
+                icon.iconViewTrackingURLTemplate.should.equal "http://example.com/linear-viewtracking"
 
         #Companions
         describe '#Companions', ->
@@ -207,17 +213,17 @@ describe 'VASTParser', ->
                         companion.trackingEvents.should.have.keys 'creativeView'
 
                     it 'should have 1 url for creativeView event', =>
-                        companion.trackingEvents['creativeView'].should.eql ['http://example.com/creativeview']
+                        companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
 
                     it 'should have 1 companion clickthrough url', =>
-                        companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion-clickthrough'
+                        companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion1-clickthrough'
 
                     it 'should store the first companion clicktracking url', =>
-                        companion.companionClickTrackingURLTemplate.should.equal 'http://example.com/companion-clicktracking-first'
+                        companion.companionClickTrackingURLTemplate.should.equal 'http://example.com/companion1-clicktracking-first'
 
                     it 'should have 2 companion clicktracking urls', =>
-                        companion.companionClickTrackingURLTemplates[0].should.equal  'http://example.com/companion-clicktracking-first'
-                        companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion-clicktracking-second'
+                        companion.companionClickTrackingURLTemplates[0].should.equal  'http://example.com/companion1-clicktracking-first'
+                        companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion1-clicktracking-second'
 
                 describe 'as IFrameResource', ->
                   before (done) =>
@@ -233,7 +239,7 @@ describe 'VASTParser', ->
                     companion.trackingEvents.should.be.empty
 
                   it 'has the #iframeResource set', ->
-                    companion.iframeResource.should.equal 'http://www.example.com/example.php'
+                    companion.iframeResource.should.equal 'http://www.example.com/companion2-example.php'
 
                 describe 'as text/html', ->
                     before (done) =>
@@ -249,7 +255,7 @@ describe 'VASTParser', ->
                         companion.trackingEvents.should.be.empty
 
                     it 'should have 1 companion clickthrough url', =>
-                        companion.companionClickThroughURLTemplate.should.equal  'http://www.example.com'
+                        companion.companionClickThroughURLTemplate.should.equal  'http://www.example.com/companion3-clickthrough'
 
                     it 'has #htmlResource available', ->
                       companion.htmlResource.should.equal "<a href=\"http://www.example.com\" target=\"_blank\">Some call to action HTML!</a>"

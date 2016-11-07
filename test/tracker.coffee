@@ -224,12 +224,12 @@ describe 'VASTTracker', ->
                 done()
 
             it 'should have sent complete event and urls', =>
-                _eventsSent.should.eql ['complete', ["http://example.com/complete", "http://example.com/wrapper-complete"]]
+                _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapper-linear-complete"]]
 
             it 'should be called multiples times', =>
                 _eventsSent = []
                 @Tracker.complete()
-                _eventsSent.should.eql ['complete', ["http://example.com/complete", "http://example.com/wrapper-complete"]]
+                _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapper-linear-complete"]]
 
 
         describe '#close', =>
@@ -240,7 +240,7 @@ describe 'VASTTracker', ->
                 done()
 
             it 'should have sent close event and urls VAST 2.0', =>
-                _eventsSent.should.eql ['close', [ 'http://example.com/close']]
+                _eventsSent.should.eql ['close', [ 'http://example.com/linear-close']]
 
             it 'should have sent closeLinear event and urls VAST 3.0', =>
                 _eventsSent = []
@@ -271,7 +271,7 @@ describe 'VASTTracker', ->
                 done()
 
             it 'should have sent clicktracking events', =>
-                _eventsSent[0].should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
+                _eventsSent[0].should.eql ['http://example.com/linear-clicktracking', 'http://example.com/wrapper-linear-clicktracking']
 
             it 'should have sent clickthrough event', =>
                 _eventsSent[1].should.eql 'clickthrough'

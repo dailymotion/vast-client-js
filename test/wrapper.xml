@@ -12,51 +12,51 @@
         <Creative>
           <CompanionAds>
             <Companion id="urn:a2:287461:103" width="0" height="0">
-              <CompanionClickThrough><![CDATA[http://example.com/companion-click-thru]]></CompanionClickThrough>
-              <CompanionClickTracking><![CDATA[http://example.com/companion-click-tracking]]></CompanionClickTracking>
+              <CompanionClickThrough><![CDATA[http://example.com/wrapper-companion1-click-thru]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[http://example.com/wrapper-companion1-click-tracking]]></CompanionClickTracking>
               <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
             </Companion>
             <Companion width="300" height="60">
               <IFrameResource>
-                <![CDATA[http://www.example.com/example.php]]>
+                <![CDATA[http://www.example.com/wrapper-companion2-example.php]]>
               </IFrameResource>
               <CompanionClickThrough>
-                http://www.example.com
+                http://example.com/wrapper-companion2-click-thru
               </CompanionClickThrough>
             </Companion>
           </CompanionAds>
         </Creative>
         <Creative>
+          <NonLinearAds>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-nonlinear-start]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapper-nonlinear-complete]]></Tracking>
+            </TrackingEvents>
+            <NonLinearClickThrough>
+              http://www.example.com/wrapper-nonlinear-click-thru
+            </NonLinearClickThrough>
+            <NonLinear>
+              <StaticResource>
+                <![CDATA[http://www.example.com/wrapper-nonlinear-example.gif]]>
+              </StaticResource>
+            </NonLinear>
+          </NonLinearAds>
+        </Creative>
+        <Creative>
           <Linear>
             <TrackingEvents>
-              <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
-              <Tracking event="progress" offset="00:00:30"><![CDATA[http://example.com/wrapper-progress-30sec]]></Tracking>
-              <Tracking event="progress" offset="60%"><![CDATA[http://example.com/wrapper-progress-60%]]></Tracking>
-              <Tracking event="complete"><![CDATA[http://example.com/wrapper-complete]]></Tracking>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-linear-start]]></Tracking>
+              <Tracking event="progress" offset="00:00:30"><![CDATA[http://example.com/wrapper-linear-progress-30sec]]></Tracking>
+              <Tracking event="progress" offset="60%"><![CDATA[http://example.com/wrapper-linear-progress-60%]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapper-linear-complete]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/wrapper-clicktracking]]></ClickTracking>
+              <ClickTracking><![CDATA[http://example.com/wrapper-linear-clicktracking]]></ClickTracking>
+              <ClickThrough><![CDATA[http://example.com/wrapper-linear-clickthrough]]></ClickThrough>
             </VideoClicks>
           </Linear>
         </Creative>
       </Creatives>
     </Wrapper>
-  </Ad>
-  <Ad id="ad_id_0002">
-    <InLine>
-      <AdSystem version="2.1" ><![CDATA[AdServer2]]></AdSystem>
-      <AdTitle><![CDATA[Ad title 2]]></AdTitle>
-      <Impression><![CDATA[http://example.com/impression1]]></Impression>
-      <Creatives>
-        <Creative id="vpaid">
-          <Linear skipoffset="00:00:10" >
-            <Duration>00:01:30.123</Duration>
-            <MediaFiles>
-              <MediaFile delivery="progressive" type="application/javascript" width="512" height="288" apiFramework="VPAID"><![CDATA[http://example.com/vpaid.js]]></MediaFile>
-            </MediaFiles>
-          </Linear>
-        </Creative>
-      </Creatives>
-    </InLine>
   </Ad>
 </VAST>
