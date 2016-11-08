@@ -28,7 +28,8 @@
               <Tracking event="progress" offset="60%"><![CDATA[http://example.com/linear-progress-60%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/linear-clicktracking]]></ClickTracking>
+              <ClickTracking><![CDATA[http://example.com/linear-clicktracking1]]></ClickTracking>
+              <ClickTracking><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
               <ClickThrough><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
               <CustomClick><![CDATA[http://example.com/linear-customclick]]></CustomClick>
             </VideoClicks>
@@ -102,10 +103,13 @@
       <Creatives>
         <Creative id="vpaid">
           <Linear skipoffset="00:00:10" >
-            <Duration>00:01:30.123</Duration>
+            <Duration>00:00:30.123</Duration>
             <MediaFiles>
               <MediaFile delivery="progressive" type="application/javascript" width="512" height="288" apiFramework="VPAID"><![CDATA[http://example.com/vpaid.js]]></MediaFile>
             </MediaFiles>
+            <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/linear-clicktracking]]></ClickTracking>
+            </VideoClicks>
           </Linear>
         </Creative>
       </Creatives>
