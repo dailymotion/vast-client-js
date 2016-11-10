@@ -488,7 +488,6 @@ VASTCreativeNonLinear = (function(superClass) {
     VASTCreativeNonLinear.__super__.constructor.apply(this, arguments);
     this.type = "nonlinear";
     this.variations = [];
-    this.videoClickTrackingURLTemplates = [];
   }
 
   return VASTCreativeNonLinear;
@@ -501,7 +500,6 @@ VASTCreativeCompanion = (function(superClass) {
   function VASTCreativeCompanion() {
     this.type = "companion";
     this.variations = [];
-    this.videoClickTrackingURLTemplates = [];
   }
 
   return VASTCreativeCompanion;
@@ -823,7 +821,7 @@ VASTParser = (function() {
               ad.nextWrapperURL = baseURL + "/" + ad.nextWrapperURL;
             }
             return _this._parse(ad.nextWrapperURL, parentURLs, options, function(err, wrappedResponse) {
-              var base, creative, errorAlreadyRaised, eventName, index, l, len3, len4, len5, len6, m, n, o, ref3, ref4, ref5, ref6, wrappedAd;
+              var base, creative, errorAlreadyRaised, eventName, index, l, len3, len4, len5, len6, len7, m, n, o, p, ref3, ref4, ref5, ref6, ref7, wrappedAd;
               errorAlreadyRaised = false;
               if (err != null) {
                 _this.track(ad.errorURLTemplates, {
@@ -864,12 +862,21 @@ VASTParser = (function() {
                     ref6 = wrappedAd.creatives;
                     for (o = 0, len6 = ref6.length; o < len6; o++) {
                       creative = ref6[o];
-                      if (creative.type === 'linear' || creative.type === 'nonlinear') {
+                      if (creative.type === 'linear') {
                         creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
                       }
                     }
                   }
-                  response.ads.splice(index, 0, wrappedAd);
+                  if (ad.videoClickThroughURLTemplate != null) {
+                    ref7 = wrappedAd.creatives;
+                    for (p = 0, len7 = ref7.length; p < len7; p++) {
+                      creative = ref7[p];
+                      if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate == null)) {
+                        creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate;
+                      }
+                    }
+                  }
+                  response.ads.splice(++index, 0, wrappedAd);
                 }
               }
               delete ad.nextWrapperURL;
@@ -914,8 +921,8 @@ VASTParser = (function() {
       if ((ref1 = adTypeElement.nodeName) !== "Wrapper" && ref1 !== "InLine") {
         continue;
       }
-      adTypeElement.setAttribute("id", adElement.getAttribute("id"));
-      adTypeElement.setAttribute("sequence", adElement.getAttribute("sequence"));
+      this.copyNodeAttribute("id", adElement, adTypeElement);
+      this.copyNodeAttribute("sequence", adElement, adTypeElement);
       if (adTypeElement.nodeName === "Wrapper") {
         return this.parseWrapperElement(adTypeElement);
       } else if (adTypeElement.nodeName === "InLine") {
@@ -948,6 +955,9 @@ VASTParser = (function() {
           }
           if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
             ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates;
+          }
+          if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
+            ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate;
           }
         }
       }
@@ -1269,7 +1279,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseCompanionAd = function(creativeElement) {
-    var base, companionAd, companionResource, creative, eventName, htmlElement, i, iframeElement, j, k, l, len, len1, len2, len3, len4, len5, m, n, ref, ref1, ref2, ref3, ref4, ref5, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate;
+    var base, clickTrackingElement, companionAd, companionResource, creative, eventName, htmlElement, i, iframeElement, j, k, l, len, len1, len2, len3, len4, len5, len6, m, n, o, ref, ref1, ref2, ref3, ref4, ref5, ref6, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate;
     creative = new VASTCreativeCompanion();
     ref = this.childsByName(creativeElement, "Companion");
     for (i = 0, len = ref.length; i < len; i++) {
@@ -1278,6 +1288,7 @@ VASTParser = (function() {
       companionAd.id = companionResource.getAttribute("id") || null;
       companionAd.width = companionResource.getAttribute("width");
       companionAd.height = companionResource.getAttribute("height");
+      companionAd.companionClickTrackingURLTemplates = [];
       ref1 = this.childsByName(companionResource, "HTMLResource");
       for (j = 0, len1 = ref1.length; j < len1; j++) {
         htmlElement = ref1[j];
@@ -1311,6 +1322,11 @@ VASTParser = (function() {
             companionAd.trackingEvents[eventName].push(trackingURLTemplate);
           }
         }
+      }
+      ref6 = this.childsByName(companionResource, "CompanionClickTracking");
+      for (o = 0, len6 = ref6.length; o < len6; o++) {
+        clickTrackingElement = ref6[o];
+        companionAd.companionClickTrackingURLTemplates.push(this.parseNodeText(clickTrackingElement));
       }
       companionAd.companionClickThroughURLTemplate = this.parseNodeText(this.childByName(companionResource, "CompanionClickThrough"));
       companionAd.companionClickTrackingURLTemplate = this.parseNodeText(this.childByName(companionResource, "CompanionClickTracking"));
@@ -1357,6 +1373,14 @@ VASTParser = (function() {
 
   VASTParser.parseNodeText = function(node) {
     return node && (node.textContent || node.text || '').trim();
+  };
+
+  VASTParser.copyNodeAttribute = function(attributeName, nodeSource, nodeDestination) {
+    var attributeValue;
+    attributeValue = nodeSource.getAttribute(attributeName);
+    if (attributeValue) {
+      return nodeDestination.setAttribute(attributeName, attributeValue);
+    }
   };
 
   return VASTParser;
