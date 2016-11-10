@@ -16,7 +16,7 @@ describe 'VASTParser', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper.xml'), (@response) =>
+            VASTParser.parse urlfor('wrapper_A.xml'), (@response) =>
                 _response = @response
                 done()
 
@@ -26,9 +26,9 @@ describe 'VASTParser', ->
         it 'should have 1 filter defined', =>
             VASTParser.countURLTemplateFilters().should.equal 1
 
-        it 'should have called URLtemplateFilter twice', =>
-            @templateFilterCalls.should.have.length 2
-            @templateFilterCalls.should.eql [urlfor('wrapper.xml'), urlfor('sample.xml')]
+        it 'should have called 3 times URLtemplateFilter ', =>
+            @templateFilterCalls.should.have.length 3
+            @templateFilterCalls.should.eql [urlfor('wrapper_A.xml'), urlfor('wrapper_B.xml'), urlfor('sample.xml')]
 
         it 'should have found 2 ads', =>
             @response.ads.should.have.length 2
@@ -37,222 +37,269 @@ describe 'VASTParser', ->
             @response.should.be.an.instanceOf(VASTResponse)
 
         it 'should have merged top level error URLs', =>
-            @response.errorURLTemplates.should.eql ["http://example.com/wrapper-error", "http://example.com/error"]
+            @response.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
 
-        describe '#For the 1st ad (Wrapped)', ->
+        describe '#For the 1st ad', ->
+            ad1 = null
+
+            before () =>
+                ad1 = _response.ads[0]
+
+            after () =>
+                ad1 = null
 
             it 'should have retrieved Ad attributes', =>
-                _response.ads[0].id.should.eql "ad_id_0001"
-                _response.ads[0].sequence.should.eql "1"
+                ad1.id.should.eql "ad_id_0001"
+                ad1.sequence.should.eql "1"
 
             it 'should have retrieved Ad sub-elements values', =>
-                _response.ads[0].system.value.should.eql "AdServer"
-                _response.ads[0].system.version.should.eql "2.0"
-                _response.ads[0].title.should.eql "Ad title"
-                _response.ads[0].advertiser.should.eql "Advertiser name"
-                _response.ads[0].description.should.eql "Description text"
-                _response.ads[0].pricing.value.should.eql "1.09"
-                _response.ads[0].pricing.model.should.eql "CPM"
-                _response.ads[0].pricing.currency.should.eql "USD"
-                _response.ads[0].survey.should.eql "http://example.com/survey"
+                ad1.system.value.should.eql "AdServer"
+                ad1.system.version.should.eql "2.0"
+                ad1.title.should.eql "Ad title"
+                ad1.advertiser.should.eql "Advertiser name"
+                ad1.description.should.eql "Description text"
+                ad1.pricing.value.should.eql "1.09"
+                ad1.pricing.model.should.eql "CPM"
+                ad1.pricing.currency.should.eql "USD"
+                ad1.survey.should.eql "http://example.com/survey"
 
             it 'should have merged wrapped ad error URLs', =>
-                _response.ads[0].errorURLTemplates.should.eql ["http://example.com/wrapper-error", "http://example.com/error"]
+                ad1.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
 
             it 'should have merged impression URLs', =>
-                _response.ads[0].impressionURLTemplates.should.eql ["http://example.com/wrapper-impression", "http://127.0.0.1:8080/second/wrapper_impression", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
+                ad1.impressionURLTemplates.should.eql ["http://example.com/wrapperA-impression", "http://example.com/wrapperB-impression1", "http://example.com/wrapperB-impression2", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
 
-            it 'should have two creatives', =>
-                _response.ads[0].creatives.should.have.length 2
+            it 'should have 2 creatives', =>
+                ad1.creatives.should.have.length 2
 
-            it 'should have two extentions', =>
-                _response.ads[0].extensions.should.have.length 2
+            it 'should have 2 extentions', =>
+                ad1.extensions.should.have.length 2
 
             it 'validate first extension', =>
-                _response.ads[0].extensions[0].attributes['type'].should.eql "Pricing"
-                _response.ads[0].extensions[0].children.should.have.length 1
-                _response.ads[0].extensions[0].children[0].name.should.eql "Price"
-                _response.ads[0].extensions[0].children[0].value.should.eql "0"
-                _response.ads[0].extensions[0].children[0].attributes['model'].should.eql "CPM"
-                _response.ads[0].extensions[0].children[0].attributes['currency'].should.eql "USD"
-                _response.ads[0].extensions[0].children[0].attributes['source'].should.eql "someone"
+                ad1.extensions[0].attributes['type'].should.eql "Pricing"
+                ad1.extensions[0].children.should.have.length 1
+                ad1.extensions[0].children[0].name.should.eql "Price"
+                ad1.extensions[0].children[0].value.should.eql "0"
+                ad1.extensions[0].children[0].attributes['model'].should.eql "CPM"
+                ad1.extensions[0].children[0].attributes['currency'].should.eql "USD"
+                ad1.extensions[0].children[0].attributes['source'].should.eql "someone"
 
             it 'validate second extension', =>
-                _response.ads[0].extensions[1].attributes['type'].should.eql "Count"
-                _response.ads[0].extensions[1].children.should.have.length 1
-                _response.ads[0].extensions[1].children[0].name.should.eql "total_available"
-                _response.ads[0].extensions[1].children[0].value.should.eql "4"
+                ad1.extensions[1].attributes['type'].should.eql "Count"
+                ad1.extensions[1].children.should.have.length 1
+                ad1.extensions[1].children[0].name.should.eql "total_available"
+                ad1.extensions[1].children[0].value.should.eql "4"
 
-        describe '#For the 2nd ad (Non wrapped)', ->
+            #Linear
+            describe '1st creative (Linear)', ->
+                linear = null
+
+                before () =>
+                    linear = _response.ads[0].creatives[0]
+
+                after () =>
+                    linear = null
+
+                it 'should have linear type', =>
+                    linear.type.should.equal "linear"
+
+                it 'should have a duration of 90.123s', =>
+                    linear.duration.should.equal 90.123
+
+                it 'should have 1 media file', =>
+                    linear.mediaFiles.should.have.length 1
+
+                it 'should have parsed media file attributes', =>
+                    mediaFile = linear.mediaFiles[0]
+                    mediaFile.width.should.equal 512
+                    mediaFile.height.should.equal 288
+                    mediaFile.mimeType.should.equal "video/mp4"
+                    mediaFile.fileURL.should.equal "http://example.com/linear-asset.mp4"
+
+                it 'should have 1 URL for clickthrough', =>
+                    linear.videoClickThroughURLTemplate.should.eql 'http://example.com/linear-clickthrough'
+
+                it 'should have 5 URLs for clicktracking', =>
+                    linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking1', 'http://example.com/linear-clicktracking2', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
+
+                it 'should have 1 URL for customclick', =>
+                    linear.videoCustomClickURLTemplates.should.eql ['http://example.com/linear-customclick']
+
+                it 'should have 8 tracking events', =>
+                    linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%'
+
+                it 'should have 3 URLs for start event', =>
+                    linear.trackingEvents['start'].should.eql ['http://example.com/linear-start', 'http://example.com/wrapperB-linear-start', 'http://example.com/wrapperA-linear-start']
+
+                it 'should have 3 URLs for complete event', =>
+                    linear.trackingEvents['complete'].should.eql ['http://example.com/linear-complete', 'http://example.com/wrapperB-linear-complete', 'http://example.com/wrapperA-linear-complete']
+
+                it 'should have 3 URLs for progress-30 event VAST 3.0', =>
+                    linear.trackingEvents['progress-30'].should.eql ['http://example.com/linear-progress-30sec', 'http://example.com/wrapperB-linear-progress-30sec', 'http://example.com/wrapperA-linear-progress-30sec']
+
+                it 'should have 3 URLs for progress-60% event VAST 3.0', =>
+                    linear.trackingEvents['progress-60%'].should.eql ['http://example.com/linear-progress-60%', 'http://example.com/wrapperB-linear-progress-60%', 'http://example.com/wrapperA-linear-progress-60%']
+
+                it 'should have parsed icons element', =>
+                    icon = linear.icons[0]
+                    icon.program.should.equal "ad1"
+                    icon.height.should.equal 20
+                    icon.width.should.equal 60
+                    icon.xPosition.should.equal "left"
+                    icon.yPosition.should.equal "bottom"
+                    icon.apiFramework.should.equal "VPAID"
+                    icon.offset.should.equal 15
+                    icon.duration.should.equal 90
+                    icon.type.should.equal "image/gif"
+                    icon.staticResource.should.equal "http://example.com/linear-icon.gif"
+                    icon.iconClickThroughURLTemplate.should.equal "http://example.com/linear-clickthrough"
+                    icon.iconClickTrackingURLTemplates.should.eql ["http://example.com/linear-clicktracking1", "http://example.com/linear-clicktracking2"]
+                    icon.iconViewTrackingURLTemplate.should.equal "http://example.com/linear-viewtracking"
+
+            #Companions
+            describe '2nd creative (Companions)', ->
+                companions = null
+
+                before () =>
+                    companions = _response.ads[0].creatives[1]
+
+                after () =>
+                    companions = null
+
+                it 'should have companion type', =>
+                    companions.type.should.equal "companion"
+
+                it 'should have 3 variations', =>
+                    companions.variations.should.have.length 3
+
+                #Companion
+                describe '#Companion', ->
+                    companion = null
+
+                    describe 'as image/jpeg', ->
+                        before () =>
+                            companion = companions.variations[0]
+
+                        after () =>
+                            companion = null
+
+                        it 'should have parsed size and type attributes', =>
+                            companion.width.should.equal '300'
+                            companion.height.should.equal '60'
+                            companion.type.should.equal 'image/jpeg'
+
+                        it 'should have 1 tracking event', =>
+                            companion.trackingEvents.should.have.keys 'creativeView'
+
+                        it 'should have 1 url for creativeView event', =>
+                            companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
+
+                        it 'should have 1 companion clickthrough url', =>
+                            companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion1-clickthrough'
+
+                        it 'should store the first companion clicktracking url', =>
+                            companion.companionClickTrackingURLTemplate.should.equal 'http://example.com/companion1-clicktracking-first'
+
+                        it 'should have 2 companion clicktracking urls', =>
+                            companion.companionClickTrackingURLTemplates[0].should.equal  'http://example.com/companion1-clicktracking-first'
+                            companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion1-clicktracking-second'
+
+                    describe 'as IFrameResource', ->
+                      before () =>
+                          companion = companions.variations[1]
+
+                      after () =>
+                          companion = null
+
+                      it 'should have parsed size and type attributes', =>
+                          companion.width.should.equal '300'
+                          companion.height.should.equal '60'
+                          companion.type.should.equal 0
+
+                      it 'does not have tracking events', =>
+                        companion.trackingEvents.should.be.empty
+
+                      it 'has the #iframeResource set', ->
+                        companion.iframeResource.should.equal 'http://www.example.com/companion2-example.php'
+
+                    describe 'as text/html', ->
+                        before () =>
+                            companion = companions.variations[2]
+
+                        after () =>
+                          companion = null
+
+                        it 'should have parsed size and type attributes', =>
+                            companion.width.should.equal '300'
+                            companion.height.should.equal '60'
+                            companion.type.should.equal 'text/html'
+
+                        it 'should have 1 tracking event', =>
+                            companion.trackingEvents.should.be.empty
+
+                        it 'should have 1 companion clickthrough url', =>
+                            companion.companionClickThroughURLTemplate.should.equal  'http://www.example.com/companion3-clickthrough'
+
+                        it 'has #htmlResource available', ->
+                          companion.htmlResource.should.equal "<a href=\"http://www.example.com\" target=\"_blank\">Some call to action HTML!</a>"
+
+
+        describe '#For the 2nd ad', ->
+            ad2 = null
+
+            before () =>
+                ad2 = _response.ads[1]
+
+            after () =>
+                ad2 = null
 
             it 'should have retrieved Ad attributes', =>
                 _response.ads[1].id.should.eql "ad_id_0002"
                 should.equal _response.ads[1].sequence, null
 
             it 'should have retrieved Ad sub-elements values', =>
-                _response.ads[1].system.value.should.eql "AdServer2"
-                _response.ads[1].system.version.should.eql "2.1"
-                _response.ads[1].title.should.eql "Ad title 2"
-                should.equal _response.ads[1].advertiser, null
-                should.equal _response.ads[1].description, null
-                should.equal _response.ads[1].pricing, null
-                should.equal _response.ads[1].survey, null
+                ad2.system.value.should.eql "AdServer2"
+                ad2.system.version.should.eql "2.1"
+                ad2.title.should.eql "Ad title 2"
+                should.equal ad2.advertiser, null
+                should.equal ad2.description, null
+                should.equal ad2.pricing, null
+                should.equal ad2.survey, null
 
-            it 'should have 0 error URL', =>
-                _response.ads[1].errorURLTemplates.should.eql []
+            it 'should have merged error URLs', =>
+                ad2.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error"]
 
-            it 'should have 1 impression URL', =>
-                _response.ads[1].impressionURLTemplates.should.eql ["http://example.com/impression1"]
+            it 'should have merged impression URLs', =>
+                ad2.impressionURLTemplates.should.eql ["http://example.com/wrapperA-impression", "http://example.com/wrapperB-impression1", "http://example.com/wrapperB-impression2", "http://example.com/impression1"]
 
             it 'should have 1 creative', =>
-                _response.ads[1].creatives.should.have.length 1
+                ad2.creatives.should.have.length 1
 
             it 'should have 0 extentions', =>
-                _response.ads[1].extensions.should.eql []
+                ad2.extensions.should.eql []
 
+            #Linear
+            describe '1st creative (Linear)', ->
+                linear = null
 
-        #Linear
-        describe '#Linear', ->
-            linear = null
+                before () =>
+                    linear = ad2.creatives[0]
 
-            before (done) =>
-                linear = _response.ads[0].creatives[0]
-                done()
+                after () =>
+                    linear = null
 
-            it 'should have linear type', =>
-                linear.type.should.equal "linear"
+                it 'should have linear type', =>
+                    linear.type.should.equal "linear"
 
-            it 'should have 1 media file', =>
-                linear.mediaFiles.should.have.length 1
+                it 'should have a duration of 30.123s', =>
+                    linear.duration.should.equal 30.123
 
-            it 'should have a duration of 90.123s', =>
-                linear.duration.should.equal 90.123
+                it 'should have wrapper clickthrough URL', =>
+                    linear.videoClickThroughURLTemplate.should.eql "http://example.com/wrapperB-linear-clickthrough"
 
-            it 'should have parsed media file attributes', =>
-                mediaFile = linear.mediaFiles[0]
-                mediaFile.width.should.equal 512
-                mediaFile.height.should.equal 288
-                mediaFile.mimeType.should.equal "video/mp4"
-                mediaFile.fileURL.should.equal "http://example.com/asset.mp4"
+                it 'should have 4 URLs for clicktracking', =>
+                    linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
 
-            it 'should have 8 tracking events', =>
-                linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%'
-
-            it 'should have 2 urls for start event', =>
-                linear.trackingEvents['start'].should.eql ['http://example.com/start', 'http://example.com/wrapper-start']
-
-            it 'should have 2 urls for complete event', =>
-                linear.trackingEvents['complete'].should.eql ['http://example.com/complete', 'http://example.com/wrapper-complete']
-
-            it 'should have 1 url for clickthrough', =>
-                linear.videoClickThroughURLTemplate.should.eql 'http://example.com/clickthrough'
-
-            it 'should have 2 urls for clicktracking', =>
-                linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/clicktracking', 'http://example.com/wrapper-clicktracking']
-
-            it 'should have 1 url for customclick', =>
-                linear.videoCustomClickURLTemplates.should.eql ['http://example.com/customclick']
-
-            it 'should have 2 urls for progress-30 event VAST 3.0', =>
-                linear.trackingEvents['progress-30'].should.eql ['http://example.com/progress-30sec', 'http://example.com/wrapper-progress-30sec']
-
-            it 'should have 2 urls for progress-60% event VAST 3.0', =>
-                linear.trackingEvents['progress-60%'].should.eql ['http://example.com/progress-60%', 'http://example.com/wrapper-progress-60%']
-
-            it 'should have parsed icons element', =>
-                icon = linear.icons[0]
-                icon.program.should.equal "ad1"
-                icon.height.should.equal 20
-                icon.width.should.equal 60
-                icon.xPosition.should.equal "left"
-                icon.yPosition.should.equal "bottom"
-                icon.apiFramework.should.equal "VPAID"
-                icon.offset.should.equal 15
-                icon.duration.should.equal 90
-                icon.type.should.equal "image/gif"
-                icon.staticResource.should.equal "http://example.com/icon.gif"
-                icon.iconClickThroughURLTemplate.should.equal "http://example.com/clickthrough"
-                icon.iconClickTrackingURLTemplates.should.eql ["http://example.com/clicktracking1", "http://example.com/clicktracking2"]
-                icon.iconViewTrackingURLTemplate.should.equal "http://example.com/viewtracking"
-
-        #Companions
-        describe '#Companions', ->
-            companions = null
-
-            before (done) =>
-                companions = _response.ads[0].creatives[1]
-                done()
-
-            it 'should have companion type', =>
-                companions.type.should.equal "companion"
-
-            it 'should have 3 variations', =>
-                companions.variations.should.have.length 3
-
-            #Companion
-            describe '#Companion', ->
-                companion = null
-
-                describe 'as image/jpeg', ->
-                    before (done) =>
-                        companion = companions.variations[0]
-                        done()
-
-                    it 'should have parsed size and type attributes', =>
-                        companion.width.should.equal '300'
-                        companion.height.should.equal '60'
-                        companion.type.should.equal 'image/jpeg'
-
-                    it 'should have 1 tracking event', =>
-                        companion.trackingEvents.should.have.keys 'creativeView'
-
-                    it 'should have 1 url for creativeView event', =>
-                        companion.trackingEvents['creativeView'].should.eql ['http://example.com/creativeview']
-
-                    it 'should have 1 companion clickthrough url', =>
-                        companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion-clickthrough'
-
-                    it 'should store the first companion clicktracking url', =>
-                        companion.companionClickTrackingURLTemplate.should.equal 'http://example.com/companion-clicktracking-first'
-
-                    it 'should have 2 companion clicktracking urls', =>
-                        companion.companionClickTrackingURLTemplates[0].should.equal  'http://example.com/companion-clicktracking-first'
-                        companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion-clicktracking-second'
-
-                describe 'as IFrameResource', ->
-                  before (done) =>
-                      companion = companions.variations[1]
-                      done()
-
-                  it 'should have parsed size and type attributes', =>
-                      companion.width.should.equal '300'
-                      companion.height.should.equal '60'
-                      companion.type.should.equal 0
-
-                  it 'does not have tracking events', =>
-                    companion.trackingEvents.should.be.empty
-
-                  it 'has the #iframeResource set', ->
-                    companion.iframeResource.should.equal 'http://www.example.com/example.php'
-
-                describe 'as text/html', ->
-                    before (done) =>
-                        companion = companions.variations[2]
-                        done()
-
-                    it 'should have parsed size and type attributes', =>
-                        companion.width.should.equal '300'
-                        companion.height.should.equal '60'
-                        companion.type.should.equal 'text/html'
-
-                    it 'should have 1 tracking event', =>
-                        companion.trackingEvents.should.be.empty
-
-                    it 'should have 1 companion clickthrough url', =>
-                        companion.companionClickThroughURLTemplate.should.equal  'http://www.example.com'
-
-                    it 'has #htmlResource available', ->
-                      companion.htmlResource.should.equal "<a href=\"http://www.example.com\" target=\"_blank\">Some call to action HTML!</a>"
 
         describe '#VAST', ->
             @response = null

@@ -20,13 +20,11 @@ class VASTCreativeNonLinear extends VASTCreative
         super
         @type = "nonlinear"
         @variations = []
-        @videoClickTrackingURLTemplates = []
 
 class VASTCreativeCompanion extends VASTCreative
     constructor: ->
         @type = "companion"
         @variations = []
-        @videoClickTrackingURLTemplates = []
 
 module.exports =
     VASTCreativeLinear: VASTCreativeLinear
