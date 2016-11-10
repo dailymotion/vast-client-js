@@ -42,9 +42,11 @@ describe 'VASTParser', ->
         describe '#For the 1st ad', ->
             ad1 = null
 
-            before (done) =>
+            before () =>
                 ad1 = _response.ads[0]
-                done()
+
+            after () =>
+                ad1 = null
 
             it 'should have retrieved Ad attributes', =>
                 ad1.id.should.eql "ad_id_0001"
@@ -92,9 +94,11 @@ describe 'VASTParser', ->
             describe '1st creative (Linear)', ->
                 linear = null
 
-                before (done) =>
+                before () =>
                     linear = _response.ads[0].creatives[0]
-                    done()
+
+                after () =>
+                    linear = null
 
                 it 'should have linear type', =>
                     linear.type.should.equal "linear"
@@ -156,9 +160,11 @@ describe 'VASTParser', ->
             describe '2nd creative (Companions)', ->
                 companions = null
 
-                before (done) =>
+                before () =>
                     companions = _response.ads[0].creatives[1]
-                    done()
+
+                after () =>
+                    companions = null
 
                 it 'should have companion type', =>
                     companions.type.should.equal "companion"
@@ -171,9 +177,11 @@ describe 'VASTParser', ->
                     companion = null
 
                     describe 'as image/jpeg', ->
-                        before (done) =>
+                        before () =>
                             companion = companions.variations[0]
-                            done()
+
+                        after () =>
+                            companion = null
 
                         it 'should have parsed size and type attributes', =>
                             companion.width.should.equal '300'
@@ -197,9 +205,11 @@ describe 'VASTParser', ->
                             companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion1-clicktracking-second'
 
                     describe 'as IFrameResource', ->
-                      before (done) =>
+                      before () =>
                           companion = companions.variations[1]
-                          done()
+
+                      after () =>
+                          companion = null
 
                       it 'should have parsed size and type attributes', =>
                           companion.width.should.equal '300'
@@ -213,9 +223,11 @@ describe 'VASTParser', ->
                         companion.iframeResource.should.equal 'http://www.example.com/companion2-example.php'
 
                     describe 'as text/html', ->
-                        before (done) =>
+                        before () =>
                             companion = companions.variations[2]
-                            done()
+
+                        after () =>
+                          companion = null
 
                         it 'should have parsed size and type attributes', =>
                             companion.width.should.equal '300'
@@ -235,9 +247,11 @@ describe 'VASTParser', ->
         describe '#For the 2nd ad', ->
             ad2 = null
 
-            before (done) =>
+            before () =>
                 ad2 = _response.ads[1]
-                done()
+
+            after () =>
+                ad2 = null
 
             it 'should have retrieved Ad attributes', =>
                 _response.ads[1].id.should.eql "ad_id_0002"
@@ -268,9 +282,11 @@ describe 'VASTParser', ->
             describe '1st creative (Linear)', ->
                 linear = null
 
-                before (done) =>
+                before () =>
                     linear = ad2.creatives[0]
-                    done()
+
+                after () =>
+                    linear = null
 
                 it 'should have linear type', =>
                     linear.type.should.equal "linear"
