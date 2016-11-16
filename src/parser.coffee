@@ -147,6 +147,11 @@ class VASTParser
                                         if creative.type is 'linear'
                                             creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
 
+                                if ad.videoCustomClickURLTemplates?
+                                    for creative in wrappedAd.creatives
+                                        if creative.type is 'linear'
+                                            creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat ad.videoCustomClickURLTemplates
+
                                 # VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
                                 if ad.videoClickThroughURLTemplate?
                                     for creative in wrappedAd.creatives
@@ -207,6 +212,8 @@ class VASTParser
                         ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates
                     if wrapperCreativeElement.videoClickThroughURLTemplate?
                         ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate
+                    if wrapperCreativeElement.videoCustomClickURLTemplates?
+                        ad.videoCustomClickURLTemplates = wrapperCreativeElement.videoCustomClickURLTemplates
 
         if ad.nextWrapperURL?
             return ad

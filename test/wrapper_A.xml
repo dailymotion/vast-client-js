@@ -52,6 +52,7 @@
             <VideoClicks>
               <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
               <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking2]]></ClickTracking>
+              <CustomClick><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
             </VideoClicks>
           </Linear>
         </Creative>
