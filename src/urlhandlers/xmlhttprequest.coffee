@@ -12,8 +12,10 @@ class XHRURLHandler
             return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'))
 
         try
+            async = options.async or true
+
             xhr = @xhr()
-            xhr.open('GET', url)
+            xhr.open('GET', url, async)
             xhr.timeout = options.timeout or 0
             xhr.withCredentials = options.withCredentials or false
             xhr.overrideMimeType && xhr.overrideMimeType('text/xml');
