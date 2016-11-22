@@ -72,23 +72,29 @@ describe 'VASTParser', ->
             it 'should have 2 creatives', =>
                 ad1.creatives.should.have.length 2
 
-            it 'should have 2 extentions', =>
-                ad1.extensions.should.have.length 2
+            it 'should have 3 extensions', =>
+                ad1.extensions.should.have.length 3
 
             it 'validate first extension', =>
-                ad1.extensions[0].attributes['type'].should.eql "Pricing"
+                ad1.extensions[0].attributes['type'].should.eql "WrapperExtension"
                 ad1.extensions[0].children.should.have.length 1
-                ad1.extensions[0].children[0].name.should.eql "Price"
-                ad1.extensions[0].children[0].value.should.eql "0"
-                ad1.extensions[0].children[0].attributes['model'].should.eql "CPM"
-                ad1.extensions[0].children[0].attributes['currency'].should.eql "USD"
-                ad1.extensions[0].children[0].attributes['source'].should.eql "someone"
+                ad1.extensions[0].children[0].name.should.eql "extension_tag"
+                ad1.extensions[0].children[0].value.should.eql "extension_value"
 
             it 'validate second extension', =>
-                ad1.extensions[1].attributes['type'].should.eql "Count"
+                ad1.extensions[1].attributes['type'].should.eql "Pricing"
                 ad1.extensions[1].children.should.have.length 1
-                ad1.extensions[1].children[0].name.should.eql "total_available"
-                ad1.extensions[1].children[0].value.should.eql "4"
+                ad1.extensions[1].children[0].name.should.eql "Price"
+                ad1.extensions[1].children[0].value.should.eql "0"
+                ad1.extensions[1].children[0].attributes['model'].should.eql "CPM"
+                ad1.extensions[1].children[0].attributes['currency'].should.eql "USD"
+                ad1.extensions[1].children[0].attributes['source'].should.eql "someone"
+
+            it 'validate third extension', =>
+                ad1.extensions[2].attributes['type'].should.eql "Count"
+                ad1.extensions[2].children.should.have.length 1
+                ad1.extensions[2].children[0].name.should.eql "total_available"
+                ad1.extensions[2].children[0].value.should.eql "4"
 
             #Linear
             describe '1st creative (Linear)', ->
@@ -275,8 +281,14 @@ describe 'VASTParser', ->
             it 'should have 1 creative', =>
                 ad2.creatives.should.have.length 1
 
-            it 'should have 0 extentions', =>
-                ad2.extensions.should.eql []
+            it 'should have 1 extension (from the wrapper)', =>
+                ad2.extensions.should.have.length 1
+
+            it 'validate the extension', =>
+                ad2.extensions[0].attributes['type'].should.eql "WrapperExtension"
+                ad2.extensions[0].children.should.have.length 1
+                ad2.extensions[0].children[0].name.should.eql "extension_tag"
+                ad2.extensions[0].children[0].value.should.eql "extension_value"
 
             #Linear
             describe '1st creative (Linear)', ->
