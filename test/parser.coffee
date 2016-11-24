@@ -122,8 +122,8 @@ describe 'VASTParser', ->
                 it 'should have 5 URLs for clicktracking', =>
                     linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking1', 'http://example.com/linear-clicktracking2', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
 
-                it 'should have 1 URL for customclick', =>
-                    linear.videoCustomClickURLTemplates.should.eql ['http://example.com/linear-customclick']
+                it 'should have 2 URLs for customclick', =>
+                    linear.videoCustomClickURLTemplates.should.eql ['http://example.com/linear-customclick', 'http://example.com/wrapperA-linear-customclick']
 
                 it 'should have 8 tracking events', =>
                     linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%'
@@ -296,6 +296,9 @@ describe 'VASTParser', ->
 
                 it 'should have wrapper clickthrough URL', =>
                     linear.videoClickThroughURLTemplate.should.eql "http://example.com/wrapperB-linear-clickthrough"
+
+                it 'should have wrapper customclick URL', =>
+                    linear.videoCustomClickURLTemplates.should.eql ["http://example.com/wrapperA-linear-customclick"]
 
                 it 'should have 4 URLs for clicktracking', =>
                     linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
