@@ -80,6 +80,22 @@
             </Companion>
           </CompanionAds>
         </Creative>
+        <Creative>
+          <NonLinearAds>
+            <NonLinear width="300" height="200">
+              <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
+              <NonLinearClickThrough><![CDATA[http://example.com/nonlinear-clickthrough]]></NonLinearClickThrough>
+            </NonLinear>
+            <TrackingEvents>
+              <Tracking event="midpoint"><![CDATA[http://example.com/nonlinear-midpoint]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/nonlinear-complete]]></Tracking>
+              <Tracking event="start"><![CDATA[http://example.com/nonlinear-start]]></Tracking>
+              <Tracking event="firstQuartile"><![CDATA[http://example.com/nonlinear-firstQuartile]]></Tracking>
+              <Tracking event="close"><![CDATA[http://example.com/nonlinear-close]]></Tracking>
+              <Tracking event="thirdQuartile"><![CDATA[http://example.com/nonlinear-thirdQuartile]]></Tracking>
+            </TrackingEvents>
+          </NonLinearAds>
+        </Creative>
       </Creatives>
       <Extensions>
         <Extension type="Pricing">

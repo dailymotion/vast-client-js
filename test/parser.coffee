@@ -69,8 +69,8 @@ describe 'VASTParser', ->
             it 'should have merged impression URLs', =>
                 ad1.impressionURLTemplates.should.eql ["http://example.com/wrapperA-impression", "http://example.com/wrapperB-impression1", "http://example.com/wrapperB-impression2", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
 
-            it 'should have 2 creatives', =>
-                ad1.creatives.should.have.length 2
+            it 'should have 3 creatives', =>
+                ad1.creatives.should.have.length 3
 
             it 'should have 3 extensions', =>
                 ad1.extensions.should.have.length 3
@@ -249,6 +249,50 @@ describe 'VASTParser', ->
                         it 'has #htmlResource available', ->
                           companion.htmlResource.should.equal "<a href=\"http://www.example.com\" target=\"_blank\">Some call to action HTML!</a>"
 
+            #Nonlinear
+            describe '3rd creative (Nonlinears)', ->
+                nonlinears = null
+
+                before () =>
+                    nonlinears = _response.ads[0].creatives[2]
+
+                after () =>
+                    nonlinears = null
+
+                it 'should have nonlinear type', =>
+                    nonlinears.type.should.equal "nonlinear"
+
+                it 'should have 1 variation', =>
+                    nonlinears.variations.should.have.length 1
+
+                #NonLinear
+                describe '#NonLinear', ->
+                    nonlinear = null
+
+                    describe 'trackingEvents', ->
+                        it 'should have 6 tracking events', =>
+                            nonlinears.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile'
+
+                        it 'should have 3 URLs for start event', =>
+                            nonlinears.trackingEvents['start'].should.eql ['http://example.com/nonlinear-start', 'http://example.com/wrapperB-nonlinear-start', 'http://example.com/wrapperA-nonlinear-start']
+
+                        it 'should have 3 URLs for complete event', =>
+                            nonlinears.trackingEvents['complete'].should.eql ['http://example.com/nonlinear-complete', 'http://example.com/wrapperB-nonlinear-complete', 'http://example.com/wrapperA-nonlinear-complete']
+
+                    describe 'as image/jpeg', ->
+                        before () =>
+                            nonlinear = nonlinears.variations[0]
+
+                        after () =>
+                            nonlinear = null
+
+                        it 'should have parsed size and type attributes', =>
+                            nonlinear.width.should.equal '300'
+                            nonlinear.height.should.equal '200'
+                            nonlinear.type.should.equal 'image/jpeg'
+
+                        it 'should have 1 nonlinear clickthrough url', =>
+                            nonlinear.nonlinearClickThroughURLTemplate.should.equal  'http://example.com/nonlinear-clickthrough'
 
         describe '#For the 2nd ad', ->
             ad2 = null
