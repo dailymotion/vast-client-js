@@ -821,7 +821,7 @@ VASTParser = (function() {
               ad.nextWrapperURL = baseURL + "/" + ad.nextWrapperURL;
             }
             return _this._parse(ad.nextWrapperURL, parentURLs, options, function(err, wrappedResponse) {
-              var base, creative, errorAlreadyRaised, eventName, index, l, len3, len4, len5, len6, len7, m, n, o, p, ref3, ref4, ref5, ref6, ref7, wrappedAd;
+              var base, creative, errorAlreadyRaised, eventName, index, l, len3, len4, len5, len6, len7, len8, m, n, o, p, q, ref3, ref4, ref5, ref6, ref7, ref8, wrappedAd;
               errorAlreadyRaised = false;
               if (err != null) {
                 _this.track(ad.errorURLTemplates, {
@@ -844,16 +844,17 @@ VASTParser = (function() {
                   wrappedAd = ref3[l];
                   wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
                   wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
+                  wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
                   if (ad.trackingEvents != null) {
                     ref4 = wrappedAd.creatives;
                     for (m = 0, len4 = ref4.length; m < len4; m++) {
                       creative = ref4[m];
-                      if (creative.type === 'linear' || creative.type === 'nonlinear') {
-                        ref5 = Object.keys(ad.trackingEvents);
+                      if (ad.trackingEvents[creative.type] != null) {
+                        ref5 = Object.keys(ad.trackingEvents[creative.type]);
                         for (n = 0, len5 = ref5.length; n < len5; n++) {
                           eventName = ref5[n];
                           (base = creative.trackingEvents)[eventName] || (base[eventName] = []);
-                          creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[eventName]);
+                          creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[creative.type][eventName]);
                         }
                       }
                     }
@@ -867,10 +868,19 @@ VASTParser = (function() {
                       }
                     }
                   }
-                  if (ad.videoClickThroughURLTemplate != null) {
+                  if (ad.videoCustomClickURLTemplates != null) {
                     ref7 = wrappedAd.creatives;
                     for (p = 0, len7 = ref7.length; p < len7; p++) {
                       creative = ref7[p];
+                      if (creative.type === 'linear') {
+                        creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(ad.videoCustomClickURLTemplates);
+                      }
+                    }
+                  }
+                  if (ad.videoClickThroughURLTemplate != null) {
+                    ref8 = wrappedAd.creatives;
+                    for (q = 0, len8 = ref8.length; q < len8; q++) {
+                      creative = ref8[q];
                       if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate == null)) {
                         creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate;
                       }
@@ -951,13 +961,17 @@ VASTParser = (function() {
         wrapperCreativeElement = creative;
         if (wrapperCreativeElement != null) {
           if (wrapperCreativeElement.trackingEvents != null) {
-            ad.trackingEvents = wrapperCreativeElement.trackingEvents;
+            ad.trackingEvents || (ad.trackingEvents = {});
+            ad.trackingEvents[wrapperCreativeElement.type] = wrapperCreativeElement.trackingEvents;
           }
           if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
             ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates;
           }
           if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
             ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate;
+          }
+          if (wrapperCreativeElement.videoCustomClickURLTemplates != null) {
+            ad.videoCustomClickURLTemplates = wrapperCreativeElement.videoCustomClickURLTemplates;
           }
         }
       }
