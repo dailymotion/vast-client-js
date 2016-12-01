@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <VAST version="2.0">
-  <Error><![CDATA[http://example.com/wrapper-error]]></Error>
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
-      <VASTAdTagURI>empty.xml</VASTAdTagURI>
-      <Error>http://example.com/wrapper-error</Error>
+      <VASTAdTagURI>empty-no-ad.xml</VASTAdTagURI>
+      <Error>http://example.com/wrapper-empty_wrapper-error</Error>
       <Impression>http://example.com/wrapper-impression</Impression>
       <Creatives>
         <Creative>

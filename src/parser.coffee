@@ -13,7 +13,10 @@ VASTCompanionAd = require './companionad'
 VASTNonLinear = require './nonlinear'
 EventEmitter = require('events').EventEmitter
 
+DEFAULT_MAX_WRAPPER_WIDTH = 10
+
 class VASTParser
+    maxWrapperDepth = null
     URLTemplateFilters = []
 
     @addURLTemplateFilter: (func) ->
@@ -29,13 +32,17 @@ class VASTParser
             cb = options if typeof options is 'function'
             options = {}
 
+        maxWrapperDepth = options.maxWrapperDepth || DEFAULT_MAX_WRAPPER_WIDTH
+        options.wrapperDepth = 0
+
         @_parse url, null, options, (err, response) ->
             cb(response, err)
 
     @vent = new EventEmitter()
     @track: (templates, errorCode) ->
         @vent.emit 'VAST-error', errorCode
-        VASTUtil.track(templates, errorCode)
+        if templates.length > 0
+            VASTUtil.track(templates, errorCode)
 
     @on: (eventName, cb) ->
         @vent.on eventName, cb
@@ -44,16 +51,16 @@ class VASTParser
         @vent.once eventName, cb
 
     @_parse: (url, parentURLs, options, cb) ->
-        # Options param can be skipped
-        if not cb
-            cb = options if typeof options is 'function'
-            options = {}
+        # Current VAST depth
+        wrapperDepth = options.wrapperDepth++
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
 
         parentURLs ?= []
         parentURLs.push url
+
+        errorAlreadyRaised = false
 
         URLHandler.get url, options, (err, xml) =>
             return cb(err) if err?
@@ -76,34 +83,40 @@ class VASTParser
                         # VAST version of response not supported.
                         @track(response.errorURLTemplates, ERRORCODE: 101)
 
-            complete = (errorAlreadyRaised = false) =>
-                return unless response
-                noCreatives = true
-                for ad in response.ads
+            complete = (err = null) =>
+                for ad, index in response.ads by -1
+                    # Still some Wrappers URL to be resolved -> continue
                     return if ad.nextWrapperURL?
-                    if ad.creatives.length > 0
-                        noCreatives = false
-                if noCreatives
-                    # No Ad Response
-                    # The VAST <Error> element is optional but if included, the video player must send a request to the URI
-                    # provided when the VAST response returns an empty InLine response after a chain of one or more wrapper ads.
-                    # If an [ERRORCODE] macro is included, the video player should substitute with error code 303.
-                    @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
-                if response.ads.length == 0
-                    response = null
-                cb(null, response)
+
+                # All <Ad> elements has been fully parsed
+                if wrapperDepth is 0
+                    # No Ad case - The parser never bump into an <Ad> element
+                    if response.ads.length is 0
+                        @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
+                    else
+                        for ad, index in response.ads by -1
+                            # No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
+                            # but no creative was found
+                            if ad.creatives.length is 0
+                                @track(ad.errorURLTemplates.concat(response.errorURLTemplates), ERRORCODE: 303)
+                                response.ads.splice(index, 1)
+
+                    # Remove errorURLTemplates from the public response
+                    delete response.errorURLTemplates
+
+                cb(err, response)
 
             loopIndex = response.ads.length
             while loopIndex--
                 ad = response.ads[loopIndex]
                 continue unless ad.nextWrapperURL?
                 do (ad) =>
-                    if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
+                    if parentURLs.length >= maxWrapperDepth or ad.nextWrapperURL in parentURLs
                         # Wrapper limit reached, as defined by the video player.
                         # Too many Wrapper responses have been received with no InLine response.
                         @track(ad.errorURLTemplates, ERRORCODE: 302)
                         response.ads.splice(response.ads.indexOf(ad), 1)
-                        complete()
+                        errorAlreadyRaised = true
                         return
 
                     if ad.nextWrapperURL.indexOf('//') == 0
@@ -115,20 +128,24 @@ class VASTParser
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
                     @_parse ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) =>
-                        errorAlreadyRaised = false
+                        delete ad.nextWrapperURL
+
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                             # (URI was either unavailable or reached a timeout as defined by the video player.)
                             @track(ad.errorURLTemplates, ERRORCODE: 301)
                             response.ads.splice(response.ads.indexOf(ad), 1)
                             errorAlreadyRaised = true
-                        else if not wrappedResponse?
-                            # No Ads VAST response after one or more Wrappers
-                            @track(ad.errorURLTemplates, ERRORCODE: 303)
-                            response.ads.splice(response.ads.indexOf(ad), 1)
-                            errorAlreadyRaised = true
-                        else
+                            complete()
+                            return
+
+                        if wrappedResponse?.errorURLTemplates?
                             response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
+
+                        if wrappedResponse.ads.length == 0
+                            # No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
+                            ad.creatives = []
+                        else
                             index = response.ads.indexOf(ad)
                             response.ads.splice(index, 1)
                             for wrappedAd in wrappedResponse.ads
@@ -161,8 +178,7 @@ class VASTParser
 
                                 response.ads.splice ++index, 0, wrappedAd
 
-                        delete ad.nextWrapperURL
-                        complete errorAlreadyRaised
+                        complete()
 
             complete()
 
