@@ -28,6 +28,11 @@
           </Linear>
         </Creative>
       </Creatives>
+      <Extensions>
+        <Extension>
+            <paramWrapperInvalidXmlfile><![CDATA[valueWrapperInvalidXmlfile]]></paramWrapperInvalidXmlfile>
+        </Extension>
+      </Extensions>
     </Wrapper>
   </Ad>
 </VAST>

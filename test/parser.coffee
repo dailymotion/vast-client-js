@@ -371,15 +371,15 @@ describe 'VASTParser', ->
 
     describe '#Tracking', ->
         trackCalls = null
-        errorCodeTriggered = null
+        dataTriggered = null
 
         beforeEach =>
             VASTParser.vent.removeAllListeners()
-            errorCodeTriggered = []
+            dataTriggered = []
             trackCalls = []
 
             VASTParser.on 'VAST-error', (variables) ->
-                errorCodeTriggered.push variables.ERRORCODE
+                dataTriggered.push variables
 
             VASTUtil.track = (templates, variables) =>
                 trackCalls.push {
@@ -393,7 +393,9 @@ describe 'VASTParser', ->
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
-                    errorCodeTriggered.should.eql [ 303 ]
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions.should.eql []
                     # Tracking has been done
                     trackCalls.length.should.eql 1
                     trackCalls[0].templates.should.eql [ 'http://example.com/empty-no-ad' ]
@@ -405,7 +407,10 @@ describe 'VASTParser', ->
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
-                    errorCodeTriggered.should.eql [ 303 ]
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramWrapperEmptyNoAd'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueWrapperEmptyNoAd'
                     # Tracking has been done
                     trackCalls.length.should.eql 1
                     trackCalls[0].templates.should.eql [ 'http://example.com/wrapper-empty_wrapper-error', 'http://example.com/empty-no-ad' ]
@@ -418,7 +423,10 @@ describe 'VASTParser', ->
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
-                    errorCodeTriggered.should.eql [ 303 ]
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramEmptyNoCreative'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueEmptyNoCreative'
                     # Tracking has been done
                     trackCalls.length.should.eql 1
                     trackCalls[0].templates.should.eql [ 'http://example.com/empty-no-creative_inline-error' ]
@@ -430,7 +438,12 @@ describe 'VASTParser', ->
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
-                    errorCodeTriggered.should.eql [ 303 ]
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramWrapperEmptyNoCreative'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueWrapperEmptyNoCreative'
+                    dataTriggered[0].extensions[1].children[0].name.should.eql 'paramEmptyNoCreative'
+                    dataTriggered[0].extensions[1].children[0].value.should.eql 'valueEmptyNoCreative'
                     # Tracking has been done
                     trackCalls.length.should.eql 1
                     trackCalls[0].templates.should.eql [ 'http://example.com/wrapper-no-creative_wrapper-error' , 'http://example.com/empty-no-creative_inline-error' ]
@@ -453,7 +466,10 @@ describe 'VASTParser', ->
                     # No error returned
                     should.not.exist(err)
                     # Error has been triggered
-                    errorCodeTriggered.should.eql [ 301 ]
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 301
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramWrapperInvalidXmlfile'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueWrapperInvalidXmlfile'
                     # Tracking has been done
                     trackCalls.length.should.eql 1
                     trackCalls[0].templates.should.eql [ 'http://example.com/wrapper-invalid-xmlfile_wrapper-error' ]
@@ -468,7 +484,10 @@ describe 'VASTParser', ->
                     # No error returned
                     should.not.exist(err)
                     # Error has been triggered
-                    errorCodeTriggered.should.eql [ 302 ]
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 302
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'extension_tag'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'extension_value'
                     # Tracking has been done
                     trackCalls.length.should.eql 1
                     trackCalls[0].templates.should.eql [ 'http://example.com/wrapperA-error' ]

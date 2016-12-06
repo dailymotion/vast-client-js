@@ -15,6 +15,10 @@ EventEmitter = require('events').EventEmitter
 
 DEFAULT_MAX_WRAPPER_WIDTH = 10
 
+DEFAULT_EVENT_DATA =
+    ERRORCODE  : 900
+    extensions : []
+
 class VASTParser
     maxWrapperDepth = null
     URLTemplateFilters = []
@@ -39,10 +43,9 @@ class VASTParser
             cb(response, err)
 
     @vent = new EventEmitter()
-    @track: (templates, errorCode) ->
-        @vent.emit 'VAST-error', errorCode
-        if templates.length > 0
-            VASTUtil.track(templates, errorCode)
+    @track: (templates, errorCode, emittedData) ->
+        @vent.emit 'VAST-error', VASTUtil.merge(DEFAULT_EVENT_DATA, errorCode, emittedData)
+        VASTUtil.track(templates, errorCode)
 
     @on: (eventName, cb) ->
         @vent.on eventName, cb
@@ -59,8 +62,6 @@ class VASTParser
 
         parentURLs ?= []
         parentURLs.push url
-
-        errorAlreadyRaised = false
 
         URLHandler.get url, options, (err, xml) =>
             return cb(err) if err?
@@ -83,7 +84,7 @@ class VASTParser
                         # VAST version of response not supported.
                         @track(response.errorURLTemplates, ERRORCODE: 101)
 
-            complete = (err = null) =>
+            complete = () =>
                 for ad, index in response.ads by -1
                     # Still some Wrappers URL to be resolved -> continue
                     return if ad.nextWrapperURL?
@@ -92,13 +93,18 @@ class VASTParser
                 if wrapperDepth is 0
                     # No Ad case - The parser never bump into an <Ad> element
                     if response.ads.length is 0
-                        @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
+                        @track(response.errorURLTemplates, ERRORCODE: 303)
                     else
                         for ad, index in response.ads by -1
-                            # No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
+                            # - Error encountred while parsing
+                            # - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
                             # but no creative was found
-                            if ad.creatives.length is 0
-                                @track(ad.errorURLTemplates.concat(response.errorURLTemplates), ERRORCODE: 303)
+                            if ad.errorCode or ad.creatives.length is 0
+                                @track(
+                                    ad.errorURLTemplates.concat(response.errorURLTemplates),
+                                    { ERRORCODE: ad.errorCode || 303 },
+                                    { extensions : ad.extensions }
+                                )
                                 response.ads.splice(index, 1)
 
                     # Remove errorURLTemplates from the public response
@@ -114,9 +120,8 @@ class VASTParser
                     if parentURLs.length >= maxWrapperDepth or ad.nextWrapperURL in parentURLs
                         # Wrapper limit reached, as defined by the video player.
                         # Too many Wrapper responses have been received with no InLine response.
-                        @track(ad.errorURLTemplates, ERRORCODE: 302)
-                        response.ads.splice(response.ads.indexOf(ad), 1)
-                        errorAlreadyRaised = true
+                        ad.errorCode = 302
+                        delete ad.nextWrapperURL
                         return
 
                     if ad.nextWrapperURL.indexOf('//') == 0
@@ -133,9 +138,7 @@ class VASTParser
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                             # (URI was either unavailable or reached a timeout as defined by the video player.)
-                            @track(ad.errorURLTemplates, ERRORCODE: 301)
-                            response.ads.splice(response.ads.indexOf(ad), 1)
-                            errorAlreadyRaised = true
+                            ad.errorCode = 301
                             complete()
                             return
 

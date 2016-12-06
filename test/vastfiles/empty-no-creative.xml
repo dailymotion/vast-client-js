@@ -9,6 +9,11 @@
             </Error>
             <Creatives>
             </Creatives>
+            <Extensions>
+                <Extension>
+                    <paramEmptyNoCreative><![CDATA[valueEmptyNoCreative]]></paramEmptyNoCreative>
+                </Extension>
+            </Extensions>
         </InLine>
     </Ad>
 </VAST>

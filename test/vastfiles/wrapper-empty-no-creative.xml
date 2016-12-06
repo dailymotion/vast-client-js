@@ -28,6 +28,11 @@
           </Linear>
         </Creative>
       </Creatives>
+      <Extensions>
+        <Extension>
+            <paramWrapperEmptyNoCreative><![CDATA[valueWrapperEmptyNoCreative]]></paramWrapperEmptyNoCreative>
+        </Extension>
+      </Extensions>
     </Wrapper>
   </Ad>
 </VAST>
