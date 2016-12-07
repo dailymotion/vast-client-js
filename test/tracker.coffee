@@ -167,6 +167,34 @@ describe 'VASTTracker', ->
                 @Tracker.setFullscreen no
                 _eventsSent.should.eql []
 
+        describe '#setExpand', =>
+
+            before (done) =>
+                _eventsSent = []
+                @Tracker.trackingEvents['expand'] = 'http://example.com/expand'
+                @Tracker.trackingEvents['collapse'] = 'http://example.com/collapse'
+                @Tracker.setExpand yes
+                done()
+
+            it 'should be in expanded mode', =>
+                @Tracker.expanded.should.eql yes
+
+            it 'should send expand event', =>
+                _eventsSent.should.eql ["expand"]
+
+            it 'should be in collapsed mode', =>
+                _eventsSent = []
+                @Tracker.setExpand no
+                @Tracker.expanded.should.eql no
+
+            it 'should send collapse event', =>
+                _eventsSent.should.eql ["collapse"]
+
+            it 'should send no event', =>
+                _eventsSent = []
+                @Tracker.setExpand no
+                _eventsSent.should.eql []
+
 
         describe '#setSkipDelay', =>
 

@@ -90,6 +90,11 @@ class VASTTracker extends EventEmitter
             @track(if fullscreen then "fullscreen" else "exitFullscreen")
         @fullscreen = fullscreen
 
+    setExpand: (expanded) ->
+        if @expanded != expanded
+            @track(if expanded then "expand" else "collapse")
+        @expanded = expanded
+
     setSkipDelay: (duration) ->
         @skipDelay = duration if typeof duration is 'number'
 
