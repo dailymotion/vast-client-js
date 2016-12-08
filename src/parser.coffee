@@ -89,7 +89,9 @@ class VASTParser
                     # Still some Wrappers URL to be resolved -> continue
                     return if ad.nextWrapperURL?
 
-                # All <Ad> elements has been fully parsed
+                # We've to wait for all <Ad> elements to be parsed before handling error so we can:
+                # - Send computed extensions data
+                # - Ping all <Error> URIs defined across VAST files
                 if wrapperDepth is 0
                     # No Ad case - The parser never bump into an <Ad> element
                     if response.ads.length is 0
@@ -106,9 +108,6 @@ class VASTParser
                                     { extensions : ad.extensions }
                                 )
                                 response.ads.splice(index, 1)
-
-                    # Remove errorURLTemplates from the public response
-                    delete response.errorURLTemplates
 
                 cb(err, response)
 
