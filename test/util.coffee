@@ -23,3 +23,9 @@ describe 'VASTUtil', ->
 
         it 'should handle undefined', ->
             should(resolve(undefined)).equal undefined
+
+    describe '#merge', ->
+        it 'should merge 2 objects', ->
+            foo = { a: 1, b: 1 }
+            bar = { b: 2, c: 3}
+            VASTUtil.merge(foo, bar).should.eql { a: 1, b: 2, c: 3 }

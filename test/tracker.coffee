@@ -5,7 +5,7 @@ VASTUtil = require('../src/util.coffee')
 VASTTracker = require '../src/tracker'
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
+    return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
 
 describe 'VASTTracker', ->
     describe '#constructor', ->
@@ -17,7 +17,7 @@ describe 'VASTTracker', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper_A.xml'), (@response) =>
+            VASTParser.parse urlfor('wrapper-a.xml'), (@response) =>
                 # Init tracker
                 ad = @response.ads[0]
                 creative = @response.ads[0].creatives[0]
