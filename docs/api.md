@@ -180,6 +180,33 @@ vastTracker.on('exitFullscreen', function() {
 });
 ```
 
+### setExpand( expanded )
+Update the expand state and call the *expand*/*collapse* tracking URLs. Emit a *expand* or *collapse* event.
+
+- `Boolean` *expanded* – Indicate if the video is expanded or not.
+
+``` javascript
+// Sample function for a button that increase/decrease player size
+var playerExpanded = false
+expandButton.addEventListener('click',  function(e) {
+  playerExpanded = !playerExpanded
+  if (playerExpanded) {
+    increasePlayerSize()
+  } else {
+    decreasePlayerSize()
+  }
+  vastTracker.setExpand(playerExpanded);
+});
+
+vastTracker.on('expand', function() {
+  // expand tracking URLs have been called
+});
+
+vastTracker.on('collapse', function() {
+  // collapse tracking URLs have been called
+});
+```
+
 ### setSkipDelay( duration )
 Must be called if you want to overwrite the `<Linear>` `Skipoffset` value. This will init the skip countdown duration. Then, every time you call `setProgress()`, it will decrease the countdown and emit a `skip-countdown` event with the remaining time.
 
