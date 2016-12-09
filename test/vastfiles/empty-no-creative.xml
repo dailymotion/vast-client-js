@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+    <Ad>
+        <InLine>
+            <AdSystem>No Ad Server</AdSystem>
+            <AdTitle>NO AD</AdTitle>
+            <Error>
+                <![CDATA[http://example.com/empty-no-creative_inline-error]]>
+            </Error>
+            <Creatives>
+            </Creatives>
+            <Extensions>
+                <Extension>
+                    <paramEmptyNoCreative><![CDATA[valueEmptyNoCreative]]></paramEmptyNoCreative>
+                </Extension>
+            </Extensions>
+        </InLine>
+    </Ad>
+</VAST>

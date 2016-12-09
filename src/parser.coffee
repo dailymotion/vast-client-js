@@ -13,7 +13,14 @@ VASTCompanionAd = require './companionad'
 VASTNonLinear = require './nonlinear'
 EventEmitter = require('events').EventEmitter
 
+DEFAULT_MAX_WRAPPER_WIDTH = 10
+
+DEFAULT_EVENT_DATA =
+    ERRORCODE  : 900
+    extensions : []
+
 class VASTParser
+    maxWrapperDepth = null
     URLTemplateFilters = []
 
     @addURLTemplateFilter: (func) ->
@@ -29,6 +36,9 @@ class VASTParser
             cb = options if typeof options is 'function'
             options = {}
 
+        maxWrapperDepth = options.maxWrapperDepth || DEFAULT_MAX_WRAPPER_WIDTH
+        options.wrapperDepth = 0
+
         @_parse url, null, options, (err, response) ->
             cb(response, err)
 
@@ -40,8 +50,8 @@ class VASTParser
         @parseXmlDocument(null, [], options, xml, cb)
 
     @vent = new EventEmitter()
-    @track: (templates, errorCode) ->
-        @vent.emit 'VAST-error', errorCode
+    @track: (templates, errorCode, emittedData) ->
+        @vent.emit 'VAST-error', VASTUtil.merge(DEFAULT_EVENT_DATA, errorCode, emittedData)
         VASTUtil.track(templates, errorCode)
 
     @on: (eventName, cb) ->
@@ -54,10 +64,8 @@ class VASTParser
         @vent.removeListener eventName, cb
 
     @_parse: (url, parentURLs, options, cb) ->
-        # Options param can be skipped
-        if not cb
-            cb = options if typeof options is 'function'
-            options = {}
+        # Current VAST depth
+        wrapperDepth = options.wrapperDepth++
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
@@ -67,6 +75,7 @@ class VASTParser
 
         URLHandler.get url, options, (err, xml) =>
             return cb(err) if err?
+<<<<<<< HEAD
             @parseXmlDocument(url, parentURLs, options, xml, cb)
 
     @parseXmlDocument: (url, parentURLs, options, xml, cb) =>
@@ -189,6 +198,126 @@ class VASTParser
             for creative in wrappedAd.creatives
                 if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
                     creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
+=======
+
+            response = new VASTResponse()
+
+            unless xml?.documentElement? and xml.documentElement.nodeName is "VAST"
+                return cb(new Error('Invalid VAST XMLDocument'))
+
+            for node in xml.documentElement.childNodes
+                if node.nodeName is 'Error'
+                    response.errorURLTemplates.push (@parseNodeText node)
+
+            for node in xml.documentElement.childNodes
+                if node.nodeName is 'Ad'
+                    ad = @parseAdElement node
+                    if ad?
+                        response.ads.push ad
+                    else
+                        # VAST version of response not supported.
+                        @track(response.errorURLTemplates, ERRORCODE: 101)
+
+            complete = () =>
+                for ad, index in response.ads by -1
+                    # Still some Wrappers URL to be resolved -> continue
+                    return if ad.nextWrapperURL?
+
+                # We've to wait for all <Ad> elements to be parsed before handling error so we can:
+                # - Send computed extensions data
+                # - Ping all <Error> URIs defined across VAST files
+                if wrapperDepth is 0
+                    # No Ad case - The parser never bump into an <Ad> element
+                    if response.ads.length is 0
+                        @track(response.errorURLTemplates, ERRORCODE: 303)
+                    else
+                        for ad, index in response.ads by -1
+                            # - Error encountred while parsing
+                            # - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
+                            # but no creative was found
+                            if ad.errorCode or ad.creatives.length is 0
+                                @track(
+                                    ad.errorURLTemplates.concat(response.errorURLTemplates),
+                                    { ERRORCODE: ad.errorCode || 303 },
+                                    { extensions : ad.extensions }
+                                )
+                                response.ads.splice(index, 1)
+
+                cb(err, response)
+
+            loopIndex = response.ads.length
+            while loopIndex--
+                ad = response.ads[loopIndex]
+                continue unless ad.nextWrapperURL?
+                do (ad) =>
+                    if parentURLs.length >= maxWrapperDepth or ad.nextWrapperURL in parentURLs
+                        # Wrapper limit reached, as defined by the video player.
+                        # Too many Wrapper responses have been received with no InLine response.
+                        ad.errorCode = 302
+                        delete ad.nextWrapperURL
+                        return
+
+                    if ad.nextWrapperURL.indexOf('//') == 0
+                      protocol = location.protocol
+                      ad.nextWrapperURL = "#{protocol}#{ad.nextWrapperURL}"
+                    else if ad.nextWrapperURL.indexOf('://') == -1
+                        # Resolve relative URLs (mainly for unit testing)
+                        baseURL = url.slice(0, url.lastIndexOf('/'))
+                        ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
+
+                    @_parse ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) =>
+                        delete ad.nextWrapperURL
+
+                        if err?
+                            # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+                            # (URI was either unavailable or reached a timeout as defined by the video player.)
+                            ad.errorCode = 301
+                            complete()
+                            return
+
+                        if wrappedResponse?.errorURLTemplates?
+                            response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
+
+                        if wrappedResponse.ads.length == 0
+                            # No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
+                            ad.creatives = []
+                        else
+                            index = response.ads.indexOf(ad)
+                            response.ads.splice(index, 1)
+                            for wrappedAd in wrappedResponse.ads
+                                wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
+                                wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
+                                wrappedAd.extensions = ad.extensions.concat wrappedAd.extensions
+
+                                if ad.trackingEvents?
+                                    for creative in wrappedAd.creatives
+                                        if ad.trackingEvents[creative.type]?
+                                            for eventName in Object.keys ad.trackingEvents[creative.type]
+                                                creative.trackingEvents[eventName] or= []
+                                                creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[creative.type][eventName]
+
+                                if ad.videoClickTrackingURLTemplates?
+                                    for creative in wrappedAd.creatives
+                                        if creative.type is 'linear'
+                                            creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
+
+                                if ad.videoCustomClickURLTemplates?
+                                    for creative in wrappedAd.creatives
+                                        if creative.type is 'linear'
+                                            creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat ad.videoCustomClickURLTemplates
+
+                                # VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+                                if ad.videoClickThroughURLTemplate?
+                                    for creative in wrappedAd.creatives
+                                        if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
+                                            creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
+
+                                response.ads.splice ++index, 0, wrappedAd
+
+                        complete()
+
+            complete()
+>>>>>>> 93b53b6... Fix parser error tracking (#137)
 
     @childByName: (node, name) ->
         for child in node.childNodes

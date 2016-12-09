@@ -3,7 +3,7 @@ path = require 'path'
 URLHandler = require '../src/urlhandler'
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
+    return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
 
 describe 'URLHandler', ->
     describe '#get', ->

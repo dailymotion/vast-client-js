@@ -37,14 +37,12 @@ class VASTUtil
 
         return URLs
 
-    # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
-    @encodeURIComponentRFC3986: (str) ->
-        return encodeURIComponent(str).replace(/[!'()*]/g, (c) ->
-            return '%' + c.charCodeAt(0).toString(16)
-        )
+    # https://gist.github.com/sheldonh/6089299
+    @merge = (xs...) ->
+        if xs?.length > 0
+            @tap {}, (m) -> m[k] = v for k, v of x for x in xs
 
-    @leftpad: (str) ->
-        return if str.length < 8 then ('0' for [0...8-str.length]).join('') + str else str
+    @tap = (o, fn) -> fn(o); o
 
     @storage: do () ->
         try

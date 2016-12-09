@@ -3,9 +3,10 @@ path = require 'path'
 URLHandler = require '../src/urlhandler'
 VASTParser = require '../src/parser'
 VASTResponse = require '../src/response'
+VASTUtil = require '../src/util'
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
+    return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
 
 describe 'VASTParser', ->
     describe '#parse', ->
@@ -17,7 +18,7 @@ describe 'VASTParser', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper_notracking.xml'), (@response) =>
+            VASTParser.parse urlfor('wrapper-a.xml'), (@response) =>
                 _response = @response
                 done()
 
@@ -27,24 +28,15 @@ describe 'VASTParser', ->
         it 'should have 1 filter defined', =>
             VASTParser.countURLTemplateFilters().should.equal 1
 
-        it 'should have called 4 times URLtemplateFilter ', =>
-            @templateFilterCalls.should.have.length 4
-            @templateFilterCalls.should.eql [urlfor('wrapper_notracking.xml'), urlfor('wrapper_A.xml'), urlfor('wrapper_B.xml'), urlfor('sample.xml')]
+        it 'should have called 3 times URLtemplateFilter ', =>
+            @templateFilterCalls.should.have.length 3
+            @templateFilterCalls.should.eql [urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]
 
         it 'should have found 2 ads', =>
             @response.ads.should.have.length 2
 
         it 'should have returned a VAST response object', =>
             @response.should.be.an.instanceOf(VASTResponse)
-
-        it 'should have merged top level error URLs', =>
-            @response.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
-
-        describe '#duration', ->
-            for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
-                do (item) ->
-                    it "should not return NaN for `#{item}`", ->
-                        isNaN(VASTParser.parseDuration(item)).should.eql false
 
         describe '#For the 1st ad', ->
             ad1 = null
@@ -567,43 +559,131 @@ describe 'VASTParser', ->
         it 'should have merged top level error URLS', =>
             @response.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
 
-    describe '#track', ->
-        errorCallbackCalled = 0
-        errorCode = null
-        errorCallback = (ec) ->
-            errorCallbackCalled++
-            errorCode = ec
+    describe '#Tracking', ->
+        trackCalls = null
+        dataTriggered = null
 
         beforeEach =>
             VASTParser.vent.removeAllListeners()
-            errorCallbackCalled = 0
+            dataTriggered = []
+            trackCalls = []
 
-        #No ads VAST response after one wrapper
-        it 'emits an VAST-error on empty vast directly', (done) ->
-            VASTParser.on 'VAST-error', errorCallback
-            VASTParser.parse urlfor('empty.xml'), =>
-                errorCallbackCalled.should.equal 1
-                errorCode.ERRORCODE.should.eql 303
-                done()
+            VASTParser.on 'VAST-error', (variables) ->
+                dataTriggered.push variables
 
-        # VAST response with Ad but no Creative
-        it 'emits a VAST-error on response with no Creative', (done) ->
-            VASTParser.on 'VAST-error', errorCallback
-            VASTParser.parse urlfor('empty-no-creative.xml'), =>
-                errorCallbackCalled.should.equal 1
-                errorCode.ERRORCODE.should.eql 303
-                done()
+            VASTUtil.track = (templates, variables) =>
+                trackCalls.push {
+                    templates : templates
+                    variables : variables
+                }
 
-        #No ads VAST response after more than one wrapper
-        # Two events should be emits :
-        # - 1 for the empty vast file
-        # - 1 for no ad response on the wrapper
-        it 'emits 2 VAST-error events on empty vast after one wrapper', (done) ->
-            VASTParser.on 'VAST-error', errorCallback
-            VASTParser.parse urlfor('wrapper-empty.xml'), =>
-                # errorCallbackCalled.should.equal 2
-                # errorCode.ERRORCODE.should.eql 303
-                done()
+        describe '#No-Ad', ->
+            it 'emits a VAST-error & track', (done) ->
+                VASTParser.parse urlfor('empty-no-ad.xml'), (response) =>
+                    # Response doesn't have any ads
+                    response.ads.should.eql []
+                    # Error has been triggered
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions.should.eql []
+                    # Tracking has been done
+                    trackCalls.length.should.eql 1
+                    trackCalls[0].templates.should.eql [ 'http://example.com/empty-no-ad' ]
+                    trackCalls[0].variables.should.eql { ERRORCODE: 303 }
+                    done()
+
+            it 'when wrapped, emits a VAST-error & track', (done) ->
+                VASTParser.parse urlfor('wrapper-empty.xml'), (response) =>
+                    # Response doesn't have any ads
+                    response.ads.should.eql []
+                    # Error has been triggered
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramWrapperEmptyNoAd'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueWrapperEmptyNoAd'
+                    # Tracking has been done
+                    trackCalls.length.should.eql 1
+                    trackCalls[0].templates.should.eql [ 'http://example.com/wrapper-empty_wrapper-error', 'http://example.com/empty-no-ad' ]
+                    trackCalls[0].variables.should.eql { ERRORCODE: 303 }
+                    done()
+
+        describe '#Ad with no creatives', ->
+            it 'emits a VAST-error & track', (done) ->
+                VASTParser.parse urlfor('empty-no-creative.xml'), (response) =>
+                    # Response doesn't have any ads
+                    response.ads.should.eql []
+                    # Error has been triggered
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramEmptyNoCreative'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueEmptyNoCreative'
+                    # Tracking has been done
+                    trackCalls.length.should.eql 1
+                    trackCalls[0].templates.should.eql [ 'http://example.com/empty-no-creative_inline-error' ]
+                    trackCalls[0].variables.should.eql { ERRORCODE: 303 }
+                    done()
+
+            it 'when wrapped, emits a VAST-error & track', (done) ->
+                VASTParser.parse urlfor('wrapper-empty-no-creative.xml'), (response) =>
+                    # Response doesn't have any ads
+                    response.ads.should.eql []
+                    # Error has been triggered
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 303
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramWrapperEmptyNoCreative'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueWrapperEmptyNoCreative'
+                    dataTriggered[0].extensions[1].children[0].name.should.eql 'paramEmptyNoCreative'
+                    dataTriggered[0].extensions[1].children[0].value.should.eql 'valueEmptyNoCreative'
+                    # Tracking has been done
+                    trackCalls.length.should.eql 1
+                    trackCalls[0].templates.should.eql [ 'http://example.com/wrapper-no-creative_wrapper-error' , 'http://example.com/empty-no-creative_inline-error' ]
+                    trackCalls[0].variables.should.eql { ERRORCODE: 303 }
+                    done()
+
+        describe '#Invalid XML file (pasing error)', ->
+            it 'returns an error', (done) ->
+                VASTParser.parse urlfor('invalid-xmlfile.xml'), (response, err) =>
+                    # No response returned
+                    should.not.exist(response)
+                    # Error returned
+                    err.should.be.instanceof(Error).and.have.property('message', 'Invalid VAST XMLDocument');
+                    done()
+
+            it 'when wrapped, emits a VAST-error & track', (done) ->
+                VASTParser.parse urlfor('wrapper-invalid-xmlfile.xml'), (response, err) =>
+                    # Response doesn't have any ads
+                    response.ads.should.eql []
+                    # No error returned
+                    should.not.exist(err)
+                    # Error has been triggered
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 301
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'paramWrapperInvalidXmlfile'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'valueWrapperInvalidXmlfile'
+                    # Tracking has been done
+                    trackCalls.length.should.eql 1
+                    trackCalls[0].templates.should.eql [ 'http://example.com/wrapper-invalid-xmlfile_wrapper-error' ]
+                    trackCalls[0].variables.should.eql { ERRORCODE: 301 }
+                    done()
+
+        describe '#Wrapper limit reached', ->
+            it 'emits a VAST-error & track', (done) ->
+                VASTParser.parse urlfor('wrapper-a.xml'), { maxWrapperDepth: 1 }, (response, err) =>
+                    # Response doesn't have any ads
+                    response.ads.should.eql []
+                    # No error returned
+                    should.not.exist(err)
+                    # Error has been triggered
+                    dataTriggered.length.should.eql 1
+                    dataTriggered[0].ERRORCODE.should.eql 302
+                    dataTriggered[0].extensions[0].children[0].name.should.eql 'extension_tag'
+                    dataTriggered[0].extensions[0].children[0].value.should.eql 'extension_value'
+                    # Tracking has been done
+                    trackCalls.length.should.eql 1
+                    trackCalls[0].templates.should.eql [ 'http://example.com/wrapperA-error' ]
+                    trackCalls[0].variables.should.eql { ERRORCODE: 302 }
+                    done()
+
 
     describe '#legacy', ->
         beforeEach =>

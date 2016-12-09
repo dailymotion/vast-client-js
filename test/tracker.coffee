@@ -8,7 +8,7 @@ VASTTracker = require '../src/tracker'
 now = new Date()
 
 urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
+    return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
 
 describe 'VASTTracker', ->
     before () =>
@@ -30,14 +30,7 @@ describe 'VASTTracker', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper_A.xml'), (@response) =>
-                done()
-
-        after () =>
-            VASTParser.clearUrlTemplateFilters()
-
-        describe '#linear', =>
-            before () =>
+            VASTParser.parse urlfor('wrapper-a.xml'), (@response) =>
                 # Init tracker
                 ad = @response.ads[0]
                 creative = @response.ads[0].creatives[0]

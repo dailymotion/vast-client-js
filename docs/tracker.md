@@ -66,8 +66,11 @@ vastTracker.on('complete', function() {
 });
 ```
 
-### errorWithCode( code )
-Send a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substitute with `code`.
+* `Object` *options* – An optional set of key/value to configure the Ajax request:
+  * `Number` *maxWrapperDepth* – The number of `<Wrapper>` responses allowed before receiving an `<InLine>` response. When the maximum is reached, the parser stop and all `<Error>` URIs are requested with a 302 error code.
+  * `String` *response* – A VAST XML document. When *response* is provided, no Ajax request is made and thus the *url* parameter is ignored.
+  * `Object` *urlhandler* – A URL handler module, used to fetch the VAST document instead of the [default ones](https://github.com/dailymotion/vast-client-js/tree/master/src/urlhandlers).
+  * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
 
 - `String` *code* – Replaces `[ERRORCODE]` macro. `[ERRORCODE]` values are liste in the VAST specification.
 
