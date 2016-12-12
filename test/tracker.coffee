@@ -1,13 +1,25 @@
 should = require 'should'
+sinon  = require 'sinon'
 path = require 'path'
 VASTParser = require '../src/parser'
 VASTUtil = require('../src/util.coffee')
 VASTTracker = require '../src/tracker'
 
+now = new Date()
+
 urlfor = (relpath) ->
     return 'file://' + path.resolve(path.dirname(module.filename), relpath).replace(/\\/g, '/')
 
 describe 'VASTTracker', ->
+    before () =>
+        @sinon = sinon.sandbox.create()
+        @sinon.stub(Math, 'random').returns(0.1)
+        @clock = sinon.useFakeTimers(now.getTime())
+
+    after () =>
+        @clock.restore()
+        @sinon.restore()
+
     describe '#constructor', ->
         @Tracker = null
         _eventsSent = []
@@ -220,7 +232,16 @@ describe 'VASTTracker', ->
                 @Tracker.impressed.should.eql yes
 
             it 'should have called impression URLs', =>
-                _eventsSent[0].should.eql ['http://example.com/wrapperA-impression', 'http://example.com/wrapperB-impression1', 'http://example.com/wrapperB-impression2', 'http://example.com/impression1', 'http://example.com/impression2', 'http://example.com/impression3']
+                creative     = VASTUtil.encodeURIComponentRFC3986(@Tracker.creative.mediaFiles[0].fileURL)
+                cacheBusting = 1000000000
+                _eventsSent[0].should.eql [
+                    'http://example.com/wrapperA-impression',
+                    'http://example.com/wrapperB-impression1',
+                    'http://example.com/wrapperB-impression2',
+                    "http://example.com/impression1_asset:#{creative}_#{cacheBusting}",
+                    "http://example.com/impression2_#{cacheBusting}",
+                    "http://example.com/impression3_#{cacheBusting}"
+                ]
 
             it 'should have sent creativeView event', =>
                 _eventsSent[1].should.eql 'creativeView'
@@ -237,11 +258,11 @@ describe 'VASTTracker', ->
                 _eventsSent = []
                 VASTUtil.track = (URLTemplates, variables) ->
                     _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                @Tracker.errorWithCode('errorCode')
+                @Tracker.errorWithCode(405)
                 done()
 
             it 'should have called error urls', =>
-                _eventsSent[0].should.eql [ 'http://example.com/wrapperA-error', 'http://example.com/wrapperB-error', 'http://example.com/error']
+                _eventsSent[0].should.eql [ 'http://example.com/wrapperA-error', 'http://example.com/wrapperB-error', 'http://example.com/error_405']
 
 
         describe '#complete', =>
@@ -299,7 +320,14 @@ describe 'VASTTracker', ->
                 done()
 
             it 'should have sent clicktracking events', =>
-                _eventsSent[0].should.eql ['http://example.com/linear-clicktracking1', 'http://example.com/linear-clicktracking2', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
+                ISOTimeStamp = (new Date).toISOString()
+                _eventsSent[0].should.eql [
+                    "http://example.com/linear-clicktracking1_ts:#{ISOTimeStamp}",
+                    'http://example.com/linear-clicktracking2',
+                    'http://example.com/wrapperB-linear-clicktracking',
+                    'http://example.com/wrapperA-linear-clicktracking1',
+                    'http://example.com/wrapperA-linear-clicktracking2'
+                ]
 
             it 'should have sent clickthrough event', =>
                 _eventsSent[1].should.eql 'clickthrough'
