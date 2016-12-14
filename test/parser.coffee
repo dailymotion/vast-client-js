@@ -64,10 +64,17 @@ describe 'VASTParser', ->
                 ad1.survey.should.eql "http://example.com/survey"
 
             it 'should have merged wrapped ad error URLs', =>
-                ad1.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
+                ad1.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error_[ERRORCODE]"]
 
             it 'should have merged impression URLs', =>
-                ad1.impressionURLTemplates.should.eql ["http://example.com/wrapperA-impression", "http://example.com/wrapperB-impression1", "http://example.com/wrapperB-impression2", "http://example.com/impression1", "http://example.com/impression2", "http://example.com/impression3"]
+                ad1.impressionURLTemplates.should.eql [
+                    "http://example.com/wrapperA-impression",
+                    "http://example.com/wrapperB-impression1",
+                    "http://example.com/wrapperB-impression2",
+                    "http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]",
+                    "http://example.com/impression2_[random]",
+                    "http://example.com/impression3_[RANDOM]"
+                ]
 
             it 'should have 3 creatives', =>
                 ad1.creatives.should.have.length 3
@@ -132,7 +139,13 @@ describe 'VASTParser', ->
                     linear.videoClickThroughURLTemplate.should.eql 'http://example.com/linear-clickthrough'
 
                 it 'should have 5 URLs for clicktracking', =>
-                    linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking1', 'http://example.com/linear-clicktracking2', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
+                    linear.videoClickTrackingURLTemplates.should.eql [
+                        'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]',
+                        'http://example.com/linear-clicktracking2',
+                        'http://example.com/wrapperB-linear-clicktracking',
+                        'http://example.com/wrapperA-linear-clicktracking1',
+                        'http://example.com/wrapperA-linear-clicktracking2'
+                    ]
 
                 it 'should have 2 URLs for customclick', =>
                     linear.videoCustomClickURLTemplates.should.eql ['http://example.com/linear-customclick', 'http://example.com/wrapperA-linear-customclick']

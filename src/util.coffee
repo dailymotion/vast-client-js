@@ -8,13 +8,22 @@ class VASTUtil
             else
                 # node mode, do not track (unit test only)
 
-    @resolveURLTemplates: (URLTemplates, variables) ->
+    @resolveURLTemplates: (URLTemplates, variables = {}) ->
         URLs = []
 
-        variables ?= {} # ["CACHEBUSTING", "random", "CONTENTPLAYHEAD", "ASSETURI", "ERRORCODE"]
-        unless "CACHEBUSTING" of variables
-            variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+10)
-        variables["random"] = variables["CACHEBUSTING"] # synonym for Auditude macro
+        # Encode String variables, when given
+        variables["ASSETURI"]        = @encodeURIComponentRFC3986(variables["ASSETURI"]) if variables["ASSETURI"]?
+        variables["CONTENTPLAYHEAD"] = @encodeURIComponentRFC3986(variables["CONTENTPLAYHEAD"]) if variables["CONTENTPLAYHEAD"]?
+
+        # Set default value for invalid ERRORCODE
+        variables["ERRORCODE"] = 900 if variables["ERRORCODE"]? and not /^[0-9]{3}$/.test(variables["ERRORCODE"])
+
+        # Calc random/time based macros
+        variables["CACHEBUSTING"] = @leftpad(Math.round(Math.random() * 1.0e+8).toString())
+        variables["TIMESTAMP"]    = @encodeURIComponentRFC3986((new Date).toISOString())
+
+        # RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
+        variables["RANDOM"] = variables["random"] = variables["CACHEBUSTING"]
 
         for URLTemplate in URLTemplates
             resolveURL = URLTemplate
@@ -27,6 +36,15 @@ class VASTUtil
             URLs.push resolveURL
 
         return URLs
+
+    # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+    @encodeURIComponentRFC3986: (str) ->
+        return encodeURIComponent(str).replace(/[!'()*]/g, (c) ->
+            return '%' + c.charCodeAt(0).toString(16)
+        )
+
+    @leftpad: (str) ->
+        return if str.length < 8 then ('0' for [0...8-str.length]).join('') + str else str
 
     @storage: do () ->
         try

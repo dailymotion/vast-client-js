@@ -9,10 +9,10 @@
       <Description><![CDATA[Description text]]></Description>
       <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
       <Survey><![CDATA[http://example.com/survey]]></Survey>
-      <Error><![CDATA[http://example.com/error]]></Error>
-      <Impression><![CDATA[http://example.com/impression1]]></Impression>
-      <Impression><![CDATA[http://example.com/impression2]]></Impression>
-      <Impression><![CDATA[http://example.com/impression3]]></Impression>
+      <Error><![CDATA[http://example.com/error_[ERRORCODE]]]></Error>
+      <Impression><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
+      <Impression><![CDATA[http://example.com/impression2_[random]]]></Impression>
+      <Impression><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
       <Creatives>
         <Creative id="video">
           <Linear>
@@ -28,7 +28,7 @@
               <Tracking event="progress" offset="60%"><![CDATA[http://example.com/linear-progress-60%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/linear-clicktracking1]]></ClickTracking>
+              <ClickTracking><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
               <ClickTracking><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
               <ClickThrough><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
               <CustomClick><![CDATA[http://example.com/linear-customclick]]></CustomClick>
