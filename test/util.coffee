@@ -19,7 +19,7 @@ encodedTimestamp = encodeRFC3986(now.toISOString())
 describe 'VASTUtil', ->
     before () =>
         @sinon = sinon.sandbox.create()
-        @sinon.stub(Math, 'random').returns(0.1)
+        @sinon.stub(Math, 'random').returns(0.0012)
         @clock = sinon.useFakeTimers(now.getTime())
 
     after () =>
@@ -37,10 +37,10 @@ describe 'VASTUtil', ->
 
         describe 'cacheBusting', ->
             it 'should resolve cache busting', ->
-                resolve("http://test.com/[CACHEBUSTING]").should.match /^http:\/\/test.com\/10000000$/
+                resolve("http://test.com/[CACHEBUSTING]").should.match /^http:\/\/test.com\/00120000$/
 
             it 'should resolve cache buster, with percents', ->
-                resolve("http://test.com/%%CACHEBUSTING%%", CACHEBUSTING: 178).should.match /^http:\/\/test.com\/10000000$/
+                resolve("http://test.com/%%CACHEBUSTING%%", CACHEBUSTING: 178).should.match /^http:\/\/test.com\/00120000$/
 
         describe 'contentPlayhead', ->
             it 'should resolve playhead', ->

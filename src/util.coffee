@@ -19,7 +19,7 @@ class VASTUtil
         variables["ERRORCODE"] = 900 if variables["ERRORCODE"]? and not /^[0-9]{3}$/.test(variables["ERRORCODE"])
 
         # Calc random/time based macros
-        variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+8)
+        variables["CACHEBUSTING"] = @leftpad(Math.round(Math.random() * 1.0e+8).toString())
         variables["TIMESTAMP"]    = @encodeURIComponentRFC3986((new Date).toISOString())
 
         # RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
@@ -42,6 +42,9 @@ class VASTUtil
         return encodeURIComponent(str).replace(/[!'()*]/g, (c) ->
             return '%' + c.charCodeAt(0).toString(16)
         )
+
+    @leftpad: (str) ->
+        return if str.length < 8 then ('0' for [0...8-str.length]).join('') + str else str
 
     @storage: do () ->
         try
