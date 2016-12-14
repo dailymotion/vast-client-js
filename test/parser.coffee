@@ -63,16 +63,10 @@ describe 'VASTParser', ->
                 ad1.survey.should.eql "http://example.com/survey"
 
             it 'should have merged wrapped ad error URLs', =>
-                ad1.errorURLTemplates.should.eql [
-                    "http://example.com/wrapperNoTracking-error",
-                    "http://example.com/wrapperA-error",
-                    "http://example.com/wrapperB-error",
-                    "http://example.com/error_[ERRORCODE]"
-                ]
+                ad1.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error_[ERRORCODE]"]
 
             it 'should have merged impression URLs', =>
                 ad1.impressionURLTemplates.should.eql [
-                    "http://example.com/wrapperNoTracking-impression",
                     "http://example.com/wrapperA-impression",
                     "http://example.com/wrapperB-impression1",
                     "http://example.com/wrapperB-impression2",
@@ -113,18 +107,6 @@ describe 'VASTParser', ->
                 ad1.extensions[3].children.should.have.length 1
                 ad1.extensions[3].children[0].name.should.eql "#text"
                 ad1.extensions[3].children[0].value.should.eql "{ foo: bar }"
-
-            it 'should not have trackingEvents property', =>
-                should.equal ad1.trackingEvents, undefined
-
-            it 'should not have videoClickTrackingURLTemplates property', =>
-                should.equal ad1.videoClickTrackingURLTemplates, undefined
-
-            it 'should not have videoClickThroughURLTemplate property', =>
-                should.equal ad1.videoClickThroughURLTemplate, undefined
-
-            it 'should not have videoCustomClickURLTemplates property', =>
-                should.equal ad1.videoCustomClickURLTemplates, undefined
 
             #Linear
             describe '1st creative (Linear)', ->
@@ -180,8 +162,7 @@ describe 'VASTParser', ->
                         'http://example.com/linear-clicktracking2',
                         'http://example.com/wrapperB-linear-clicktracking',
                         'http://example.com/wrapperA-linear-clicktracking1',
-                        'http://example.com/wrapperA-linear-clicktracking2',
-                        'http://example.com/wrapperA-linear-clicktracking3'
+                        'http://example.com/wrapperA-linear-clicktracking2'
                     ]
 
                 it 'should have 2 URLs for customclick', =>
