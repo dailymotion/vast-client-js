@@ -1058,7 +1058,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseExtension = function(collection, extensions) {
-    var childNode, ext, extChild, extChildNodeAttr, extNode, extNodeAttr, i, j, k, l, len, len1, len2, len3, ref, ref1, ref2, results;
+    var childNode, ext, extChild, extChildNodeAttr, extNode, extNodeAttr, i, j, k, l, len, len1, len2, len3, ref, ref1, ref2, results, txt;
     results = [];
     for (i = 0, len = extensions.length; i < len; i++) {
       extNode = extensions[i];
@@ -1073,10 +1073,11 @@ VASTParser = (function() {
       ref1 = extNode.childNodes;
       for (k = 0, len2 = ref1.length; k < len2; k++) {
         childNode = ref1[k];
-        if (childNode.nodeName !== '#text') {
+        txt = this.parseNodeText(childNode);
+        if (childNode.nodeName !== '#comment' && txt !== '') {
           extChild = new VASTAdExtensionChild();
           extChild.name = childNode.nodeName;
-          extChild.value = this.parseNodeText(childNode);
+          extChild.value = txt;
           if (childNode.attributes) {
             ref2 = childNode.attributes;
             for (l = 0, len3 = ref2.length; l < len3; l++) {
@@ -1533,6 +1534,13 @@ VASTTracker = (function(superClass) {
     return this.fullscreen = fullscreen;
   };
 
+  VASTTracker.prototype.setExpand = function(expanded) {
+    if (this.expanded !== expanded) {
+      this.track(expanded ? "expand" : "collapse");
+    }
+    return this.expanded = expanded;
+  };
+
   VASTTracker.prototype.setSkipDelay = function(duration) {
     if (typeof duration === 'number') {
       return this.skipDelay = duration;
@@ -1609,10 +1617,14 @@ VASTTracker = (function(superClass) {
   };
 
   VASTTracker.prototype.trackURLs = function(URLTemplates, variables) {
+    var ref;
     if (variables == null) {
       variables = {};
     }
     if (this.linear) {
+      if (((ref = this.creative.mediaFiles[0]) != null ? ref.fileURL : void 0) != null) {
+        variables["ASSETURI"] = this.creative.mediaFiles[0].fileURL;
+      }
       variables["CONTENTPLAYHEAD"] = this.progressFormated();
     }
     return VASTUtil.track(URLTemplates, variables);
@@ -1805,14 +1817,22 @@ VASTUtil = (function() {
 
   VASTUtil.resolveURLTemplates = function(URLTemplates, variables) {
     var URLTemplate, URLs, j, key, len, macro1, macro2, resolveURL, value;
-    URLs = [];
     if (variables == null) {
       variables = {};
     }
-    if (!("CACHEBUSTING" in variables)) {
-      variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+10);
+    URLs = [];
+    if (variables["ASSETURI"] != null) {
+      variables["ASSETURI"] = this.encodeURIComponentRFC3986(variables["ASSETURI"]);
     }
-    variables["random"] = variables["CACHEBUSTING"];
+    if (variables["CONTENTPLAYHEAD"] != null) {
+      variables["CONTENTPLAYHEAD"] = this.encodeURIComponentRFC3986(variables["CONTENTPLAYHEAD"]);
+    }
+    if ((variables["ERRORCODE"] != null) && !/^[0-9]{3}$/.test(variables["ERRORCODE"])) {
+      variables["ERRORCODE"] = 900;
+    }
+    variables["CACHEBUSTING"] = this.leftpad(Math.round(Math.random() * 1.0e+8).toString());
+    variables["TIMESTAMP"] = this.encodeURIComponentRFC3986((new Date).toISOString());
+    variables["RANDOM"] = variables["random"] = variables["CACHEBUSTING"];
     for (j = 0, len = URLTemplates.length; j < len; j++) {
       URLTemplate = URLTemplates[j];
       resolveURL = URLTemplate;
@@ -1829,6 +1849,27 @@ VASTUtil = (function() {
       URLs.push(resolveURL);
     }
     return URLs;
+  };
+
+  VASTUtil.encodeURIComponentRFC3986 = function(str) {
+    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+      return '%' + c.charCodeAt(0).toString(16);
+    });
+  };
+
+  VASTUtil.leftpad = function(str) {
+    if (str.length < 8) {
+      return ((function() {
+        var j, ref, results;
+        results = [];
+        for (j = 0, ref = 8 - str.length; 0 <= ref ? j < ref : j > ref; 0 <= ref ? j++ : j--) {
+          results.push('0');
+        }
+        return results;
+      })()).join('') + str;
+    } else {
+      return str;
+    }
   };
 
   VASTUtil.storage = (function() {
