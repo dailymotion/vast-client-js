@@ -104,9 +104,11 @@
           </Price>
         </Extension>
         <Extension type="Count">
-          <total_available>
-            <![CDATA[ 4 ]]>
-          </total_available>
+          <!-- -->
+          <![CDATA[ 4 ]]>
+        </Extension>
+        <Extension>
+            { foo: bar }
         </Extension>
       </Extensions>
     </InLine>

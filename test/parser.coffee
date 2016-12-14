@@ -72,8 +72,8 @@ describe 'VASTParser', ->
             it 'should have 3 creatives', =>
                 ad1.creatives.should.have.length 3
 
-            it 'should have 3 extensions', =>
-                ad1.extensions.should.have.length 3
+            it 'should have 4 extensions', =>
+                ad1.extensions.should.have.length 4
 
             it 'validate first extension', =>
                 ad1.extensions[0].attributes['type'].should.eql "WrapperExtension"
@@ -93,8 +93,14 @@ describe 'VASTParser', ->
             it 'validate third extension', =>
                 ad1.extensions[2].attributes['type'].should.eql "Count"
                 ad1.extensions[2].children.should.have.length 1
-                ad1.extensions[2].children[0].name.should.eql "total_available"
+                ad1.extensions[2].children[0].name.should.eql "#cdata-section"
                 ad1.extensions[2].children[0].value.should.eql "4"
+
+            it 'validate fourth extension', =>
+                ad1.extensions[3].attributes.should.eql {}
+                ad1.extensions[3].children.should.have.length 1
+                ad1.extensions[3].children[0].name.should.eql "#text"
+                ad1.extensions[3].children[0].value.should.eql "{ foo: bar }"
 
             #Linear
             describe '1st creative (Linear)', ->
