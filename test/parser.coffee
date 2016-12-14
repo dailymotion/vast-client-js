@@ -112,15 +112,22 @@ describe 'VASTParser', ->
                 it 'should have a duration of 90.123s', =>
                     linear.duration.should.equal 90.123
 
-                it 'should have 1 media file', =>
-                    linear.mediaFiles.should.have.length 1
+                it 'should have 2 media file', =>
+                    linear.mediaFiles.should.have.length 2
 
-                it 'should have parsed media file attributes', =>
-                    mediaFile = linear.mediaFiles[0]
-                    mediaFile.width.should.equal 512
-                    mediaFile.height.should.equal 288
-                    mediaFile.mimeType.should.equal "video/mp4"
-                    mediaFile.fileURL.should.equal "http://example.com/linear-asset.mp4"
+                it 'should have parsed 1st media file attributes', =>
+                    linear.mediaFiles[0].width.should.equal 512
+                    linear.mediaFiles[0].height.should.equal 288
+                    linear.mediaFiles[0].mimeType.should.equal "video/mp4"
+                    linear.mediaFiles[0].fileURL.should.equal "http://example.com/linear-asset.mp4"
+
+                it 'should have parsed 2nd media file attributes', =>
+                    linear.mediaFiles[1].width.should.equal 512
+                    linear.mediaFiles[1].height.should.equal 288
+                    linear.mediaFiles[1].mimeType.should.equal "application/javascript"
+                    linear.mediaFiles[1].apiFramework.should.equal "VPAID"
+                    linear.mediaFiles[1].deliveryType.should.equal "progressive"
+                    linear.mediaFiles[1].fileURL.should.equal "parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D"
 
                 it 'should have 1 URL for clickthrough', =>
                     linear.videoClickThroughURLTemplate.should.eql 'http://example.com/linear-clickthrough'
