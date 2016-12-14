@@ -16,6 +16,10 @@ Run the tests :
 
     npm test
 
+Transpile `.coffee` into `.js` :
+
+    npm run-script build
+
 Bundle the scripts :
 
     npm run-script bundle
