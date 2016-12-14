@@ -286,10 +286,13 @@ class VASTParser
                     ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
 
             for childNode in extNode.childNodes
-                if childNode.nodeName != '#text'
+                txt = @parseNodeText(childNode)
+
+                # ignore comments / empty value
+                if childNode.nodeName isnt '#comment' and txt isnt ''
                     extChild = new VASTAdExtensionChild()
                     extChild.name = childNode.nodeName
-                    extChild.value = @parseNodeText(childNode)
+                    extChild.value = txt
 
                     if childNode.attributes
                         for extChildNodeAttr in childNode.attributes

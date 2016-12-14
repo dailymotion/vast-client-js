@@ -93,7 +93,7 @@ describe 'VASTParser', ->
             it 'validate third extension', =>
                 ad1.extensions[2].attributes['type'].should.eql "Count"
                 ad1.extensions[2].children.should.have.length 1
-                ad1.extensions[2].children[0].name.should.eql "total_available"
+                ad1.extensions[2].children[0].name.should.eql "#cdata-section"
                 ad1.extensions[2].children[0].value.should.eql "4"
 
             #Linear

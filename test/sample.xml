@@ -104,9 +104,8 @@
           </Price>
         </Extension>
         <Extension type="Count">
-          <total_available>
-            <![CDATA[ 4 ]]>
-          </total_available>
+          <!-- -->
+          <![CDATA[ 4 ]]>
         </Extension>
       </Extensions>
     </InLine>
