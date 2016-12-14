@@ -159,10 +159,9 @@ class VASTTracker extends EventEmitter
             @emitAlwaysEvents.splice idx, 1 if idx > -1
         return
 
-    trackURLs: (URLTemplates, variables) ->
-        variables ?= {}
-
+    trackURLs: (URLTemplates, variables = {}) ->
         if @linear
+            variables["ASSETURI"] = @creative.mediaFiles[0].fileURL if @creative.mediaFiles[0]?.fileURL?
             variables["CONTENTPLAYHEAD"] = @progressFormated()
 
         VASTUtil.track(URLTemplates, variables)
