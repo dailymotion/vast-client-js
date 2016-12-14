@@ -107,6 +107,9 @@
           <!-- -->
           <![CDATA[ 4 ]]>
         </Extension>
+        <Extension>
+            { foo: bar }
+        </Extension>
       </Extensions>
     </InLine>
   </Ad>
