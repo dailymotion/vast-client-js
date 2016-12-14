@@ -32,7 +32,8 @@
   },
   "devDependencies": {
     "mocha": "3.1.2",
-    "should": "11.1.1"
+    "should": "11.1.1",
+    "sinon": "^1.17.6"
   },
   "dependencies": {
     "coffee-script": "~1.11.1",
