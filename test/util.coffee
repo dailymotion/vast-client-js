@@ -2,16 +2,19 @@ should = require 'should'
 sinon  = require 'sinon'
 VASTUtil = require '../src/util'
 
-now = new Date()
-
+now      = new Date()
+playhead = '00:12:30.212'
 assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-\[{bar'
-encodedAssetURI = 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4%3Ffoo%3D1%26bar%3D_-%5B%7Bbar'
 
 resolve = (URLTemplate, variables) ->
     VASTUtil.resolveURLTemplates([URLTemplate], variables)[0]
 
 encodeRFC3986 = (str) ->
     VASTUtil.encodeURIComponentRFC3986(str)
+
+encodedAssetURI  = encodeRFC3986(assetURI)
+encodedPlayhead  = encodeRFC3986(playhead)
+encodedTimestamp = encodeRFC3986(now.toISOString())
 
 describe 'VASTUtil', ->
     before () =>
@@ -34,26 +37,24 @@ describe 'VASTUtil', ->
 
         describe 'cacheBusting', ->
             it 'should resolve cache busting', ->
-                resolve("http://test.com/[CACHEBUSTING]").should.match /^http:\/\/test.com\/[0-9]+$/
+                resolve("http://test.com/[CACHEBUSTING]").should.match /^http:\/\/test.com\/10000000$/
 
             it 'should resolve cache buster, with percents', ->
-                resolve("http://test.com/%%CACHEBUSTER%%", CACHEBUSTER: 12345678).should.match /^http:\/\/test.com\/12345678$/
+                resolve("http://test.com/%%CACHEBUSTING%%", CACHEBUSTING: 178).should.match /^http:\/\/test.com\/10000000$/
 
         describe 'contentPlayhead', ->
             it 'should resolve playhead', ->
-                resolve("http://test.com/[CONTENTPLAYHEAD]", CONTENTPLAYHEAD: 120).should.equal "http://test.com/120"
+                resolve("http://test.com/[CONTENTPLAYHEAD]", CONTENTPLAYHEAD: playhead).should.equal "http://test.com/#{encodedPlayhead}"
 
             it 'should resolve playhead, with percents', ->
-                resolve("http://test.com/%%CONTENTPLAYHEAD%%", CONTENTPLAYHEAD: 120).should.equal "http://test.com/120"
+                resolve("http://test.com/%%CONTENTPLAYHEAD%%", CONTENTPLAYHEAD: playhead).should.equal "http://test.com/#{encodedPlayhead}"
 
         describe 'timestamp', ->
-            ISOTimeStamp = now.toISOString()
-
             it 'should resolve timestamp', ->
-                resolve("http://test.com/[TIMESTAMP]").should.match "http://test.com/#{ISOTimeStamp}"
+                resolve("http://test.com/[TIMESTAMP]").should.equal "http://test.com/#{encodedTimestamp}"
 
             it 'should resolve timestamp, with percents', ->
-                resolve("http://test.com/%%TIMESTAMP%%", TIMESTAMP: 12345678).should.match /^http:\/\/test.com\/12345678$/
+                resolve("http://test.com/%%TIMESTAMP%%", TIMESTAMP: 12345678).should.equal "http://test.com/#{encodedTimestamp}"
 
         describe 'random/RANDOM', ->
             it 'should resolve random', ->

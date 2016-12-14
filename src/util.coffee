@@ -11,9 +11,16 @@ class VASTUtil
     @resolveURLTemplates: (URLTemplates, variables = {}) ->
         URLs = []
 
-        variables["ASSETURI"]     = @encodeURIComponentRFC3986(variables["ASSETURI"]) if variables["ASSETURI"]?
-        variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+10) unless variables["CACHEBUSTING"]?
-        variables["TIMESTAMP"]    = (new Date).toISOString() unless variables["TIMESTAMP"]?
+        # Encode String variables, when given
+        variables["ASSETURI"]        = @encodeURIComponentRFC3986(variables["ASSETURI"]) if variables["ASSETURI"]?
+        variables["CONTENTPLAYHEAD"] = @encodeURIComponentRFC3986(variables["CONTENTPLAYHEAD"]) if variables["CONTENTPLAYHEAD"]?
+
+        # Set default value for invalid ERRORCODE
+        variables["ERRORCODE"] = 900 if variables["ERRORCODE"]? and not /^[0-9]{3}$/.test(variables["ERRORCODE"])
+
+        # Calc random/time based macros
+        variables["CACHEBUSTING"] = Math.round(Math.random() * 1.0e+8)
+        variables["TIMESTAMP"]    = @encodeURIComponentRFC3986((new Date).toISOString())
 
         # RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
         variables["RANDOM"] = variables["random"] = variables["CACHEBUSTING"]

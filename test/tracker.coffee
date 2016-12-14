@@ -233,7 +233,7 @@ describe 'VASTTracker', ->
 
             it 'should have called impression URLs', =>
                 creative     = VASTUtil.encodeURIComponentRFC3986(@Tracker.creative.mediaFiles[0].fileURL)
-                cacheBusting = 1000000000
+                cacheBusting = 10000000
                 _eventsSent[0].should.eql [
                     'http://example.com/wrapperA-impression',
                     'http://example.com/wrapperB-impression1',
@@ -320,7 +320,7 @@ describe 'VASTTracker', ->
                 done()
 
             it 'should have sent clicktracking events', =>
-                ISOTimeStamp = (new Date).toISOString()
+                ISOTimeStamp = VASTUtil.encodeURIComponentRFC3986((new Date).toISOString())
                 _eventsSent[0].should.eql [
                     "http://example.com/linear-clicktracking1_ts:#{ISOTimeStamp}",
                     'http://example.com/linear-clicktracking2',
