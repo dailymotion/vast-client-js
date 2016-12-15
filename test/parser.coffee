@@ -347,9 +347,15 @@ describe 'VASTParser', ->
                         after () =>
                             nonlinear = null
 
-                        it 'should have parsed size and type attributes', =>
+                        it 'should have parsed attributes', =>
                             nonlinear.width.should.equal '300'
                             nonlinear.height.should.equal '200'
+                            nonlinear.expandedWidth.should.equal '600'
+                            nonlinear.expandedHeight.should.equal '400'
+                            nonlinear.scalable.should.equal false
+                            nonlinear.maintainAspectRatio.should.equal true
+                            nonlinear.minSuggestedDuration.should.equal 100
+                            nonlinear.apiFramework.should.equal "someAPI"
                             nonlinear.type.should.equal 'image/jpeg'
 
                         it 'should have 1 nonlinear clickthrough url', =>
