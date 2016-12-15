@@ -425,7 +425,11 @@ class VASTParser
             nonlinearAd.id = nonlinearResource.getAttribute("id") or null
             nonlinearAd.width = nonlinearResource.getAttribute("width")
             nonlinearAd.height = nonlinearResource.getAttribute("height")
-            nonlinearAd.minSuggestedDuration = nonlinearResource.getAttribute("minSuggestedDuration")
+            nonlinearAd.expandedWidth = nonlinearResource.getAttribute("expandedWidth")
+            nonlinearAd.expandedHeight = nonlinearResource.getAttribute("expandedHeight")
+            nonlinearAd.scalable = @parseBoolean nonlinearResource.getAttribute("scalable")
+            nonlinearAd.maintainAspectRatio = @parseBoolean nonlinearResource.getAttribute("maintainAspectRatio")
+            nonlinearAd.minSuggestedDuration = @parseDuration nonlinearResource.getAttribute("minSuggestedDuration")
             nonlinearAd.apiFramework = nonlinearResource.getAttribute("apiFramework")
 
             for htmlElement in @childsByName(nonlinearResource, "HTMLResource")
@@ -508,6 +512,9 @@ class VASTParser
             return yPosition
 
         return parseInt yPosition or 0
+
+    @parseBoolean: (booleanString) ->
+            return booleanString in ['true', 'TRUE', '1']
 
     # Parsing node text for legacy support
     @parseNodeText: (node) ->
