@@ -84,6 +84,9 @@
           <NonLinearAds>
             <NonLinear width="300" height="200">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
+              <AdParameters>
+                <![CDATA[{"key":"value"}]]>
+              </AdParameters>
               <NonLinearClickThrough><![CDATA[http://example.com/nonlinear-clickthrough]]></NonLinearClickThrough>
             </NonLinear>
             <TrackingEvents>

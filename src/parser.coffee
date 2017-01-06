@@ -443,6 +443,10 @@ class VASTParser
                 nonlinearAd.type = staticElement.getAttribute("creativeType") or 0
                 nonlinearAd.staticResource = @parseNodeText(staticElement)
 
+            adParamsElement = @childByName(nonlinearResource, "AdParameters")
+            if adParamsElement?
+                nonlinearAd.adParameters = @parseNodeText(adParamsElement)
+
             nonlinearAd.nonlinearClickThroughURLTemplate = @parseNodeText(@childByName(nonlinearResource, "NonLinearClickThrough"))
             creative.variations.push nonlinearAd
 
