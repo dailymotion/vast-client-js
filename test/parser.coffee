@@ -313,6 +313,16 @@ describe 'VASTParser', ->
                         it 'should have 1 nonlinear clickthrough url', =>
                             nonlinear.nonlinearClickThroughURLTemplate.should.equal  'http://example.com/nonlinear-clickthrough'
 
+                    describe 'AdParameter check', ->
+                        before () =>
+                            nonlinear = nonlinears.variations[0]
+
+                        after () =>
+                            nonlinear = null
+
+                        it 'should have AdParameter', =>
+                            nonlinear.adParameters.should.equal '{"key":"value"}'
+
         describe '#For the 2nd ad', ->
             ad2 = null
 
