@@ -53,16 +53,14 @@
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
-              <AltText>
-				<![CDATA[Sample Alt Text Content!!!!]]>
-			  </AltText>
-			  <TrackingEvents>
+              <AltText><![CDATA[Sample Alt Text Content!!!!]]></AltText>
+			        <TrackingEvents>
                 <Tracking event="creativeView"><![CDATA[http://example.com/companion1-creativeview]]></Tracking>
               </TrackingEvents>
               <CompanionClickThrough><![CDATA[http://example.com/companion1-clickthrough]]></CompanionClickThrough>
               <CompanionClickTracking><![CDATA[http://example.com/companion1-clicktracking-first]]></CompanionClickTracking>
               <CompanionClickTracking><![CDATA[http://example.com/companion1-clicktracking-second]]></CompanionClickTracking>
-			  </Companion>
+			      </Companion>
             <Companion width="300" height="60">
               <IFrameResource>
                 <![CDATA[http://www.example.com/companion2-example.php]]>

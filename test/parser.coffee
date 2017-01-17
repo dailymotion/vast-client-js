@@ -218,8 +218,7 @@ describe 'VASTParser', ->
 
                         it 'should have 1 url for creativeView event', =>
                             companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
-				
-       
+				       
                         it 'should have checked that AltText exists', =>
                             companion.should.have.property('altText')
 
