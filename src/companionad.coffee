@@ -7,6 +7,7 @@ class VASTCompanionAd
         @staticResource = null
         @htmlResource = null
         @iframeResource = null
+        @altText = null
         @companionClickThroughURLTemplate = null
         @trackingEvents = {}
 
