@@ -469,6 +469,8 @@ class VASTParser
                 companionAd.iframeResource = @parseNodeText(iframeElement)
             for staticElement in @childsByName(companionResource, "StaticResource")
                 companionAd.type = staticElement.getAttribute("creativeType") or 0
+                for child in @childsByName(companionResource, "AltText")
+                    companionAd.altText = @parseNodeText(child)
                 companionAd.staticResource = @parseNodeText(staticElement)
             for trackingEventsElement in @childsByName(companionResource, "TrackingEvents")
                 for trackingElement in @childsByName(trackingEventsElement, "Tracking")

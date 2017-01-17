@@ -53,6 +53,7 @@
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
+              <AltText><![CDATA[Sample Alt Text Content!!!!]]></AltText>
               <TrackingEvents>
                 <Tracking event="creativeView"><![CDATA[http://example.com/companion1-creativeview]]></Tracking>
               </TrackingEvents>

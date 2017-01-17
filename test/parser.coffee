@@ -218,6 +218,12 @@ describe 'VASTParser', ->
 
                         it 'should have 1 url for creativeView event', =>
                             companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
+				       
+                        it 'should have checked that AltText exists', =>
+                            companion.should.have.property('altText')
+
+                        it 'should have parsed AltText for companion and its equal', =>
+                            companion.altText.should.equal 'Sample Alt Text Content!!!!'
 
                         it 'should have 1 companion clickthrough url', =>
                             companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion1-clickthrough'
