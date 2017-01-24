@@ -98,7 +98,7 @@ class VASTParser
                 ad = response.ads[loopIndex]
                 continue unless ad.nextWrapperURL?
                 do (ad) =>
-                    if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
+                    if parentURLs.length > (if options.wrapperLimit != null then options.wrapperLimit else 9) or ad.nextWrapperURL in parentURLs
                         # Wrapper limit reached, as defined by the video player.
                         # Too many Wrapper responses have been received with no InLine response.
                         @track(ad.errorURLTemplates, ERRORCODE: 302)

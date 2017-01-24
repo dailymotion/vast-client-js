@@ -52,6 +52,7 @@ Fetch a URL and parse the response into a valid VAST object.
   * `String` *response* – A VAST XML document. When *response* is provided, no Ajax request is made and thus the *url* parameter is ignored.
   * `Object` *urlhandler* – A URL handler module, used to fetch the VAST document instead of the [default ones](https://github.com/dailymotion/vast-client-js/tree/master/src/urlhandlers).
   * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
+  * `Number` *wrapperLimit* – A number of available *Wrapper* responses that can be received with no InLine response.
 
 * `Function` *done* – Method to be called once the VAST document is parsed. The VAST JS object is passed as the 1st parameter. If null, an error is provided as a 2nd parameter.
 
