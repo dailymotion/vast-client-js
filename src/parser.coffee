@@ -76,7 +76,7 @@ class VASTParser
                         # VAST version of response not supported.
                         @track(response.errorURLTemplates, ERRORCODE: 101)
 
-            complete = (errorAlreadyRaised = false) =>
+            complete = (error = null, errorAlreadyRaised = false) =>
                 return unless response
                 noCreatives = true
                 for ad in response.ads
@@ -91,19 +91,19 @@ class VASTParser
                     @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
                 if response.ads.length == 0
                     response = null
-                cb(null, response)
+                cb(error, response)
 
             loopIndex = response.ads.length
             while loopIndex--
                 ad = response.ads[loopIndex]
                 continue unless ad.nextWrapperURL?
                 do (ad) =>
-                    if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
+                    if parentURLs.length > (if options.wrapperLimit != null then options.wrapperLimit else 9) or ad.nextWrapperURL in parentURLs
                         # Wrapper limit reached, as defined by the video player.
                         # Too many Wrapper responses have been received with no InLine response.
                         @track(ad.errorURLTemplates, ERRORCODE: 302)
                         response.ads.splice(response.ads.indexOf(ad), 1)
-                        complete()
+                        complete(new Error("Wrapper limit reached, as defined by the video player"))
                         return
 
                     if ad.nextWrapperURL.indexOf('//') == 0
@@ -162,7 +162,7 @@ class VASTParser
                                 response.ads.splice ++index, 0, wrappedAd
 
                         delete ad.nextWrapperURL
-                        complete errorAlreadyRaised
+                        complete err, errorAlreadyRaised
 
             complete()
 
