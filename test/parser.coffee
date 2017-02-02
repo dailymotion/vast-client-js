@@ -377,7 +377,7 @@ describe 'VASTParser', ->
                     linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
 
 
-        describe '#VAST', ->
+        describe '#VPAID', ->
             @response = null
 
             before (done) =>
@@ -386,6 +386,9 @@ describe 'VASTParser', ->
 
             it 'should have apiFramework set', =>
                 @response.ads[0].creatives[0].mediaFiles[0].apiFramework.should.be.equal "VPAID"
+
+            it 'should have duration set to -1', =>
+                @response.ads[0].creatives[0].duration.should.be.equal -1
 
 
     describe '#Tracking', ->
