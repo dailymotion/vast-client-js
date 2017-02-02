@@ -49,7 +49,7 @@
             </Icons>
           </Linear>
         </Creative>
-        <Creative id="id130985" AdID="adId345691" sequence="2" >
+        <Creative id="id130985" adId="adId345691" sequence="2" >
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
@@ -125,7 +125,7 @@
       <AdTitle><![CDATA[Ad title 2]]></AdTitle>
       <Impression><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
-        <Creative id="id873421" adID="adId221144" apiFramework="VPAID">
+        <Creative id="id873421" apiFramework="VPAID">
           <Linear skipoffset="00:00:10" >
             <Duration>30</Duration>
             <MediaFiles>

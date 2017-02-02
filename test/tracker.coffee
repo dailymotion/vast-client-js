@@ -30,7 +30,15 @@ describe 'VASTTracker', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
+
             VASTParser.parse urlfor('wrapper-a.xml'), (@response) =>
+                done()
+
+        after () =>
+            VASTParser.clearUrlTemplateFilters()
+
+        describe '#linear', =>
+            before () =>
                 # Init tracker
                 ad = @response.ads[0]
                 creative = @response.ads[0].creatives[0]
@@ -164,17 +172,13 @@ describe 'VASTTracker', ->
                     @Tracker.setFullscreen no
                     @Tracker.fullscreen.should.eql no
 
-            it 'should have called impression URLs', =>
-                creative     = VASTUtil.encodeURIComponentRFC3986(@Tracker.creative.mediaFiles[0].fileURL)
-                cacheBusting = 10000000
-                _eventsSent[0].should.eql [
-                    'http://example.com/wrapperA-impression',
-                    'http://example.com/wrapperB-impression1',
-                    'http://example.com/wrapperB-impression2',
-                    "http://example.com/impression1_asset:#{creative}_#{cacheBusting}",
-                    "http://example.com/impression2_#{cacheBusting}",
-                    "http://example.com/impression3_#{cacheBusting}"
-                ]
+                it 'should send exitFullscreen event', =>
+                    _eventsSent.should.eql ["exitFullscreen"]
+
+                it 'should send no event', =>
+                    _eventsSent = []
+                    @Tracker.setFullscreen no
+                    _eventsSent.should.eql []
 
             describe '#setExpand', =>
 
@@ -206,80 +210,180 @@ describe 'VASTTracker', ->
 
             describe '#setSkipDelay', =>
 
-            before (done) =>
-                _eventsSent = []
-                VASTUtil.track = (URLTemplates, variables) ->
-                    _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                @Tracker.errorWithCode(405)
-                done()
+                it 'should have skipDelay set to 3', =>
+                    @Tracker.setSkipDelay 3
+                    @Tracker.skipDelay.should.eql 3
 
-            it 'should have called error urls', =>
-                _eventsSent[0].should.eql [ 'http://example.com/wrapperA-error', 'http://example.com/wrapperB-error', 'http://example.com/error_405']
+                it 'should have skipDelay still set to 3', =>
+                    @Tracker.setSkipDelay 'blabla'
+                    @Tracker.skipDelay.should.eql 3
 
+            describe '#load', =>
 
-        describe '#complete', =>
+                before (done) =>
+                    _eventsSent = []
+                    VASTUtil.track = (URLTemplates, variables) ->
+                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
+                    @Tracker.load()
+                    done()
 
-            before (done) =>
-                _eventsSent = []
-                @Tracker.complete()
-                done()
+                it 'should have impressed set to true', =>
+                    @Tracker.impressed.should.eql yes
 
-            it 'should have sent complete event and urls', =>
-                _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]
+                it 'should have called impression URLs', =>
+                    creative     = VASTUtil.encodeURIComponentRFC3986(@Tracker.creative.mediaFiles[0].fileURL)
+                    cacheBusting = 10000000
+                    _eventsSent[0].should.eql [
+                        'http://example.com/wrapperA-impression',
+                        'http://example.com/wrapperB-impression1',
+                        'http://example.com/wrapperB-impression2',
+                        "http://example.com/impression1_asset:#{creative}_#{cacheBusting}",
+                        "http://example.com/impression2_#{cacheBusting}",
+                        "http://example.com/impression3_#{cacheBusting}"
+                    ]
 
-            it 'should be called multiples times', =>
-                _eventsSent = []
-                @Tracker.complete()
-                _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]
+                it 'should have sent creativeView event', =>
+                    _eventsSent[1].should.eql 'creativeView'
 
+                it 'should only be called once', =>
+                    _eventsSent = []
+                    @Tracker.load()
+                    _eventsSent.should.eql []
 
-        describe '#close', =>
+            describe '#errorWithCode', =>
 
-            before (done) =>
-                _eventsSent = []
-                @Tracker.close()
-                done()
+                before (done) =>
+                    _eventsSent = []
+                    VASTUtil.track = (URLTemplates, variables) ->
+                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
+                    @Tracker.errorWithCode(405)
+                    done()
 
-            it 'should have sent close event and urls VAST 2.0', =>
-                _eventsSent.should.eql ['close', [ 'http://example.com/linear-close']]
+                it 'should have called error urls', =>
+                    _eventsSent[0].should.eql [ 'http://example.com/wrapperA-error', 'http://example.com/wrapperB-error', 'http://example.com/error_405']
 
-            it 'should have sent closeLinear event and urls VAST 3.0', =>
-                _eventsSent = []
-                @Tracker.trackingEvents['closeLinear'] = ['http://example.com/closelinear']
-                delete @Tracker.trackingEvents['close']
-                @Tracker.close()
-                _eventsSent.should.eql ['closeLinear', [ 'http://example.com/closelinear']]
+            describe '#complete', =>
 
+                before (done) =>
+                    _eventsSent = []
+                    @Tracker.complete()
+                    done()
 
-        describe '#skip', =>
+                it 'should have sent complete event and urls', =>
+                    _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]
 
-            before (done) =>
-                _eventsSent = []
-                @Tracker.skip()
-                done()
+                it 'should be called multiples times', =>
+                    _eventsSent = []
+                    @Tracker.complete()
+                    _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]
 
-            it 'should have sent skip event', =>
-                _eventsSent.should.eql ['skip']
+            describe '#close', =>
 
+                before (done) =>
+                    _eventsSent = []
+                    @Tracker.close()
+                    done()
 
-        describe '#click', =>
+                it 'should have sent close event and urls VAST 2.0', =>
+                    _eventsSent.should.eql ['close', [ 'http://example.com/linear-close']]
 
-            before (done) =>
-                _eventsSent = []
-                VASTUtil.track = (URLTemplates, variables) ->
-                    _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                @Tracker.click()
-                done()
+                it 'should have sent closeLinear event and urls VAST 3.0', =>
+                    _eventsSent = []
+                    @Tracker.trackingEvents['closeLinear'] = ['http://example.com/closelinear']
+                    delete @Tracker.trackingEvents['close']
+                    @Tracker.close()
+                    _eventsSent.should.eql ['closeLinear', [ 'http://example.com/closelinear']]
 
-            it 'should have sent clicktracking events', =>
-                ISOTimeStamp = VASTUtil.encodeURIComponentRFC3986((new Date).toISOString())
-                _eventsSent[0].should.eql [
-                    "http://example.com/linear-clicktracking1_ts:#{ISOTimeStamp}",
-                    'http://example.com/linear-clicktracking2',
-                    'http://example.com/wrapperB-linear-clicktracking',
-                    'http://example.com/wrapperA-linear-clicktracking1',
-                    'http://example.com/wrapperA-linear-clicktracking2'
-                ]
+            describe '#skip', =>
 
-            it 'should have sent clickthrough event', =>
-                _eventsSent[1].should.eql 'clickthrough'
+                before (done) =>
+                    _eventsSent = []
+                    @Tracker.skip()
+                    done()
+
+                it 'should have sent skip event', =>
+                    _eventsSent.should.eql ['skip']
+
+            describe '#click', =>
+
+                before (done) =>
+                    _eventsSent = []
+                    VASTUtil.track = (URLTemplates, variables) ->
+                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
+                    @Tracker.click()
+                    done()
+
+                it 'should have sent clicktracking events', =>
+                    ISOTimeStamp = VASTUtil.encodeURIComponentRFC3986((new Date).toISOString())
+                    _eventsSent[0].should.eql [
+                        "http://example.com/linear-clicktracking1_ts:#{ISOTimeStamp}",
+                        'http://example.com/linear-clicktracking2',
+                        'http://example.com/wrapperB-linear-clicktracking',
+                        'http://example.com/wrapperA-linear-clicktracking1',
+                        'http://example.com/wrapperA-linear-clicktracking2'
+                    ]
+
+                it 'should have sent clickthrough event', =>
+                    _eventsSent[1].should.eql 'clickthrough'
+
+        describe '#companion', =>
+            before () =>
+                # Init tracker
+                ad = @response.ads[0]
+                creative = ad.creatives[1]
+                variation = creative.variations[0]
+                @Tracker = new VASTTracker ad, creative, variation
+                # Mock emit
+                @Tracker.emit = (event, args...) =>
+                    _eventsSent.push({ event: event, args: args })
+
+            describe '#click', =>
+
+                before (done) =>
+                    _eventsSent = []
+                    VASTUtil.track = (URLTemplates, variables) ->
+                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
+                    @Tracker.click()
+                    done()
+
+                it 'should have sent clicktracking events', =>
+                    ISOTimeStamp = VASTUtil.encodeURIComponentRFC3986((new Date).toISOString())
+                    _eventsSent[0].should.eql [
+                        'http://example.com/companion1-clicktracking-first',
+                        'http://example.com/companion1-clicktracking-second'
+                    ]
+
+                it 'should have sent clickthrough event withy clickThrough url', =>
+                    _eventsSent[1].event.should.eql 'clickthrough'
+                    _eventsSent[1].args.should.eql [ 'http://example.com/companion1-clickthrough' ]
+
+        describe '#nonlinear', =>
+            before () =>
+                # Init tracker
+                ad = @response.ads[0]
+                creative = ad.creatives[2]
+                variation = creative.variations[0]
+                @Tracker = new VASTTracker ad, creative, variation
+                # Mock emit
+                @Tracker.emit = (event, args...) =>
+                    _eventsSent.push({ event: event, args: args })
+
+            describe '#click', =>
+
+                before (done) =>
+                    _eventsSent = []
+                    VASTUtil.track = (URLTemplates, variables) ->
+                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
+                    @Tracker.click()
+                    done()
+
+                it 'should have sent clicktracking events', =>
+                    ISOTimeStamp = VASTUtil.encodeURIComponentRFC3986((new Date).toISOString())
+                    _eventsSent[0].should.eql [
+                        'http://example.com/nonlinear-clicktracking-1',
+                        'http://example.com/nonlinear-clicktracking-2'
+                    ]
+
+                it 'should have sent clickthrough event withy clickThrough url', =>
+                    _eventsSent[1].event.should.eql 'clickthrough'
+                    _eventsSent[1].args.should.eql [ 'http://example.com/nonlinear-clickthrough' ]

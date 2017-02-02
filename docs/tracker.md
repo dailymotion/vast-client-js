@@ -71,6 +71,7 @@ vastTracker.on('complete', function() {
   * `String` *response* – A VAST XML document. When *response* is provided, no Ajax request is made and thus the *url* parameter is ignored.
   * `Object` *urlhandler* – A URL handler module, used to fetch the VAST document instead of the [default ones](https://github.com/dailymotion/vast-client-js/tree/master/src/urlhandlers).
   * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
+  * `Number` *wrapperLimit* – A number of available *Wrapper* responses that can be received with no InLine response.
 
 - `String` *code* – Replaces `[ERRORCODE]` macro. `[ERRORCODE]` values are liste in the VAST specification.
 
@@ -86,20 +87,18 @@ $player.on('error', function() {
 ### load()
 Report the impression URI. Can only be called once. Will report the following URI:
 
--  All `<Impression>` URI from the `<InLine>` and `<Wrapper>` tracking elements.
--  The `creativeView` URI from the `<Tracking>` events
+The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
 
-Once done, a *creativeView* event is emitted.
+- `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
+- `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
+- `Object` *variation* - An optional reference to the selected `<NonLinear>`/`<Companion>` element for non-linear ads.
 
 ``` javascript
-// Bind canplay listener to the player
-$player.on('canplay', function() {
-  vastTracker.load();
-});
+// Create a VAST Tracker instance for a linear ad
+var vastTracker = new DMVAST.tracker(ad, creative);
 
-vastTracker.on('creativeView', function() {
-  // impression tracking URLs have been called
-});
+// Create a VAST Tracker instance for a companion ad
+var vastTracker = new DMVAST.tracker(ad, creative, companion);
 ```
 
 ### off( eventName [, listener] )

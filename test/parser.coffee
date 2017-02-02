@@ -460,8 +460,8 @@ describe 'VASTParser', ->
                 it 'should have an id', =>
                     linear.id.should.equal "id873421"
 
-                it 'should have an adId', =>
-                    linear.adId.should.equal "adId221144"
+                it 'should not have an adId', =>
+                    should.equal linear.adId, null
 
                 it 'should not have a sequence', =>
                     should.equal linear.sequence, null
@@ -611,7 +611,7 @@ describe 'VASTParser', ->
 
         describe '#Wrapper limit reached', ->
             it 'emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('wrapper-a.xml'), { maxWrapperDepth: 1 }, (response, err) =>
+                VASTParser.parse urlfor('wrapper-a.xml'), { wrapperLimit: 1 }, (response, err) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # No error returned

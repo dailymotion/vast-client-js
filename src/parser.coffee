@@ -36,7 +36,7 @@ class VASTParser
             cb = options if typeof options is 'function'
             options = {}
 
-        maxWrapperDepth = options.maxWrapperDepth || DEFAULT_MAX_WRAPPER_WIDTH
+        maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH
         options.wrapperDepth = 0
 
         @_parse url, null, options, (err, response) ->
@@ -270,7 +270,7 @@ class VASTParser
                     for creativeElement in @childsByName(node, "Creative")
                         creativeAttributes =
                             id           : creativeElement.getAttribute('id') or null
-                            adId         : @parseCreativeAdIdAttribute(creativeElement)
+                            adId         : creativeElement.getAttribute('adId') or null
                             sequence     : creativeElement.getAttribute('sequence') or null
                             apiFramework : creativeElement.getAttribute('apiFramework') or null
 
@@ -567,7 +567,7 @@ class VASTParser
         return parseInt yPosition or 0
 
     @parseBoolean: (booleanString) ->
-        return booleanString in ['true', 'TRUE', '1']
+            return booleanString in ['true', 'TRUE', '1']
 
     # Parsing node text for legacy support
     @parseNodeText: (node) ->
