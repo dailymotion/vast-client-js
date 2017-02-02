@@ -345,12 +345,10 @@ class VASTParser
         creative = new VASTCreativeLinear(creativeAttributes)
 
         creative.duration = @parseDuration @parseNodeText(@childByName(creativeElement, "Duration"))
-        if creative.duration == -1 and creativeElement.parentNode.parentNode.parentNode.nodeName != 'Wrapper'
-            return null # can't parse duration, element is required
-
         skipOffset = creativeElement.getAttribute("skipoffset")
+
         if not skipOffset? then creative.skipDelay = null
-        else if skipOffset.charAt(skipOffset.length - 1) is "%"
+        else if skipOffset.charAt(skipOffset.length - 1) is "%" and  creative.duration != -1
             percent = parseInt(skipOffset, 10)
             creative.skipDelay = creative.duration * (percent / 100)
         else
