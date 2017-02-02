@@ -1096,13 +1096,10 @@ VASTParser = (function() {
     var adParamsElement, base, clickTrackingElement, creative, customClickElement, eventName, htmlElement, i, icon, iconClickTrackingElement, iconClicksElement, iconElement, iconsElement, iframeElement, j, k, l, len, len1, len10, len2, len3, len4, len5, len6, len7, len8, len9, m, maintainAspectRatio, mediaFile, mediaFileElement, mediaFilesElement, n, o, offset, p, percent, q, r, ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, s, scalable, skipOffset, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement;
     creative = new VASTCreativeLinear();
     creative.duration = this.parseDuration(this.parseNodeText(this.childByName(creativeElement, "Duration")));
-    if (creative.duration === -1 && creativeElement.parentNode.parentNode.parentNode.nodeName !== 'Wrapper') {
-      return null;
-    }
     skipOffset = creativeElement.getAttribute("skipoffset");
     if (skipOffset == null) {
       creative.skipDelay = null;
-    } else if (skipOffset.charAt(skipOffset.length - 1) === "%") {
+    } else if (skipOffset.charAt(skipOffset.length - 1) === "%" && creative.duration !== -1) {
       percent = parseInt(skipOffset, 10);
       creative.skipDelay = creative.duration * (percent / 100);
     } else {
