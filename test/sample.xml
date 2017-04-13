@@ -125,7 +125,7 @@
       <Creatives>
         <Creative id="id873421" apiFramework="VPAID">
           <Linear skipoffset="00:00:10" >
-            <Duration>00:00:30.123</Duration>
+            <Duration>30</Duration>
             <MediaFiles>
               <MediaFile delivery="progressive" type="application/javascript" width="512" height="288" apiFramework="VPAID"><![CDATA[http://example.com/vpaid.js]]></MediaFile>
             </MediaFiles>

@@ -496,6 +496,10 @@ class VASTParser
     @parseDuration: (durationString) ->
         unless (durationString?)
             return -1
+        # Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
+        if VASTUtil.isNumeric(durationString)
+            return parseInt durationString
+
         durationComponents = durationString.split(":")
         if durationComponents.length != 3
             return -1

@@ -430,8 +430,8 @@ describe 'VASTParser', ->
                 it 'should have an apiFramework', =>
                     linear.apiFramework.should.equal "VPAID"
 
-                it 'should have a duration of 30.123s', =>
-                    linear.duration.should.equal 30.123
+                it 'should have a duration of 30', =>
+                    linear.duration.should.equal 30
 
                 it 'should have wrapper clickthrough URL', =>
                     linear.videoClickThroughURLTemplate.should.eql "http://example.com/wrapperB-linear-clickthrough"
