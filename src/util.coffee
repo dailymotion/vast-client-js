@@ -87,5 +87,7 @@ class VASTUtil
 
         return storage
 
+    @isNumeric: (n) ->
+        return !isNaN(parseFloat(n)) and isFinite(n)
 
 module.exports = VASTUtil
