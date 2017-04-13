@@ -1,10 +1,12 @@
 VASTClient = require('./client')
 VASTUtil = require('./util')
 VASTCreativeLinear = require('./creative').VASTCreativeLinear
+VASTNonLinear = require('./nonlinear')
+VASTCompanionAd = require('./companionad')
 EventEmitter = require('events').EventEmitter
 
 class VASTTracker extends EventEmitter
-    constructor: (@ad, @creative) ->
+    constructor: (@ad, @creative, @variation = null) ->
         @muted = no
         @impressed = no
         @skipable = no
@@ -27,9 +29,18 @@ class VASTTracker extends EventEmitter
             @linear = yes
             @clickThroughURLTemplate = @creative.videoClickThroughURLTemplate
             @clickTrackingURLTemplates = @creative.videoClickTrackingURLTemplates
+        # Nonlinear and Companion
         else
             @skipDelay = -1
             @linear = no
+            # Used variation has been specified
+            if @variation
+                if @variation instanceof VASTNonLinear
+                    @clickThroughURLTemplate = @variation.nonlinearClickThroughURLTemplate
+                    @clickTrackingURLTemplates = @variation.nonlinearClickTrackingURLTemplates
+                else if @variation instanceof VASTCompanionAd
+                    @clickThroughURLTemplate = @variation.companionClickThroughURLTemplate
+                    @clickTrackingURLTemplates = @variation.companionClickTrackingURLTemplates
 
         @on 'start', ->
             VASTClient.lastSuccessfullAd = +new Date()

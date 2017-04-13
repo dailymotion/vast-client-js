@@ -65,14 +65,18 @@ DMVAST.client.get('http://example.dailymotion.com/vast.xml', function(response, 
 
 # VASTTracker
 
-The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative )`.
+The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
 
-- `Object` *ad* – Reference to the `<Ad>` element of the selected `mediaFile`
-- `Object` *creative* – Reference to the `<Creative>` element of the selected `mediaFile`
+- `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
+- `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
+- `Object` *variation* - An optional reference to the selected `<NonLinear>`/`<Companion>` element for non-linear ads.
 
 ``` javascript
-// Create a VAST Tracker instance
+// Create a VAST Tracker instance for a linear ad
 var vastTracker = new DMVAST.tracker(ad, creative);
+
+// Create a VAST Tracker instance for a companion ad
+var vastTracker = new DMVAST.tracker(ad, creative, companion);
 ```
 
 ## Methods
