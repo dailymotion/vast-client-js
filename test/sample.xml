@@ -14,7 +14,7 @@
       <Impression><![CDATA[http://example.com/impression2_[random]]]></Impression>
       <Impression><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
       <Creatives>
-        <Creative id="video">
+        <Creative id="id130984" adId="adId345690" sequence="1" >
           <Linear>
             <Duration>00:01:30.123</Duration>
             <TrackingEvents>
@@ -49,7 +49,7 @@
             </Icons>
           </Linear>
         </Creative>
-        <Creative>
+        <Creative id="id130985" adId="adId345691" sequence="2" >
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
@@ -123,7 +123,7 @@
       <AdTitle><![CDATA[Ad title 2]]></AdTitle>
       <Impression><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
-        <Creative id="vpaid">
+        <Creative id="id873421" apiFramework="VPAID">
           <Linear skipoffset="00:00:10" >
             <Duration>00:00:30.123</Duration>
             <MediaFiles>

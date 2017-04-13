@@ -1,5 +1,9 @@
 class VASTCreative
-    constructor: ->
+    constructor: (creativeAttributes = {}) ->
+        @id = creativeAttributes.id or null
+        @adId = creativeAttributes.adId or null
+        @sequence = creativeAttributes.sequence or null
+        @apiFramework = creativeAttributes.apiFramework or null
         @trackingEvents = {}
 
 class VASTCreativeLinear extends VASTCreative
@@ -23,6 +27,7 @@ class VASTCreativeNonLinear extends VASTCreative
 
 class VASTCreativeCompanion extends VASTCreative
     constructor: ->
+        super
         @type = "companion"
         @variations = []
 
