@@ -10,6 +10,7 @@ class VASTNonLinear
         @htmlResource = null
         @iframeResource = null
         @nonlinearClickThroughURLTemplate = null
+        @nonlinearClickTrackingURLTemplates = []
         @adParameters = null
 
 module.exports = VASTNonLinear

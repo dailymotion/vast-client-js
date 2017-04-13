@@ -9,6 +9,7 @@ class VASTCompanionAd
         @iframeResource = null
         @altText = null
         @companionClickThroughURLTemplate = null
+        @companionClickTrackingURLTemplates = []
         @trackingEvents = {}
 
 module.exports = VASTCompanionAd

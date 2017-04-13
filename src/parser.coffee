@@ -448,6 +448,9 @@ class VASTParser
                 nonlinearAd.adParameters = @parseNodeText(adParamsElement)
 
             nonlinearAd.nonlinearClickThroughURLTemplate = @parseNodeText(@childByName(nonlinearResource, "NonLinearClickThrough"))
+            for clickTrackingElement in @childsByName(nonlinearResource, "NonLinearClickTracking")
+                nonlinearAd.nonlinearClickTrackingURLTemplates.push @parseNodeText(clickTrackingElement)
+
             creative.variations.push nonlinearAd
 
         return creative
