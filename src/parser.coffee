@@ -235,18 +235,24 @@ class VASTParser
 
                 when "Creatives"
                     for creativeElement in @childsByName(node, "Creative")
+                        creativeAttributes =
+                            id           : creativeElement.getAttribute('id') or null
+                            adId         : creativeElement.getAttribute('adId') or null
+                            sequence     : creativeElement.getAttribute('sequence') or null
+                            apiFramework : creativeElement.getAttribute('apiFramework') or null
+
                         for creativeTypeElement in creativeElement.childNodes
                             switch creativeTypeElement.nodeName
                                 when "Linear"
-                                    creative = @parseCreativeLinearElement creativeTypeElement
+                                    creative = @parseCreativeLinearElement creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
                                 when "NonLinearAds"
-                                    creative = @parseNonLinear creativeTypeElement
+                                    creative = @parseNonLinear creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
                                 when "CompanionAds"
-                                    creative = @parseCompanionAd creativeTypeElement
+                                    creative = @parseCompanionAd creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
                 when "Extensions"
@@ -302,8 +308,8 @@ class VASTParser
 
             collection.push ext
 
-    @parseCreativeLinearElement: (creativeElement) ->
-        creative = new VASTCreativeLinear()
+    @parseCreativeLinearElement: (creativeElement, creativeAttributes) ->
+        creative = new VASTCreativeLinear(creativeAttributes)
 
         creative.duration = @parseDuration @parseNodeText(@childByName(creativeElement, "Duration"))
         if creative.duration == -1 and creativeElement.parentNode.parentNode.parentNode.nodeName != 'Wrapper'
@@ -412,8 +418,8 @@ class VASTParser
 
         return creative
 
-    @parseNonLinear: (creativeElement) ->
-        creative = new VASTCreativeNonLinear()
+    @parseNonLinear: (creativeElement, creativeAttributes) ->
+        creative = new VASTCreativeNonLinear(creativeAttributes)
 
         for trackingEventsElement in @childsByName(creativeElement, "TrackingEvents")
           for trackingElement in @childsByName(trackingEventsElement, "Tracking")
@@ -452,8 +458,8 @@ class VASTParser
 
         return creative
 
-    @parseCompanionAd: (creativeElement) ->
-        creative = new VASTCreativeCompanion()
+    @parseCompanionAd: (creativeElement, creativeAttributes) ->
+        creative = new VASTCreativeCompanion(creativeAttributes)
 
         for companionResource in @childsByName(creativeElement, "Companion")
             companionAd = new VASTCompanionAd()

@@ -122,6 +122,18 @@ describe 'VASTParser', ->
                 it 'should have linear type', =>
                     linear.type.should.equal "linear"
 
+                it 'should have an id', =>
+                    linear.id.should.equal "id130984"
+
+                it 'should have an adId', =>
+                    linear.adId.should.equal "adId345690"
+
+                it 'should have a sequence', =>
+                    linear.sequence.should.equal "1"
+
+                it 'should not have an apiFramework', =>
+                    should.equal linear.apiFramework, null
+
                 it 'should have a duration of 90.123s', =>
                     linear.duration.should.equal 90.123
 
@@ -193,6 +205,18 @@ describe 'VASTParser', ->
 
                 it 'should have companion type', =>
                     companions.type.should.equal "companion"
+
+                it 'should have an id', =>
+                    companions.id.should.equal "id130985"
+
+                it 'should have an adId', =>
+                    companions.adId.should.equal "adId345691"
+
+                it 'should have a sequence', =>
+                    companions.sequence.should.equal "2"
+
+                it 'should not have an apiFramework', =>
+                    should.equal companions.apiFramework, null
 
                 it 'should have 3 variations', =>
                     companions.variations.should.have.length 3
@@ -286,6 +310,18 @@ describe 'VASTParser', ->
 
                 it 'should have nonlinear type', =>
                     nonlinears.type.should.equal "nonlinear"
+
+                it 'should not have an id', =>
+                    should.equal nonlinears.id, null
+
+                it 'should not have an adId', =>
+                    should.equal nonlinears.adId, null
+
+                it 'should not have a sequence', =>
+                    should.equal nonlinears.sequence, null
+
+                it 'should not have an apiFramework', =>
+                    should.equal nonlinears.apiFramework, null
 
                 it 'should have 1 variation', =>
                     nonlinears.variations.should.have.length 1
@@ -381,6 +417,18 @@ describe 'VASTParser', ->
 
                 it 'should have linear type', =>
                     linear.type.should.equal "linear"
+
+                it 'should have an id', =>
+                    linear.id.should.equal "id873421"
+
+                it 'should not have an adId', =>
+                    should.equal linear.adId, null
+
+                it 'should not have a sequence', =>
+                    should.equal linear.sequence, null
+
+                it 'should have an apiFramework', =>
+                    linear.apiFramework.should.equal "VPAID"
 
                 it 'should have a duration of 30.123s', =>
                     linear.duration.should.equal 30.123
