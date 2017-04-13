@@ -256,8 +256,7 @@ describe 'VASTParser', ->
                             companion.companionClickTrackingURLTemplate.should.equal 'http://example.com/companion1-clicktracking-first'
 
                         it 'should have 2 companion clicktracking urls', =>
-                            companion.companionClickTrackingURLTemplates[0].should.equal  'http://example.com/companion1-clicktracking-first'
-                            companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion1-clicktracking-second'
+                            companion.companionClickTrackingURLTemplates.should.eql  ['http://example.com/companion1-clicktracking-first', 'http://example.com/companion1-clicktracking-second']
 
                     describe 'as IFrameResource', ->
                       before () =>
@@ -361,12 +360,8 @@ describe 'VASTParser', ->
                         it 'should have 1 nonlinear clickthrough url', =>
                             nonlinear.nonlinearClickThroughURLTemplate.should.equal  'http://example.com/nonlinear-clickthrough'
 
-                    describe 'AdParameter check', ->
-                        before () =>
-                            nonlinear = nonlinears.variations[0]
-
-                        after () =>
-                            nonlinear = null
+                        it 'should have 2 nonlinear clicktracking urls', =>
+                            nonlinear.nonlinearClickTrackingURLTemplates.should.eql  ['http://example.com/nonlinear-clicktracking-1', 'http://example.com/nonlinear-clicktracking-2']
 
                         it 'should have AdParameter', =>
                             nonlinear.adParameters.should.equal '{"key":"value"}'
