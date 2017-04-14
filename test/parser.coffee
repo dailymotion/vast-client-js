@@ -120,6 +120,18 @@ describe 'VASTParser', ->
                 it 'should have linear type', =>
                     linear.type.should.equal "linear"
 
+                it 'should have an id', =>
+                    linear.id.should.equal "id130984"
+
+                it 'should have an adId', =>
+                    linear.adId.should.equal "adId345690"
+
+                it 'should have a sequence', =>
+                    linear.sequence.should.equal "1"
+
+                it 'should not have an apiFramework', =>
+                    should.equal linear.apiFramework, null
+
                 it 'should have a duration of 90.123s', =>
                     linear.duration.should.equal 90.123
 
@@ -192,6 +204,18 @@ describe 'VASTParser', ->
                 it 'should have companion type', =>
                     companions.type.should.equal "companion"
 
+                it 'should have an id', =>
+                    companions.id.should.equal "id130985"
+
+                it 'should have an adId', =>
+                    companions.adId.should.equal "adId345691"
+
+                it 'should have a sequence', =>
+                    companions.sequence.should.equal "2"
+
+                it 'should not have an apiFramework', =>
+                    should.equal companions.apiFramework, null
+
                 it 'should have 3 variations', =>
                     companions.variations.should.have.length 3
 
@@ -217,6 +241,12 @@ describe 'VASTParser', ->
                         it 'should have 1 url for creativeView event', =>
                             companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
 
+                        it 'should have checked that AltText exists', =>
+                            companion.should.have.property('altText')
+
+                        it 'should have parsed AltText for companion and its equal', =>
+                            companion.altText.should.equal 'Sample Alt Text Content!!!!'
+
                         it 'should have 1 companion clickthrough url', =>
                             companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion1-clickthrough'
 
@@ -224,8 +254,7 @@ describe 'VASTParser', ->
                             companion.companionClickTrackingURLTemplate.should.equal 'http://example.com/companion1-clicktracking-first'
 
                         it 'should have 2 companion clicktracking urls', =>
-                            companion.companionClickTrackingURLTemplates[0].should.equal  'http://example.com/companion1-clicktracking-first'
-                            companion.companionClickTrackingURLTemplates[1].should.equal  'http://example.com/companion1-clicktracking-second'
+                            companion.companionClickTrackingURLTemplates.should.eql  ['http://example.com/companion1-clicktracking-first', 'http://example.com/companion1-clicktracking-second']
 
                     describe 'as IFrameResource', ->
                       before () =>
@@ -279,6 +308,18 @@ describe 'VASTParser', ->
                 it 'should have nonlinear type', =>
                     nonlinears.type.should.equal "nonlinear"
 
+                it 'should not have an id', =>
+                    should.equal nonlinears.id, null
+
+                it 'should not have an adId', =>
+                    should.equal nonlinears.adId, null
+
+                it 'should not have a sequence', =>
+                    should.equal nonlinears.sequence, null
+
+                it 'should not have an apiFramework', =>
+                    should.equal nonlinears.apiFramework, null
+
                 it 'should have 1 variation', =>
                     nonlinears.variations.should.have.length 1
 
@@ -303,13 +344,25 @@ describe 'VASTParser', ->
                         after () =>
                             nonlinear = null
 
-                        it 'should have parsed size and type attributes', =>
+                        it 'should have parsed attributes', =>
                             nonlinear.width.should.equal '300'
                             nonlinear.height.should.equal '200'
+                            nonlinear.expandedWidth.should.equal '600'
+                            nonlinear.expandedHeight.should.equal '400'
+                            nonlinear.scalable.should.equal false
+                            nonlinear.maintainAspectRatio.should.equal true
+                            nonlinear.minSuggestedDuration.should.equal 100
+                            nonlinear.apiFramework.should.equal "someAPI"
                             nonlinear.type.should.equal 'image/jpeg'
 
                         it 'should have 1 nonlinear clickthrough url', =>
                             nonlinear.nonlinearClickThroughURLTemplate.should.equal  'http://example.com/nonlinear-clickthrough'
+
+                        it 'should have 2 nonlinear clicktracking urls', =>
+                            nonlinear.nonlinearClickTrackingURLTemplates.should.eql  ['http://example.com/nonlinear-clicktracking-1', 'http://example.com/nonlinear-clicktracking-2']
+
+                        it 'should have AdParameter', =>
+                            nonlinear.adParameters.should.equal '{"key":"value"}'
 
         describe '#For the 2nd ad', ->
             ad2 = null
@@ -364,8 +417,20 @@ describe 'VASTParser', ->
                 it 'should have linear type', =>
                     linear.type.should.equal "linear"
 
-                it 'should have a duration of 30.123s', =>
-                    linear.duration.should.equal 30.123
+                it 'should have an id', =>
+                    linear.id.should.equal "id873421"
+
+                it 'should not have an adId', =>
+                    should.equal linear.adId, null
+
+                it 'should not have a sequence', =>
+                    should.equal linear.sequence, null
+
+                it 'should have an apiFramework', =>
+                    linear.apiFramework.should.equal "VPAID"
+
+                it 'should have a duration of 30', =>
+                    linear.duration.should.equal 30
 
                 it 'should have wrapper clickthrough URL', =>
                     linear.videoClickThroughURLTemplate.should.eql "http://example.com/wrapperB-linear-clickthrough"
@@ -500,7 +565,7 @@ describe 'VASTParser', ->
 
         describe '#Wrapper limit reached', ->
             it 'emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('wrapper-a.xml'), { maxWrapperDepth: 1 }, (response, err) =>
+                VASTParser.parse urlfor('wrapper-a.xml'), { wrapperLimit: 1 }, (response, err) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # No error returned

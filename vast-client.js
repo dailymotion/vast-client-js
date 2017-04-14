@@ -436,7 +436,9 @@ VASTCompanionAd = (function() {
     this.staticResource = null;
     this.htmlResource = null;
     this.iframeResource = null;
+    this.altText = null;
     this.companionClickThroughURLTemplate = null;
+    this.companionClickTrackingURLTemplates = [];
     this.trackingEvents = {};
   }
 
@@ -453,7 +455,14 @@ var VASTCreative, VASTCreativeCompanion, VASTCreativeLinear, VASTCreativeNonLine
   hasProp = {}.hasOwnProperty;
 
 VASTCreative = (function() {
-  function VASTCreative() {
+  function VASTCreative(creativeAttributes) {
+    if (creativeAttributes == null) {
+      creativeAttributes = {};
+    }
+    this.id = creativeAttributes.id || null;
+    this.adId = creativeAttributes.adId || null;
+    this.sequence = creativeAttributes.sequence || null;
+    this.apiFramework = creativeAttributes.apiFramework || null;
     this.trackingEvents = {};
   }
 
@@ -498,6 +507,7 @@ VASTCreativeCompanion = (function(superClass) {
   extend(VASTCreativeCompanion, superClass);
 
   function VASTCreativeCompanion() {
+    VASTCreativeCompanion.__super__.constructor.apply(this, arguments);
     this.type = "companion";
     this.variations = [];
   }
@@ -619,13 +629,19 @@ VASTNonLinear = (function() {
     this.id = null;
     this.width = 0;
     this.height = 0;
-    this.minSuggestedDuration = "00:00:00";
+    this.expandedWidth = 0;
+    this.expandedHeight = 0;
+    this.scalable = true;
+    this.maintainAspectRatio = true;
+    this.minSuggestedDuration = 0;
     this.apiFramework = "static";
     this.type = null;
     this.staticResource = null;
     this.htmlResource = null;
     this.iframeResource = null;
     this.nonlinearClickThroughURLTemplate = null;
+    this.nonlinearClickTrackingURLTemplates = [];
+    this.adParameters = null;
   }
 
   return VASTNonLinear;
@@ -708,7 +724,7 @@ VASTParser = (function() {
       }
       options = {};
     }
-    maxWrapperDepth = options.maxWrapperDepth || DEFAULT_MAX_WRAPPER_WIDTH;
+    maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH;
     options.wrapperDepth = 0;
     return this._parse(url, null, options, function(err, response) {
       return cb(response, err);
@@ -981,7 +997,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseInLineElement = function(inLineElement) {
-    var ad, creative, creativeElement, creativeTypeElement, i, j, k, len, len1, len2, node, ref, ref1, ref2;
+    var ad, creative, creativeAttributes, creativeElement, creativeTypeElement, i, j, k, len, len1, len2, node, ref, ref1, ref2;
     ad = new VASTAd();
     ad.id = inLineElement.getAttribute("id") || null;
     ad.sequence = inLineElement.getAttribute("sequence") || null;
@@ -999,24 +1015,30 @@ VASTParser = (function() {
           ref1 = this.childsByName(node, "Creative");
           for (j = 0, len1 = ref1.length; j < len1; j++) {
             creativeElement = ref1[j];
+            creativeAttributes = {
+              id: creativeElement.getAttribute('id') || null,
+              adId: creativeElement.getAttribute('adId') || null,
+              sequence: creativeElement.getAttribute('sequence') || null,
+              apiFramework: creativeElement.getAttribute('apiFramework') || null
+            };
             ref2 = creativeElement.childNodes;
             for (k = 0, len2 = ref2.length; k < len2; k++) {
               creativeTypeElement = ref2[k];
               switch (creativeTypeElement.nodeName) {
                 case "Linear":
-                  creative = this.parseCreativeLinearElement(creativeTypeElement);
+                  creative = this.parseCreativeLinearElement(creativeTypeElement, creativeAttributes);
                   if (creative) {
                     ad.creatives.push(creative);
                   }
                   break;
                 case "NonLinearAds":
-                  creative = this.parseNonLinear(creativeTypeElement);
+                  creative = this.parseNonLinear(creativeTypeElement, creativeAttributes);
                   if (creative) {
                     ad.creatives.push(creative);
                   }
                   break;
                 case "CompanionAds":
-                  creative = this.parseCompanionAd(creativeTypeElement);
+                  creative = this.parseCompanionAd(creativeTypeElement, creativeAttributes);
                   if (creative) {
                     ad.creatives.push(creative);
                   }
@@ -1092,9 +1114,9 @@ VASTParser = (function() {
     return results;
   };
 
-  VASTParser.parseCreativeLinearElement = function(creativeElement) {
+  VASTParser.parseCreativeLinearElement = function(creativeElement, creativeAttributes) {
     var adParamsElement, base, clickTrackingElement, creative, customClickElement, eventName, htmlElement, i, icon, iconClickTrackingElement, iconClicksElement, iconElement, iconsElement, iframeElement, j, k, l, len, len1, len10, len2, len3, len4, len5, len6, len7, len8, len9, m, maintainAspectRatio, mediaFile, mediaFileElement, mediaFilesElement, n, o, offset, p, percent, q, r, ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, s, scalable, skipOffset, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate, videoClicksElement;
-    creative = new VASTCreativeLinear();
+    creative = new VASTCreativeLinear(creativeAttributes);
     creative.duration = this.parseDuration(this.parseNodeText(this.childByName(creativeElement, "Duration")));
     skipOffset = creativeElement.getAttribute("skipoffset");
     if (skipOffset == null) {
@@ -1237,9 +1259,9 @@ VASTParser = (function() {
     return creative;
   };
 
-  VASTParser.parseNonLinear = function(creativeElement) {
-    var base, creative, eventName, htmlElement, i, iframeElement, j, k, l, len, len1, len2, len3, len4, len5, m, n, nonlinearAd, nonlinearResource, ref, ref1, ref2, ref3, ref4, ref5, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate;
-    creative = new VASTCreativeNonLinear();
+  VASTParser.parseNonLinear = function(creativeElement, creativeAttributes) {
+    var adParamsElement, base, clickTrackingElement, creative, eventName, htmlElement, i, iframeElement, j, k, l, len, len1, len2, len3, len4, len5, len6, m, n, nonlinearAd, nonlinearResource, o, ref, ref1, ref2, ref3, ref4, ref5, ref6, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate;
+    creative = new VASTCreativeNonLinear(creativeAttributes);
     ref = this.childsByName(creativeElement, "TrackingEvents");
     for (i = 0, len = ref.length; i < len; i++) {
       trackingEventsElement = ref[i];
@@ -1263,7 +1285,11 @@ VASTParser = (function() {
       nonlinearAd.id = nonlinearResource.getAttribute("id") || null;
       nonlinearAd.width = nonlinearResource.getAttribute("width");
       nonlinearAd.height = nonlinearResource.getAttribute("height");
-      nonlinearAd.minSuggestedDuration = nonlinearResource.getAttribute("minSuggestedDuration");
+      nonlinearAd.expandedWidth = nonlinearResource.getAttribute("expandedWidth");
+      nonlinearAd.expandedHeight = nonlinearResource.getAttribute("expandedHeight");
+      nonlinearAd.scalable = this.parseBoolean(nonlinearResource.getAttribute("scalable"));
+      nonlinearAd.maintainAspectRatio = this.parseBoolean(nonlinearResource.getAttribute("maintainAspectRatio"));
+      nonlinearAd.minSuggestedDuration = this.parseDuration(nonlinearResource.getAttribute("minSuggestedDuration"));
       nonlinearAd.apiFramework = nonlinearResource.getAttribute("apiFramework");
       ref3 = this.childsByName(nonlinearResource, "HTMLResource");
       for (l = 0, len3 = ref3.length; l < len3; l++) {
@@ -1283,15 +1309,24 @@ VASTParser = (function() {
         nonlinearAd.type = staticElement.getAttribute("creativeType") || 0;
         nonlinearAd.staticResource = this.parseNodeText(staticElement);
       }
+      adParamsElement = this.childByName(nonlinearResource, "AdParameters");
+      if (adParamsElement != null) {
+        nonlinearAd.adParameters = this.parseNodeText(adParamsElement);
+      }
       nonlinearAd.nonlinearClickThroughURLTemplate = this.parseNodeText(this.childByName(nonlinearResource, "NonLinearClickThrough"));
+      ref6 = this.childsByName(nonlinearResource, "NonLinearClickTracking");
+      for (o = 0, len6 = ref6.length; o < len6; o++) {
+        clickTrackingElement = ref6[o];
+        nonlinearAd.nonlinearClickTrackingURLTemplates.push(this.parseNodeText(clickTrackingElement));
+      }
       creative.variations.push(nonlinearAd);
     }
     return creative;
   };
 
-  VASTParser.parseCompanionAd = function(creativeElement) {
-    var base, clickTrackingElement, companionAd, companionResource, creative, eventName, htmlElement, i, iframeElement, j, k, l, len, len1, len2, len3, len4, len5, len6, m, n, o, ref, ref1, ref2, ref3, ref4, ref5, ref6, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate;
-    creative = new VASTCreativeCompanion();
+  VASTParser.parseCompanionAd = function(creativeElement, creativeAttributes) {
+    var base, child, clickTrackingElement, companionAd, companionResource, creative, eventName, htmlElement, i, iframeElement, j, k, l, len, len1, len2, len3, len4, len5, len6, len7, m, n, o, p, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, staticElement, trackingElement, trackingEventsElement, trackingURLTemplate;
+    creative = new VASTCreativeCompanion(creativeAttributes);
     ref = this.childsByName(creativeElement, "Companion");
     for (i = 0, len = ref.length; i < len; i++) {
       companionResource = ref[i];
@@ -1316,14 +1351,19 @@ VASTParser = (function() {
       for (l = 0, len3 = ref3.length; l < len3; l++) {
         staticElement = ref3[l];
         companionAd.type = staticElement.getAttribute("creativeType") || 0;
+        ref4 = this.childsByName(companionResource, "AltText");
+        for (m = 0, len4 = ref4.length; m < len4; m++) {
+          child = ref4[m];
+          companionAd.altText = this.parseNodeText(child);
+        }
         companionAd.staticResource = this.parseNodeText(staticElement);
       }
-      ref4 = this.childsByName(companionResource, "TrackingEvents");
-      for (m = 0, len4 = ref4.length; m < len4; m++) {
-        trackingEventsElement = ref4[m];
-        ref5 = this.childsByName(trackingEventsElement, "Tracking");
-        for (n = 0, len5 = ref5.length; n < len5; n++) {
-          trackingElement = ref5[n];
+      ref5 = this.childsByName(companionResource, "TrackingEvents");
+      for (n = 0, len5 = ref5.length; n < len5; n++) {
+        trackingEventsElement = ref5[n];
+        ref6 = this.childsByName(trackingEventsElement, "Tracking");
+        for (o = 0, len6 = ref6.length; o < len6; o++) {
+          trackingElement = ref6[o];
           eventName = trackingElement.getAttribute("event");
           trackingURLTemplate = this.parseNodeText(trackingElement);
           if ((eventName != null) && (trackingURLTemplate != null)) {
@@ -1334,9 +1374,9 @@ VASTParser = (function() {
           }
         }
       }
-      ref6 = this.childsByName(companionResource, "CompanionClickTracking");
-      for (o = 0, len6 = ref6.length; o < len6; o++) {
-        clickTrackingElement = ref6[o];
+      ref7 = this.childsByName(companionResource, "CompanionClickTracking");
+      for (p = 0, len7 = ref7.length; p < len7; p++) {
+        clickTrackingElement = ref7[p];
         companionAd.companionClickTrackingURLTemplates.push(this.parseNodeText(clickTrackingElement));
       }
       companionAd.companionClickThroughURLTemplate = this.parseNodeText(this.childByName(companionResource, "CompanionClickThrough"));
@@ -1350,6 +1390,9 @@ VASTParser = (function() {
     var durationComponents, hours, minutes, seconds, secondsAndMS;
     if (!(durationString != null)) {
       return -1;
+    }
+    if (VASTUtil.isNumeric(durationString)) {
+      return parseInt(durationString);
     }
     durationComponents = durationString.split(":");
     if (durationComponents.length !== 3) {
@@ -1380,6 +1423,10 @@ VASTParser = (function() {
       return yPosition;
     }
     return parseInt(yPosition || 0);
+  };
+
+  VASTParser.parseBoolean = function(booleanString) {
+    return booleanString === 'true' || booleanString === 'TRUE' || booleanString === '1';
   };
 
   VASTParser.parseNodeText = function(node) {
@@ -1418,7 +1465,7 @@ module.exports = VASTResponse;
 
 },{}],14:[function(require,module,exports){
 // Generated by CoffeeScript 1.11.1
-var EventEmitter, VASTClient, VASTCreativeLinear, VASTTracker, VASTUtil,
+var EventEmitter, VASTClient, VASTCompanionAd, VASTCreativeLinear, VASTNonLinear, VASTTracker, VASTUtil,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -1428,15 +1475,20 @@ VASTUtil = require('./util');
 
 VASTCreativeLinear = require('./creative').VASTCreativeLinear;
 
+VASTNonLinear = require('./nonlinear');
+
+VASTCompanionAd = require('./companionad');
+
 EventEmitter = require('events').EventEmitter;
 
 VASTTracker = (function(superClass) {
   extend(VASTTracker, superClass);
 
-  function VASTTracker(ad, creative) {
+  function VASTTracker(ad, creative, variation) {
     var eventName, events, ref;
     this.ad = ad;
     this.creative = creative;
+    this.variation = variation != null ? variation : null;
     this.muted = false;
     this.impressed = false;
     this.skipable = false;
@@ -1457,6 +1509,15 @@ VASTTracker = (function(superClass) {
     } else {
       this.skipDelay = -1;
       this.linear = false;
+      if (this.variation) {
+        if (this.variation instanceof VASTNonLinear) {
+          this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
+          this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
+        } else if (this.variation instanceof VASTCompanionAd) {
+          this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
+          this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
+        }
+      }
     }
     this.on('start', function() {
       VASTClient.lastSuccessfullAd = +new Date();
@@ -1651,7 +1712,7 @@ VASTTracker = (function(superClass) {
 
 module.exports = VASTTracker;
 
-},{"./client":3,"./creative":5,"./util":18,"events":1}],15:[function(require,module,exports){
+},{"./client":3,"./companionad":4,"./creative":5,"./nonlinear":11,"./util":18,"events":1}],15:[function(require,module,exports){
 // Generated by CoffeeScript 1.11.1
 var URLHandler, flash, xhr;
 
@@ -1943,6 +2004,10 @@ VASTUtil = (function() {
     }
     return storage;
   })();
+
+  VASTUtil.isNumeric = function(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+  };
 
   return VASTUtil;
 

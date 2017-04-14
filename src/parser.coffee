@@ -36,7 +36,7 @@ class VASTParser
             cb = options if typeof options is 'function'
             options = {}
 
-        maxWrapperDepth = options.maxWrapperDepth || DEFAULT_MAX_WRAPPER_WIDTH
+        maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH
         options.wrapperDepth = 0
 
         @_parse url, null, options, (err, response) ->
@@ -253,18 +253,24 @@ class VASTParser
 
                 when "Creatives"
                     for creativeElement in @childsByName(node, "Creative")
+                        creativeAttributes =
+                            id           : creativeElement.getAttribute('id') or null
+                            adId         : creativeElement.getAttribute('adId') or null
+                            sequence     : creativeElement.getAttribute('sequence') or null
+                            apiFramework : creativeElement.getAttribute('apiFramework') or null
+
                         for creativeTypeElement in creativeElement.childNodes
                             switch creativeTypeElement.nodeName
                                 when "Linear"
-                                    creative = @parseCreativeLinearElement creativeTypeElement
+                                    creative = @parseCreativeLinearElement creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
                                 when "NonLinearAds"
-                                    creative = @parseNonLinear creativeTypeElement
+                                    creative = @parseNonLinear creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
                                 when "CompanionAds"
-                                    creative = @parseCompanionAd creativeTypeElement
+                                    creative = @parseCompanionAd creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
                 when "Extensions"
@@ -320,8 +326,8 @@ class VASTParser
 
             collection.push ext
 
-    @parseCreativeLinearElement: (creativeElement) ->
-        creative = new VASTCreativeLinear()
+    @parseCreativeLinearElement: (creativeElement, creativeAttributes) ->
+        creative = new VASTCreativeLinear(creativeAttributes)
 
         creative.duration = @parseDuration @parseNodeText(@childByName(creativeElement, "Duration"))
         skipOffset = creativeElement.getAttribute("skipoffset")
@@ -428,8 +434,8 @@ class VASTParser
 
         return creative
 
-    @parseNonLinear: (creativeElement) ->
-        creative = new VASTCreativeNonLinear()
+    @parseNonLinear: (creativeElement, creativeAttributes) ->
+        creative = new VASTCreativeNonLinear(creativeAttributes)
 
         for trackingEventsElement in @childsByName(creativeElement, "TrackingEvents")
           for trackingElement in @childsByName(trackingEventsElement, "Tracking")
@@ -444,7 +450,11 @@ class VASTParser
             nonlinearAd.id = nonlinearResource.getAttribute("id") or null
             nonlinearAd.width = nonlinearResource.getAttribute("width")
             nonlinearAd.height = nonlinearResource.getAttribute("height")
-            nonlinearAd.minSuggestedDuration = nonlinearResource.getAttribute("minSuggestedDuration")
+            nonlinearAd.expandedWidth = nonlinearResource.getAttribute("expandedWidth")
+            nonlinearAd.expandedHeight = nonlinearResource.getAttribute("expandedHeight")
+            nonlinearAd.scalable = @parseBoolean nonlinearResource.getAttribute("scalable")
+            nonlinearAd.maintainAspectRatio = @parseBoolean nonlinearResource.getAttribute("maintainAspectRatio")
+            nonlinearAd.minSuggestedDuration = @parseDuration nonlinearResource.getAttribute("minSuggestedDuration")
             nonlinearAd.apiFramework = nonlinearResource.getAttribute("apiFramework")
 
             for htmlElement in @childsByName(nonlinearResource, "HTMLResource")
@@ -459,13 +469,20 @@ class VASTParser
                 nonlinearAd.type = staticElement.getAttribute("creativeType") or 0
                 nonlinearAd.staticResource = @parseNodeText(staticElement)
 
+            adParamsElement = @childByName(nonlinearResource, "AdParameters")
+            if adParamsElement?
+                nonlinearAd.adParameters = @parseNodeText(adParamsElement)
+
             nonlinearAd.nonlinearClickThroughURLTemplate = @parseNodeText(@childByName(nonlinearResource, "NonLinearClickThrough"))
+            for clickTrackingElement in @childsByName(nonlinearResource, "NonLinearClickTracking")
+                nonlinearAd.nonlinearClickTrackingURLTemplates.push @parseNodeText(clickTrackingElement)
+
             creative.variations.push nonlinearAd
 
         return creative
 
-    @parseCompanionAd: (creativeElement) ->
-        creative = new VASTCreativeCompanion()
+    @parseCompanionAd: (creativeElement, creativeAttributes) ->
+        creative = new VASTCreativeCompanion(creativeAttributes)
 
         for companionResource in @childsByName(creativeElement, "Companion")
             companionAd = new VASTCompanionAd()
@@ -481,6 +498,8 @@ class VASTParser
                 companionAd.iframeResource = @parseNodeText(iframeElement)
             for staticElement in @childsByName(companionResource, "StaticResource")
                 companionAd.type = staticElement.getAttribute("creativeType") or 0
+                for child in @childsByName(companionResource, "AltText")
+                    companionAd.altText = @parseNodeText(child)
                 companionAd.staticResource = @parseNodeText(staticElement)
             for trackingEventsElement in @childsByName(companionResource, "TrackingEvents")
                 for trackingElement in @childsByName(trackingEventsElement, "Tracking")
@@ -500,6 +519,10 @@ class VASTParser
     @parseDuration: (durationString) ->
         unless (durationString?)
             return -1
+        # Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
+        if VASTUtil.isNumeric(durationString)
+            return parseInt durationString
+
         durationComponents = durationString.split(":")
         if durationComponents.length != 3
             return -1
@@ -527,6 +550,9 @@ class VASTParser
             return yPosition
 
         return parseInt yPosition or 0
+
+    @parseBoolean: (booleanString) ->
+            return booleanString in ['true', 'TRUE', '1']
 
     # Parsing node text for legacy support
     @parseNodeText: (node) ->
