@@ -53,6 +53,7 @@ Fetch a URL and parse the response into a valid VAST object.
   * `String` *response* – A VAST XML document. When *response* is provided, no Ajax request is made and thus the *url* parameter is ignored.
   * `Object` *urlhandler* – A URL handler module, used to fetch the VAST document instead of the [default ones](https://github.com/dailymotion/vast-client-js/tree/master/src/urlhandlers).
   * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
+  * `Number` *wrapperLimit* – A number of available *Wrapper* responses that can be received with no InLine response.
 
 * `Function` *done* – Method to be called once the VAST document is parsed. The VAST JS object is passed as the 1st parameter. If null, an error is provided as a 2nd parameter.
 
@@ -65,14 +66,18 @@ DMVAST.client.get('http://example.dailymotion.com/vast.xml', function(response, 
 
 # VASTTracker
 
-The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative )`.
+The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
 
-- `Object` *ad* – Reference to the `<Ad>` element of the selected `mediaFile`
-- `Object` *creative* – Reference to the `<Creative>` element of the selected `mediaFile`
+- `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
+- `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
+- `Object` *variation* - An optional reference to the selected `<NonLinear>`/`<Companion>` element for non-linear ads.
 
 ``` javascript
-// Create a VAST Tracker instance
+// Create a VAST Tracker instance for a linear ad
 var vastTracker = new DMVAST.tracker(ad, creative);
+
+// Create a VAST Tracker instance for a companion ad
+var vastTracker = new DMVAST.tracker(ad, creative, companion);
 ```
 
 ## Methods
