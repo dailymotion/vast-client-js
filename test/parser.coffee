@@ -422,8 +422,8 @@ describe 'VASTParser', ->
                 it 'should have an id', =>
                     linear.id.should.equal "id873421"
 
-                it 'should not have an adId', =>
-                    should.equal linear.adId, null
+                it 'should have an adId', =>
+                    linear.adId.should.equal "adId221144"
 
                 it 'should not have a sequence', =>
                     should.equal linear.sequence, null
