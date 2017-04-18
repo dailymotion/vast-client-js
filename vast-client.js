@@ -1017,7 +1017,7 @@ VASTParser = (function() {
             creativeElement = ref1[j];
             creativeAttributes = {
               id: creativeElement.getAttribute('id') || null,
-              adId: creativeElement.getAttribute('adId') || null,
+              adId: this.parseCreativeAdIdAttribute(creativeElement),
               sequence: creativeElement.getAttribute('sequence') || null,
               apiFramework: creativeElement.getAttribute('apiFramework') || null
             };
@@ -1439,6 +1439,10 @@ VASTParser = (function() {
     if (attributeValue) {
       return nodeDestination.setAttribute(attributeName, attributeValue);
     }
+  };
+
+  VASTParser.parseCreativeAdIdAttribute = function(creativeElement) {
+    return creativeElement.getAttribute('AdID') || creativeElement.getAttribute('adID') || creativeElement.getAttribute('adId') || null;
   };
 
   return VASTParser;
