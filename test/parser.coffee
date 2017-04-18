@@ -108,6 +108,18 @@ describe 'VASTParser', ->
                 ad1.extensions[3].children[0].name.should.eql "#text"
                 ad1.extensions[3].children[0].value.should.eql "{ foo: bar }"
 
+            it 'should not have trackingEvents property', =>
+                should.equal ad1.trackingEvents, undefined
+
+            it 'should not have videoClickTrackingURLTemplates property', =>
+                should.equal ad1.videoClickTrackingURLTemplates, undefined
+
+            it 'should not have videoClickThroughURLTemplate property', =>
+                should.equal ad1.videoClickThroughURLTemplate, undefined
+
+            it 'should not have videoCustomClickURLTemplates property', =>
+                should.equal ad1.videoCustomClickURLTemplates, undefined
+
             #Linear
             describe '1st creative (Linear)', ->
                 linear = null
@@ -162,7 +174,8 @@ describe 'VASTParser', ->
                         'http://example.com/linear-clicktracking2',
                         'http://example.com/wrapperB-linear-clicktracking',
                         'http://example.com/wrapperA-linear-clicktracking1',
-                        'http://example.com/wrapperA-linear-clicktracking2'
+                        'http://example.com/wrapperA-linear-clicktracking2',
+                        'http://example.com/wrapperA-linear-clicktracking3'
                     ]
 
                 it 'should have 2 URLs for customclick', =>
@@ -270,12 +283,6 @@ describe 'VASTParser', ->
 
                         it 'should have 1 url for creativeView event', =>
                             companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
-
-                        it 'should have checked that AltText exists', =>
-                            companion.should.have.property('altText')
-
-                        it 'should have parsed AltText for companion and its equal', =>
-                            companion.altText.should.equal 'Sample Alt Text Content!!!!'
 
                         it 'should have checked that AltText exists', =>
                             companion.should.have.property('altText')
