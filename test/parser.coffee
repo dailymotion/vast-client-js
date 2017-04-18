@@ -247,6 +247,12 @@ describe 'VASTParser', ->
                         it 'should have parsed AltText for companion and its equal', =>
                             companion.altText.should.equal 'Sample Alt Text Content!!!!'
 
+                        it 'should have checked that AltText exists', =>
+                            companion.should.have.property('altText')
+
+                        it 'should have parsed AltText for companion and its equal', =>
+                            companion.altText.should.equal 'Sample Alt Text Content!!!!'
+
                         it 'should have 1 companion clickthrough url', =>
                             companion.companionClickThroughURLTemplate.should.equal  'http://example.com/companion1-clickthrough'
 
@@ -420,8 +426,8 @@ describe 'VASTParser', ->
                 it 'should have an id', =>
                     linear.id.should.equal "id873421"
 
-                it 'should not have an adId', =>
-                    should.equal linear.adId, null
+                it 'should have an adId', =>
+                    linear.adId.should.equal "adId221144"
 
                 it 'should not have a sequence', =>
                     should.equal linear.sequence, null
