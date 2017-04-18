@@ -255,7 +255,7 @@ class VASTParser
                     for creativeElement in @childsByName(node, "Creative")
                         creativeAttributes =
                             id           : creativeElement.getAttribute('id') or null
-                            adId         : creativeElement.getAttribute('adId') or null
+                            adId         : @parseCreativeAdIdAttribute(creativeElement)
                             sequence     : creativeElement.getAttribute('sequence') or null
                             apiFramework : creativeElement.getAttribute('apiFramework') or null
 
@@ -562,5 +562,11 @@ class VASTParser
         attributeValue = nodeSource.getAttribute attributeName
         if attributeValue
             nodeDestination.setAttribute attributeName, attributeValue
+
+    @parseCreativeAdIdAttribute: (creativeElement) ->
+        return creativeElement.getAttribute('AdID') or  # VAST 2 spec
+               creativeElement.getAttribute('adID') or  # VAST 3 spec
+               creativeElement.getAttribute('adId') or  # VAST 4 spec
+               null
 
 module.exports = VASTParser
