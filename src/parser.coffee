@@ -136,19 +136,18 @@ class VASTParser
                                 wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
                                 wrappedAd.extensions = ad.extensions.concat wrappedAd.extensions
 
-                                if ad.trackingEvents?
-                                    for creative in wrappedAd.creatives
-                                        if ad.trackingEvents[creative.type]?
-                                            for eventName in Object.keys ad.trackingEvents[creative.type]
-                                                creative.trackingEvents[eventName] or= []
-                                                creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[creative.type][eventName]
+                                for creative in wrappedAd.creatives
+                                    if ad.trackingEvents[creative.type]?
+                                        for eventName, urls of ad.trackingEvents[creative.type]
+                                            creative.trackingEvents[eventName] or= []
+                                            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat urls
 
-                                if ad.videoClickTrackingURLTemplates?
+                                if ad.videoClickTrackingURLTemplates.length
                                     for creative in wrappedAd.creatives
                                         if creative.type is 'linear'
                                             creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
 
-                                if ad.videoCustomClickURLTemplates?
+                                if ad.videoCustomClickURLTemplates.length
                                     for creative in wrappedAd.creatives
                                         if creative.type is 'linear'
                                             creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat ad.videoCustomClickURLTemplates
@@ -201,21 +200,26 @@ class VASTParser
             if wrapperURLElement?
                 ad.nextWrapperURL = @parseNodeText @childByName wrapperURLElement, "URL"
 
-
-        for creative in ad.creatives
-            wrapperCreativeElement = null
-            if creative.type is 'linear' || creative.type is 'nonlinear'
-                wrapperCreativeElement = creative
-                if wrapperCreativeElement?
-                    if wrapperCreativeElement.trackingEvents?
-                        ad.trackingEvents or= {}
-                        ad.trackingEvents[wrapperCreativeElement.type] = wrapperCreativeElement.trackingEvents
-                    if wrapperCreativeElement.videoClickTrackingURLTemplates?
-                        ad.videoClickTrackingURLTemplates = wrapperCreativeElement.videoClickTrackingURLTemplates
-                    if wrapperCreativeElement.videoClickThroughURLTemplate?
-                        ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate
-                    if wrapperCreativeElement.videoCustomClickURLTemplates?
-                        ad.videoCustomClickURLTemplates = wrapperCreativeElement.videoCustomClickURLTemplates
+        for wrapperCreativeElement in ad.creatives
+            if wrapperCreativeElement.type in ['linear', 'nonlinear']
+                # TrackingEvents Linear / NonLinear
+                if wrapperCreativeElement.trackingEvents?
+                    ad.trackingEvents or= {}
+                    ad.trackingEvents[wrapperCreativeElement.type] or= {}
+                    for eventName, urls of wrapperCreativeElement.trackingEvents
+                        ad.trackingEvents[wrapperCreativeElement.type][eventName] or= []
+                        ad.trackingEvents[wrapperCreativeElement.type][eventName].push url for url in urls
+                # ClickTracking
+                if wrapperCreativeElement.videoClickTrackingURLTemplates?
+                    ad.videoClickTrackingURLTemplates or= [] # tmp property to save wrapper tracking URLs until they are merged
+                    ad.videoClickTrackingURLTemplates.push item for item in wrapperCreativeElement.videoClickTrackingURLTemplates
+                # ClickThrough
+                if wrapperCreativeElement.videoClickThroughURLTemplate?
+                    ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate
+                # CustomClick
+                if wrapperCreativeElement.videoCustomClickURLTemplates?
+                    ad.videoCustomClickURLTemplates or= [] # tmp property to save wrapper tracking URLs until they are merged
+                    ad.videoCustomClickURLTemplates.push item for item in wrapperCreativeElement.videoCustomClickURLTemplates
 
         if ad.nextWrapperURL?
             return ad
@@ -536,7 +540,7 @@ class VASTParser
         return parseInt yPosition or 0
 
     @parseBoolean: (booleanString) ->
-            return booleanString in ['true', 'TRUE', '1']
+        return booleanString in ['true', 'TRUE', '1']
 
     # Parsing node text for legacy support
     @parseNodeText: (node) ->

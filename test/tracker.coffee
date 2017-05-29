@@ -319,7 +319,8 @@ describe 'VASTTracker', ->
                         'http://example.com/linear-clicktracking2',
                         'http://example.com/wrapperB-linear-clicktracking',
                         'http://example.com/wrapperA-linear-clicktracking1',
-                        'http://example.com/wrapperA-linear-clicktracking2'
+                        'http://example.com/wrapperA-linear-clicktracking2',
+                        'http://example.com/wrapperA-linear-clicktracking3'
                     ]
 
                 it 'should have sent clickthrough event', =>
