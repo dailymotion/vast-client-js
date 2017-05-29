@@ -44,7 +44,7 @@
         <Creative>
           <Linear>
             <TrackingEvents>
-              <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start]]></Tracking>
+              <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start1]]></Tracking>
               <Tracking event="progress" offset="00:00:30"><![CDATA[http://example.com/wrapperA-linear-progress-30sec]]></Tracking>
               <Tracking event="progress" offset="60%"><![CDATA[http://example.com/wrapperA-linear-progress-60%]]></Tracking>
               <Tracking event="complete"><![CDATA[http://example.com/wrapperA-linear-complete]]></Tracking>
@@ -53,6 +53,17 @@
               <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
               <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking2]]></ClickTracking>
               <CustomClick><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
+            </VideoClicks>
+          </Linear>
+        </Creative>
+        <Creative>
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start2]]></Tracking>
+              <Tracking event="progress" offset="90%"><![CDATA[http://example.com/wrapperA-linear-progress-90%]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking3]]></ClickTracking>
             </VideoClicks>
           </Linear>
         </Creative>
