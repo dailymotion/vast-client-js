@@ -881,7 +881,7 @@ VASTParser = (function() {
               ad.nextWrapperURL = baseURL + "/" + ad.nextWrapperURL;
             }
             return _this._parse(ad.nextWrapperURL, parentURLs, options, function(err, wrappedResponse) {
-              var base, creative, eventName, index, l, len3, len4, len5, len6, len7, len8, m, n, o, p, q, ref3, ref4, ref5, ref6, ref7, ref8, wrappedAd;
+              var base, creative, eventName, index, l, len3, len4, len5, len6, len7, m, n, o, p, ref3, ref4, ref5, ref6, ref7, ref8, urls, wrappedAd;
               delete ad.nextWrapperURL;
               if (err != null) {
                 ad.errorCode = 301;
@@ -902,33 +902,31 @@ VASTParser = (function() {
                   wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
                   wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
                   wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
-                  if (ad.trackingEvents != null) {
-                    ref4 = wrappedAd.creatives;
-                    for (m = 0, len4 = ref4.length; m < len4; m++) {
-                      creative = ref4[m];
-                      if (ad.trackingEvents[creative.type] != null) {
-                        ref5 = Object.keys(ad.trackingEvents[creative.type]);
-                        for (n = 0, len5 = ref5.length; n < len5; n++) {
-                          eventName = ref5[n];
-                          (base = creative.trackingEvents)[eventName] || (base[eventName] = []);
-                          creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(ad.trackingEvents[creative.type][eventName]);
-                        }
+                  ref4 = wrappedAd.creatives;
+                  for (m = 0, len4 = ref4.length; m < len4; m++) {
+                    creative = ref4[m];
+                    if (ad.trackingEvents[creative.type] != null) {
+                      ref5 = ad.trackingEvents[creative.type];
+                      for (eventName in ref5) {
+                        urls = ref5[eventName];
+                        (base = creative.trackingEvents)[eventName] || (base[eventName] = []);
+                        creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
                       }
                     }
                   }
-                  if (ad.videoClickTrackingURLTemplates != null) {
+                  if (ad.videoClickTrackingURLTemplates.length) {
                     ref6 = wrappedAd.creatives;
-                    for (o = 0, len6 = ref6.length; o < len6; o++) {
-                      creative = ref6[o];
+                    for (n = 0, len5 = ref6.length; n < len5; n++) {
+                      creative = ref6[n];
                       if (creative.type === 'linear') {
                         creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
                       }
                     }
                   }
-                  if (ad.videoCustomClickURLTemplates != null) {
+                  if (ad.videoCustomClickURLTemplates.length) {
                     ref7 = wrappedAd.creatives;
-                    for (p = 0, len7 = ref7.length; p < len7; p++) {
-                      creative = ref7[p];
+                    for (o = 0, len6 = ref7.length; o < len6; o++) {
+                      creative = ref7[o];
                       if (creative.type === 'linear') {
                         creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(ad.videoCustomClickURLTemplates);
                       }
@@ -936,8 +934,8 @@ VASTParser = (function() {
                   }
                   if (ad.videoClickThroughURLTemplate != null) {
                     ref8 = wrappedAd.creatives;
-                    for (q = 0, len8 = ref8.length; q < len8; q++) {
-                      creative = ref8[q];
+                    for (p = 0, len7 = ref8.length; p < len7; p++) {
+                      creative = ref8[p];
                       if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate == null)) {
                         creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate;
                       }
