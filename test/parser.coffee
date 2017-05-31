@@ -107,6 +107,18 @@ describe 'VASTParser', ->
                 ad1.extensions[3].children[0].name.should.eql "#text"
                 ad1.extensions[3].children[0].value.should.eql "{ foo: bar }"
 
+            it 'should not have trackingEvents property', =>
+                should.equal ad1.trackingEvents, undefined
+
+            it 'should not have videoClickTrackingURLTemplates property', =>
+                should.equal ad1.videoClickTrackingURLTemplates, undefined
+
+            it 'should not have videoClickThroughURLTemplate property', =>
+                should.equal ad1.videoClickThroughURLTemplate, undefined
+
+            it 'should not have videoCustomClickURLTemplates property', =>
+                should.equal ad1.videoCustomClickURLTemplates, undefined
+
             #Linear
             describe '1st creative (Linear)', ->
                 linear = null
@@ -154,7 +166,8 @@ describe 'VASTParser', ->
                         'http://example.com/linear-clicktracking2',
                         'http://example.com/wrapperB-linear-clicktracking',
                         'http://example.com/wrapperA-linear-clicktracking1',
-                        'http://example.com/wrapperA-linear-clicktracking2'
+                        'http://example.com/wrapperA-linear-clicktracking2',
+                        'http://example.com/wrapperA-linear-clicktracking3'
                     ]
 
                 it 'should have 2 URLs for customclick', =>
@@ -163,17 +176,39 @@ describe 'VASTParser', ->
                 it 'should have 8 tracking events', =>
                     linear.trackingEvents.should.have.keys 'start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%'
 
-                it 'should have 3 URLs for start event', =>
-                    linear.trackingEvents['start'].should.eql ['http://example.com/linear-start', 'http://example.com/wrapperB-linear-start', 'http://example.com/wrapperA-linear-start']
+                it 'should have 4 URLs for start event', =>
+                    linear.trackingEvents['start'].should.eql [
+                        'http://example.com/linear-start',
+                        'http://example.com/wrapperB-linear-start',
+                        'http://example.com/wrapperA-linear-start1',
+                        'http://example.com/wrapperA-linear-start2'
+                    ]
 
                 it 'should have 3 URLs for complete event', =>
-                    linear.trackingEvents['complete'].should.eql ['http://example.com/linear-complete', 'http://example.com/wrapperB-linear-complete', 'http://example.com/wrapperA-linear-complete']
+                    linear.trackingEvents['complete'].should.eql [
+                        'http://example.com/linear-complete',
+                        'http://example.com/wrapperB-linear-complete',
+                        'http://example.com/wrapperA-linear-complete'
+                    ]
 
                 it 'should have 3 URLs for progress-30 event VAST 3.0', =>
-                    linear.trackingEvents['progress-30'].should.eql ['http://example.com/linear-progress-30sec', 'http://example.com/wrapperB-linear-progress-30sec', 'http://example.com/wrapperA-linear-progress-30sec']
+                    linear.trackingEvents['progress-30'].should.eql [
+                        'http://example.com/linear-progress-30sec',
+                        'http://example.com/wrapperB-linear-progress-30sec',
+                        'http://example.com/wrapperA-linear-progress-30sec'
+                    ]
 
                 it 'should have 3 URLs for progress-60% event VAST 3.0', =>
-                    linear.trackingEvents['progress-60%'].should.eql ['http://example.com/linear-progress-60%', 'http://example.com/wrapperB-linear-progress-60%', 'http://example.com/wrapperA-linear-progress-60%']
+                    linear.trackingEvents['progress-60%'].should.eql [
+                        'http://example.com/linear-progress-60%',
+                        'http://example.com/wrapperB-linear-progress-60%',
+                        'http://example.com/wrapperA-linear-progress-60%'
+                    ]
+
+                it 'should have 3 URLs for progress-90% event VAST 3.0', =>
+                    linear.trackingEvents['progress-90%'].should.eql [
+                        'http://example.com/wrapperA-linear-progress-90%'
+                    ]
 
                 it 'should have parsed icons element', =>
                     icon = linear.icons[0]
@@ -240,12 +275,6 @@ describe 'VASTParser', ->
 
                         it 'should have 1 url for creativeView event', =>
                             companion.trackingEvents['creativeView'].should.eql ['http://example.com/companion1-creativeview']
-
-                        it 'should have checked that AltText exists', =>
-                            companion.should.have.property('altText')
-
-                        it 'should have parsed AltText for companion and its equal', =>
-                            companion.altText.should.equal 'Sample Alt Text Content!!!!'
 
                         it 'should have checked that AltText exists', =>
                             companion.should.have.property('altText')
@@ -444,8 +473,14 @@ describe 'VASTParser', ->
                 it 'should have wrapper customclick URL', =>
                     linear.videoCustomClickURLTemplates.should.eql ["http://example.com/wrapperA-linear-customclick"]
 
-                it 'should have 4 URLs for clicktracking', =>
-                    linear.videoClickTrackingURLTemplates.should.eql ['http://example.com/linear-clicktracking', 'http://example.com/wrapperB-linear-clicktracking', 'http://example.com/wrapperA-linear-clicktracking1', 'http://example.com/wrapperA-linear-clicktracking2']
+                it 'should have 5 URLs for clicktracking', =>
+                    linear.videoClickTrackingURLTemplates.should.eql [
+                        'http://example.com/linear-clicktracking',
+                        'http://example.com/wrapperB-linear-clicktracking',
+                        'http://example.com/wrapperA-linear-clicktracking1',
+                        'http://example.com/wrapperA-linear-clicktracking2',
+                        'http://example.com/wrapperA-linear-clicktracking3'
+                    ]
 
 
         describe '#VPAID', ->
