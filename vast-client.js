@@ -826,21 +826,15 @@ VASTParser = (function() {
             continue;
           }
           (function(ad) {
-            var baseURL, protocol, ref2;
+            var ref2;
             if (parentURLs.length >= maxWrapperDepth || (ref2 = ad.nextWrapperURL, indexOf.call(parentURLs, ref2) >= 0)) {
               ad.errorCode = 302;
               delete ad.nextWrapperURL;
               return;
             }
-            if (ad.nextWrapperURL.indexOf('//') === 0) {
-              protocol = location.protocol;
-              ad.nextWrapperURL = "" + protocol + ad.nextWrapperURL;
-            } else if (ad.nextWrapperURL.indexOf('://') === -1) {
-              baseURL = url.slice(0, url.lastIndexOf('/'));
-              ad.nextWrapperURL = baseURL + "/" + ad.nextWrapperURL;
-            }
+            ad.nextWrapperURL = _this.resolveVastAdTagURI(ad.nextWrapperURL, url);
             return _this._parse(ad.nextWrapperURL, parentURLs, options, function(err, wrappedResponse) {
-              var base, creative, eventName, index, l, len3, len4, len5, len6, len7, m, n, o, p, ref3, ref4, ref5, ref6, ref7, ref8, urls, wrappedAd;
+              var index, l, len3, ref3, wrappedAd;
               delete ad.nextWrapperURL;
               if (err != null) {
                 ad.errorCode = 301;
@@ -858,48 +852,7 @@ VASTParser = (function() {
                 ref3 = wrappedResponse.ads;
                 for (l = 0, len3 = ref3.length; l < len3; l++) {
                   wrappedAd = ref3[l];
-                  wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
-                  wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
-                  wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
-                  ref4 = wrappedAd.creatives;
-                  for (m = 0, len4 = ref4.length; m < len4; m++) {
-                    creative = ref4[m];
-                    if (ad.trackingEvents[creative.type] != null) {
-                      ref5 = ad.trackingEvents[creative.type];
-                      for (eventName in ref5) {
-                        urls = ref5[eventName];
-                        (base = creative.trackingEvents)[eventName] || (base[eventName] = []);
-                        creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
-                      }
-                    }
-                  }
-                  if (ad.videoClickTrackingURLTemplates.length) {
-                    ref6 = wrappedAd.creatives;
-                    for (n = 0, len5 = ref6.length; n < len5; n++) {
-                      creative = ref6[n];
-                      if (creative.type === 'linear') {
-                        creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
-                      }
-                    }
-                  }
-                  if (ad.videoCustomClickURLTemplates.length) {
-                    ref7 = wrappedAd.creatives;
-                    for (o = 0, len6 = ref7.length; o < len6; o++) {
-                      creative = ref7[o];
-                      if (creative.type === 'linear') {
-                        creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(ad.videoCustomClickURLTemplates);
-                      }
-                    }
-                  }
-                  if (ad.videoClickThroughURLTemplate != null) {
-                    ref8 = wrappedAd.creatives;
-                    for (p = 0, len7 = ref8.length; p < len7; p++) {
-                      creative = ref8[p];
-                      if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate == null)) {
-                        creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate;
-                      }
-                    }
-                  }
+                  _this.mergeWrapperAdData(wrappedAd, ad);
                   response.ads.splice(++index, 0, wrappedAd);
                 }
               }
@@ -910,6 +863,69 @@ VASTParser = (function() {
         return complete();
       };
     })(this));
+  };
+
+  VASTParser.resolveVastAdTagURI = function(vastAdTagUrl, originalUrl) {
+    var baseURL, protocol;
+    if (vastAdTagUrl.indexOf('//') === 0) {
+      protocol = location.protocol;
+      return "" + protocol + vastAdTagUrl;
+    }
+    if (vastAdTagUrl.indexOf('://') === -1) {
+      baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
+      return baseURL + "/" + vastAdTagUrl;
+    }
+    return vastAdTagUrl;
+  };
+
+  VASTParser.mergeWrapperAdData = function(wrappedAd, ad) {
+    var base, creative, eventName, i, j, k, l, len, len1, len2, len3, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, results, urls;
+    wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
+    wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
+    wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
+    ref = wrappedAd.creatives;
+    for (i = 0, len = ref.length; i < len; i++) {
+      creative = ref[i];
+      if (((ref1 = ad.trackingEvents) != null ? ref1[creative.type] : void 0) != null) {
+        ref2 = ad.trackingEvents[creative.type];
+        for (eventName in ref2) {
+          urls = ref2[eventName];
+          (base = creative.trackingEvents)[eventName] || (base[eventName] = []);
+          creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
+        }
+      }
+    }
+    if ((ref3 = ad.videoClickTrackingURLTemplates) != null ? ref3.length : void 0) {
+      ref4 = wrappedAd.creatives;
+      for (j = 0, len1 = ref4.length; j < len1; j++) {
+        creative = ref4[j];
+        if (creative.type === 'linear') {
+          creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
+        }
+      }
+    }
+    if ((ref5 = ad.videoCustomClickURLTemplates) != null ? ref5.length : void 0) {
+      ref6 = wrappedAd.creatives;
+      for (k = 0, len2 = ref6.length; k < len2; k++) {
+        creative = ref6[k];
+        if (creative.type === 'linear') {
+          creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(ad.videoCustomClickURLTemplates);
+        }
+      }
+    }
+    if (ad.videoClickThroughURLTemplate != null) {
+      ref7 = wrappedAd.creatives;
+      results = [];
+      for (l = 0, len3 = ref7.length; l < len3; l++) {
+        creative = ref7[l];
+        if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate == null)) {
+          results.push(creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate);
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    }
   };
 
   VASTParser.childByName = function(node, name) {
