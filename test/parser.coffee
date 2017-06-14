@@ -17,7 +17,7 @@ describe 'VASTParser', ->
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper-a.xml'), (@response) =>
+            VASTParser.parse urlfor('wrapper-notracking.xml'), (@response) =>
                 _response = @response
                 done()
 
@@ -27,9 +27,9 @@ describe 'VASTParser', ->
         it 'should have 1 filter defined', =>
             VASTParser.countURLTemplateFilters().should.equal 1
 
-        it 'should have called 3 times URLtemplateFilter ', =>
-            @templateFilterCalls.should.have.length 3
-            @templateFilterCalls.should.eql [urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]
+        it 'should have called 4 times URLtemplateFilter ', =>
+            @templateFilterCalls.should.have.length 4
+            @templateFilterCalls.should.eql [urlfor('wrapper-notracking.xml'), urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]
 
         it 'should have found 2 ads', =>
             @response.ads.should.have.length 2
@@ -62,10 +62,16 @@ describe 'VASTParser', ->
                 ad1.survey.should.eql "http://example.com/survey"
 
             it 'should have merged wrapped ad error URLs', =>
-                ad1.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error_[ERRORCODE]"]
+                ad1.errorURLTemplates.should.eql [
+                    "http://example.com/wrapperNoTracking-error",
+                    "http://example.com/wrapperA-error",
+                    "http://example.com/wrapperB-error",
+                    "http://example.com/error_[ERRORCODE]"
+                ]
 
             it 'should have merged impression URLs', =>
                 ad1.impressionURLTemplates.should.eql [
+                    "http://example.com/wrapperNoTracking-impression",
                     "http://example.com/wrapperA-impression",
                     "http://example.com/wrapperB-impression1",
                     "http://example.com/wrapperB-impression2",
@@ -422,10 +428,20 @@ describe 'VASTParser', ->
                 should.equal ad2.survey, null
 
             it 'should have merged error URLs', =>
-                ad2.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error"]
+                ad2.errorURLTemplates.should.eql [
+                    "http://example.com/wrapperNoTracking-error",
+                    "http://example.com/wrapperA-error",
+                    "http://example.com/wrapperB-error"
+                ]
 
             it 'should have merged impression URLs', =>
-                ad2.impressionURLTemplates.should.eql ["http://example.com/wrapperA-impression", "http://example.com/wrapperB-impression1", "http://example.com/wrapperB-impression2", "http://example.com/impression1"]
+                ad2.impressionURLTemplates.should.eql [
+                    "http://example.com/wrapperNoTracking-impression",
+                    "http://example.com/wrapperA-impression",
+                    "http://example.com/wrapperB-impression1",
+                    "http://example.com/wrapperB-impression2",
+                    "http://example.com/impression1"
+                ]
 
             it 'should have 1 creative', =>
                 ad2.creatives.should.have.length 1

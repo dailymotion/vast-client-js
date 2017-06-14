@@ -123,13 +123,8 @@ class VASTParser
                         delete ad.nextWrapperURL
                         return
 
-                    if ad.nextWrapperURL.indexOf('//') == 0
-                      protocol = location.protocol
-                      ad.nextWrapperURL = "#{protocol}#{ad.nextWrapperURL}"
-                    else if ad.nextWrapperURL.indexOf('://') == -1
-                        # Resolve relative URLs (mainly for unit testing)
-                        baseURL = url.slice(0, url.lastIndexOf('/'))
-                        ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
+                    # Get full URL
+                    ad.nextWrapperURL = @resolveVastAdTagURI(ad.nextWrapperURL, url)
 
                     @_parse ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) =>
                         delete ad.nextWrapperURL
@@ -150,38 +145,55 @@ class VASTParser
                         else
                             index = response.ads.indexOf(ad)
                             response.ads.splice(index, 1)
+
                             for wrappedAd in wrappedResponse.ads
-                                wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
-                                wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
-                                wrappedAd.extensions = ad.extensions.concat wrappedAd.extensions
-
-                                for creative in wrappedAd.creatives
-                                    if ad.trackingEvents[creative.type]?
-                                        for eventName, urls of ad.trackingEvents[creative.type]
-                                            creative.trackingEvents[eventName] or= []
-                                            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat urls
-
-                                if ad.videoClickTrackingURLTemplates.length
-                                    for creative in wrappedAd.creatives
-                                        if creative.type is 'linear'
-                                            creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
-
-                                if ad.videoCustomClickURLTemplates.length
-                                    for creative in wrappedAd.creatives
-                                        if creative.type is 'linear'
-                                            creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat ad.videoCustomClickURLTemplates
-
-                                # VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-                                if ad.videoClickThroughURLTemplate?
-                                    for creative in wrappedAd.creatives
-                                        if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
-                                            creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
-
+                                @mergeWrapperAdData wrappedAd, ad
                                 response.ads.splice ++index, 0, wrappedAd
 
                         complete()
 
             complete()
+
+    # Convert relative vastAdTagUri
+    @resolveVastAdTagURI: (vastAdTagUrl, originalUrl) ->
+        if vastAdTagUrl.indexOf('//') == 0
+            protocol = location.protocol
+            return "#{protocol}#{vastAdTagUrl}"
+
+        if vastAdTagUrl.indexOf('://') == -1
+            # Resolve relative URLs (mainly for unit testing)
+            baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'))
+            return "#{baseURL}/#{vastAdTagUrl}"
+
+        return vastAdTagUrl
+
+    # Merge ad tracking URLs / extensions data into wrappedAd
+    @mergeWrapperAdData: (wrappedAd, ad) ->
+        wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
+        wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
+        wrappedAd.extensions = ad.extensions.concat wrappedAd.extensions
+
+        for creative in wrappedAd.creatives
+            if ad.trackingEvents?[creative.type]?
+                for eventName, urls of ad.trackingEvents[creative.type]
+                    creative.trackingEvents[eventName] or= []
+                    creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat urls
+
+        if ad.videoClickTrackingURLTemplates?.length
+            for creative in wrappedAd.creatives
+                if creative.type is 'linear'
+                    creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
+
+        if ad.videoCustomClickURLTemplates?.length
+            for creative in wrappedAd.creatives
+                if creative.type is 'linear'
+                    creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat ad.videoCustomClickURLTemplates
+
+        # VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+        if ad.videoClickThroughURLTemplate?
+            for creative in wrappedAd.creatives
+                if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
+                    creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
 
     @childByName: (node, name) ->
         for child in node.childNodes
