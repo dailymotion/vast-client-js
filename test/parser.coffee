@@ -38,6 +38,12 @@ describe 'VASTParser', ->
         it 'should have returned a VAST response object', =>
             @response.should.be.an.instanceOf(VASTResponse)
 
+        describe '#duration', ->
+            for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
+                do (item) ->
+                    it "should not return NaN for `#{item}`", ->
+                        isNaN(VASTParser.parseDuration(item)).should.eql false
+
         describe '#For the 1st ad', ->
             ad1 = null
 
@@ -519,6 +525,46 @@ describe 'VASTParser', ->
 
             it 'should have duration set to -1', =>
                 @response.ads[0].creatives[0].duration.should.be.equal -1
+
+
+    describe '#load', ->
+        @response = null
+        @templateFilterCalls = []
+
+        before (done) =>
+            VASTParser.addURLTemplateFilter (url) =>
+                @templateFilterCalls.push url
+                return url
+            url = urlfor('wrapper-notracking.xml')
+            URLHandler.get url, {}, (err, xml) =>
+                # `VAST > Wrapper > VASTAdTagURI` in the VAST must be an absolute URL
+                for node in xml.documentElement.childNodes
+                    if node.nodeName is 'Ad'
+                        for node in node.childNodes
+                            if node.nodeName is 'Wrapper'
+                                for node in node.childNodes
+                                    if node.nodeName is 'VASTAdTagURI'
+                                        node.textContent = urlfor(VASTParser.parseNodeText node)
+                                        break
+                VASTParser.load xml, (err, response) =>
+                    @response = response
+                    done()
+
+        after () =>
+            VASTParser.clearUrlTemplateFilters()
+
+        it 'should have 1 filter defined', =>
+            VASTParser.countURLTemplateFilters().should.equal 1
+
+        it 'should have called 4 times URLtemplateFilter ', =>
+            @templateFilterCalls.should.have.length 3
+            @templateFilterCalls.should.eql [urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]
+
+        it 'should have found 2 ads', =>
+            @response.ads.should.have.length 2
+
+        it 'should have returned a VAST response object', =>
+            @response.should.be.an.instanceOf(VASTResponse)
 
 
     describe '#Tracking', ->

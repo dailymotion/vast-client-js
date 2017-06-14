@@ -1,7 +1,7 @@
 {
   "name": "vast-client",
   "author": "Olivier Poitrey <rs@dailymotion.com>",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "description": "Javascript VAST Client",
   "keywords": [
     "vast",
@@ -31,13 +31,13 @@
     "postinstall": "coffee --compile --output dist/ src/"
   },
   "devDependencies": {
-    "mocha": "3.1.2",
-    "should": "11.1.1",
-    "sinon": "^1.17.6"
+    "mocha": "^3.4.2",
+    "should": "^11.2.1",
+    "sinon": "^2.3.6"
   },
   "dependencies": {
-    "coffee-script": "~1.11.1",
-    "browserify": "13.1.0",
-    "xmldom": "0.1.22"
+    "coffee-script": "~1.12.6",
+    "browserify": "~14.4.0",
+    "xmldom": "~0.1.27"
   }
 }

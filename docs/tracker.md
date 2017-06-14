@@ -66,12 +66,8 @@ vastTracker.on('complete', function() {
 });
 ```
 
-* `Object` *options* – An optional set of key/value to configure the Ajax request:
-  * `Number` *maxWrapperDepth* – The number of `<Wrapper>` responses allowed before receiving an `<InLine>` response. When the maximum is reached, the parser stop and all `<Error>` URIs are requested with a 302 error code.
-  * `String` *response* – A VAST XML document. When *response* is provided, no Ajax request is made and thus the *url* parameter is ignored.
-  * `Object` *urlhandler* – A URL handler module, used to fetch the VAST document instead of the [default ones](https://github.com/dailymotion/vast-client-js/tree/master/src/urlhandlers).
-  * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
-  * `Number` *wrapperLimit* – A number of available *Wrapper* responses that can be received with no InLine response.
+### errorWithCode( code )
+Send a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substitute with `code`.
 
 - `String` *code* – Replaces `[ERRORCODE]` macro. `[ERRORCODE]` values are liste in the VAST specification.
 
@@ -87,18 +83,20 @@ $player.on('error', function() {
 ### load()
 Report the impression URI. Can only be called once. Will report the following URI:
 
-The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
+-  All `<Impression>` URI from the `<InLine>` and `<Wrapper>` tracking elements.
+-  The `creativeView` URI from the `<Tracking>` events
 
-- `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
-- `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
-- `Object` *variation* - An optional reference to the selected `<NonLinear>`/`<Companion>` element for non-linear ads.
+Once done, a *creativeView* event is emitted.
 
 ``` javascript
-// Create a VAST Tracker instance for a linear ad
-var vastTracker = new DMVAST.tracker(ad, creative);
+// Bind canplay listener to the player
+$player.on('canplay', function() {
+  vastTracker.load();
+});
 
-// Create a VAST Tracker instance for a companion ad
-var vastTracker = new DMVAST.tracker(ad, creative, companion);
+vastTracker.on('creativeView', function() {
+  // impression tracking URLs have been called
+});
 ```
 
 ### off( eventName [, listener] )
