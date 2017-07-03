@@ -15,7 +15,9 @@ This library provides:
 Complies with [VAST 3.0 spec](http://www.iab.net/media/file/VASTv3.0.pdf).
 
 ## Documentation
-See [API](docs/api.md)
+The [client](docs/client.md) documentation contains the basic information to parse a VAST URL/Document. For more advanced use of the parser, see the [parser](docs/parser.md) documentation.
+
+All information about the tracking part can be found in the [tracker](docs/tracker.md) documentation.
 
 ## Support
 If you need to support legacy browsers (e.g. IE8+), don't forget to include [es5.js](https://github.com/inexorabletash/polyfill/blob/master/es5.js)
