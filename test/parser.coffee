@@ -1,5 +1,6 @@
 should = require 'should'
 path = require 'path'
+URLHandler = require '../src/urlhandler'
 VASTParser = require '../src/parser'
 VASTResponse = require '../src/response'
 
@@ -511,6 +512,48 @@ describe 'VASTParser', ->
             it 'should have apiFramework set', =>
                 @response.ads[0].creatives[0].mediaFiles[0].apiFramework.should.be.equal "VPAID"
 
+    describe '#load', ->
+        @response = null
+        @templateFilterCalls = []
+
+        before (done) =>
+            VASTParser.addURLTemplateFilter (url) =>
+                @templateFilterCalls.push url
+                return url
+            url = urlfor('wrapper_notracking.xml')
+            URLHandler.get url, {}, (err, xml) =>
+                # `VAST > Wrapper > VASTAdTagURI` in the VAST must be an absolute URL
+                for node in xml.documentElement.childNodes
+                    if node.nodeName is 'Ad'
+                        for node in node.childNodes
+                            if node.nodeName is 'Wrapper'
+                                for node in node.childNodes
+                                    if node.nodeName is 'VASTAdTagURI'
+                                        node.textContent = urlfor(VASTParser.parseNodeText node)
+                                        break
+                VASTParser.load xml, (err, response) =>
+                    @response = response
+                    console.log response.ads[0]
+                    done()
+
+        after () =>
+            VASTParser.clearUrlTemplateFilters()
+
+        it 'should have 1 filter defined', =>
+            VASTParser.countURLTemplateFilters().should.equal 1
+
+        it 'should have called 4 times URLtemplateFilter ', =>
+            @templateFilterCalls.should.have.length 3
+            @templateFilterCalls.should.eql [urlfor('wrapper_A.xml'), urlfor('wrapper_B.xml'), urlfor('sample.xml')]
+
+        it 'should have found 2 ads', =>
+            @response.ads.should.have.length 2
+
+        it 'should have returned a VAST response object', =>
+            @response.should.be.an.instanceOf(VASTResponse)
+
+        it 'should have merged top level error URLS', =>
+            @response.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
 
     describe '#track', ->
         errorCallbackCalled = 0
