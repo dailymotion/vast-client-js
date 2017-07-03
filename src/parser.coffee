@@ -50,6 +50,9 @@ class VASTParser
     @once: (eventName, cb) ->
         @vent.once eventName, cb
 
+    @off: (eventName, cb) ->
+        @vent.removeListener eventName, cb
+
     @_parse: (url, parentURLs, options, cb) ->
         # Options param can be skipped
         if not cb
