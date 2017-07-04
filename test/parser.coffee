@@ -533,7 +533,6 @@ describe 'VASTParser', ->
                                         break
                 VASTParser.load xml, (err, response) =>
                     @response = response
-                    console.log response.ads[0]
                     done()
 
         after () =>
