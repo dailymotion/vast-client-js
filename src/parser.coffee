@@ -548,7 +548,7 @@ class VASTParser
         minutes = parseInt durationComponents[1] * 60
         hours = parseInt durationComponents[0] * 60 * 60
 
-        if isNaN hours or isNaN minutes or isNaN seconds or minutes > 60 * 60 or seconds > 60
+        if isNaN(hours) or isNaN(minutes) or isNaN(seconds) or minutes > 60 * 60 or seconds > 60
             return -1
         return hours + minutes + seconds
 

@@ -40,6 +40,12 @@ describe 'VASTParser', ->
         it 'should have merged top level error URLs', =>
             @response.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
 
+        describe '#duration', ->
+            for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
+                do (item) ->
+                    it "should not return NaN for `#{item}`", ->
+                        isNaN(VASTParser.parseDuration(item)).should.eql false
+
         describe '#For the 1st ad', ->
             ad1 = null
 
