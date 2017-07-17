@@ -88,7 +88,6 @@ class VASTTracker extends EventEmitter
 
         @progress = progress
 
-
     setMuted: (muted) ->
         if @muted != muted
             @track(if muted then "mute" else "unmute")
