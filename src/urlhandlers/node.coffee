@@ -1,12 +1,14 @@
 uri = require 'url'
 fs = require 'fs'
 http = require 'http'
+https = require 'https'
 DOMParser = require('xmldom').DOMParser
 
 class NodeURLHandler
     @get: (url, options, cb) ->
 
         url = uri.parse(url)
+        httpModule = if url.protocol is 'https:' then https else http
         if url.protocol is 'file:'
             fs.readFile url.pathname, 'utf8', (err, data) ->
                 return cb(err) if (err)
@@ -19,7 +21,7 @@ class NodeURLHandler
                 return ->
                     req.abort( );
 
-            req = http.get url.href, (res) ->
+            req = httpModule.get url.href, (res) ->
                 res.on 'data', (chunk) ->
                     data += chunk
                     clearTimeout( timing );
