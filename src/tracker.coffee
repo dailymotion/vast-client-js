@@ -46,6 +46,9 @@ class VASTTracker extends EventEmitter
             VASTClient.lastSuccessfullAd = +new Date()
             return
 
+    @off: (eventName, cb) ->
+        @removeListener eventName, cb
+
     setDuration: (duration) ->
         @assetDuration = duration
         # beware of key names, theses are also used as event names
@@ -84,7 +87,6 @@ class VASTTracker extends EventEmitter
                 @track "rewind"
 
         @progress = progress
-
 
     setMuted: (muted) ->
         if @muted != muted
