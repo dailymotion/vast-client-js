@@ -13,8 +13,16 @@ describe 'VASTParser', ->
         @response = null
         _response = null
         @templateFilterCalls = []
+        eventsTriggered = null
 
         before (done) =>
+            eventsTriggered = []
+
+            VASTParser.on 'resolving', (variables) ->
+                eventsTriggered.push { name: 'resolving', data: variables }
+            VASTParser.on 'resolved', (variables) ->
+                eventsTriggered.push { name: 'resolved', data: variables }
+
             VASTParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
@@ -23,6 +31,8 @@ describe 'VASTParser', ->
                 done()
 
         after () =>
+            eventsTriggered = []
+            VASTParser.vent.removeAllListeners()
             VASTParser.clearUrlTemplateFilters()
 
         it 'should have 1 filter defined', =>
@@ -31,6 +41,18 @@ describe 'VASTParser', ->
         it 'should have called 4 times URLtemplateFilter ', =>
             @templateFilterCalls.should.have.length 4
             @templateFilterCalls.should.eql [urlfor('wrapper-notracking.xml'), urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]
+
+        it 'should have emiited resolving/resolved events', =>
+            eventsTriggered.should.eql [
+                { name : 'resolving', data : { url : urlfor('wrapper-notracking.xml') }},
+                { name : 'resolved',  data : { url : urlfor('wrapper-notracking.xml') }},
+                { name : 'resolving', data : { url : urlfor('wrapper-a.xml') }},
+                { name : 'resolved',  data : { url : urlfor('wrapper-a.xml') }},
+                { name : 'resolving', data : { url : urlfor('wrapper-b.xml') }},
+                { name : 'resolved',  data : { url : urlfor('wrapper-b.xml') }},
+                { name : 'resolving', data : { url : urlfor('sample.xml') }},
+                { name : 'resolved',  data : { url : urlfor('sample.xml') }},
+            ]
 
         it 'should have found 2 ads', =>
             @response.ads.should.have.length 2
