@@ -70,7 +70,11 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
+        @vent.emit 'resolving', { url: url }
+
         URLHandler.get url, options, (err, xml) =>
+            @vent.emit 'resolved', { url: url }
+
             return cb(err) if err?
             @parseXmlDocument(url, parentURLs, options, xml, cb)
 
