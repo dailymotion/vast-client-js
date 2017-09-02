@@ -24,6 +24,7 @@ class XHRURLHandler
                     else
                         cb(new Error("XHRURLHandler: #{xhr.statusText}"))
             xhr.send()
+            return xhr;
         catch
             cb(new Error('XHRURLHandler: Unexpected error'))
 

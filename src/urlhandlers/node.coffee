@@ -37,4 +37,6 @@ class NodeURLHandler
             fn = timeout_wrapper req
             timing = setTimeout( fn, options.timeout or 120000 );
 
+            return req;
+
 module.exports = NodeURLHandler
