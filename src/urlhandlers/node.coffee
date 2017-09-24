@@ -14,7 +14,7 @@ class NodeURLHandler
                 xml = new DOMParser().parseFromString(data)
                 cb(null, xml)
         else
-            data = ''
+            data = ''<<<<<<< align-with-production
             options = 
             	host: url.hostname
             	path: url.path
@@ -23,7 +23,10 @@ class NodeURLHandler
             req = httpModule.get options, (res) ->
             	res.on 'data', (chunk) ->
                     data += chunk
+                    clearTimeout( timing );
+                    timing = setTimeout( fn, options.timeout or 120000 );
                 res.on 'end', ->
+                    clearTimeout( timing );
                     xml = new DOMParser().parseFromString(data)
                     cb(null, xml)
             req.setTimeout timeout, () ->

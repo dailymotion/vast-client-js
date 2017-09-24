@@ -1,10 +1,12 @@
-VASTClient = require('./client.coffee')
-VASTUtil = require('./util.coffee')
-VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
+VASTClient = require('./client')
+VASTUtil = require('./util')
+VASTCreativeLinear = require('./creative').VASTCreativeLinear
+VASTNonLinear = require('./nonlinear')
+VASTCompanionAd = require('./companionad')
 EventEmitter = require('events').EventEmitter
 
 class VASTTracker extends EventEmitter
-    constructor: (@ad, @creative) ->
+    constructor: (@ad, @creative, @variation = null) ->
         @muted = no
         @impressed = no
         @skipable = no
@@ -15,30 +17,45 @@ class VASTTracker extends EventEmitter
         @emitAlwaysEvents = [
             'creativeView',
             'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete',
-            'rewind', 'skip', 'closeLinear', 'close'
+            'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'
         ]
         # Duplicate the creative's trackingEvents property so we can alter it
-        for eventName, events of creative.trackingEvents
+        for eventName, events of @creative.trackingEvents
             @trackingEvents[eventName] = events.slice(0)
-        if creative instanceof VASTCreativeLinear
-            @assetDuration = creative.duration
-            # beware of key names, theses are also used as event names
-            @quartiles =
-                'firstQuartile' : Math.round(25 * @assetDuration) / 100
-                'midpoint'      : Math.round(50 * @assetDuration) / 100
-                'thirdQuartile' : Math.round(75 * @assetDuration) / 100
+        if @creative instanceof VASTCreativeLinear
+            @setDuration @creative.duration
 
-            @skipDelay = creative.skipDelay
+            @skipDelay = @creative.skipDelay
             @linear = yes
-            @clickThroughURLTemplate = creative.videoClickThroughURLTemplate
-            @clickTrackingURLTemplate = creative.videoClickTrackingURLTemplate
+            @clickThroughURLTemplate = @creative.videoClickThroughURLTemplate
+            @clickTrackingURLTemplates = @creative.videoClickTrackingURLTemplates
+        # Nonlinear and Companion
         else
             @skipDelay = -1
             @linear = no
+            # Used variation has been specified
+            if @variation
+                if @variation instanceof VASTNonLinear
+                    @clickThroughURLTemplate = @variation.nonlinearClickThroughURLTemplate
+                    @clickTrackingURLTemplates = @variation.nonlinearClickTrackingURLTemplates
+                else if @variation instanceof VASTCompanionAd
+                    @clickThroughURLTemplate = @variation.companionClickThroughURLTemplate
+                    @clickTrackingURLTemplates = @variation.companionClickTrackingURLTemplates
 
         @on 'start', ->
             VASTClient.lastSuccessfullAd = +new Date()
             return
+
+    @off: (eventName, cb) ->
+        @removeListener eventName, cb
+
+    setDuration: (duration) ->
+        @assetDuration = duration
+        # beware of key names, theses are also used as event names
+        @quartiles =
+            'firstQuartile' : Math.round(25 * @assetDuration) / 100
+            'midpoint'      : Math.round(50 * @assetDuration) / 100
+            'thirdQuartile' : Math.round(75 * @assetDuration) / 100
 
     setProgress: (progress) ->
         skipDelay = if @skipDelay is null then @skipDelayDefault else @skipDelay
@@ -58,6 +75,7 @@ class VASTTracker extends EventEmitter
 
                 percent = Math.round(progress / @assetDuration * 100)
                 events.push "progress-#{percent}%"
+                events.push "progress-#{Math.round(progress)}"
 
                 for quartile, time of @quartiles
                     events.push quartile if time <= progress <= (time + 1)
@@ -70,10 +88,9 @@ class VASTTracker extends EventEmitter
 
         @progress = progress
 
-
     setMuted: (muted) ->
         if @muted != muted
-            @track(if muted then "muted" else "unmuted")
+            @track(if muted then "mute" else "unmute")
         @muted = muted
 
     setPaused: (paused) ->
@@ -86,31 +103,46 @@ class VASTTracker extends EventEmitter
             @track(if fullscreen then "fullscreen" else "exitFullscreen")
         @fullscreen = fullscreen
 
+    setExpand: (expanded) ->
+        if @expanded != expanded
+            @track(if expanded then "expand" else "collapse")
+        @expanded = expanded
+
     setSkipDelay: (duration) ->
         @skipDelay = duration if typeof duration is 'number'
 
+    # To be called when the video started to log the impression
     load: ->
         unless @impressed
             @impressed = yes
             @trackURLs @ad.impressionURLTemplates
             @track "creativeView"
 
+    # To be called when an error happen with the proper error code
     errorWithCode: (errorCode) ->
         @trackURLs @ad.errorURLTemplates, ERRORCODE: errorCode
 
+    # To be called when the user watched the creative until it's end
     complete: ->
         @track "complete"
 
-    stop: ->
+    # To be called when the player or the window is closed during the ad
+    close: ->
         @track(if @linear then "closeLinear" else "close")
 
+    # Deprecated
+    stop: ->
+    	# noop for backward compat
+
+    # To be called when the skip button is clicked
     skip: ->
         @track "skip"
         @trackingEvents = []
 
+    # To be called when the user clicks on the creative
     click: ->
-        if @clickTrackingURLTemplate?
-            @trackURLs [@clickTrackingURLTemplate]
+        if @clickTrackingURLTemplates?.length
+            @trackURLs @clickTrackingURLTemplates
 
         if @clickThroughURLTemplate?
             if @linear
@@ -140,10 +172,9 @@ class VASTTracker extends EventEmitter
             @emitAlwaysEvents.splice idx, 1 if idx > -1
         return
 
-    trackURLs: (URLTemplates, variables) ->
-        variables ?= {}
-
+    trackURLs: (URLTemplates, variables = {}) ->
         if @linear
+            variables["ASSETURI"] = @creative.mediaFiles[0].fileURL if @creative.mediaFiles[0]?.fileURL?
             variables["CONTENTPLAYHEAD"] = @progressFormated()
 
         VASTUtil.track(URLTemplates, variables)

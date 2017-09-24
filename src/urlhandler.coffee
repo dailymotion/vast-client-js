@@ -1,5 +1,5 @@
-xhr = require './urlhandlers/xmlhttprequest.coffee'
-flash = require './urlhandlers/flash.coffee'
+xhr = require './urlhandlers/xmlhttprequest'
+flash = require './urlhandlers/flash'
 
 class URLHandler
     @get: (url, headers, timeout, cb) ->
@@ -11,6 +11,6 @@ class URLHandler
         else if flash.supported()
             return flash.get(url, headers, timeout, cb)
         else
-            return cb()
+            return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'))
 
 module.exports = URLHandler

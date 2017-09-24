@@ -1,5 +1,9 @@
 class VASTCreative
-    constructor: ->
+    constructor: (creativeAttributes = {}) ->
+        @id = creativeAttributes.id or null
+        @adId = creativeAttributes.adId or null
+        @sequence = creativeAttributes.sequence or null
+        @apiFramework = creativeAttributes.apiFramework or null
         @trackingEvents = {}
 
 class VASTCreativeLinear extends VASTCreative
@@ -10,13 +14,20 @@ class VASTCreativeLinear extends VASTCreative
         @skipDelay = null
         @mediaFiles = []
         @videoClickThroughURLTemplate = null
-        @videoClickTrackingURLTemplate = null
+        @videoClickTrackingURLTemplates = []
+        @videoCustomClickURLTemplates = []
+        @adParameters = null
+        @icons = []
 
 class VASTCreativeNonLinear extends VASTCreative
-    # TODO
-
-class VASTCreativeCompanion
     constructor: ->
+        super
+        @type = "nonlinear"
+        @variations = []
+
+class VASTCreativeCompanion extends VASTCreative
+    constructor: ->
+        super
         @type = "companion"
         @variations = []
 
