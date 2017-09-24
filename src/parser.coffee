@@ -24,13 +24,11 @@ class VASTParser
     @countURLTemplateFilters: () -> URLTemplateFilters.length
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
-    @parse: (url, options, cb) ->
-        if not cb
-            cb = options if typeof options is 'function'
-            options = {}
+    @parse: (url, headers, timeout, logger, cb) ->
+        @_parse url, headers, timeout, logger, null, (err, response) ->
+            cb(response)
 
-        @_parse url, null, options, (err, response) ->
-            cb(response, err)
+    @_parse: (url, headers, timeout, logger, parentURLs, cb) ->
 
     @load: (xml, options, cb) ->
         if not cb
@@ -39,13 +37,12 @@ class VASTParser
 
         @parseXmlDocument(null, [], options, xml, cb)
 
-    @vent = new EventEmitter()
-    @track: (templates, errorCode) ->
-        @vent.emit 'VAST-error', errorCode
-        VASTUtil.track(templates, errorCode)
-
-    @on: (eventName, cb) ->
-        @vent.on eventName, cb
+        start = new Date().getTime()
+        URLHandler.get url, headers, timeout, (err, xml) =>
+            return cb(err) if err?
+            took = new Date().getTime() - start
+            logger.log("Vast download took " + took/1000 + " seconds, URL [" + url + "]")
+            response = new VASTResponse()
 
     @once: (eventName, cb) ->
         @vent.once eventName, cb
@@ -53,14 +50,75 @@ class VASTParser
     @off: (eventName, cb) ->
         @vent.removeListener eventName, cb
 
-    @_parse: (url, parentURLs, options, cb) ->
-        # Options param can be skipped
-        if not cb
-            cb = options if typeof options is 'function'
-            options = {}
+            for node in xml.documentElement.childNodes
+                if node.nodeName is 'Ad'
+                    ad = @parseAdElement node
+                    if ad?
+                        response.ads.push ad
+                    else
+                        # VAST version of response not supported.
+                        VASTUtil.track(response.errorURLTemplates, ERRORCODE: 101)
 
-        # Process url with defined filter
-        url = filter(url) for filter in URLTemplateFilters
+            complete = =>
+                return unless response
+                for ad in response.ads
+                    return if ad.nextWrapperURL?
+                if response.ads.length == 0
+                    # No Ad Response
+                    # The VAST <Error> element is optional but if included, the video player must send a request to the URI
+                    # provided when the VAST response returns an empty InLine response after a chain of one or more wrapper ads.
+                    # If an [ERRORCODE] macro is included, the video player should substitute with error code 303.
+                    VASTUtil.track(response.errorURLTemplates, ERRORCODE: 303)
+                    response = null
+                cb(null, response)
+
+            loopIndex = response.ads.length
+            while loopIndex--
+                ad = response.ads[loopIndex]
+                continue unless ad.nextWrapperURL?
+                do (ad) =>
+                    if parentURLs.length >= 20
+                        # Wrapper limit reached, as defined by the video player.
+                        # Too many Wrapper responses have been received with no InLine response.
+                        VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 302)
+                        response.ads.splice(response.ads.indexOf(ad), 1)
+                        complete()
+                        return
+
+                    if ad.nextWrapperURL.indexOf('://') == -1
+                        # Resolve relative URLs (mainly for unit testing)
+                        baseURL = url.slice(0, url.lastIndexOf('/'))
+                        ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
+
+                    @_parse ad.nextWrapperURL, headers, timeout, logger, parentURLs, (err, wrappedResponse) =>
+                        if err?
+                            # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+                            # (URI was either unavailable or reached a timeout as defined by the video player.)
+                            VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 301)
+                            response.ads.splice(response.ads.indexOf(ad), 1)
+                        else if not wrappedResponse?
+                            # No Ads VAST response after one or more Wrappers
+                            VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 303)
+                            response.ads.splice(response.ads.indexOf(ad), 1)
+                        else
+                            response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
+                            index = response.ads.indexOf(ad)
+                            response.ads.splice(index, 1)
+                            for wrappedAd in wrappedResponse.ads
+                                wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
+                                wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
+
+                                if ad.trackingEvents?
+                                    for creative in wrappedAd.creatives
+                                        for eventName in Object.keys ad.trackingEvents
+                                            if creative.trackingEvents?
+                                                creative.trackingEvents[eventName] or= []
+                                                creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+                                            
+                                if ad.sequence? and ad.sequence > 0
+                                    wrappedAd.sequence = ad.sequence
+
+                                response.ads.splice index, 0, wrappedAd
 
         parentURLs ?= []
         parentURLs.push url
@@ -211,12 +269,12 @@ class VASTParser
             @copyNodeAttribute "sequence", adElement, adTypeElement
 
             if adTypeElement.nodeName is "Wrapper"
-                return @parseWrapperElement adTypeElement
+                return @parseWrapperElement(adTypeElement, parseInt adElement.getAttribute("sequence") or 0)
             else if adTypeElement.nodeName is "InLine"
-                return @parseInLineElement adTypeElement
+                return @parseInLineElement(adTypeElement, parseInt adElement.getAttribute("sequence") or 0)
 
-    @parseWrapperElement: (wrapperElement) ->
-        ad = @parseInLineElement wrapperElement
+    @parseWrapperElement: (wrapperElement, sequence) ->
+        ad = @parseInLineElement(wrapperElement,sequence)
         wrapperURLElement = @childByName wrapperElement, "VASTAdTagURI"
         if wrapperURLElement?
             ad.nextWrapperURL = @parseNodeText wrapperURLElement
@@ -249,11 +307,9 @@ class VASTParser
         if ad.nextWrapperURL?
             return ad
 
-    @parseInLineElement: (inLineElement) ->
+    @parseInLineElement: (inLineElement, sequence) ->
         ad = new VASTAd()
-        ad.id = inLineElement.getAttribute("id") || null
-        ad.sequence = inLineElement.getAttribute("sequence") || null
-
+        ad.sequence = sequence
         for node in inLineElement.childNodes
             switch node.nodeName
                 when "Error"
@@ -284,31 +340,6 @@ class VASTParser
                                     creative = @parseCompanionAd creativeTypeElement, creativeAttributes
                                     if creative
                                         ad.creatives.push creative
-                when "Extensions"
-                    @parseExtension(ad.extensions, @childsByName(node, "Extension"))
-
-                when "AdSystem"
-                    ad.system =
-                        value : @parseNodeText node
-                        version : node.getAttribute("version") || null
-
-                when "AdTitle"
-                    ad.title = @parseNodeText node
-
-                when "Description"
-                    ad.description = @parseNodeText node
-
-                when "Advertiser"
-                    ad.advertiser = @parseNodeText node
-
-                when "Pricing"
-                    ad.pricing =
-                        value    : @parseNodeText node
-                        model    : node.getAttribute("model") || null
-                        currency : node.getAttribute("currency") || null
-
-                when "Survey"
-                    ad.survey = @parseNodeText node
 
         return ad
 
@@ -395,19 +426,7 @@ class VASTParser
                 mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
                 mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
                 mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
-
-                scalable = mediaFileElement.getAttribute("scalable")
-                if scalable and typeof scalable is "string"
-                  scalable = scalable.toLowerCase()
-                  if scalable is "true" then mediaFile.scalable = true
-                  else if scalable is "false" then mediaFile.scalable = false
-
-                maintainAspectRatio = mediaFileElement.getAttribute("maintainAspectRatio")
-                if maintainAspectRatio and typeof maintainAspectRatio is "string"
-                  maintainAspectRatio = maintainAspectRatio.toLowerCase()
-                  if maintainAspectRatio is "true" then mediaFile.maintainAspectRatio = true
-                  else if maintainAspectRatio is "false" then mediaFile.maintainAspectRatio = false
-
+                mediaFile.apiFramework = mediaFileElement.getAttribute("apiFramework")
                 creative.mediaFiles.push mediaFile
 
         iconsElement = @childByName(creativeElement, "Icons")

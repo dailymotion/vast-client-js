@@ -8,7 +8,7 @@ class VASTClient
         withCredentials : false,
         timeout : 0
 
-    @get: (url, opts, cb) ->
+    @get: (url, headers, timeout, logger, cb) ->
         now = +new Date()
  
         extend = exports.extend = (object, properties) ->
@@ -44,8 +44,10 @@ class VASTClient
             cb(null, new Error("VAST call canceled – (#{@cappingMinimumTimeInterval})ms minimum interval reached"))
             return
 
-        VASTParser.parse url, options, (response, err) =>
-            cb(response, err)
+        # TODO: handle request timeout
+
+        VASTParser.parse url, headers, timeout, logger, (response) =>
+            cb(response)
 
 
     # 'Fake' static constructor

@@ -11,6 +11,6 @@ class VASTAd
         @errorURLTemplates = []
         @impressionURLTemplates = []
         @creatives = []
-        @extensions = []
+        @sequence = 0
 
 module.exports = VASTAd
