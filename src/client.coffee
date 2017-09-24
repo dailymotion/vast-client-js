@@ -6,7 +6,7 @@ class VASTClient
     @cappingMinimumTimeInterval: 0
     @timeout: 0
 
-    @get: (url, headers, timeout, cb) ->
+    @get: (url, headers, timeout, logger, cb) ->
         now = +new Date()
 
         # Check totalCallsTimeout (first call + 1 hour), if older than now,
@@ -28,7 +28,7 @@ class VASTClient
 
         # TODO: handle request timeout
 
-        VASTParser.parse url, headers, timeout, (response) =>
+        VASTParser.parse url, headers, timeout, logger, (response) =>
             cb(response)
 
 

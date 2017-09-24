@@ -18,11 +18,11 @@ class VASTParser
     @countURLTemplateFilters: () -> URLTemplateFilters.length
     @clearUrlTemplateFilters: () -> URLTemplateFilters = []
 
-    @parse: (url, headers, timeout, cb) ->
-        @_parse url, headers, timeout, null, (err, response) ->
+    @parse: (url, headers, timeout, logger, cb) ->
+        @_parse url, headers, timeout, logger, null, (err, response) ->
             cb(response)
 
-    @_parse: (url, headers, timeout, parentURLs, cb) ->
+    @_parse: (url, headers, timeout, logger, parentURLs, cb) ->
 
         # Process url with defined filter
         url = filter(url) for filter in URLTemplateFilters
@@ -30,9 +30,11 @@ class VASTParser
         parentURLs ?= []
         parentURLs.push url
 
+        start = new Date().getTime()
         URLHandler.get url, headers, timeout, (err, xml) =>
             return cb(err) if err?
-
+            took = new Date().getTime() - start
+            logger.log("Vast download took " + took/1000 + " seconds, URL [" + url + "]")
             response = new VASTResponse()
 
             unless xml?.documentElement? and xml.documentElement.nodeName is "VAST"
@@ -69,7 +71,7 @@ class VASTParser
                 ad = response.ads[loopIndex]
                 continue unless ad.nextWrapperURL?
                 do (ad) =>
-                    if parentURLs.length >= 10 or ad.nextWrapperURL in parentURLs
+                    if parentURLs.length >= 20
                         # Wrapper limit reached, as defined by the video player.
                         # Too many Wrapper responses have been received with no InLine response.
                         VASTUtil.track(ad.errorURLTemplates, ERRORCODE: 302)
@@ -82,7 +84,7 @@ class VASTParser
                         baseURL = url.slice(0, url.lastIndexOf('/'))
                         ad.nextWrapperURL = "#{baseURL}/#{ad.nextWrapperURL}"
 
-                    @_parse ad.nextWrapperURL, headers, timeout, parentURLs, (err, wrappedResponse) =>
+                    @_parse ad.nextWrapperURL, headers, timeout, logger, parentURLs, (err, wrappedResponse) =>
                         if err?
                             # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                             # (URI was either unavailable or reached a timeout as defined by the video player.)
@@ -103,8 +105,9 @@ class VASTParser
                                 if ad.trackingEvents?
                                     for creative in wrappedAd.creatives
                                         for eventName in Object.keys ad.trackingEvents
-                                            creative.trackingEvents[eventName] or= []
-                                            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
+                                            if creative.trackingEvents?
+                                                creative.trackingEvents[eventName] or= []
+                                                creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat ad.trackingEvents[eventName]
                                             
                                 if ad.sequence? and ad.sequence > 0
                                     wrappedAd.sequence = ad.sequence
