@@ -50,8 +50,8 @@ class VASTParser
         @parseXmlDocument(null, [], options, xml, cb)
 
     @vent = new EventEmitter()
-    @track: (templates, errorCode, emittedData) ->
-        @vent.emit 'VAST-error', VASTUtil.merge(DEFAULT_EVENT_DATA, errorCode, emittedData)
+    @track: (templates, errorCode, data...) ->
+        @vent.emit 'VAST-error', VASTUtil.merge(DEFAULT_EVENT_DATA, errorCode, data...)
         VASTUtil.track(templates, errorCode)
 
     @on: (eventName, cb) ->
@@ -121,7 +121,9 @@ class VASTParser
                             @track(
                                 ad.errorURLTemplates.concat(response.errorURLTemplates),
                                 { ERRORCODE: ad.errorCode || 303 },
-                                { extensions : ad.extensions }
+                                { ERRORMESSAGE: ad.errorMessage || '' },
+                                { extensions : ad.extensions },
+                                { system: ad.system }
                             )
                             response.ads.splice(index, 1)
 
@@ -149,6 +151,7 @@ class VASTParser
                         # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
                         # (URI was either unavailable or reached a timeout as defined by the video player.)
                         ad.errorCode = 301
+                        ad.errorMessage = err.message
                         complete()
                         return
 
