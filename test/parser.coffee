@@ -567,6 +567,28 @@ describe 'VASTParser', ->
         it 'should have merged top level error URLS', =>
             @response.errorURLTemplates.should.eql ["http://example.com/wrapperA-error", "http://example.com/wrapperB-error", "http://example.com/error"]
 
+    describe '#loadError', ->
+        @response = null
+        @err = null
+        @expectedErr = 'No ads: no valid <inline> has been found'
+
+        before (done) =>
+            url = urlfor('empty.xml')
+            URLHandler.get url, {}, (err, xml) =>
+                VASTParser.load xml, (err, response) =>
+                    @response = response
+                    @err = err
+                    done()
+
+        after () =>
+            VASTParser.clearUrlTemplateFilters()
+
+        it 'should have null response', =>
+            should.equal @response, null
+
+        it 'should have error equal to Error', =>
+            should.equal @err.message, @expectedErr
+
     describe '#track', ->
         errorCallbackCalled = 0
         errorCode = null

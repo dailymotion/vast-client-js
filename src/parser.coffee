@@ -103,6 +103,7 @@ class VASTParser
                 @track(response.errorURLTemplates, ERRORCODE: 303) unless errorAlreadyRaised
             if response.ads.length == 0
                 response = null
+                error = new Error("No ads: no valid <inline> has been found")
             cb(error, response)
 
         loopIndex = response.ads.length
