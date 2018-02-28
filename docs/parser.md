@@ -64,7 +64,9 @@ Parse an VAST xml, resolve any wrappers and execute callback function `done`
   * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
   * `Number` *wrapperLimit* – A number of available *Wrapper* responses that can be received with no InLine response.
 
-* `Function` *done* – Method to be called once the VAST document is parsed. When at least 1 valid `<inline>` has been found, the 1st parameter will be an array of [`VASTAd`](https://github.com/dailymotion/vast-client-js/tree/master/src/ad.coffee) instances. Hoverwise, in case of no ads, it will be `null`, and an error as a 2nd parameter is provided.
+* `Function` *done* – Callback function to be called once the VAST document is parsed. When at least 1 valid `<inline>` has been found, the 2nd parameter will be an array of [`VASTAd`](https://github.com/dailymotion/vast-client-js/tree/master/src/ad.coffee) instances. Otherwise, in case of no ads, it will be `null`, and an error as a 1st parameter is provided.
+  * `Error` *error*
+  * `[VASTAd]` *response*
 
 ``` javascript
 var xml = (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
@@ -73,7 +75,7 @@ var options = {
     wrapperLimit : 5
 };
 
-DMVAST.parser.load(xml, options, function(response, error) {
+DMVAST.parser.load(xml, options, function(error, response) {
   // process the VAST response
 });
 ```
@@ -87,7 +89,7 @@ DMVAST.parser.on(`VAST-error`, function(error) {
 });
 
 // Parsing a no ad VAST xml document
-DMVAST.parser.load(xmlNoAds, options, function(response, error) {});
+DMVAST.parser.load(xmlNoAds, options, function(error, response) {});
 // Will log => "error: {ERRORCODE: 303}""
 ```
 
@@ -104,7 +106,7 @@ Fetch a URL and parse the response into a valid VAST object.
   * `Boolean` *withCredentials* – A boolean to enable the *withCredentials* options for the XHR and FLASH URLHandlers.
   * `Number` *wrapperLimit* – A number of available *Wrapper* responses that can be received with no InLine response.
 
-* `Function` *done* – Method to be called once the VAST document is parsed. When at least 1 valid `<inline>` has been found, the 1st parameter will be an array of [`VASTAd`](https://github.com/dailymotion/vast-client-js/tree/master/src/ad.coffee) instances. Hoverwise, in case of no ads, it will be `null`, and an error as a 2nd parameter is provided.
+* `Function` *done* – Callback function to be called once the VAST document is parsed. When at least 1 valid `<inline>` has been found, the 1st parameter will be an array of [`VASTAd`](https://github.com/dailymotion/vast-client-js/tree/master/src/ad.coffee) instances. Hoverwise, in case of no ads, it will be `null`, and an error as a 2nd parameter is provided.
 
 ``` javascript
 var url = 'http://example.dailymotion.com/vast.xml';
