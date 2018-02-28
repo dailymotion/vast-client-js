@@ -1894,9 +1894,15 @@ XHRURLHandler = (function() {
       xhr.withCredentials = options.withCredentials || false;
       xhr.overrideMimeType && xhr.overrideMimeType('text/xml');
       xhr.onreadystatechange = function() {
+        var message;
         if (xhr.readyState === 4) {
           if (xhr.status === 200) {
-            return cb(null, xhr.responseXML);
+            if (!xhr.responseXML) {
+              message = xhr.responseText.length > 0 ? 'Malformed XML Document' : 'Empty XML Document';
+              return cb(new Error(message));
+            } else {
+              return cb(null, xhr.responseXML);
+            }
           } else {
             return cb(new Error("XHRURLHandler: " + xhr.statusText));
           }

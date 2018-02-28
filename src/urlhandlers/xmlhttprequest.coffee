@@ -20,7 +20,11 @@ class XHRURLHandler
             xhr.onreadystatechange = ->
                 if xhr.readyState == 4
                     if xhr.status == 200
-                        cb(null, xhr.responseXML)
+                        if !xhr.responseXML
+                            message = if xhr.responseText.length > 0 then 'Malformed XML Document' else 'Empty XML Document'
+                            cb(new Error(message))
+                        else 
+                            cb(null, xhr.responseXML)
                     else
                         cb(new Error("XHRURLHandler: #{xhr.statusText}"))
             xhr.send()
