@@ -1,16 +1,16 @@
-VASTParser = require './parser'
-VASTUtil = require './util'
+VASTParser = require './parser.coffee'
+VASTUtil = require './util.coffee'
 
 class VASTClient
     @cappingFreeLunch: 0
     @cappingMinimumTimeInterval: 0
-    @options: 
+    @options:
         withCredentials : false,
         timeout : 0
 
     @get: (url, opts, cb) ->
         now = +new Date()
- 
+
         extend = exports.extend = (object, properties) ->
             for key, val of properties
                 object[key] = val
