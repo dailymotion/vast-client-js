@@ -7,8 +7,8 @@ class VASTCreative
         @trackingEvents = {}
 
 class VASTCreativeLinear extends VASTCreative
-    constructor: ->
-        super
+    constructor: (creativeAttributes = {}) ->
+        super(creativeAttributes)
         @type = "linear"
         @duration = 0
         @skipDelay = null
@@ -20,14 +20,14 @@ class VASTCreativeLinear extends VASTCreative
         @icons = []
 
 class VASTCreativeNonLinear extends VASTCreative
-    constructor: ->
-        super
+    constructor: (creativeAttributes = {}) ->
+        super(creativeAttributes)
         @type = "nonlinear"
         @variations = []
 
 class VASTCreativeCompanion extends VASTCreative
-    constructor: ->
-        super
+    constructor: (creativeAttributes = {}) ->
+        super(creativeAttributes)
         @type = "companion"
         @variations = []
 
