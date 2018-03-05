@@ -1,4 +1,4 @@
-VASTParser = require './parser.coffee'
+VASTParser = require './parser/parser.coffee'
 VASTUtil = require './util.coffee'
 
 class VASTClient

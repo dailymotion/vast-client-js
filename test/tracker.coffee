@@ -1,7 +1,7 @@
 should = require 'should'
 sinon  = require 'sinon'
 path = require 'path'
-VASTParser = require '../src/parser'
+VASTParser = require '../src/parser/parser'
 VASTUtil = require('../src/util.coffee')
 VASTTracker = require '../src/tracker'
 
