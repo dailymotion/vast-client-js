@@ -1,7 +1,7 @@
 should = require 'should'
 path = require 'path'
 URLHandler = require '../src/urlhandler'
-VASTParser = require '../src/parser'
+VASTParser = require '../src/parser/parser'
 VASTResponse = require '../src/response'
 VASTUtil = require '../src/util'
 
@@ -64,13 +64,13 @@ describe 'VASTParser', ->
             for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
                 do (item) ->
                     it "should not return NaN for `#{item}`", ->
-                        isNaN(VASTParser.parseDuration(item)).should.eql false
+                        isNaN(VASTParser.utils.parseDuration(item)).should.eql false
 
         describe '#duration', ->
             for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
                 do (item) ->
                     it "should not return NaN for `#{item}`", ->
-                        isNaN(VASTParser.parseDuration(item)).should.eql false
+                        isNaN(VASTParser.utils.parseDuration(item)).should.eql false
 
         describe '#For the 1st ad', ->
             ad1 = null
@@ -572,7 +572,7 @@ describe 'VASTParser', ->
                             if node.nodeName is 'Wrapper'
                                 for node in node.childNodes
                                     if node.nodeName is 'VASTAdTagURI'
-                                        node.textContent = urlfor(VASTParser.parseNodeText node)
+                                        node.textContent = urlfor(VASTParser.utils.parseNodeText node)
                                         break
                 VASTParser.load xml, (err, response) =>
                     @response = response
