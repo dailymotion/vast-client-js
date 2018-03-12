@@ -3,3 +3,4 @@ dist/*
 node_modules/*
 bower_components/*
 npm-debug.log
+.coffee2js.tmp

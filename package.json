@@ -42,8 +42,12 @@
   },
   "dependencies": {
     "browserify": "~14.4.0",
+    "cli-input": "^0.2.0",
     "coffeescript": "^2.2.2",
+    "colors": "^1.2.1",
+    "commander": "^2.15.0",
     "path": "^0.12.7",
+    "replace": "^0.3.0",
     "xmldom": "~0.1.27"
   }
 }
