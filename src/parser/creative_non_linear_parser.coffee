@@ -1,5 +1,5 @@
 ParserUtils = require './parser_utils.coffee'
-VASTCreativeNonLinear = require('../creative.coffee').VASTCreativeNonLinear
+VASTCreativeNonLinear = require('../creative.js').VASTCreativeNonLinear
 VASTNonLinear = require '../nonlinear.js'
 
 class CreativeNonLinearParser

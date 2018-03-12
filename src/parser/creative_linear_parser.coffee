@@ -1,5 +1,5 @@
 ParserUtils = require './parser_utils.coffee'
-VASTCreativeLinear = require('../creative.coffee').VASTCreativeLinear
+VASTCreativeLinear = require('../creative.js').VASTCreativeLinear
 VASTIcon = require '../icon.js'
 VASTMediaFile = require '../mediafile.js'
 
