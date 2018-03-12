@@ -1,6 +1,6 @@
 ParserUtils = require './parser_utils.coffee'
 VASTCreativeLinear = require('../creative.coffee').VASTCreativeLinear
-VASTIcon = require '../icon.coffee'
+VASTIcon = require '../icon.js'
 VASTMediaFile = require '../mediafile.coffee'
 
 class CreativeLinearParser
