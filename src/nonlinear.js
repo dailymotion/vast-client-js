@@ -1,20 +1,22 @@
-class VASTNonLinear
-    constructor: ->
-        @id = null
-        @width = 0
-        @height = 0
-        @expandedWidth = 0
-        @expandedHeight = 0
-        @scalable = true
-        @maintainAspectRatio = true
-        @minSuggestedDuration = 0
-        @apiFramework = "static"
-        @type = null
-        @staticResource = null
-        @htmlResource = null
-        @iframeResource = null
-        @nonlinearClickThroughURLTemplate = null
-        @nonlinearClickTrackingURLTemplates = []
-        @adParameters = null
+class VASTNonLinear {
+    constructor() {
+        this.id = null;
+        this.width = 0;
+        this.height = 0;
+        this.expandedWidth = 0;
+        this.expandedHeight = 0;
+        this.scalable = true;
+        this.maintainAspectRatio = true;
+        this.minSuggestedDuration = 0;
+        this.apiFramework = "static";
+        this.type = null;
+        this.staticResource = null;
+        this.htmlResource = null;
+        this.iframeResource = null;
+        this.nonlinearClickThroughURLTemplate = null;
+        this.nonlinearClickTrackingURLTemplates = [];
+        this.adParameters = null;
+    }
+}
 
-module.exports = VASTNonLinear
+module.exports = VASTNonLinear;
