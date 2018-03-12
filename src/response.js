@@ -1,6 +1,8 @@
-class VASTResponse
-    constructor: ->
-        @ads = []
-        @errorURLTemplates = []
+class VASTResponse {
+    constructor() {
+        this.ads = [];
+        this.errorURLTemplates = [];
+    }
+}
 
-module.exports = VASTResponse
+module.exports = VASTResponse;
