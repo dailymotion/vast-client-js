@@ -1,15 +1,17 @@
-class VASTCompanionAd
-    constructor: ->
-        @id = null
-        @width = 0
-        @height = 0
-        @type = null
-        @staticResource = null
-        @htmlResource = null
-        @iframeResource = null
-        @altText = null
-        @companionClickThroughURLTemplate = null
-        @companionClickTrackingURLTemplates = []
-        @trackingEvents = {}
+class VASTCompanionAd {
+    constructor() {
+        this.id = null;
+        this.width = 0;
+        this.height = 0;
+        this.type = null;
+        this.staticResource = null;
+        this.htmlResource = null;
+        this.iframeResource = null;
+        this.altText = null;
+        this.companionClickThroughURLTemplate = null;
+        this.companionClickTrackingURLTemplates = [];
+        this.trackingEvents = {};
+    }
+}
 
-module.exports = VASTCompanionAd
+module.exports = VASTCompanionAd;
