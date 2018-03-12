@@ -3,7 +3,7 @@ CreativeLinearParser = require './creative_linear_parser.coffee'
 CreativeNonLinearParser = require './creative_non_linear_parser.coffee'
 ParserUtils = require './parser_utils.coffee'
 VASTAd = require '../ad.coffee'
-VASTAdExtension = require '../extension.coffee'
+VASTAdExtension = require '../extension.js'
 VASTAdExtensionChild = require '../extensionchild.coffee'
 
 class AdParser
