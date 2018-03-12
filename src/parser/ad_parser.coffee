@@ -2,7 +2,7 @@ CreativeCompanionParser = require './creative_companion_parser.coffee'
 CreativeLinearParser = require './creative_linear_parser.coffee'
 CreativeNonLinearParser = require './creative_non_linear_parser.coffee'
 ParserUtils = require './parser_utils.coffee'
-VASTAd = require '../ad.coffee'
+VASTAd = require '../ad.js'
 VASTAdExtension = require '../extension.js'
 VASTAdExtensionChild = require '../extensionchild.js'
 

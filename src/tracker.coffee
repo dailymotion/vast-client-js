@@ -2,7 +2,7 @@ VASTClient = require('./client.coffee')
 VASTUtil = require('./util.coffee')
 VASTCreativeLinear = require('./creative.coffee').VASTCreativeLinear
 VASTNonLinear = require('./nonlinear.coffee')
-VASTCompanionAd = require('./companionad.coffee')
+VASTCompanionAd = require('./companionad.js')
 EventEmitter = require('events').EventEmitter
 
 class VASTTracker extends EventEmitter

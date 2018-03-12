@@ -1,16 +1,18 @@
-class VASTAd
-    constructor: ->
-        @id = null
-        @sequence = null
-        @system = null
-        @title = null
-        @description = null
-        @advertiser = null
-        @pricing = null
-        @survey = null
-        @errorURLTemplates = []
-        @impressionURLTemplates = []
-        @creatives = []
-        @extensions = []
+class VASTAd {
+    constructor() {
+        this.id = null;
+        this.sequence = null;
+        this.system = null;
+        this.title = null;
+        this.description = null;
+        this.advertiser = null;
+        this.pricing = null;
+        this.survey = null;
+        this.errorURLTemplates = [];
+        this.impressionURLTemplates = [];
+        this.creatives = [];
+        this.extensions = [];
+    }
+}
 
-module.exports = VASTAd
+module.exports = VASTAd;

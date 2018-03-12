@@ -1,4 +1,4 @@
-VASTCompanionAd = require '../companionad.coffee'
+VASTCompanionAd = require '../companionad.js'
 VASTCreativeCompanion = require('../creative.coffee').VASTCreativeCompanion
 ParserUtils = require './parser_utils.coffee'
 
