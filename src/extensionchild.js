@@ -1,7 +1,9 @@
-class VASTAdExtensionChild
-    constructor: ->
-        @name = null
-        @value = null
-        @attributes = {}
+class VASTAdExtensionChild {
+    constructor() {
+        this.name = null;
+        this.value = null;
+        this.attributes = {};
+    }
+}
 
-module.exports = VASTAdExtensionChild
+module.exports = VASTAdExtensionChild;
