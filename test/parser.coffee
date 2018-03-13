@@ -1,6 +1,5 @@
 should = require 'should'
 path = require 'path'
-URLHandler = require '../src/urlhandler'
 VASTParser = require '../src/parser/parser'
 VASTResponse = require '../src/response'
 
@@ -563,7 +562,7 @@ describe 'VASTParser', ->
                 @templateFilterCalls.push url
                 return url
             url = urlfor('wrapper-notracking.xml')
-            URLHandler.get url, {}, (err, xml) =>
+            VASTParser.urlHandler.get url, {}, (err, xml) =>
                 # `VAST > Wrapper > VASTAdTagURI` in the VAST must be an absolute URL
                 for node in xml.documentElement.childNodes
                     if node.nodeName is 'Ad'

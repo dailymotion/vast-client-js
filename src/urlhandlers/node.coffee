@@ -5,7 +5,7 @@ https = require 'https'
 DOMParser = require('xmldom').DOMParser
 
 class NodeURLHandler
-    @get: (url, options, cb) ->
+    get: (url, options, cb) ->
 
         url = uri.parse(url)
         httpModule = if url.protocol is 'https:' then https else http
