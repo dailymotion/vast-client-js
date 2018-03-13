@@ -1,5 +1,5 @@
 const XHRURLHandler = require('./urlhandlers/xmlhttprequest.js');
-const FlashURLHandler = require('./urlhandlers/flash.coffee');
+const FlashURLHandler = require('./urlhandlers/flash.js');
 const NodeURLHandler = require('./urlhandlers/node.js');
 
 class URLHandler {
