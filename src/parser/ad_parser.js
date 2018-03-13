@@ -1,110 +1,157 @@
-CreativeCompanionParser = require './creative_companion_parser.coffee'
-CreativeLinearParser = require './creative_linear_parser.coffee'
-CreativeNonLinearParser = require './creative_non_linear_parser.coffee'
-ParserUtils = require './parser_utils.js'
-VASTAd = require '../ad.js'
-VASTAdExtension = require '../extension.js'
-VASTAdExtensionChild = require '../extensionchild.js'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const CreativeCompanionParser = require('./creative_companion_parser.coffee');
+const CreativeLinearParser = require('./creative_linear_parser.coffee');
+const CreativeNonLinearParser = require('./creative_non_linear_parser.coffee');
+const ParserUtils = require('./parser_utils.js');
+const VASTAd = require('../ad.js');
+const VASTAdExtension = require('../extension.js');
+const VASTAdExtensionChild = require('../extensionchild.js');
 
-class AdParser
-    constructor: ->
-        @creativeCompanionParser = new CreativeCompanionParser()
-        @creativeNonLinearParser = new CreativeNonLinearParser()
-        @creativeLinearParser = new CreativeLinearParser()
-        @utils = new ParserUtils()
+class AdParser {
+    constructor() {
+        this.creativeCompanionParser = new CreativeCompanionParser();
+        this.creativeNonLinearParser = new CreativeNonLinearParser();
+        this.creativeLinearParser = new CreativeLinearParser();
+        this.utils = new ParserUtils();
+    }
 
-    parse: (inLineElement) ->
-        ad = new VASTAd()
-        ad.id = inLineElement.getAttribute("id") || null
-        ad.sequence = inLineElement.getAttribute("sequence") || null
+    parse(inLineElement) {
+        const ad = new VASTAd();
+        ad.id = inLineElement.getAttribute("id") || null;
+        ad.sequence = inLineElement.getAttribute("sequence") || null;
 
-        for node in inLineElement.childNodes
-            switch node.nodeName
-                when "Error"
-                    ad.errorURLTemplates.push (@utils.parseNodeText node)
+        for (let node of Array.from(inLineElement.childNodes)) {
+            switch (node.nodeName) {
+                case "Error":
+                    ad.errorURLTemplates.push((this.utils.parseNodeText(node)));
+                    break;
 
-                when "Impression"
-                    ad.impressionURLTemplates.push (@utils.parseNodeText node)
+                case "Impression":
+                    ad.impressionURLTemplates.push((this.utils.parseNodeText(node)));
+                    break;
 
-                when "Creatives"
-                    for creativeElement in @utils.childrenByName(node, "Creative")
-                        creativeAttributes =
-                            id           : creativeElement.getAttribute('id') or null
-                            adId         : @parseCreativeAdIdAttribute(creativeElement)
-                            sequence     : creativeElement.getAttribute('sequence') or null
-                            apiFramework : creativeElement.getAttribute('apiFramework') or null
+                case "Creatives":
+                    for (let creativeElement of Array.from(this.utils.childrenByName(node, "Creative"))) {
+                        const creativeAttributes = {
+                            id           : creativeElement.getAttribute('id') || null,
+                            adId         : this.parseCreativeAdIdAttribute(creativeElement),
+                            sequence     : creativeElement.getAttribute('sequence') || null,
+                            apiFramework : creativeElement.getAttribute('apiFramework') || null
+                        };
 
-                        for creativeTypeElement in creativeElement.childNodes
-                            switch creativeTypeElement.nodeName
-                                when "Linear"
-                                    creative = @creativeLinearParser.parse creativeTypeElement, creativeAttributes
-                                    if creative
-                                        ad.creatives.push creative
-                                when "NonLinearAds"
-                                    creative = @creativeNonLinearParser.parse creativeTypeElement, creativeAttributes
-                                    if creative
-                                        ad.creatives.push creative
-                                when "CompanionAds"
-                                    creative = @creativeCompanionParser.parse creativeTypeElement, creativeAttributes
-                                    if creative
-                                        ad.creatives.push creative
-                when "Extensions"
-                    @parseExtension(ad.extensions, @utils.childrenByName(node, "Extension"))
+                        for (let creativeTypeElement of Array.from(creativeElement.childNodes)) {
+                            switch (creativeTypeElement.nodeName) {
+                                case "Linear":
+                                    var creative = this.creativeLinearParser.parse(creativeTypeElement, creativeAttributes);
+                                    if (creative) {
+                                        ad.creatives.push(creative);
+                                    }
+                                    break;
+                                case "NonLinearAds":
+                                    creative = this.creativeNonLinearParser.parse(creativeTypeElement, creativeAttributes);
+                                    if (creative) {
+                                        ad.creatives.push(creative);
+                                    }
+                                    break;
+                                case "CompanionAds":
+                                    creative = this.creativeCompanionParser.parse(creativeTypeElement, creativeAttributes);
+                                    if (creative) {
+                                        ad.creatives.push(creative);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Extensions":
+                    this.parseExtension(ad.extensions, this.utils.childrenByName(node, "Extension"));
+                    break;
 
-                when "AdSystem"
-                    ad.system =
-                        value : @utils.parseNodeText node
+                case "AdSystem":
+                    ad.system = {
+                        value : this.utils.parseNodeText(node),
                         version : node.getAttribute("version") || null
+                    };
+                    break;
 
-                when "AdTitle"
-                    ad.title = @utils.parseNodeText node
+                case "AdTitle":
+                    ad.title = this.utils.parseNodeText(node);
+                    break;
 
-                when "Description"
-                    ad.description = @utils.parseNodeText node
+                case "Description":
+                    ad.description = this.utils.parseNodeText(node);
+                    break;
 
-                when "Advertiser"
-                    ad.advertiser = @utils.parseNodeText node
+                case "Advertiser":
+                    ad.advertiser = this.utils.parseNodeText(node);
+                    break;
 
-                when "Pricing"
-                    ad.pricing =
-                        value    : @utils.parseNodeText node
-                        model    : node.getAttribute("model") || null
+                case "Pricing":
+                    ad.pricing = {
+                        value    : this.utils.parseNodeText(node),
+                        model    : node.getAttribute("model") || null,
                         currency : node.getAttribute("currency") || null
+                    };
+                    break;
 
-                when "Survey"
-                    ad.survey = @utils.parseNodeText node
+                case "Survey":
+                    ad.survey = this.utils.parseNodeText(node);
+                    break;
+            }
+        }
 
-        return ad
+        return ad;
+    }
 
-    parseExtension: (collection, extensions) ->
-        for extNode in extensions
-            ext = new VASTAdExtension()
+    parseExtension(collection, extensions) {
+        return (() => {
+            const result = [];
+            for (let extNode of Array.from(extensions)) {
+                const ext = new VASTAdExtension();
 
-            if extNode.attributes
-                for extNodeAttr in extNode.attributes
-                    ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+                if (extNode.attributes) {
+                    for (let extNodeAttr of Array.from(extNode.attributes)) {
+                        ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+                    }
+                }
 
-            for childNode in extNode.childNodes
-                txt = @utils.parseNodeText(childNode)
+                for (let childNode of Array.from(extNode.childNodes)) {
+                    const txt = this.utils.parseNodeText(childNode);
 
-                # ignore comments / empty value
-                if childNode.nodeName isnt '#comment' and txt isnt ''
-                    extChild = new VASTAdExtensionChild()
-                    extChild.name = childNode.nodeName
-                    extChild.value = txt
+                    // ignore comments / empty value
+                    if ((childNode.nodeName !== '#comment') && (txt !== '')) {
+                        const extChild = new VASTAdExtensionChild();
+                        extChild.name = childNode.nodeName;
+                        extChild.value = txt;
 
-                    if childNode.attributes
-                        for extChildNodeAttr in childNode.attributes
-                            extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
+                        if (childNode.attributes) {
+                            for (let extChildNodeAttr of Array.from(childNode.attributes)) {
+                                extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
+                            }
+                        }
 
-                    ext.children.push extChild
+                        ext.children.push(extChild);
+                    }
+                }
 
-            collection.push ext
+                result.push(collection.push(ext));
+            }
+            return result;
+        })();
+    }
 
-    parseCreativeAdIdAttribute: (creativeElement) ->
-        return creativeElement.getAttribute('AdID') or  # VAST 2 spec
-               creativeElement.getAttribute('adID') or  # VAST 3 spec
-               creativeElement.getAttribute('adId') or  # VAST 4 spec
-               null
+    parseCreativeAdIdAttribute(creativeElement) {
+        return creativeElement.getAttribute('AdID') ||  // VAST 2 spec
+               creativeElement.getAttribute('adID') ||  // VAST 3 spec
+               creativeElement.getAttribute('adId') ||  // VAST 4 spec
+               null;
+    }
+}
 
-module.exports = AdParser
+module.exports = AdParser;
