@@ -1,10 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const VASTUtil = require('../util.js');
 
 class ParserUtils {
@@ -13,7 +6,11 @@ class ParserUtils {
     }
 
     childByName(node, name) {
-        for (let child of Array.from(node.childNodes)) {
+        const childNodes = node.childNodes;
+
+        for (let childKey in childNodes) {
+            const child = childNodes[childKey];
+
             if (child.nodeName === name) {
                 return child;
             }
@@ -22,7 +19,11 @@ class ParserUtils {
 
     childrenByName(node, name) {
         const children = [];
-        for (let child of Array.from(node.childNodes)) {
+        const childNodes = node.childNodes;
+
+        for (let childKey in childNodes) {
+            const child = childNodes[childKey];
+
             if (child.nodeName === name) {
                 children.push(child);
             }
@@ -42,7 +43,7 @@ class ParserUtils {
     copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
         const attributeValue = nodeSource.getAttribute(attributeName);
         if (attributeValue) {
-            return nodeDestination.setAttribute(attributeName, attributeValue);
+            nodeDestination.setAttribute(attributeName, attributeValue);
         }
     }
 
