@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 class XHRURLHandler {
     xhr() {
         const xhr = new window.XMLHttpRequest();
@@ -29,15 +24,15 @@ class XHRURLHandler {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        return cb(null, xhr.responseXML);
+                        cb(null, xhr.responseXML);
                     } else {
-                        return cb(new Error(`XHRURLHandler: ${xhr.statusText}`));
+                        cb(new Error(`XHRURLHandler: ${xhr.statusText}`));
                     }
                 }
             };
-            return xhr.send();
+            xhr.send();
         } catch (error) {
-            return cb(new Error('XHRURLHandler: Unexpected error'));
+            cb(new Error('XHRURLHandler: Unexpected error'));
         }
     }
 }
