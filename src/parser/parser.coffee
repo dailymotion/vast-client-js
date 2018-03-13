@@ -1,6 +1,6 @@
 AdParser = require './ad_parser.coffee'
 ParserUtils = require './parser_utils.coffee'
-URLHandler = require '../urlhandler.coffee'
+URLHandler = require '../urlhandler.js'
 VASTResponse = require '../response.js'
 VASTUtil = require '../util.js'
 EventEmitter = require('events').EventEmitter
