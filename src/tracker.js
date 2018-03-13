@@ -1,11 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS001: Remove Babel/TypeScript constructor workaround
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const VASTClient = require('./client.coffee');
 const VASTUtil = require('./util.js');
 const { VASTCreativeLinear } = require('./creative.js');
@@ -15,17 +7,10 @@ const { EventEmitter } = require('events');
 
 class VASTTracker extends EventEmitter {
     constructor(ad, creative, variation = null) {
-        {
-          // Hack: trick Babel/TypeScript into allowing this before super.
-          if (false) { super(); }
-          let thisFn = (() => { this; }).toString();
-          let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-          eval(`${thisName} = this;`);
-        }
+        super();
         this.ad = ad;
         this.creative = creative;
         this.variation = variation;
-        super();
         this.vastUtil = new VASTUtil();
         this.muted = false;
         this.impressed = false;
@@ -73,13 +58,13 @@ class VASTTracker extends EventEmitter {
     }
 
     static off(eventName, cb) {
-        return this.removeListener(eventName, cb);
+        this.removeListener(eventName, cb);
     }
 
     setDuration(duration) {
         this.assetDuration = duration;
         // beware of key names, theses are also used as event names
-        return this.quartiles = {
+        this.quartiles = {
             'firstQuartile' : Math.round(25 * this.assetDuration) / 100,
             'midpoint'      : Math.round(50 * this.assetDuration) / 100,
             'thirdQuartile' : Math.round(75 * this.assetDuration) / 100
@@ -114,7 +99,7 @@ class VASTTracker extends EventEmitter {
                 }
             }
 
-            for (let eventName of Array.from(events)) {
+            for (let eventName of events) {
                 this.track(eventName, true);
             }
 
@@ -123,39 +108,39 @@ class VASTTracker extends EventEmitter {
             }
         }
 
-        return this.progress = progress;
+        this.progress = progress;
     }
 
     setMuted(muted) {
         if (this.muted !== muted) {
             this.track(muted ? "mute" : "unmute");
         }
-        return this.muted = muted;
+        this.muted = muted;
     }
 
     setPaused(paused) {
         if (this.paused !== paused) {
             this.track(paused ? "pause" : "resume");
         }
-        return this.paused = paused;
+        this.paused = paused;
     }
 
     setFullscreen(fullscreen) {
         if (this.fullscreen !== fullscreen) {
             this.track(fullscreen ? "fullscreen" : "exitFullscreen");
         }
-        return this.fullscreen = fullscreen;
+        this.fullscreen = fullscreen;
     }
 
     setExpand(expanded) {
         if (this.expanded !== expanded) {
             this.track(expanded ? "expand" : "collapse");
         }
-        return this.expanded = expanded;
+        this.expanded = expanded;
     }
 
     setSkipDelay(duration) {
-        if (typeof duration === 'number') { return this.skipDelay = duration; }
+        if (typeof duration === 'number') { this.skipDelay = duration; }
     }
 
     // To be called when the video started to log the impression
@@ -163,23 +148,23 @@ class VASTTracker extends EventEmitter {
         if (!this.impressed) {
             this.impressed = true;
             this.trackURLs(this.ad.impressionURLTemplates);
-            return this.track("creativeView");
+            this.track("creativeView");
         }
     }
 
     // To be called when an error happen with the proper error code
     errorWithCode(errorCode) {
-        return this.trackURLs(this.ad.errorURLTemplates, {ERRORCODE: errorCode});
+        this.trackURLs(this.ad.errorURLTemplates, {ERRORCODE: errorCode});
     }
 
     // To be called when the user watched the creative until it's end
     complete() {
-        return this.track("complete");
+        this.track("complete");
     }
 
     // To be called when the player or the window is closed during the ad
     close() {
-        return this.track(this.linear ? "closeLinear" : "close");
+        this.track(this.linear ? "closeLinear" : "close");
     }
 
     // Deprecated
@@ -189,7 +174,7 @@ class VASTTracker extends EventEmitter {
     // To be called when the skip button is clicked
     skip() {
         this.track("skip");
-        return this.trackingEvents = [];
+        this.trackingEvents = [];
     }
 
     // To be called when the user clicks on the creative
@@ -205,7 +190,7 @@ class VASTTracker extends EventEmitter {
             }
             const clickThroughURL = this.vastUtil.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
 
-            return this.emit("clickthrough", clickThroughURL);
+            this.emit("clickthrough", clickThroughURL);
         }
     }
 
@@ -241,7 +226,7 @@ class VASTTracker extends EventEmitter {
             variables["CONTENTPLAYHEAD"] = this.progressFormated();
         }
 
-        return this.vastUtil.track(URLTemplates, variables);
+        this.vastUtil.track(URLTemplates, variables);
     }
 
     progressFormated() {
