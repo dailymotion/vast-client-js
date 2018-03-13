@@ -1,4 +1,4 @@
-VASTUtil = require '../util.coffee'
+VASTUtil = require '../util.js'
 
 class ParserUtils
     constructor: ->

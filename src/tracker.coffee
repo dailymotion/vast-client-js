@@ -1,5 +1,5 @@
 VASTClient = require('./client.coffee')
-VASTUtil = require('./util.coffee')
+VASTUtil = require('./util.js')
 VASTCreativeLinear = require('./creative.js').VASTCreativeLinear
 VASTNonLinear = require('./nonlinear.js')
 VASTCompanionAd = require('./companionad.js')
