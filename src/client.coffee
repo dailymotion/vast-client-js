@@ -50,7 +50,8 @@ class VASTClient
 
     # 'Fake' static constructor
     do ->
-        storage = VASTUtil.storage
+        @vastUtil = new VASTUtil()
+        storage = @vastUtil.getStorage()
         defineProperty = Object.defineProperty
 
         # Create new properties for VASTClient, using ECMAScript 5

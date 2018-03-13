@@ -1,6 +1,9 @@
 VASTUtil = require '../util.coffee'
 
 class ParserUtils
+    constructor: ->
+        @vastUtil = new VASTUtil()
+
     childByName: (node, name) ->
         for child in node.childNodes
             if child.nodeName is name
@@ -29,7 +32,7 @@ class ParserUtils
         unless (durationString?)
             return -1
         # Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
-        if VASTUtil.isNumeric(durationString)
+        if @vastUtil.isNumeric(durationString)
             return parseInt durationString
 
         durationComponents = durationString.split(":")

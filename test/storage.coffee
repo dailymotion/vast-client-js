@@ -1,6 +1,5 @@
 should = require 'should'
 path = require 'path'
-VASTUtil = require '../src/util'
 VASTClient = require '../src/client'
 
 urlfor = (relpath) ->

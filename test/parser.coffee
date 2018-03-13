@@ -3,7 +3,6 @@ path = require 'path'
 URLHandler = require '../src/urlhandler'
 VASTParser = require '../src/parser/parser'
 VASTResponse = require '../src/response'
-VASTUtil = require '../src/util'
 
 urlfor = (relpath) ->
     return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
@@ -607,7 +606,7 @@ describe 'VASTParser', ->
             VASTParser.on 'VAST-error', (variables) ->
                 dataTriggered.push variables
 
-            VASTUtil.track = (templates, variables) =>
+            VASTParser.vastUtil.track = (templates, variables) =>
                 trackCalls.push {
                     templates : templates
                     variables : variables

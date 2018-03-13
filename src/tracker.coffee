@@ -8,6 +8,7 @@ EventEmitter = require('events').EventEmitter
 class VASTTracker extends EventEmitter
     constructor: (@ad, @creative, @variation = null) ->
         super()
+        @vastUtil = new VASTUtil()
         @muted = no
         @impressed = no
         @skipable = no
@@ -148,7 +149,7 @@ class VASTTracker extends EventEmitter
         if @clickThroughURLTemplate?
             if @linear
                 variables = CONTENTPLAYHEAD: @progressFormated()
-            clickThroughURL = VASTUtil.resolveURLTemplates([@clickThroughURLTemplate], variables)[0]
+            clickThroughURL = @vastUtil.resolveURLTemplates([@clickThroughURLTemplate], variables)[0]
 
             @emit "clickthrough", clickThroughURL
 
@@ -178,7 +179,7 @@ class VASTTracker extends EventEmitter
             variables["ASSETURI"] = @creative.mediaFiles[0].fileURL if @creative.mediaFiles[0]?.fileURL?
             variables["CONTENTPLAYHEAD"] = @progressFormated()
 
-        VASTUtil.track(URLTemplates, variables)
+        @vastUtil.track(URLTemplates, variables)
 
     progressFormated: ->
         seconds = parseInt(@progress)

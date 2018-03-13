@@ -16,6 +16,7 @@ class VASTParser
     URLTemplateFilters = []
     @utils = new ParserUtils();
     @adParser = new AdParser()
+    @vastUtil = new VASTUtil()
 
     @addURLTemplateFilter: (func) ->
         URLTemplateFilters.push(func) if typeof func is 'function'
@@ -45,8 +46,8 @@ class VASTParser
 
     @vent = new EventEmitter()
     @track: (templates, errorCode, data...) ->
-        @vent.emit 'VAST-error', VASTUtil.merge(DEFAULT_EVENT_DATA, errorCode, data...)
-        VASTUtil.track(templates, errorCode)
+        @vent.emit 'VAST-error', @vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, data...)
+        @vastUtil.track(templates, errorCode)
 
     @on: (eventName, cb) ->
         @vent.on eventName, cb

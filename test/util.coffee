@@ -5,12 +5,13 @@ VASTUtil = require '../src/util'
 now      = new Date()
 playhead = '00:12:30.212'
 assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-\[{bar'
+util = new VASTUtil()
 
 resolve = (URLTemplate, variables) ->
-    VASTUtil.resolveURLTemplates([URLTemplate], variables)[0]
+    util.resolveURLTemplates([URLTemplate], variables)[0]
 
 encodeRFC3986 = (str) ->
-    VASTUtil.encodeURIComponentRFC3986(str)
+    util.encodeURIComponentRFC3986(str)
 
 encodedAssetURI  = encodeRFC3986(assetURI)
 encodedPlayhead  = encodeRFC3986(playhead)
@@ -73,4 +74,4 @@ describe 'VASTUtil', ->
         it 'should merge 2 objects', ->
             foo = { a: 1, b: 1 }
             bar = { b: 2, c: 3}
-            VASTUtil.merge(foo, bar).should.eql { a: 1, b: 2, c: 3 }
+            util.merge(foo, bar).should.eql { a: 1, b: 2, c: 3 }
