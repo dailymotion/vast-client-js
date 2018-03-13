@@ -1,11 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 let storage = null;
 
 class VASTUtil {
@@ -70,26 +62,21 @@ class VASTUtil {
 
     track(URLTemplates, variables) {
         const URLs = this.resolveURLTemplates(URLTemplates, variables);
-        return (() => {
-            const result = [];
-            for (let URL of Array.from(URLs)) {
-                if (typeof window !== 'undefined' && window !== null) {
-                    const i = new Image();
-                    result.push(i.src = URL);
-                }
-                else {}
+
+        for (let URL of URLs) {
+            if (typeof window !== 'undefined' && window !== null) {
+                const i = new Image();
+                result.push(i.src = URL);
             }
-            return result;
-        })();
+        }
     }
-                // node mode, do not track (unit test only)
 
     resolveURLTemplates(URLTemplates, variables) {
         if (variables == null) { variables = {}; }
         const URLs = [];
 
         // Encode String variables, when given
-        if (variables["ASSETURI"] != null) { variables["ASSETURI"]        = this.encodeURIComponentRFC3986(variables["ASSETURI"]); }
+        if (variables["ASSETURI"] != null) { variables["ASSETURI"] = this.encodeURIComponentRFC3986(variables["ASSETURI"]); }
         if (variables["CONTENTPLAYHEAD"] != null) { variables["CONTENTPLAYHEAD"] = this.encodeURIComponentRFC3986(variables["CONTENTPLAYHEAD"]); }
 
         // Set default value for invalid ERRORCODE
@@ -97,12 +84,12 @@ class VASTUtil {
 
         // Calc random/time based macros
         variables["CACHEBUSTING"] = this.leftpad(Math.round(Math.random() * 1.0e+8).toString());
-        variables["TIMESTAMP"]    = this.encodeURIComponentRFC3986((new Date).toISOString());
+        variables["TIMESTAMP"] = this.encodeURIComponentRFC3986((new Date).toISOString());
 
         // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
         variables["RANDOM"] = (variables["random"] = variables["CACHEBUSTING"]);
 
-        for (let URLTemplate of Array.from(URLTemplates)) {
+        for (let URLTemplate of URLTemplates) {
             let resolveURL = URLTemplate;
             if (!resolveURL) { continue; }
             for (let key in variables) {
@@ -124,24 +111,27 @@ class VASTUtil {
     }
 
     leftpad(str) {
-        if (str.length < 8) { return (__range__(0, 8-str.length, false).map((i) => '0')).join('') + str; } else { return str; }
-    }
-
-    // https://gist.github.com/sheldonh/6089299
-    merge(...xs) {
-        if ((xs != null ? xs.length : undefined) > 0) {
-            return this.tap({}, m => Array.from(xs).map((x) => (() => {
-                const result = [];
-                for (let k in x) {
-                    const v = x[k];
-                    result.push(m[k] = v);
-                }
-                return result;
-            })()) );
+        if (str.length < 8) {
+            return (this.range(0, 8-str.length, false).map((i) => '0')).join('') + str;
+        } else {
+            return str;
         }
     }
 
-    tap(o, fn) { fn(o); return o; }
+    range(left, right, inclusive) {
+        let range = [];
+        let ascending = left < right;
+        let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+
+        for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+          range.push(i);
+        }
+        return range;
+    }
+
+    merge(...xs) {
+        return Object.assign(...xs);
+    }
 
     isNumeric(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
@@ -149,13 +139,3 @@ class VASTUtil {
 }
 
 module.exports = VASTUtil;
-
-function __range__(left, right, inclusive) {
-  let range = [];
-  let ascending = left < right;
-  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
-  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    range.push(i);
-  }
-  return range;
-}

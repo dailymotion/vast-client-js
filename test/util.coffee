@@ -73,5 +73,11 @@ describe 'VASTUtil', ->
     describe '#merge', ->
         it 'should merge 2 objects', ->
             foo = { a: 1, b: 1 }
-            bar = { b: 2, c: 3}
+            bar = { b: 2, c: 3 }
             util.merge(foo, bar).should.eql { a: 1, b: 2, c: 3 }
+
+        it 'should merge 3 objects', ->
+            foo = { a: 1, b: 1 }
+            bar = { b: 2, c: 3 }
+            lol = { b: 7, d: 4 }
+            util.merge(foo, bar, lol).should.eql { a: 1, b: 7, c: 3, d: 4 }
