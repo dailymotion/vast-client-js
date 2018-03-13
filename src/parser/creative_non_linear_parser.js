@@ -1,56 +1,75 @@
-ParserUtils = require './parser_utils.js'
-VASTCreativeNonLinear = require('../creative.js').VASTCreativeNonLinear
-VASTNonLinear = require '../nonlinear.js'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const ParserUtils = require('./parser_utils.js');
+const { VASTCreativeNonLinear } = require('../creative.js');
+const VASTNonLinear = require('../nonlinear.js');
 
-class CreativeNonLinearParser
-    constructor: ->
-        @utils = new ParserUtils()
+class CreativeNonLinearParser {
+    constructor() {
+        this.utils = new ParserUtils();
+    }
 
-    parse: (creativeElement, creativeAttributes) ->
-        creative = new VASTCreativeNonLinear(creativeAttributes)
+    parse(creativeElement, creativeAttributes) {
+        const creative = new VASTCreativeNonLinear(creativeAttributes);
 
-        for trackingEventsElement in @utils.childrenByName(creativeElement, "TrackingEvents")
-            for trackingElement in @utils.childrenByName(trackingEventsElement, "Tracking")
-                eventName = trackingElement.getAttribute("event")
-                trackingURLTemplate = @utils.parseNodeText(trackingElement)
-            if eventName? and trackingURLTemplate?
-                creative.trackingEvents[eventName] ?= []
-                creative.trackingEvents[eventName].push trackingURLTemplate
+        for (let trackingEventsElement of Array.from(this.utils.childrenByName(creativeElement, "TrackingEvents"))) {
+            var eventName, trackingURLTemplate;
+            for (let trackingElement of Array.from(this.utils.childrenByName(trackingEventsElement, "Tracking"))) {
+                eventName = trackingElement.getAttribute("event");
+                trackingURLTemplate = this.utils.parseNodeText(trackingElement);
+            }
+            if ((eventName != null) && (trackingURLTemplate != null)) {
+                if (creative.trackingEvents[eventName] == null) { creative.trackingEvents[eventName] = []; }
+                creative.trackingEvents[eventName].push(trackingURLTemplate);
+            }
+        }
 
-        for nonlinearResource in @utils.childrenByName(creativeElement, "NonLinear")
-            nonlinearAd = new VASTNonLinear()
-            nonlinearAd.id = nonlinearResource.getAttribute("id") or null
-            nonlinearAd.width = nonlinearResource.getAttribute("width")
-            nonlinearAd.height = nonlinearResource.getAttribute("height")
-            nonlinearAd.expandedWidth = nonlinearResource.getAttribute("expandedWidth")
-            nonlinearAd.expandedHeight = nonlinearResource.getAttribute("expandedHeight")
-            nonlinearAd.scalable = @utils.parseBoolean nonlinearResource.getAttribute("scalable")
-            nonlinearAd.maintainAspectRatio = @utils.parseBoolean nonlinearResource.getAttribute("maintainAspectRatio")
-            nonlinearAd.minSuggestedDuration = @utils.parseDuration nonlinearResource.getAttribute("minSuggestedDuration")
-            nonlinearAd.apiFramework = nonlinearResource.getAttribute("apiFramework")
+        for (let nonlinearResource of Array.from(this.utils.childrenByName(creativeElement, "NonLinear"))) {
+            const nonlinearAd = new VASTNonLinear();
+            nonlinearAd.id = nonlinearResource.getAttribute("id") || null;
+            nonlinearAd.width = nonlinearResource.getAttribute("width");
+            nonlinearAd.height = nonlinearResource.getAttribute("height");
+            nonlinearAd.expandedWidth = nonlinearResource.getAttribute("expandedWidth");
+            nonlinearAd.expandedHeight = nonlinearResource.getAttribute("expandedHeight");
+            nonlinearAd.scalable = this.utils.parseBoolean(nonlinearResource.getAttribute("scalable"));
+            nonlinearAd.maintainAspectRatio = this.utils.parseBoolean(nonlinearResource.getAttribute("maintainAspectRatio"));
+            nonlinearAd.minSuggestedDuration = this.utils.parseDuration(nonlinearResource.getAttribute("minSuggestedDuration"));
+            nonlinearAd.apiFramework = nonlinearResource.getAttribute("apiFramework");
 
-            for htmlElement in @utils.childrenByName(nonlinearResource, "HTMLResource")
-                nonlinearAd.type = htmlElement.getAttribute("creativeType") or 'text/html'
-                nonlinearAd.htmlResource = @utils.parseNodeText(htmlElement)
+            for (let htmlElement of Array.from(this.utils.childrenByName(nonlinearResource, "HTMLResource"))) {
+                nonlinearAd.type = htmlElement.getAttribute("creativeType") || 'text/html';
+                nonlinearAd.htmlResource = this.utils.parseNodeText(htmlElement);
+            }
 
-            for iframeElement in @utils.childrenByName(nonlinearResource, "IFrameResource")
-                nonlinearAd.type = iframeElement.getAttribute("creativeType") or 0
-                nonlinearAd.iframeResource = @utils.parseNodeText(iframeElement)
+            for (let iframeElement of Array.from(this.utils.childrenByName(nonlinearResource, "IFrameResource"))) {
+                nonlinearAd.type = iframeElement.getAttribute("creativeType") || 0;
+                nonlinearAd.iframeResource = this.utils.parseNodeText(iframeElement);
+            }
 
-            for staticElement in @utils.childrenByName(nonlinearResource, "StaticResource")
-                nonlinearAd.type = staticElement.getAttribute("creativeType") or 0
-                nonlinearAd.staticResource = @utils.parseNodeText(staticElement)
+            for (let staticElement of Array.from(this.utils.childrenByName(nonlinearResource, "StaticResource"))) {
+                nonlinearAd.type = staticElement.getAttribute("creativeType") || 0;
+                nonlinearAd.staticResource = this.utils.parseNodeText(staticElement);
+            }
 
-            adParamsElement = @utils.childByName(nonlinearResource, "AdParameters")
-            if adParamsElement?
-                nonlinearAd.adParameters = @utils.parseNodeText(adParamsElement)
+            const adParamsElement = this.utils.childByName(nonlinearResource, "AdParameters");
+            if (adParamsElement != null) {
+                nonlinearAd.adParameters = this.utils.parseNodeText(adParamsElement);
+            }
 
-            nonlinearAd.nonlinearClickThroughURLTemplate = @utils.parseNodeText(@utils.childByName(nonlinearResource, "NonLinearClickThrough"))
-            for clickTrackingElement in @utils.childrenByName(nonlinearResource, "NonLinearClickTracking")
-                nonlinearAd.nonlinearClickTrackingURLTemplates.push @utils.parseNodeText(clickTrackingElement)
+            nonlinearAd.nonlinearClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(nonlinearResource, "NonLinearClickThrough"));
+            for (let clickTrackingElement of Array.from(this.utils.childrenByName(nonlinearResource, "NonLinearClickTracking"))) {
+                nonlinearAd.nonlinearClickTrackingURLTemplates.push(this.utils.parseNodeText(clickTrackingElement));
+            }
 
-            creative.variations.push nonlinearAd
+            creative.variations.push(nonlinearAd);
+        }
 
-        return creative
+        return creative;
+    }
+}
 
-module.exports = CreativeNonLinearParser
+module.exports = CreativeNonLinearParser;
