@@ -10,12 +10,12 @@ class CreativeNonLinearParser
         creative = new VASTCreativeNonLinear(creativeAttributes)
 
         for trackingEventsElement in @utils.childrenByName(creativeElement, "TrackingEvents")
-          for trackingElement in @utils.childrenByName(trackingEventsElement, "Tracking")
-            eventName = trackingElement.getAttribute("event")
-            trackingURLTemplate = @utils.parseNodeText(trackingElement)
+            for trackingElement in @utils.childrenByName(trackingEventsElement, "Tracking")
+                eventName = trackingElement.getAttribute("event")
+                trackingURLTemplate = @utils.parseNodeText(trackingElement)
             if eventName? and trackingURLTemplate?
-              creative.trackingEvents[eventName] ?= []
-              creative.trackingEvents[eventName].push trackingURLTemplate
+                creative.trackingEvents[eventName] ?= []
+                creative.trackingEvents[eventName].push trackingURLTemplate
 
         for nonlinearResource in @utils.childrenByName(creativeElement, "NonLinear")
             nonlinearAd = new VASTNonLinear()
