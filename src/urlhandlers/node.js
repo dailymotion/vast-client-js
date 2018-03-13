@@ -1,40 +1,55 @@
-uri = require 'url'
-fs = require 'fs'
-http = require 'http'
-https = require 'https'
-DOMParser = require('xmldom').DOMParser
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const uri = require('url');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const { DOMParser } = require('xmldom');
 
-class NodeURLHandler
-    get: (url, options, cb) ->
+class NodeURLHandler {
+    get(url, options, cb) {
 
-        url = uri.parse(url)
-        httpModule = if url.protocol is 'https:' then https else http
-        if url.protocol is 'file:'
-            fs.readFile url.pathname, 'utf8', (err, data) ->
-                return cb(err) if (err)
-                xml = new DOMParser().parseFromString(data)
-                cb(null, xml)
-        else
-            data = ''
+        url = uri.parse(url);
+        const httpModule = url.protocol === 'https:' ? https : http;
+        if (url.protocol === 'file:') {
+            return fs.readFile(url.pathname, 'utf8', function(err, data) {
+                if (err) { return cb(err); }
+                const xml = new DOMParser().parseFromString(data);
+                return cb(null, xml);
+            });
+        } else {
+            let timing;
+            let data = '';
 
-            timeout_wrapper = ( req ) ->
-                return ->
-                    req.abort( );
+            const timeout_wrapper =  req  =>
+                () => req.abort( )
+            ;
 
-            req = httpModule.get url.href, (res) ->
-                res.on 'data', (chunk) ->
-                    data += chunk
+            const req = httpModule.get(url.href, function(res) {
+                res.on('data', function(chunk) {
+                    let timing;
+                    data += chunk;
                     clearTimeout( timing );
-                    timing = setTimeout( fn, options.timeout or 120000 );
-                res.on 'end', ->
+                    return timing = setTimeout( fn, options.timeout || 120000 );
+                });
+                return res.on('end', function() {
                     clearTimeout( timing );
-                    xml = new DOMParser().parseFromString(data)
-                    cb(null, xml)
-            req.on 'error', (err) ->
+                    const xml = new DOMParser().parseFromString(data);
+                    return cb(null, xml);
+                });
+            });
+            req.on('error', function(err) {
                 clearTimeout( timing );
-                cb(err)
+                return cb(err);
+            });
 
-            fn = timeout_wrapper req
-            timing = setTimeout( fn, options.timeout or 120000 );
+            var fn = timeout_wrapper(req);
+            return timing = setTimeout( fn, options.timeout || 120000 );
+        }
+    }
+}
 
-module.exports = NodeURLHandler
+module.exports = NodeURLHandler;
