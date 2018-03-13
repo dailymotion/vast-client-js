@@ -1,130 +1,166 @@
-ParserUtils = require './parser_utils.js'
-VASTCreativeLinear = require('../creative.js').VASTCreativeLinear
-VASTIcon = require '../icon.js'
-VASTMediaFile = require '../mediafile.js'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const ParserUtils = require('./parser_utils.js');
+const { VASTCreativeLinear } = require('../creative.js');
+const VASTIcon = require('../icon.js');
+const VASTMediaFile = require('../mediafile.js');
 
-class CreativeLinearParser
-    constructor: ->
-        @utils = new ParserUtils()
+class CreativeLinearParser {
+    constructor() {
+        this.utils = new ParserUtils();
+    }
 
-    parse: (creativeElement, creativeAttributes) ->
-        creative = new VASTCreativeLinear(creativeAttributes)
+    parse(creativeElement, creativeAttributes) {
+        let offset;
+        const creative = new VASTCreativeLinear(creativeAttributes);
 
-        creative.duration = @utils.parseDuration @utils.parseNodeText(@utils.childByName(creativeElement, "Duration"))
-        skipOffset = creativeElement.getAttribute("skipoffset")
+        creative.duration = this.utils.parseDuration(this.utils.parseNodeText(this.utils.childByName(creativeElement, "Duration")));
+        const skipOffset = creativeElement.getAttribute("skipoffset");
 
-        if not skipOffset? then creative.skipDelay = null
-        else if skipOffset.charAt(skipOffset.length - 1) is "%" and  creative.duration != -1
-            percent = parseInt(skipOffset, 10)
-            creative.skipDelay = creative.duration * (percent / 100)
-        else
-            creative.skipDelay = @utils.parseDuration skipOffset
+        if ((skipOffset == null)) { creative.skipDelay = null;
+        } else if ((skipOffset.charAt(skipOffset.length - 1) === "%") &&  (creative.duration !== -1)) {
+            const percent = parseInt(skipOffset, 10);
+            creative.skipDelay = creative.duration * (percent / 100);
+        } else {
+            creative.skipDelay = this.utils.parseDuration(skipOffset);
+        }
 
-        videoClicksElement = @utils.childByName(creativeElement, "VideoClicks")
-        if videoClicksElement?
-            creative.videoClickThroughURLTemplate = @utils.parseNodeText(@utils.childByName(videoClicksElement, "ClickThrough"))
-            for clickTrackingElement in @utils.childrenByName(videoClicksElement, "ClickTracking")
-                creative.videoClickTrackingURLTemplates.push @utils.parseNodeText(clickTrackingElement)
-            for customClickElement in @utils.childrenByName(videoClicksElement, "CustomClick")
-                creative.videoCustomClickURLTemplates.push @utils.parseNodeText(customClickElement)
+        const videoClicksElement = this.utils.childByName(creativeElement, "VideoClicks");
+        if (videoClicksElement != null) {
+            creative.videoClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(videoClicksElement, "ClickThrough"));
+            for (let clickTrackingElement of Array.from(this.utils.childrenByName(videoClicksElement, "ClickTracking"))) {
+                creative.videoClickTrackingURLTemplates.push(this.utils.parseNodeText(clickTrackingElement));
+            }
+            for (let customClickElement of Array.from(this.utils.childrenByName(videoClicksElement, "CustomClick"))) {
+                creative.videoCustomClickURLTemplates.push(this.utils.parseNodeText(customClickElement));
+            }
+        }
 
-        adParamsElement = @utils.childByName(creativeElement, "AdParameters")
-        if adParamsElement?
-            creative.adParameters = @utils.parseNodeText(adParamsElement)
+        const adParamsElement = this.utils.childByName(creativeElement, "AdParameters");
+        if (adParamsElement != null) {
+            creative.adParameters = this.utils.parseNodeText(adParamsElement);
+        }
 
-        for trackingEventsElement in @utils.childrenByName(creativeElement, "TrackingEvents")
-            for trackingElement in @utils.childrenByName(trackingEventsElement, "Tracking")
-                eventName = trackingElement.getAttribute("event")
-                trackingURLTemplate = @utils.parseNodeText(trackingElement)
-                if eventName? and trackingURLTemplate?
-                    if eventName == "progress"
-                        offset = trackingElement.getAttribute("offset")
-                        if not offset
-                            continue
-                        if offset.charAt(offset.length - 1) == '%'
-                            eventName = "progress-#{offset}"
-                        else
-                            eventName = "progress-#{Math.round(@utils.parseDuration offset)}"
+        for (let trackingEventsElement of Array.from(this.utils.childrenByName(creativeElement, "TrackingEvents"))) {
+            for (let trackingElement of Array.from(this.utils.childrenByName(trackingEventsElement, "Tracking"))) {
+                let eventName = trackingElement.getAttribute("event");
+                const trackingURLTemplate = this.utils.parseNodeText(trackingElement);
+                if ((eventName != null) && (trackingURLTemplate != null)) {
+                    if (eventName === "progress") {
+                        offset = trackingElement.getAttribute("offset");
+                        if (!offset) {
+                            continue;
+                        }
+                        if (offset.charAt(offset.length - 1) === '%') {
+                            eventName = `progress-${offset}`;
+                        } else {
+                            eventName = `progress-${Math.round(this.utils.parseDuration(offset))}`;
+                        }
+                    }
 
-                    creative.trackingEvents[eventName] ?= []
-                    creative.trackingEvents[eventName].push trackingURLTemplate
+                    if (creative.trackingEvents[eventName] == null) { creative.trackingEvents[eventName] = []; }
+                    creative.trackingEvents[eventName].push(trackingURLTemplate);
+                }
+            }
+        }
 
-        for mediaFilesElement in @utils.childrenByName(creativeElement, "MediaFiles")
-            for mediaFileElement in @utils.childrenByName(mediaFilesElement, "MediaFile")
-                mediaFile = new VASTMediaFile()
-                mediaFile.id = mediaFileElement.getAttribute("id")
-                mediaFile.fileURL = @utils.parseNodeText(mediaFileElement)
-                mediaFile.deliveryType = mediaFileElement.getAttribute("delivery")
-                mediaFile.codec = mediaFileElement.getAttribute("codec")
-                mediaFile.mimeType = mediaFileElement.getAttribute("type")
-                mediaFile.apiFramework = mediaFileElement.getAttribute("apiFramework")
-                mediaFile.bitrate = parseInt mediaFileElement.getAttribute("bitrate") or 0
-                mediaFile.minBitrate = parseInt mediaFileElement.getAttribute("minBitrate") or 0
-                mediaFile.maxBitrate = parseInt mediaFileElement.getAttribute("maxBitrate") or 0
-                mediaFile.width = parseInt mediaFileElement.getAttribute("width") or 0
-                mediaFile.height = parseInt mediaFileElement.getAttribute("height") or 0
+        for (let mediaFilesElement of Array.from(this.utils.childrenByName(creativeElement, "MediaFiles"))) {
+            for (let mediaFileElement of Array.from(this.utils.childrenByName(mediaFilesElement, "MediaFile"))) {
+                const mediaFile = new VASTMediaFile();
+                mediaFile.id = mediaFileElement.getAttribute("id");
+                mediaFile.fileURL = this.utils.parseNodeText(mediaFileElement);
+                mediaFile.deliveryType = mediaFileElement.getAttribute("delivery");
+                mediaFile.codec = mediaFileElement.getAttribute("codec");
+                mediaFile.mimeType = mediaFileElement.getAttribute("type");
+                mediaFile.apiFramework = mediaFileElement.getAttribute("apiFramework");
+                mediaFile.bitrate = parseInt(mediaFileElement.getAttribute("bitrate") || 0);
+                mediaFile.minBitrate = parseInt(mediaFileElement.getAttribute("minBitrate") || 0);
+                mediaFile.maxBitrate = parseInt(mediaFileElement.getAttribute("maxBitrate") || 0);
+                mediaFile.width = parseInt(mediaFileElement.getAttribute("width") || 0);
+                mediaFile.height = parseInt(mediaFileElement.getAttribute("height") || 0);
 
-                scalable = mediaFileElement.getAttribute("scalable")
-                if scalable and typeof scalable is "string"
-                  scalable = scalable.toLowerCase()
-                  if scalable is "true" then mediaFile.scalable = true
-                  else if scalable is "false" then mediaFile.scalable = false
+                let scalable = mediaFileElement.getAttribute("scalable");
+                if (scalable && (typeof scalable === "string")) {
+                  scalable = scalable.toLowerCase();
+                  if (scalable === "true") { mediaFile.scalable = true;
+                  } else if (scalable === "false") { mediaFile.scalable = false; }
+              }
 
-                maintainAspectRatio = mediaFileElement.getAttribute("maintainAspectRatio")
-                if maintainAspectRatio and typeof maintainAspectRatio is "string"
-                  maintainAspectRatio = maintainAspectRatio.toLowerCase()
-                  if maintainAspectRatio is "true" then mediaFile.maintainAspectRatio = true
-                  else if maintainAspectRatio is "false" then mediaFile.maintainAspectRatio = false
+                let maintainAspectRatio = mediaFileElement.getAttribute("maintainAspectRatio");
+                if (maintainAspectRatio && (typeof maintainAspectRatio === "string")) {
+                  maintainAspectRatio = maintainAspectRatio.toLowerCase();
+                  if (maintainAspectRatio === "true") { mediaFile.maintainAspectRatio = true;
+                  } else if (maintainAspectRatio === "false") { mediaFile.maintainAspectRatio = false; }
+              }
 
-                creative.mediaFiles.push mediaFile
+                creative.mediaFiles.push(mediaFile);
+            }
+        }
 
-        iconsElement = @utils.childByName(creativeElement, "Icons")
-        if iconsElement?
-            for iconElement in @utils.childrenByName(iconsElement, "Icon")
-                icon = new VASTIcon()
-                icon.program = iconElement.getAttribute("program")
-                icon.height = parseInt iconElement.getAttribute("height") or 0
-                icon.width = parseInt iconElement.getAttribute("width") or 0
-                icon.xPosition = @parseXPosition iconElement.getAttribute("xPosition")
-                icon.yPosition = @parseYPosition iconElement.getAttribute("yPosition")
-                icon.apiFramework = iconElement.getAttribute("apiFramework")
-                icon.offset = @utils.parseDuration iconElement.getAttribute("offset")
-                icon.duration = @utils.parseDuration iconElement.getAttribute("duration")
+        const iconsElement = this.utils.childByName(creativeElement, "Icons");
+        if (iconsElement != null) {
+            for (let iconElement of Array.from(this.utils.childrenByName(iconsElement, "Icon"))) {
+                const icon = new VASTIcon();
+                icon.program = iconElement.getAttribute("program");
+                icon.height = parseInt(iconElement.getAttribute("height") || 0);
+                icon.width = parseInt(iconElement.getAttribute("width") || 0);
+                icon.xPosition = this.parseXPosition(iconElement.getAttribute("xPosition"));
+                icon.yPosition = this.parseYPosition(iconElement.getAttribute("yPosition"));
+                icon.apiFramework = iconElement.getAttribute("apiFramework");
+                icon.offset = this.utils.parseDuration(iconElement.getAttribute("offset"));
+                icon.duration = this.utils.parseDuration(iconElement.getAttribute("duration"));
 
-                for htmlElement in @utils.childrenByName(iconElement, "HTMLResource")
-                    icon.type = htmlElement.getAttribute("creativeType") or 'text/html'
-                    icon.htmlResource = @utils.parseNodeText(htmlElement)
+                for (let htmlElement of Array.from(this.utils.childrenByName(iconElement, "HTMLResource"))) {
+                    icon.type = htmlElement.getAttribute("creativeType") || 'text/html';
+                    icon.htmlResource = this.utils.parseNodeText(htmlElement);
+                }
 
-                for iframeElement in @utils.childrenByName(iconElement, "IFrameResource")
-                    icon.type = iframeElement.getAttribute("creativeType") or 0
-                    icon.iframeResource = @utils.parseNodeText(iframeElement)
+                for (let iframeElement of Array.from(this.utils.childrenByName(iconElement, "IFrameResource"))) {
+                    icon.type = iframeElement.getAttribute("creativeType") || 0;
+                    icon.iframeResource = this.utils.parseNodeText(iframeElement);
+                }
 
-                for staticElement in @utils.childrenByName(iconElement, "StaticResource")
-                    icon.type = staticElement.getAttribute("creativeType") or 0
-                    icon.staticResource = @utils.parseNodeText(staticElement)
+                for (let staticElement of Array.from(this.utils.childrenByName(iconElement, "StaticResource"))) {
+                    icon.type = staticElement.getAttribute("creativeType") || 0;
+                    icon.staticResource = this.utils.parseNodeText(staticElement);
+                }
 
-                iconClicksElement = @utils.childByName(iconElement, "IconClicks")
-                if iconClicksElement?
-                    icon.iconClickThroughURLTemplate = @utils.parseNodeText(@utils.childByName(iconClicksElement, "IconClickThrough"))
-                    for iconClickTrackingElement in @utils.childrenByName(iconClicksElement, "IconClickTracking")
-                        icon.iconClickTrackingURLTemplates.push @utils.parseNodeText(iconClickTrackingElement)
+                const iconClicksElement = this.utils.childByName(iconElement, "IconClicks");
+                if (iconClicksElement != null) {
+                    icon.iconClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(iconClicksElement, "IconClickThrough"));
+                    for (let iconClickTrackingElement of Array.from(this.utils.childrenByName(iconClicksElement, "IconClickTracking"))) {
+                        icon.iconClickTrackingURLTemplates.push(this.utils.parseNodeText(iconClickTrackingElement));
+                    }
+                }
 
-                icon.iconViewTrackingURLTemplate = @utils.parseNodeText(@utils.childByName(iconElement, "IconViewTracking"))
+                icon.iconViewTrackingURLTemplate = this.utils.parseNodeText(this.utils.childByName(iconElement, "IconViewTracking"));
 
-                creative.icons.push icon
+                creative.icons.push(icon);
+            }
+        }
 
-        return creative
+        return creative;
+    }
 
-    parseXPosition: (xPosition) ->
-        if xPosition in ["left", "right"]
-            return xPosition
+    parseXPosition(xPosition) {
+        if (["left", "right"].includes(xPosition)) {
+            return xPosition;
+        }
 
-        return parseInt xPosition or 0
+        return parseInt(xPosition || 0);
+    }
 
-    parseYPosition: (yPosition) ->
-        if yPosition in ["top", "bottom"]
-            return yPosition
+    parseYPosition(yPosition) {
+        if (["top", "bottom"].includes(yPosition)) {
+            return yPosition;
+        }
 
-        return parseInt yPosition or 0
+        return parseInt(yPosition || 0);
+    }
+}
 
-module.exports = CreativeLinearParser
+module.exports = CreativeLinearParser;

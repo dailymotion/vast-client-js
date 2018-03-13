@@ -1,5 +1,5 @@
 const CreativeCompanionParser = require('./creative_companion_parser.js');
-const CreativeLinearParser = require('./creative_linear_parser.coffee');
+const CreativeLinearParser = require('./creative_linear_parser.js');
 const CreativeNonLinearParser = require('./creative_non_linear_parser.coffee');
 const ParserUtils = require('./parser_utils.js');
 const VASTAd = require('../ad.js');
