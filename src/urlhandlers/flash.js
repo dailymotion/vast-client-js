@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 class FlashURLHandler {
     xdr() {
         let xdr;
@@ -15,13 +10,13 @@ class FlashURLHandler {
     }
 
     get(url, options, cb) {
+        let xmlDocument = typeof window.ActiveXObject === 'function' ? new window.ActiveXObject("Microsoft.XMLDOM") : undefined;
 
-        let xmlDocument;
-        if (xmlDocument = typeof window.ActiveXObject === 'function' ? new window.ActiveXObject("Microsoft.XMLDOM") : undefined) {
-          xmlDocument.async = false;
+        if (xmlDocument) {
+            xmlDocument.async = false;
         } else {
-          return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
-      }
+            return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
+        }
 
         const xdr = this.xdr();
         xdr.open('GET', url);
@@ -30,10 +25,10 @@ class FlashURLHandler {
         xdr.send();
         xdr.onprogress = function() {};
 
-        return xdr.onload = function() {
-             xmlDocument.loadXML(xdr.responseText);
-             return cb(null, xmlDocument);
-         };
+        xdr.onload = function() {
+            xmlDocument.loadXML(xdr.responseText);
+            cb(null, xmlDocument);
+        };
     }
 }
 
