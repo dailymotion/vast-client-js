@@ -1,10 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const CreativeCompanionParser = require('./creative_companion_parser.coffee');
 const CreativeLinearParser = require('./creative_linear_parser.coffee');
 const CreativeNonLinearParser = require('./creative_non_linear_parser.coffee');
@@ -22,11 +15,14 @@ class AdParser {
     }
 
     parse(inLineElement) {
+        const childNodes = inLineElement.childNodes;
         const ad = new VASTAd();
         ad.id = inLineElement.getAttribute("id") || null;
         ad.sequence = inLineElement.getAttribute("sequence") || null;
 
-        for (let node of Array.from(inLineElement.childNodes)) {
+        for (let nodeKey in childNodes) {
+            const node = childNodes[nodeKey];
+
             switch (node.nodeName) {
                 case "Error":
                     ad.errorURLTemplates.push((this.utils.parseNodeText(node)));
@@ -37,7 +33,7 @@ class AdParser {
                     break;
 
                 case "Creatives":
-                    for (let creativeElement of Array.from(this.utils.childrenByName(node, "Creative"))) {
+                    for (let creativeElement of this.utils.childrenByName(node, "Creative")) {
                         const creativeAttributes = {
                             id           : creativeElement.getAttribute('id') || null,
                             adId         : this.parseCreativeAdIdAttribute(creativeElement),
@@ -45,7 +41,9 @@ class AdParser {
                             apiFramework : creativeElement.getAttribute('apiFramework') || null
                         };
 
-                        for (let creativeTypeElement of Array.from(creativeElement.childNodes)) {
+                        for (let creativeTypeElementKey in creativeElement.childNodes) {
+                            const creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
+
                             switch (creativeTypeElement.nodeName) {
                                 case "Linear":
                                     var creative = this.creativeLinearParser.parse(creativeTypeElement, creativeAttributes);
@@ -110,40 +108,47 @@ class AdParser {
     }
 
     parseExtension(collection, extensions) {
-        return (() => {
-            const result = [];
-            for (let extNode of Array.from(extensions)) {
-                const ext = new VASTAdExtension();
+        for (let extNode of extensions) {
+            const ext = new VASTAdExtension();
+            const extNodeAttrs = extNode.attributes;
+            const childNodes = extNode.childNodes;
 
-                if (extNode.attributes) {
-                    for (let extNodeAttr of Array.from(extNode.attributes)) {
+            if (extNode.attributes) {
+                for (let extNodeAttrKey in extNodeAttrs) {
+                    const extNodeAttr = extNodeAttrs[extNodeAttrKey]
+
+                    if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
                         ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
                     }
                 }
-
-                for (let childNode of Array.from(extNode.childNodes)) {
-                    const txt = this.utils.parseNodeText(childNode);
-
-                    // ignore comments / empty value
-                    if ((childNode.nodeName !== '#comment') && (txt !== '')) {
-                        const extChild = new VASTAdExtensionChild();
-                        extChild.name = childNode.nodeName;
-                        extChild.value = txt;
-
-                        if (childNode.attributes) {
-                            for (let extChildNodeAttr of Array.from(childNode.attributes)) {
-                                extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
-                            }
-                        }
-
-                        ext.children.push(extChild);
-                    }
-                }
-
-                result.push(collection.push(ext));
             }
-            return result;
-        })();
+
+            for (let childNodeKey in childNodes) {
+                const childNode = childNodes[childNodeKey];
+                const txt = this.utils.parseNodeText(childNode);
+
+                // ignore comments / empty value
+                if ((childNode.nodeName !== '#comment') && (txt !== '')) {
+                    const extChild = new VASTAdExtensionChild();
+                    extChild.name = childNode.nodeName;
+                    extChild.value = txt;
+
+                    if (childNode.attributes) {
+                        const childNodeAttributes = childNode.attributes;
+
+                        for (let extChildNodeAttrKey in childNodeAttributes) {
+                            const extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
+
+                            extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
+                        }
+                    }
+
+                    ext.children.push(extChild);
+                }
+            }
+
+            collection.push(ext);
+        }
     }
 
     parseCreativeAdIdAttribute(creativeElement) {
