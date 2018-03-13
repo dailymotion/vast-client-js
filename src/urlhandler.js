@@ -1,4 +1,4 @@
-const XHRURLHandler = require('./urlhandlers/xmlhttprequest.coffee');
+const XHRURLHandler = require('./urlhandlers/xmlhttprequest.js');
 const FlashURLHandler = require('./urlhandlers/flash.coffee');
 const NodeURLHandler = require('./urlhandlers/node.js');
 

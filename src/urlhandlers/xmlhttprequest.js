@@ -1,30 +1,45 @@
-class XHRURLHandler
-    xhr: ->
-        xhr = new window.XMLHttpRequest()
-        if 'withCredentials' of xhr # check CORS support
-            return xhr
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+class XHRURLHandler {
+    xhr() {
+        const xhr = new window.XMLHttpRequest();
+        if ('withCredentials' in xhr) { // check CORS support
+            return xhr;
+        }
+    }
 
-    supported: ->
-        return !!@xhr()
+    supported() {
+        return !!this.xhr();
+    }
 
-    get: (url, options, cb) ->
-        if window.location.protocol == 'https:' && url.indexOf('http://') == 0
-            return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'))
+    get(url, options, cb) {
+        if ((window.location.protocol === 'https:') && (url.indexOf('http://') === 0)) {
+            return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
+        }
 
-        try
-            xhr = @xhr()
-            xhr.open('GET', url)
-            xhr.timeout = options.timeout or 0
-            xhr.withCredentials = options.withCredentials or false
+        try {
+            const xhr = this.xhr();
+            xhr.open('GET', url);
+            xhr.timeout = options.timeout || 0;
+            xhr.withCredentials = options.withCredentials || false;
             xhr.overrideMimeType && xhr.overrideMimeType('text/xml');
-            xhr.onreadystatechange = ->
-                if xhr.readyState == 4
-                    if xhr.status == 200
-                        cb(null, xhr.responseXML)
-                    else
-                        cb(new Error("XHRURLHandler: #{xhr.statusText}"))
-            xhr.send()
-        catch
-            cb(new Error('XHRURLHandler: Unexpected error'))
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        return cb(null, xhr.responseXML);
+                    } else {
+                        return cb(new Error(`XHRURLHandler: ${xhr.statusText}`));
+                    }
+                }
+            };
+            return xhr.send();
+        } catch (error) {
+            return cb(new Error('XHRURLHandler: Unexpected error'));
+        }
+    }
+}
 
-module.exports = XHRURLHandler
+module.exports = XHRURLHandler;
