@@ -1,9 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const ParserUtils = require('./parser_utils.js');
 const { VASTCreativeLinear } = require('../creative.js');
 const VASTIcon = require('../icon.js');
@@ -32,10 +26,10 @@ class CreativeLinearParser {
         const videoClicksElement = this.utils.childByName(creativeElement, "VideoClicks");
         if (videoClicksElement != null) {
             creative.videoClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(videoClicksElement, "ClickThrough"));
-            for (let clickTrackingElement of Array.from(this.utils.childrenByName(videoClicksElement, "ClickTracking"))) {
+            for (let clickTrackingElement of this.utils.childrenByName(videoClicksElement, "ClickTracking")) {
                 creative.videoClickTrackingURLTemplates.push(this.utils.parseNodeText(clickTrackingElement));
             }
-            for (let customClickElement of Array.from(this.utils.childrenByName(videoClicksElement, "CustomClick"))) {
+            for (let customClickElement of this.utils.childrenByName(videoClicksElement, "CustomClick")) {
                 creative.videoCustomClickURLTemplates.push(this.utils.parseNodeText(customClickElement));
             }
         }
@@ -45,8 +39,8 @@ class CreativeLinearParser {
             creative.adParameters = this.utils.parseNodeText(adParamsElement);
         }
 
-        for (let trackingEventsElement of Array.from(this.utils.childrenByName(creativeElement, "TrackingEvents"))) {
-            for (let trackingElement of Array.from(this.utils.childrenByName(trackingEventsElement, "Tracking"))) {
+        for (let trackingEventsElement of this.utils.childrenByName(creativeElement, "TrackingEvents")) {
+            for (let trackingElement of this.utils.childrenByName(trackingEventsElement, "Tracking")) {
                 let eventName = trackingElement.getAttribute("event");
                 const trackingURLTemplate = this.utils.parseNodeText(trackingElement);
                 if ((eventName != null) && (trackingURLTemplate != null)) {
@@ -68,8 +62,8 @@ class CreativeLinearParser {
             }
         }
 
-        for (let mediaFilesElement of Array.from(this.utils.childrenByName(creativeElement, "MediaFiles"))) {
-            for (let mediaFileElement of Array.from(this.utils.childrenByName(mediaFilesElement, "MediaFile"))) {
+        for (let mediaFilesElement of this.utils.childrenByName(creativeElement, "MediaFiles")) {
+            for (let mediaFileElement of this.utils.childrenByName(mediaFilesElement, "MediaFile")) {
                 const mediaFile = new VASTMediaFile();
                 mediaFile.id = mediaFileElement.getAttribute("id");
                 mediaFile.fileURL = this.utils.parseNodeText(mediaFileElement);
@@ -103,7 +97,7 @@ class CreativeLinearParser {
 
         const iconsElement = this.utils.childByName(creativeElement, "Icons");
         if (iconsElement != null) {
-            for (let iconElement of Array.from(this.utils.childrenByName(iconsElement, "Icon"))) {
+            for (let iconElement of this.utils.childrenByName(iconsElement, "Icon")) {
                 const icon = new VASTIcon();
                 icon.program = iconElement.getAttribute("program");
                 icon.height = parseInt(iconElement.getAttribute("height") || 0);
@@ -114,17 +108,17 @@ class CreativeLinearParser {
                 icon.offset = this.utils.parseDuration(iconElement.getAttribute("offset"));
                 icon.duration = this.utils.parseDuration(iconElement.getAttribute("duration"));
 
-                for (let htmlElement of Array.from(this.utils.childrenByName(iconElement, "HTMLResource"))) {
+                for (let htmlElement of this.utils.childrenByName(iconElement, "HTMLResource")) {
                     icon.type = htmlElement.getAttribute("creativeType") || 'text/html';
                     icon.htmlResource = this.utils.parseNodeText(htmlElement);
                 }
 
-                for (let iframeElement of Array.from(this.utils.childrenByName(iconElement, "IFrameResource"))) {
+                for (let iframeElement of this.utils.childrenByName(iconElement, "IFrameResource")) {
                     icon.type = iframeElement.getAttribute("creativeType") || 0;
                     icon.iframeResource = this.utils.parseNodeText(iframeElement);
                 }
 
-                for (let staticElement of Array.from(this.utils.childrenByName(iconElement, "StaticResource"))) {
+                for (let staticElement of this.utils.childrenByName(iconElement, "StaticResource")) {
                     icon.type = staticElement.getAttribute("creativeType") || 0;
                     icon.staticResource = this.utils.parseNodeText(staticElement);
                 }
@@ -132,7 +126,7 @@ class CreativeLinearParser {
                 const iconClicksElement = this.utils.childByName(iconElement, "IconClicks");
                 if (iconClicksElement != null) {
                     icon.iconClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(iconClicksElement, "IconClickThrough"));
-                    for (let iconClickTrackingElement of Array.from(this.utils.childrenByName(iconClicksElement, "IconClickTracking"))) {
+                    for (let iconClickTrackingElement of this.utils.childrenByName(iconClicksElement, "IconClickTracking")) {
                         icon.iconClickTrackingURLTemplates.push(this.utils.parseNodeText(iconClickTrackingElement));
                     }
                 }
