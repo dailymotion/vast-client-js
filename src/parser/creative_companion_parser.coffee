@@ -1,6 +1,6 @@
 VASTCompanionAd = require '../companionad.js'
 VASTCreativeCompanion = require('../creative.js').VASTCreativeCompanion
-ParserUtils = require './parser_utils.coffee'
+ParserUtils = require './parser_utils.js'
 
 class CreativeCompanionParser
     constructor: ->

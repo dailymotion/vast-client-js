@@ -1,4 +1,4 @@
-ParserUtils = require './parser_utils.coffee'
+ParserUtils = require './parser_utils.js'
 VASTCreativeNonLinear = require('../creative.js').VASTCreativeNonLinear
 VASTNonLinear = require '../nonlinear.js'
 

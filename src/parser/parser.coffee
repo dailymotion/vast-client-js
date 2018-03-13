@@ -1,5 +1,5 @@
 AdParser = require './ad_parser.coffee'
-ParserUtils = require './parser_utils.coffee'
+ParserUtils = require './parser_utils.js'
 URLHandler = require '../urlhandler.js'
 VASTResponse = require '../response.js'
 VASTUtil = require '../util.js'
