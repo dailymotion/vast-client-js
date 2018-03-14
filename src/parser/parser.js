@@ -36,9 +36,9 @@ class VASTParser {
         if (typeof func === 'function') { this.URLTemplateFilters.push(func); }
     }
 
-    removeURLTemplateFilter() { return this.URLTemplateFilters.pop(); }
+    removeURLTemplateFilter() { this.URLTemplateFilters.pop(); }
     countURLTemplateFilters() { return this.URLTemplateFilters.length; }
-    clearUrlTemplateFilters() { return this.URLTemplateFilters = []; }
+    clearUrlTemplateFilters() { this.URLTemplateFilters = []; }
 
     parse(url, options, cb) {
         if (!cb) {
@@ -49,7 +49,7 @@ class VASTParser {
         this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH;
         options.wrapperDepth = 0;
 
-        return this._parse(url, null, options, (err, response) => cb(response, err));
+        this._parse(url, null, options, (err, response) => cb(response, err));
     }
 
     load(xml, options, cb) {
@@ -58,41 +58,40 @@ class VASTParser {
             options = {};
         }
 
-        return this.parseXmlDocument(null, [], options, xml, cb);
+        this.parseXmlDocument(null, [], options, xml, cb);
     }
 
     track(templates, errorCode, ...data) {
-        this.vent.emit('VAST-error', this.vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, ...Array.from(data)));
-        return this.vastUtil.track(templates, errorCode);
+        this.vent.emit('VAST-error', this.vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, ...data));
+        this.vastUtil.track(templates, errorCode);
     }
 
     on(eventName, cb) {
-        return this.vent.on(eventName, cb);
+        this.vent.on(eventName, cb);
     }
 
     once(eventName, cb) {
-        return this.vent.once(eventName, cb);
+        this.vent.once(eventName, cb);
     }
 
     off(eventName, cb) {
-        return this.vent.removeListener(eventName, cb);
+        this.vent.removeListener(eventName, cb);
     }
 
     _parse(url, parentURLs, options, cb) {
         // Process url with defined filter
-        for (let filter of Array.from(this.URLTemplateFilters)) { url = filter(url); }
-        console.log(url);
+        for (let filter of this.URLTemplateFilters) { url = filter(url); }
 
         if (parentURLs == null) { parentURLs = []; }
         parentURLs.push(url);
 
         this.vent.emit('resolving', { url });
 
-        return this.urlHandler.get(url, options, (err, xml) => {
+        this.urlHandler.get(url, options, (err, xml) => {
             this.vent.emit('resolved', { url });
 
             if (err != null) { return cb(err); }
-            return this.parseXmlDocument(url, parentURLs, options, xml, cb);
+            this.parseXmlDocument(url, parentURLs, options, xml, cb);
         });
     }
 
@@ -100,20 +99,21 @@ class VASTParser {
         // Current VAST depth
         let ad;
         const wrapperDepth = options.wrapperDepth++;
-
         const response = new VASTResponse();
 
         if (((xml != null ? xml.documentElement : undefined) == null) || (xml.documentElement.nodeName !== "VAST")) {
             return cb(new Error('Invalid VAST XMLDocument'));
         }
 
-        for (var node of Array.from(xml.documentElement.childNodes)) {
+        const childNodes = xml.documentElement.childNodes;
+
+        for (let nodeKey in childNodes) {
+            const node = childNodes[nodeKey];
+
             if (node.nodeName === 'Error') {
                 response.errorURLTemplates.push((this.utils.parseNodeText(node)));
             }
-        }
 
-        for (node of Array.from(xml.documentElement.childNodes)) {
             if (node.nodeName === 'Ad') {
                 ad = this.parseAdElement(node);
                 if (ad != null) {
@@ -160,15 +160,16 @@ class VASTParser {
                 }
             }
 
-            return cb(null, response);
+            cb(null, response);
         };
 
         let loopIndex = response.ads.length;
+        // To refactor
         while (loopIndex--) {
             ad = response.ads[loopIndex];
             if (ad.nextWrapperURL == null) { continue; }
             (ad => {
-                if ((parentURLs.length >= this.maxWrapperDepth) || Array.from(parentURLs).includes(ad.nextWrapperURL)) {
+                if ((parentURLs.length >= this.maxWrapperDepth) || parentURLs.includes(ad.nextWrapperURL)) {
                     // Wrapper limit reached, as defined by the video player.
                     // Too many Wrapper responses have been received with no InLine response.
                     ad.errorCode = 302;
@@ -179,7 +180,7 @@ class VASTParser {
                 // Get full URL
                 ad.nextWrapperURL = this.resolveVastAdTagURI(ad.nextWrapperURL, url);
 
-                return this._parse(ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) => {
+                this._parse(ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) => {
                     delete ad.nextWrapperURL;
 
                     if (err != null) {
@@ -202,18 +203,18 @@ class VASTParser {
                         let index = response.ads.indexOf(ad);
                         response.ads.splice(index, 1);
 
-                        for (let wrappedAd of Array.from(wrappedResponse.ads)) {
+                        for (let wrappedAd of wrappedResponse.ads) {
                             this.mergeWrapperAdData(wrappedAd, ad);
                             response.ads.splice(++index, 0, wrappedAd);
                         }
                     }
 
-                    return complete();
+                    complete();
                 });
             })(ad);
         }
 
-        return complete();
+        complete();
     }
 
     // Convert relative vastAdTagUri
@@ -238,7 +239,7 @@ class VASTParser {
         wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
         wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
 
-        for (var creative of Array.from(wrappedAd.creatives)) {
+        for (let creative of wrappedAd.creatives) {
             if ((ad.trackingEvents != null ? ad.trackingEvents[creative.type] : undefined) != null) {
                 for (let eventName in ad.trackingEvents[creative.type]) {
                     const urls = ad.trackingEvents[creative.type][eventName];
@@ -249,7 +250,7 @@ class VASTParser {
         }
 
         if (ad.videoClickTrackingURLTemplates != null ? ad.videoClickTrackingURLTemplates.length : undefined) {
-            for (creative of Array.from(wrappedAd.creatives)) {
+            for (let creative of wrappedAd.creatives) {
                 if (creative.type === 'linear') {
                     creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
                 }
@@ -257,7 +258,7 @@ class VASTParser {
         }
 
         if (ad.videoCustomClickURLTemplates != null ? ad.videoCustomClickURLTemplates.length : undefined) {
-            for (creative of Array.from(wrappedAd.creatives)) {
+            for (let creative of wrappedAd.creatives) {
                 if (creative.type === 'linear') {
                     creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(ad.videoCustomClickURLTemplates);
                 }
@@ -266,22 +267,20 @@ class VASTParser {
 
         // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
         if (ad.videoClickThroughURLTemplate != null) {
-            return (() => {
-                const result = [];
-                for (creative of Array.from(wrappedAd.creatives)) {
-                    if ((creative.type === 'linear') && (creative.videoClickThroughURLTemplate == null)) {
-                        result.push(creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate);
-                    } else {
-                        result.push(undefined);
-                    }
+            for (let creative of wrappedAd.creatives) {
+                if ((creative.type === 'linear') && (creative.videoClickThroughURLTemplate == null)) {
+                    creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate;
                 }
-                return result;
-            })();
+            }
         }
     }
 
     parseAdElement(adElement) {
-        for (let adTypeElement of Array.from(adElement.childNodes)) {
+        const childNodes = adElement.childNodes;
+
+        for (let adTypeElementKey in childNodes) {
+            const adTypeElement = childNodes[adTypeElementKey];
+
             if (!["Wrapper", "InLine"].includes(adTypeElement.nodeName)) { continue; }
 
             this.utils.copyNodeAttribute("id", adElement, adTypeElement);
@@ -307,7 +306,7 @@ class VASTParser {
             }
         }
 
-        for (let wrapperCreativeElement of Array.from(ad.creatives)) {
+        for (let wrapperCreativeElement of ad.creatives) {
             if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
                 // TrackingEvents Linear / NonLinear
                 var item;
@@ -317,13 +316,13 @@ class VASTParser {
                     for (let eventName in wrapperCreativeElement.trackingEvents) {
                         const urls = wrapperCreativeElement.trackingEvents[eventName];
                         if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) { ad.trackingEvents[wrapperCreativeElement.type][eventName] = []; }
-                        for (let url of Array.from(urls)) { ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url); }
+                        for (let url of urls) { ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url); }
                     }
                 }
                 // ClickTracking
                 if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
                     if (!ad.videoClickTrackingURLTemplates) { ad.videoClickTrackingURLTemplates = []; } // tmp property to save wrapper tracking URLs until they are merged
-                    for (item of Array.from(wrapperCreativeElement.videoClickTrackingURLTemplates)) { ad.videoClickTrackingURLTemplates.push(item); }
+                    for (item of wrapperCreativeElement.videoClickTrackingURLTemplates) { ad.videoClickTrackingURLTemplates.push(item); }
                 }
                 // ClickThrough
                 if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
@@ -332,7 +331,7 @@ class VASTParser {
                 // CustomClick
                 if (wrapperCreativeElement.videoCustomClickURLTemplates != null) {
                     if (!ad.videoCustomClickURLTemplates) { ad.videoCustomClickURLTemplates = []; } // tmp property to save wrapper tracking URLs until they are merged
-                    for (item of Array.from(wrapperCreativeElement.videoCustomClickURLTemplates)) { ad.videoCustomClickURLTemplates.push(item); }
+                    for (item of wrapperCreativeElement.videoCustomClickURLTemplates) { ad.videoCustomClickURLTemplates.push(item); }
                 }
             }
         }
