@@ -1,390 +1,494 @@
-should = require 'should'
-sinon  = require 'sinon'
-path = require 'path'
-VASTParser = require '../src/parser/parser'
-VASTTracker = require '../src/tracker'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const should = require('should');
+const sinon  = require('sinon');
+const path = require('path');
+const VASTParser = require('../src/parser/parser');
+const VASTTracker = require('../src/tracker');
 
-now = new Date()
-vastParser = new VASTParser()
+const now = new Date();
+const vastParser = new VASTParser();
 
-urlfor = (relpath) ->
-    return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
+const urlfor = relpath => `file://${path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')}`;
 
-describe 'VASTTracker', ->
-    before () =>
-        @sinon = sinon.sandbox.create()
-        @sinon.stub(Math, 'random').returns(0.1)
-        @clock = sinon.useFakeTimers(now.getTime())
+describe('VASTTracker', function() {
+    before(() => {
+        this.sinon = sinon.sandbox.create();
+        this.sinon.stub(Math, 'random').returns(0.1);
+        return this.clock = sinon.useFakeTimers(now.getTime());
+    });
 
-    after () =>
-        @clock.restore()
-        @sinon.restore()
+    after(() => {
+        this.clock.restore();
+        return this.sinon.restore();
+    });
 
-    describe '#constructor', ->
-        @Tracker = null
-        _eventsSent = []
-        @templateFilterCalls = []
-        @response = {}
+    return describe('#constructor', function() {
+        this.Tracker = null;
+        let _eventsSent = [];
+        this.templateFilterCalls = [];
+        this.response = {};
 
-        before (done) =>
-            vastParser.addURLTemplateFilter (url) =>
-              @templateFilterCalls.push url
-              return url
+        before(done => {
+            vastParser.addURLTemplateFilter(url => {
+              this.templateFilterCalls.push(url);
+              return url;
+            });
 
-            vastParser.parse urlfor('wrapper-a.xml'), (@response) =>
-                done()
+            return vastParser.parse(urlfor('wrapper-a.xml'), response => {
+                this.response = response;
+                return done();
+            });
+        });
 
-        after () =>
-            vastParser.clearUrlTemplateFilters()
+        after(() => {
+            return vastParser.clearUrlTemplateFilters();
+        });
 
-        describe '#linear', =>
-            before () =>
-                # Init tracker
-                ad = @response.ads[0]
-                creative = @response.ads[0].creatives[0]
-                @Tracker = new VASTTracker ad, creative
-                # Mock emit
-                @Tracker.emit = (event) =>
-                    _eventsSent.push(event)
+        describe('#linear', () => {
+            before(() => {
+                // Init tracker
+                const ad = this.response.ads[0];
+                const creative = this.response.ads[0].creatives[0];
+                this.Tracker = new VASTTracker(ad, creative);
+                // Mock emit
+                return this.Tracker.emit = event => {
+                    return _eventsSent.push(event);
+                };
+            });
 
-            it 'should have firstQuartile set', =>
-                @Tracker.quartiles.firstQuartile.should.equal 22.53
+            it('should have firstQuartile set', () => {
+                return this.Tracker.quartiles.firstQuartile.should.equal(22.53);
+            });
 
-            it 'should have midpoint set', =>
-                @Tracker.quartiles.midpoint.should.equal 45.06
+            it('should have midpoint set', () => {
+                return this.Tracker.quartiles.midpoint.should.equal(45.06);
+            });
 
-            it 'should have thirdQuartile set', =>
-                @Tracker.quartiles.thirdQuartile.should.equal 67.59
+            it('should have thirdQuartile set', () => {
+                return this.Tracker.quartiles.thirdQuartile.should.equal(67.59);
+            });
 
-            it 'should have skipDelay disabled', =>
-                @Tracker.skipDelay.should.equal -1
+            it('should have skipDelay disabled', () => {
+                return this.Tracker.skipDelay.should.equal(-1);
+            });
 
-            describe '#setProgress', =>
+            describe('#setProgress', () => {
 
-                beforeEach (done) =>
-                    _eventsSent = []
-                    done()
+                beforeEach(done => {
+                    _eventsSent = [];
+                    return done();
+                });
 
-                it 'should send start event when set at 1', =>
-                    @Tracker.setProgress 1
-                    _eventsSent.should.eql ["start"]
+                it('should send start event when set at 1', () => {
+                    this.Tracker.setProgress(1);
+                    return _eventsSent.should.eql(["start"]);
+            });
 
-                it 'should send skip-countdown event', =>
-                    @Tracker.skipDelay = 5
-                    @Tracker.setProgress 6
-                    _eventsSent.should.eql ["skip-countdown"]
+                it('should send skip-countdown event', () => {
+                    this.Tracker.skipDelay = 5;
+                    this.Tracker.setProgress(6);
+                    return _eventsSent.should.eql(["skip-countdown"]);
+            });
 
-                it 'should send rewind event when set back at 5', =>
-                    @Tracker.setProgress 5
-                    _eventsSent.should.eql ["rewind"]
+                it('should send rewind event when set back at 5', () => {
+                    this.Tracker.setProgress(5);
+                    return _eventsSent.should.eql(["rewind"]);
+            });
 
-                it 'should send firstQuartile event', =>
-                    @Tracker.setProgress 23
-                    _eventsSent.should.eql ["firstQuartile"]
+                it('should send firstQuartile event', () => {
+                    this.Tracker.setProgress(23);
+                    return _eventsSent.should.eql(["firstQuartile"]);
+            });
 
-                it 'should send progress-30 event VAST 3.0', =>
-                    @Tracker.setProgress 30
-                    _eventsSent.should.eql ["progress-30"]
+                it('should send progress-30 event VAST 3.0', () => {
+                    this.Tracker.setProgress(30);
+                    return _eventsSent.should.eql(["progress-30"]);
+            });
 
-                it 'should send midpoint event', =>
-                    @Tracker.setProgress 46
-                    _eventsSent.should.eql ["midpoint"]
+                it('should send midpoint event', () => {
+                    this.Tracker.setProgress(46);
+                    return _eventsSent.should.eql(["midpoint"]);
+            });
 
-                it 'should send progress-60% event VAST 3.0', =>
-                    @Tracker.setProgress 54
-                    _eventsSent.should.eql ["progress-60%"]
+                it('should send progress-60% event VAST 3.0', () => {
+                    this.Tracker.setProgress(54);
+                    return _eventsSent.should.eql(["progress-60%"]);
+            });
 
-                it 'should send thirdQuartile event', =>
-                    @Tracker.setProgress 68
-                    _eventsSent.should.eql ["thirdQuartile"]
+                return it('should send thirdQuartile event', () => {
+                    this.Tracker.setProgress(68);
+                    return _eventsSent.should.eql(["thirdQuartile"]);
+            });
+        });
 
-            describe '#setMuted', =>
+            describe('#setMuted', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.trackingEvents['mute'] = 'http://example.com/muted'
-                    @Tracker.trackingEvents['unmute'] = 'http://example.com/muted'
-                    @Tracker.setMuted yes
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.trackingEvents['mute'] = 'http://example.com/muted';
+                    this.Tracker.trackingEvents['unmute'] = 'http://example.com/muted';
+                    this.Tracker.setMuted(true);
+                    return done();
+                });
 
-                it 'should be muted', =>
-                    @Tracker.muted.should.eql yes
+                it('should be muted', () => {
+                    return this.Tracker.muted.should.eql(true);
+                });
 
-                it 'should send muted event', =>
-                    _eventsSent.should.eql ["mute"]
+                it('should send muted event', () => {
+                    return _eventsSent.should.eql(["mute"]);
+            });
 
-                it 'should be unmuted', =>
-                    _eventsSent = []
-                    @Tracker.setMuted no
-                    @Tracker.muted.should.eql no
+                it('should be unmuted', () => {
+                    _eventsSent = [];
+                    this.Tracker.setMuted(false);
+                    return this.Tracker.muted.should.eql(false);
+                });
 
-                it 'should send unmuted event', =>
-                    _eventsSent.should.eql ["unmute"]
+                it('should send unmuted event', () => {
+                    return _eventsSent.should.eql(["unmute"]);
+            });
 
-                it 'should send no event', =>
-                    _eventsSent = []
-                    @Tracker.setMuted no
-                    _eventsSent.should.eql []
+                return it('should send no event', () => {
+                    _eventsSent = [];
+                    this.Tracker.setMuted(false);
+                    return _eventsSent.should.eql([]);
+            });
+        });
 
-            describe '#setPaused', =>
+            describe('#setPaused', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.setPaused yes
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.setPaused(true);
+                    return done();
+                });
 
-                it 'should be paused', =>
-                    @Tracker.paused.should.eql yes
+                it('should be paused', () => {
+                    return this.Tracker.paused.should.eql(true);
+                });
 
-                it 'should send pause event', =>
-                    _eventsSent.should.eql ["pause"]
+                it('should send pause event', () => {
+                    return _eventsSent.should.eql(["pause"]);
+            });
 
-                it 'should be resumed', =>
-                    _eventsSent = []
-                    @Tracker.setPaused no
-                    @Tracker.paused.should.eql no
+                it('should be resumed', () => {
+                    _eventsSent = [];
+                    this.Tracker.setPaused(false);
+                    return this.Tracker.paused.should.eql(false);
+                });
 
-                it 'should send resume event', =>
-                    _eventsSent.should.eql ["resume"]
+                it('should send resume event', () => {
+                    return _eventsSent.should.eql(["resume"]);
+            });
 
-                it 'should send no event', =>
-                    _eventsSent = []
-                    @Tracker.setPaused no
-                    _eventsSent.should.eql []
+                return it('should send no event', () => {
+                    _eventsSent = [];
+                    this.Tracker.setPaused(false);
+                    return _eventsSent.should.eql([]);
+            });
+        });
 
-            describe '#setFullscreen', =>
+            describe('#setFullscreen', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.trackingEvents['fullscreen'] = 'http://example.com/fullscreen'
-                    @Tracker.trackingEvents['exitFullscreen'] = 'http://example.com/exitFullscreen'
-                    @Tracker.setFullscreen yes
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.trackingEvents['fullscreen'] = 'http://example.com/fullscreen';
+                    this.Tracker.trackingEvents['exitFullscreen'] = 'http://example.com/exitFullscreen';
+                    this.Tracker.setFullscreen(true);
+                    return done();
+                });
 
-                it 'should be in fullscreen mode', =>
-                    @Tracker.fullscreen.should.eql yes
+                it('should be in fullscreen mode', () => {
+                    return this.Tracker.fullscreen.should.eql(true);
+                });
 
-                it 'should send fullscreen event', =>
-                    _eventsSent.should.eql ["fullscreen"]
+                it('should send fullscreen event', () => {
+                    return _eventsSent.should.eql(["fullscreen"]);
+            });
 
-                it 'should be in exitFullscreen mode', =>
-                    _eventsSent = []
-                    @Tracker.setFullscreen no
-                    @Tracker.fullscreen.should.eql no
+                it('should be in exitFullscreen mode', () => {
+                    _eventsSent = [];
+                    this.Tracker.setFullscreen(false);
+                    return this.Tracker.fullscreen.should.eql(false);
+                });
 
-                it 'should send exitFullscreen event', =>
-                    _eventsSent.should.eql ["exitFullscreen"]
+                it('should send exitFullscreen event', () => {
+                    return _eventsSent.should.eql(["exitFullscreen"]);
+            });
 
-                it 'should send no event', =>
-                    _eventsSent = []
-                    @Tracker.setFullscreen no
-                    _eventsSent.should.eql []
+                return it('should send no event', () => {
+                    _eventsSent = [];
+                    this.Tracker.setFullscreen(false);
+                    return _eventsSent.should.eql([]);
+            });
+        });
 
-            describe '#setExpand', =>
+            describe('#setExpand', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.trackingEvents['expand'] = 'http://example.com/expand'
-                    @Tracker.trackingEvents['collapse'] = 'http://example.com/collapse'
-                    @Tracker.setExpand yes
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.trackingEvents['expand'] = 'http://example.com/expand';
+                    this.Tracker.trackingEvents['collapse'] = 'http://example.com/collapse';
+                    this.Tracker.setExpand(true);
+                    return done();
+                });
 
-                it 'should be in expanded mode', =>
-                    @Tracker.expanded.should.eql yes
+                it('should be in expanded mode', () => {
+                    return this.Tracker.expanded.should.eql(true);
+                });
 
-                it 'should send expand event', =>
-                    _eventsSent.should.eql ["expand"]
+                it('should send expand event', () => {
+                    return _eventsSent.should.eql(["expand"]);
+            });
 
-                it 'should be in collapsed mode', =>
-                    _eventsSent = []
-                    @Tracker.setExpand no
-                    @Tracker.expanded.should.eql no
+                it('should be in collapsed mode', () => {
+                    _eventsSent = [];
+                    this.Tracker.setExpand(false);
+                    return this.Tracker.expanded.should.eql(false);
+                });
 
-                it 'should send collapse event', =>
-                    _eventsSent.should.eql ["collapse"]
+                it('should send collapse event', () => {
+                    return _eventsSent.should.eql(["collapse"]);
+            });
 
-                it 'should send no event', =>
-                    _eventsSent = []
-                    @Tracker.setExpand no
-                    _eventsSent.should.eql []
+                return it('should send no event', () => {
+                    _eventsSent = [];
+                    this.Tracker.setExpand(false);
+                    return _eventsSent.should.eql([]);
+            });
+        });
 
-            describe '#setSkipDelay', =>
+            describe('#setSkipDelay', () => {
 
-                it 'should have skipDelay set to 3', =>
-                    @Tracker.setSkipDelay 3
-                    @Tracker.skipDelay.should.eql 3
+                it('should have skipDelay set to 3', () => {
+                    this.Tracker.setSkipDelay(3);
+                    return this.Tracker.skipDelay.should.eql(3);
+                });
 
-                it 'should have skipDelay still set to 3', =>
-                    @Tracker.setSkipDelay 'blabla'
-                    @Tracker.skipDelay.should.eql 3
+                return it('should have skipDelay still set to 3', () => {
+                    this.Tracker.setSkipDelay('blabla');
+                    return this.Tracker.skipDelay.should.eql(3);
+                });
+            });
 
-            describe '#load', =>
+            describe('#load', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.vastUtil.track = (URLTemplates, variables) ->
-                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                    @Tracker.load()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.vastUtil.track = function(URLTemplates, variables) {
+                        return _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
+                    };
+                    this.Tracker.load();
+                    return done();
+                });
 
-                it 'should have impressed set to true', =>
-                    @Tracker.impressed.should.eql yes
+                it('should have impressed set to true', () => {
+                    return this.Tracker.impressed.should.eql(true);
+                });
 
-                it 'should have called impression URLs', =>
-                    creative     = @Tracker.vastUtil.encodeURIComponentRFC3986(@Tracker.creative.mediaFiles[0].fileURL)
-                    cacheBusting = 10000000
-                    _eventsSent[0].should.eql [
+                it('should have called impression URLs', () => {
+                    const creative     = this.Tracker.vastUtil.encodeURIComponentRFC3986(this.Tracker.creative.mediaFiles[0].fileURL);
+                    const cacheBusting = 10000000;
+                    return _eventsSent[0].should.eql([
                         'http://example.com/wrapperA-impression',
                         'http://example.com/wrapperB-impression1',
                         'http://example.com/wrapperB-impression2',
-                        "http://example.com/impression1_asset:#{creative}_#{cacheBusting}",
-                        "http://example.com/impression2_#{cacheBusting}",
-                        "http://example.com/impression3_#{cacheBusting}"
-                    ]
+                        `http://example.com/impression1_asset:${creative}_${cacheBusting}`,
+                        `http://example.com/impression2_${cacheBusting}`,
+                        `http://example.com/impression3_${cacheBusting}`
+                    ]);
+            });
 
-                it 'should have sent creativeView event', =>
-                    _eventsSent[1].should.eql 'creativeView'
+                it('should have sent creativeView event', () => {
+                    return _eventsSent[1].should.eql('creativeView');
+                });
 
-                it 'should only be called once', =>
-                    _eventsSent = []
-                    @Tracker.load()
-                    _eventsSent.should.eql []
+                return it('should only be called once', () => {
+                    _eventsSent = [];
+                    this.Tracker.load();
+                    return _eventsSent.should.eql([]);
+            });
+        });
 
-            describe '#errorWithCode', =>
+            describe('#errorWithCode', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.vastUtil.track = (URLTemplates, variables) ->
-                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                    @Tracker.errorWithCode(405)
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.vastUtil.track = function(URLTemplates, variables) {
+                        return _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
+                    };
+                    this.Tracker.errorWithCode(405);
+                    return done();
+                });
 
-                it 'should have called error urls', =>
-                    _eventsSent[0].should.eql [ 'http://example.com/wrapperA-error', 'http://example.com/wrapperB-error', 'http://example.com/error_405']
+                return it('should have called error urls', () => {
+                    return _eventsSent[0].should.eql([ 'http://example.com/wrapperA-error', 'http://example.com/wrapperB-error', 'http://example.com/error_405']);
+            });
+        });
 
-            describe '#complete', =>
+            describe('#complete', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.complete()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.complete();
+                    return done();
+                });
 
-                it 'should have sent complete event and urls', =>
-                    _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]
+                it('should have sent complete event and urls', () => {
+                    return _eventsSent.should.eql(['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]);
+            });
 
-                it 'should be called multiples times', =>
-                    _eventsSent = []
-                    @Tracker.complete()
-                    _eventsSent.should.eql ['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]
+                return it('should be called multiples times', () => {
+                    _eventsSent = [];
+                    this.Tracker.complete();
+                    return _eventsSent.should.eql(['complete', ["http://example.com/linear-complete", "http://example.com/wrapperB-linear-complete", "http://example.com/wrapperA-linear-complete"]]);
+            });
+        });
 
-            describe '#close', =>
+            describe('#close', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.close()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.close();
+                    return done();
+                });
 
-                it 'should have sent close event and urls VAST 2.0', =>
-                    _eventsSent.should.eql ['close', [ 'http://example.com/linear-close']]
+                it('should have sent close event and urls VAST 2.0', () => {
+                    return _eventsSent.should.eql(['close', [ 'http://example.com/linear-close']]);
+            });
 
-                it 'should have sent closeLinear event and urls VAST 3.0', =>
-                    _eventsSent = []
-                    @Tracker.trackingEvents['closeLinear'] = ['http://example.com/closelinear']
-                    delete @Tracker.trackingEvents['close']
-                    @Tracker.close()
-                    _eventsSent.should.eql ['closeLinear', [ 'http://example.com/closelinear']]
+                return it('should have sent closeLinear event and urls VAST 3.0', () => {
+                    _eventsSent = [];
+                    this.Tracker.trackingEvents['closeLinear'] = ['http://example.com/closelinear'];
+                    delete this.Tracker.trackingEvents['close'];
+                    this.Tracker.close();
+                    return _eventsSent.should.eql(['closeLinear', [ 'http://example.com/closelinear']]);
+            });
+        });
 
-            describe '#skip', =>
+            describe('#skip', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.skip()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.skip();
+                    return done();
+                });
 
-                it 'should have sent skip event', =>
-                    _eventsSent.should.eql ['skip']
+                return it('should have sent skip event', () => {
+                    return _eventsSent.should.eql(['skip']);
+            });
+        });
 
-            describe '#click', =>
+            return describe('#click', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.vastUtil.track = (URLTemplates, variables) ->
-                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                    @Tracker.click()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.vastUtil.track = function(URLTemplates, variables) {
+                        return _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
+                    };
+                    this.Tracker.click();
+                    return done();
+                });
 
-                it 'should have sent clicktracking events', =>
-                    ISOTimeStamp = @Tracker.vastUtil.encodeURIComponentRFC3986((new Date).toISOString())
-                    _eventsSent[0].should.eql [
-                        "http://example.com/linear-clicktracking1_ts:#{ISOTimeStamp}",
+                it('should have sent clicktracking events', () => {
+                    const ISOTimeStamp = this.Tracker.vastUtil.encodeURIComponentRFC3986((new Date).toISOString());
+                    return _eventsSent[0].should.eql([
+                        `http://example.com/linear-clicktracking1_ts:${ISOTimeStamp}`,
                         'http://example.com/linear-clicktracking2',
                         'http://example.com/wrapperB-linear-clicktracking',
                         'http://example.com/wrapperA-linear-clicktracking1',
                         'http://example.com/wrapperA-linear-clicktracking2',
                         'http://example.com/wrapperA-linear-clicktracking3'
-                    ]
+                    ]);
+            });
 
-                it 'should have sent clickthrough event', =>
-                    _eventsSent[1].should.eql 'clickthrough'
+                return it('should have sent clickthrough event', () => {
+                    return _eventsSent[1].should.eql('clickthrough');
+                });
+            });
+        });
 
-        describe '#companion', =>
-            before () =>
-                # Init tracker
-                ad = @response.ads[0]
-                creative = ad.creatives[1]
-                variation = creative.variations[0]
-                @Tracker = new VASTTracker ad, creative, variation
-                # Mock emit
-                @Tracker.emit = (event, args...) =>
-                    _eventsSent.push({ event: event, args: args })
+        describe('#companion', () => {
+            before(() => {
+                // Init tracker
+                const ad = this.response.ads[0];
+                const creative = ad.creatives[1];
+                const variation = creative.variations[0];
+                this.Tracker = new VASTTracker(ad, creative, variation);
+                // Mock emit
+                return this.Tracker.emit = (event, ...args) => {
+                    return _eventsSent.push({ event, args });
+                };
+            });
 
-            describe '#click', =>
+            return describe('#click', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.vastUtil.track = (URLTemplates, variables) ->
-                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                    @Tracker.click()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.vastUtil.track = function(URLTemplates, variables) {
+                        return _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
+                    };
+                    this.Tracker.click();
+                    return done();
+                });
 
-                it 'should have sent clicktracking events', =>
-                    ISOTimeStamp = @Tracker.vastUtil.encodeURIComponentRFC3986((new Date).toISOString())
-                    _eventsSent[0].should.eql [
+                it('should have sent clicktracking events', () => {
+                    const ISOTimeStamp = this.Tracker.vastUtil.encodeURIComponentRFC3986((new Date).toISOString());
+                    return _eventsSent[0].should.eql([
                         'http://example.com/companion1-clicktracking-first',
                         'http://example.com/companion1-clicktracking-second'
-                    ]
+                    ]);
+            });
 
-                it 'should have sent clickthrough event withy clickThrough url', =>
-                    _eventsSent[1].event.should.eql 'clickthrough'
-                    _eventsSent[1].args.should.eql [ 'http://example.com/companion1-clickthrough' ]
+                return it('should have sent clickthrough event withy clickThrough url', () => {
+                    _eventsSent[1].event.should.eql('clickthrough');
+                    return _eventsSent[1].args.should.eql([ 'http://example.com/companion1-clickthrough' ]);
+            });
+        });
+    });
 
-        describe '#nonlinear', =>
-            before () =>
-                # Init tracker
-                ad = @response.ads[0]
-                creative = ad.creatives[2]
-                variation = creative.variations[0]
-                @Tracker = new VASTTracker ad, creative, variation
-                # Mock emit
-                @Tracker.emit = (event, args...) =>
-                    _eventsSent.push({ event: event, args: args })
+        return describe('#nonlinear', () => {
+            before(() => {
+                // Init tracker
+                const ad = this.response.ads[0];
+                const creative = ad.creatives[2];
+                const variation = creative.variations[0];
+                this.Tracker = new VASTTracker(ad, creative, variation);
+                // Mock emit
+                return this.Tracker.emit = (event, ...args) => {
+                    return _eventsSent.push({ event, args });
+                };
+            });
 
-            describe '#click', =>
+            return describe('#click', () => {
 
-                before (done) =>
-                    _eventsSent = []
-                    @Tracker.vastUtil.track = (URLTemplates, variables) ->
-                        _eventsSent.push @resolveURLTemplates(URLTemplates, variables)
-                    @Tracker.click()
-                    done()
+                before(done => {
+                    _eventsSent = [];
+                    this.Tracker.vastUtil.track = function(URLTemplates, variables) {
+                        return _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
+                    };
+                    this.Tracker.click();
+                    return done();
+                });
 
-                it 'should have sent clicktracking events', =>
-                    ISOTimeStamp = @Tracker.vastUtil.encodeURIComponentRFC3986((new Date).toISOString())
-                    _eventsSent[0].should.eql [
+                it('should have sent clicktracking events', () => {
+                    const ISOTimeStamp = this.Tracker.vastUtil.encodeURIComponentRFC3986((new Date).toISOString());
+                    return _eventsSent[0].should.eql([
                         'http://example.com/nonlinear-clicktracking-1',
                         'http://example.com/nonlinear-clicktracking-2'
-                    ]
+                    ]);
+            });
 
-                it 'should have sent clickthrough event withy clickThrough url', =>
-                    _eventsSent[1].event.should.eql 'clickthrough'
-                    _eventsSent[1].args.should.eql [ 'http://example.com/nonlinear-clickthrough' ]
+                return it('should have sent clickthrough event withy clickThrough url', () => {
+                    _eventsSent[1].event.should.eql('clickthrough');
+                    return _eventsSent[1].args.should.eql([ 'http://example.com/nonlinear-clickthrough' ]);
+            });
+        });
+    });
+});
+});
