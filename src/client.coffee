@@ -2,14 +2,37 @@ VASTParser = require './parser/parser.js'
 VASTUtil = require './util.js'
 
 class VASTClient
-    @cappingFreeLunch: 0
-    @cappingMinimumTimeInterval: 0
-    @options:
-        withCredentials : false,
-        timeout : 0
-    @vastParser = new VASTParser()
+    constructor: ->
+        @cappingFreeLunch = 0
+        @cappingMinimumTimeInterval = 0
+        @options =
+            withCredentials : false,
+            timeout : 0
+        @vastParser = new VASTParser()
+        @vastUtil = new VASTUtil()
+        @storage = @vastUtil.getStorage()
+        defineProperty = Object.defineProperty
 
-    @get: (url, opts, cb) ->
+        # Create new properties for VASTClient, using ECMAScript 5
+        # we can define custom getters and setters logic.
+        # By this way, we implement the use of storage inside these methods,
+        # while it will be fully transparent for the user
+        ['lastSuccessfullAd', 'totalCalls', 'totalCallsTimeout'].forEach (property) ->
+            defineProperty VASTClient, property,
+            {
+                get: () -> @storage.getItem property
+                set: (value) -> @storage.setItem property, value
+                configurable: false
+                enumerable: true
+            }
+            return
+
+        # Init values if not already set
+        @lastSuccessfullAd ?= 0
+        @totalCalls ?= 0
+        @totalCallsTimeout ?= 0
+
+    get: (url, opts, cb) ->
         now = +new Date()
 
         extend = exports.extend = (object, properties) ->
@@ -47,32 +70,5 @@ class VASTClient
 
         @vastParser.parse url, options, (response, err) =>
             cb(response, err)
-
-
-    # 'Fake' static constructor
-    do ->
-        @vastUtil = new VASTUtil()
-        storage = @vastUtil.getStorage()
-        defineProperty = Object.defineProperty
-
-        # Create new properties for VASTClient, using ECMAScript 5
-        # we can define custom getters and setters logic.
-        # By this way, we implement the use of storage inside these methods,
-        # while it will be fully transparent for the user
-        ['lastSuccessfullAd', 'totalCalls', 'totalCallsTimeout'].forEach (property) ->
-            defineProperty VASTClient, property,
-            {
-                get: () -> storage.getItem property
-                set: (value) -> storage.setItem property, value
-                configurable: false
-                enumerable: true
-            }
-            return
-
-        # Init values if not already set
-        VASTClient.lastSuccessfullAd ?= 0
-        VASTClient.totalCalls ?= 0
-        VASTClient.totalCallsTimeout ?= 0
-        return
 
 module.exports = VASTClient
