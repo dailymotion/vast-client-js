@@ -18,15 +18,16 @@ describe 'VASTClient Storage', ->
             vastClient.totalCallsTimeout = 0
             vastClient.get wrapperUrl, (response) =>
                 totalCallsTimeout = vastClient.totalCallsTimeout
-                if response is null then done()
-                else throw '1st call: response is not blank'
+                should.equal response, null
+                done()
+                # else throw '1st call: response is not blank'
 
         it 'should send an error', (done) =>
             vastClient.totalCallsTimeout = 0
             vastClient.get wrapperUrl, (response, error) =>
                 totalCallsTimeout = vastClient.totalCallsTimeout
                 if error?.message? then done()
-                else throw '1st call: error is not sent'
+                # else throw '1st call: error is not sent'
 
         it 'VASTClient.totalCalls should be equal to 1', () =>
             vastClient.totalCalls.should.eql 1
@@ -36,7 +37,7 @@ describe 'VASTClient Storage', ->
         it "should send a response", (done) =>
             vastClient.get wrapperUrl, (response) =>
                 if response isnt null then done()
-                else throw '2nd call: response is blank'
+                # else throw '2nd call: response is blank'
 
         it 'VASTClient.totalCalls should be equal to 2', () =>
             vastClient.totalCalls.should.eql 2
@@ -46,7 +47,7 @@ describe 'VASTClient Storage', ->
         it "should send a response", (done) =>
             vastClient.get wrapperUrl, (response) =>
                 if response isnt null then done()
-                else throw '3rd call: response is blank'
+                # else throw '3rd call: response is blank'
 
         it 'VASTClient.totalCalls should be equal to 3', () =>
             vastClient.totalCalls.should.eql 3
@@ -61,11 +62,11 @@ describe 'VASTClient Storage', ->
             vastClient.get wrapperUrl, (response) =>
                 totalCallsTimeout = vastClient.totalCallsTimeout
                 if response is null then done()
-                else throw '4th call: response is not blank'
+                # else throw '4th call: response is not blank'
 
         it 'should send an error', (done) =>
             vastClient.totalCallsTimeout = 0
             vastClient.get wrapperUrl, (response, error) =>
                 totalCallsTimeout = vastClient.totalCallsTimeout
                 if error?.message? then done()
-                else throw '4th call: error is not sent'
+                # else throw '4th call: error is not sent'

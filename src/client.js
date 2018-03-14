@@ -1,9 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const VASTParser = require('./parser/parser.js');
 const VASTUtil = require('./util.js');
 
@@ -18,21 +12,6 @@ class VASTClient {
         this.vastParser = new VASTParser();
         this.vastUtil = new VASTUtil();
         this.storage = this.vastUtil.getStorage();
-        const { defineProperty } = Object;
-
-        // Create new properties for VASTClient, using ECMAScript 5
-        // we can define custom getters and setters logic.
-        // By this way, we implement the use of storage inside these methods,
-        // while it will be fully transparent for the user
-        ['lastSuccessfullAd', 'totalCalls', 'totalCallsTimeout'].forEach(function(property) {
-            defineProperty(VASTClient, property,
-            {
-                get() { return this.storage.getItem(property); },
-                set(value) { return this.storage.setItem(property, value); },
-                configurable: false,
-                enumerable: true
-            });
-        });
 
         // Init values if not already set
         if (this.lastSuccessfullAd == null) { this.lastSuccessfullAd = 0; }
@@ -40,24 +19,40 @@ class VASTClient {
         if (this.totalCallsTimeout == null) { this.totalCallsTimeout = 0; }
     }
 
+    get lastSuccessfullAd() {
+        return this.storage.getItem('lastSuccessfullAd');
+    }
+
+    set lastSuccessfullAd(value) {
+        this.storage.setItem('lastSuccessfullAd', value);
+    }
+
+    get totalCalls() {
+        return this.storage.getItem('totalCalls');
+    }
+
+    set totalCalls(value) {
+        this.storage.setItem('totalCalls', value);
+    }
+
+    get totalCallsTimeout() {
+        return this.storage.getItem('totalCallsTimeout');
+    }
+
+    set totalCallsTimeout(value) {
+        this.storage.setItem('totalCallsTimeout', value);
+    }
+
     get(url, opts, cb) {
         let options;
         const now = +new Date();
-
-        const extend = (exports.extend = function(object, properties) {
-            for (let key in properties) {
-                const val = properties[key];
-                object[key] = val;
-            }
-            return object;
-        });
 
         if (!cb) {
             if (typeof opts === 'function') { cb = opts; }
             options = {};
         }
 
-        options = extend(this.options, opts);
+        options = Object.assign(this.options, opts);
 
         // Check totalCallsTimeout (first call + 1 hour), if older than now,
         // reset totalCalls number, by this way the client will be eligible again
@@ -70,8 +65,7 @@ class VASTClient {
         }
 
         if (this.cappingFreeLunch >= this.totalCalls) {
-            cb(null, new Error(`VAST call canceled – FreeLunch capping not reached yet ${this.totalCalls}/${this.cappingFreeLunch}`));
-            return;
+            return cb(null, new Error(`VAST call canceled – FreeLunch capping not reached yet ${this.totalCalls}/${this.cappingFreeLunch}`));
         }
 
         const timeSinceLastCall = now - this.lastSuccessfullAd;
@@ -80,8 +74,7 @@ class VASTClient {
         if (timeSinceLastCall < 0) {
             this.lastSuccessfullAd = 0;
         } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
-            cb(null, new Error(`VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval reached`));
-            return;
+            return cb(null, new Error(`VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval reached`));
         }
 
         return this.vastParser.parse(url, options, (response, err) => {
