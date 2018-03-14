@@ -1,261 +1,346 @@
-AdParser = require './ad_parser.js'
-ParserUtils = require './parser_utils.js'
-URLHandler = require '../urlhandler.js'
-VASTResponse = require '../response.js'
-VASTUtil = require '../util.js'
-EventEmitter = require('events').EventEmitter
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const AdParser = require('./ad_parser.js');
+const ParserUtils = require('./parser_utils.js');
+const URLHandler = require('../urlhandler.js');
+const VASTResponse = require('../response.js');
+const VASTUtil = require('../util.js');
+const { EventEmitter } = require('events');
 
-DEFAULT_MAX_WRAPPER_WIDTH = 10
+const DEFAULT_MAX_WRAPPER_WIDTH = 10;
 
-DEFAULT_EVENT_DATA =
-    ERRORCODE  : 900
+const DEFAULT_EVENT_DATA = {
+    ERRORCODE  : 900,
     extensions : []
+};
 
-class VASTParser
-    constructor: ->
-        @maxWrapperDepth = null
-        @URLTemplateFilters = []
-        @utils = new ParserUtils();
-        @adParser = new AdParser()
-        @vastUtil = new VASTUtil()
-        @urlHandler = new URLHandler()
-        @vent = new EventEmitter()
+class VASTParser {
+    constructor() {
+        this.parseXmlDocument = this.parseXmlDocument.bind(this);
+        this.maxWrapperDepth = null;
+        this.URLTemplateFilters = [];
+        this.utils = new ParserUtils();
+        this.adParser = new AdParser();
+        this.vastUtil = new VASTUtil();
+        this.urlHandler = new URLHandler();
+        this.vent = new EventEmitter();
+    }
 
-    addURLTemplateFilter: (func) ->
-        @URLTemplateFilters.push(func) if typeof func is 'function'
-        return
+    addURLTemplateFilter(func) {
+        if (typeof func === 'function') { this.URLTemplateFilters.push(func); }
+    }
 
-    removeURLTemplateFilter: () -> @URLTemplateFilters.pop()
-    countURLTemplateFilters: () -> @URLTemplateFilters.length
-    clearUrlTemplateFilters: () -> @URLTemplateFilters = []
+    removeURLTemplateFilter() { return this.URLTemplateFilters.pop(); }
+    countURLTemplateFilters() { return this.URLTemplateFilters.length; }
+    clearUrlTemplateFilters() { return this.URLTemplateFilters = []; }
 
-    parse: (url, options, cb) ->
-        if not cb
-            cb = options if typeof options is 'function'
-            options = {}
+    parse(url, options, cb) {
+        if (!cb) {
+            if (typeof options === 'function') { cb = options; }
+            options = {};
+        }
 
-        @maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH
-        options.wrapperDepth = 0
+        this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH;
+        options.wrapperDepth = 0;
 
-        @_parse url, null, options, (err, response) ->
-            cb(response, err)
+        return this._parse(url, null, options, (err, response) => cb(response, err));
+    }
 
-    load: (xml, options, cb) ->
-        if not cb
-            cb = options if typeof options is 'function'
-            options = {}
+    load(xml, options, cb) {
+        if (!cb) {
+            if (typeof options === 'function') { cb = options; }
+            options = {};
+        }
 
-        @parseXmlDocument(null, [], options, xml, cb)
+        return this.parseXmlDocument(null, [], options, xml, cb);
+    }
 
-    track: (templates, errorCode, data...) ->
-        @vent.emit 'VAST-error', @vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, data...)
-        @vastUtil.track(templates, errorCode)
+    track(templates, errorCode, ...data) {
+        this.vent.emit('VAST-error', this.vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, ...Array.from(data)));
+        return this.vastUtil.track(templates, errorCode);
+    }
 
-    on: (eventName, cb) ->
-        @vent.on eventName, cb
+    on(eventName, cb) {
+        return this.vent.on(eventName, cb);
+    }
 
-    once: (eventName, cb) ->
-        @vent.once eventName, cb
+    once(eventName, cb) {
+        return this.vent.once(eventName, cb);
+    }
 
-    off: (eventName, cb) ->
-        @vent.removeListener eventName, cb
+    off(eventName, cb) {
+        return this.vent.removeListener(eventName, cb);
+    }
 
-    _parse: (url, parentURLs, options, cb) ->
-        # Process url with defined filter
-        url = filter(url) for filter in @URLTemplateFilters
-        console.log(url)
+    _parse(url, parentURLs, options, cb) {
+        // Process url with defined filter
+        for (let filter of Array.from(this.URLTemplateFilters)) { url = filter(url); }
+        console.log(url);
 
-        parentURLs ?= []
-        parentURLs.push url
+        if (parentURLs == null) { parentURLs = []; }
+        parentURLs.push(url);
 
-        @vent.emit 'resolving', { url: url }
+        this.vent.emit('resolving', { url });
 
-        @urlHandler.get url, options, (err, xml) =>
-            @vent.emit 'resolved', { url: url }
+        return this.urlHandler.get(url, options, (err, xml) => {
+            this.vent.emit('resolved', { url });
 
-            return cb(err) if err?
-            @parseXmlDocument(url, parentURLs, options, xml, cb)
+            if (err != null) { return cb(err); }
+            return this.parseXmlDocument(url, parentURLs, options, xml, cb);
+        });
+    }
 
-    parseXmlDocument: (url, parentURLs, options, xml, cb) =>
-        # Current VAST depth
-        wrapperDepth = options.wrapperDepth++
+    parseXmlDocument(url, parentURLs, options, xml, cb) {
+        // Current VAST depth
+        let ad;
+        const wrapperDepth = options.wrapperDepth++;
 
-        response = new VASTResponse()
+        const response = new VASTResponse();
 
-        unless xml?.documentElement? and xml.documentElement.nodeName is "VAST"
-            return cb(new Error('Invalid VAST XMLDocument'))
+        if (((xml != null ? xml.documentElement : undefined) == null) || (xml.documentElement.nodeName !== "VAST")) {
+            return cb(new Error('Invalid VAST XMLDocument'));
+        }
 
-        for node in xml.documentElement.childNodes
-            if node.nodeName is 'Error'
-                response.errorURLTemplates.push (@utils.parseNodeText node)
+        for (var node of Array.from(xml.documentElement.childNodes)) {
+            if (node.nodeName === 'Error') {
+                response.errorURLTemplates.push((this.utils.parseNodeText(node)));
+            }
+        }
 
-        for node in xml.documentElement.childNodes
-            if node.nodeName is 'Ad'
-                ad = @parseAdElement node
-                if ad?
-                    response.ads.push ad
-                else
-                    # VAST version of response not supported.
-                    @track(response.errorURLTemplates, ERRORCODE: 101)
+        for (node of Array.from(xml.documentElement.childNodes)) {
+            if (node.nodeName === 'Ad') {
+                ad = this.parseAdElement(node);
+                if (ad != null) {
+                    response.ads.push(ad);
+                } else {
+                    // VAST version of response not supported.
+                    this.track(response.errorURLTemplates, {ERRORCODE: 101});
+                }
+            }
+        }
 
-        complete = () =>
-            for ad, index in response.ads by -1
-                # Still some Wrappers URL to be resolved -> continue
-                return if ad.nextWrapperURL?
+        const complete = () => {
+            let index;
+            for (index = response.ads.length - 1; index >= 0; index--) {
+                // Still some Wrappers URL to be resolved -> continue
+                ad = response.ads[index];
+                if (ad.nextWrapperURL != null) { return; }
+            }
 
-            # We've to wait for all <Ad> elements to be parsed before handling error so we can:
-            # - Send computed extensions data
-            # - Ping all <Error> URIs defined across VAST files
-            if wrapperDepth is 0
-                # No Ad case - The parser never bump into an <Ad> element
-                if response.ads.length is 0
-                    @track(response.errorURLTemplates, ERRORCODE: 303)
-                else
-                    for ad, index in response.ads by -1
-                        # - Error encountred while parsing
-                        # - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
-                        # but no creative was found
-                        if ad.errorCode or ad.creatives.length is 0
-                            @track(
+            // We've to wait for all <Ad> elements to be parsed before handling error so we can:
+            // - Send computed extensions data
+            // - Ping all <Error> URIs defined across VAST files
+            if (wrapperDepth === 0) {
+                // No Ad case - The parser never bump into an <Ad> element
+                if (response.ads.length === 0) {
+                    this.track(response.errorURLTemplates, {ERRORCODE: 303});
+                } else {
+                    for (index = response.ads.length - 1; index >= 0; index--) {
+                        // - Error encountred while parsing
+                        // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
+                        // but no creative was found
+                        ad = response.ads[index];
+                        if (ad.errorCode || (ad.creatives.length === 0)) {
+                            this.track(
                                 ad.errorURLTemplates.concat(response.errorURLTemplates),
                                 { ERRORCODE: ad.errorCode || 303 },
                                 { ERRORMESSAGE: ad.errorMessage || '' },
                                 { extensions : ad.extensions },
                                 { system: ad.system }
-                            )
-                            response.ads.splice(index, 1)
+                            );
+                            response.ads.splice(index, 1);
+                        }
+                    }
+                }
+            }
 
-            cb(null, response)
+            return cb(null, response);
+        };
 
-        loopIndex = response.ads.length
-        while loopIndex--
-            ad = response.ads[loopIndex]
-            continue unless ad.nextWrapperURL?
-            do (ad) =>
-                if parentURLs.length >= @maxWrapperDepth or ad.nextWrapperURL in parentURLs
-                    # Wrapper limit reached, as defined by the video player.
-                    # Too many Wrapper responses have been received with no InLine response.
-                    ad.errorCode = 302
-                    delete ad.nextWrapperURL
-                    return
+        let loopIndex = response.ads.length;
+        while (loopIndex--) {
+            ad = response.ads[loopIndex];
+            if (ad.nextWrapperURL == null) { continue; }
+            (ad => {
+                if ((parentURLs.length >= this.maxWrapperDepth) || Array.from(parentURLs).includes(ad.nextWrapperURL)) {
+                    // Wrapper limit reached, as defined by the video player.
+                    // Too many Wrapper responses have been received with no InLine response.
+                    ad.errorCode = 302;
+                    delete ad.nextWrapperURL;
+                    return;
+                }
 
-                # Get full URL
-                ad.nextWrapperURL = @resolveVastAdTagURI(ad.nextWrapperURL, url)
+                // Get full URL
+                ad.nextWrapperURL = this.resolveVastAdTagURI(ad.nextWrapperURL, url);
 
-                @_parse ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) =>
-                    delete ad.nextWrapperURL
+                return this._parse(ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) => {
+                    delete ad.nextWrapperURL;
 
-                    if err?
-                        # Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-                        # (URI was either unavailable or reached a timeout as defined by the video player.)
-                        ad.errorCode = 301
-                        ad.errorMessage = err.message
-                        complete()
-                        return
+                    if (err != null) {
+                        // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+                        // (URI was either unavailable or reached a timeout as defined by the video player.)
+                        ad.errorCode = 301;
+                        ad.errorMessage = err.message;
+                        complete();
+                        return;
+                    }
 
-                    if wrappedResponse?.errorURLTemplates?
-                        response.errorURLTemplates = response.errorURLTemplates.concat wrappedResponse.errorURLTemplates
+                    if ((wrappedResponse != null ? wrappedResponse.errorURLTemplates : undefined) != null) {
+                        response.errorURLTemplates = response.errorURLTemplates.concat(wrappedResponse.errorURLTemplates);
+                    }
 
-                    if wrappedResponse.ads.length == 0
-                        # No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
-                        ad.creatives = []
-                    else
-                        index = response.ads.indexOf(ad)
-                        response.ads.splice(index, 1)
+                    if (wrappedResponse.ads.length === 0) {
+                        // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
+                        ad.creatives = [];
+                    } else {
+                        let index = response.ads.indexOf(ad);
+                        response.ads.splice(index, 1);
 
-                        for wrappedAd in wrappedResponse.ads
-                            @mergeWrapperAdData wrappedAd, ad
-                            response.ads.splice ++index, 0, wrappedAd
+                        for (let wrappedAd of Array.from(wrappedResponse.ads)) {
+                            this.mergeWrapperAdData(wrappedAd, ad);
+                            response.ads.splice(++index, 0, wrappedAd);
+                        }
+                    }
 
-                    complete()
+                    return complete();
+                });
+            })(ad);
+        }
 
-        complete()
+        return complete();
+    }
 
-    # Convert relative vastAdTagUri
-    resolveVastAdTagURI: (vastAdTagUrl, originalUrl) ->
-        if vastAdTagUrl.indexOf('//') == 0
-            protocol = location.protocol
-            return "#{protocol}#{vastAdTagUrl}"
+    // Convert relative vastAdTagUri
+    resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
+        if (vastAdTagUrl.indexOf('//') === 0) {
+            const { protocol } = location;
+            return `${protocol}${vastAdTagUrl}`;
+        }
 
-        if vastAdTagUrl.indexOf('://') == -1
-            # Resolve relative URLs (mainly for unit testing)
-            baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'))
-            return "#{baseURL}/#{vastAdTagUrl}"
+        if (vastAdTagUrl.indexOf('://') === -1) {
+            // Resolve relative URLs (mainly for unit testing)
+            const baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
+            return `${baseURL}/${vastAdTagUrl}`;
+        }
 
-        return vastAdTagUrl
+        return vastAdTagUrl;
+    }
 
-    # Merge ad tracking URLs / extensions data into wrappedAd
-    mergeWrapperAdData: (wrappedAd, ad) ->
-        wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
-        wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
-        wrappedAd.extensions = ad.extensions.concat wrappedAd.extensions
+    // Merge ad tracking URLs / extensions data into wrappedAd
+    mergeWrapperAdData(wrappedAd, ad) {
+        wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(wrappedAd.errorURLTemplates);
+        wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(wrappedAd.impressionURLTemplates);
+        wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
 
-        for creative in wrappedAd.creatives
-            if ad.trackingEvents?[creative.type]?
-                for eventName, urls of ad.trackingEvents[creative.type]
-                    creative.trackingEvents[eventName] or= []
-                    creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat urls
+        for (var creative of Array.from(wrappedAd.creatives)) {
+            if ((ad.trackingEvents != null ? ad.trackingEvents[creative.type] : undefined) != null) {
+                for (let eventName in ad.trackingEvents[creative.type]) {
+                    const urls = ad.trackingEvents[creative.type][eventName];
+                    if (!creative.trackingEvents[eventName]) { creative.trackingEvents[eventName] = []; }
+                    creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
+                }
+            }
+        }
 
-        if ad.videoClickTrackingURLTemplates?.length
-            for creative in wrappedAd.creatives
-                if creative.type is 'linear'
-                    creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat ad.videoClickTrackingURLTemplates
+        if (ad.videoClickTrackingURLTemplates != null ? ad.videoClickTrackingURLTemplates.length : undefined) {
+            for (creative of Array.from(wrappedAd.creatives)) {
+                if (creative.type === 'linear') {
+                    creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(ad.videoClickTrackingURLTemplates);
+                }
+            }
+        }
 
-        if ad.videoCustomClickURLTemplates?.length
-            for creative in wrappedAd.creatives
-                if creative.type is 'linear'
-                    creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat ad.videoCustomClickURLTemplates
+        if (ad.videoCustomClickURLTemplates != null ? ad.videoCustomClickURLTemplates.length : undefined) {
+            for (creative of Array.from(wrappedAd.creatives)) {
+                if (creative.type === 'linear') {
+                    creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(ad.videoCustomClickURLTemplates);
+                }
+            }
+        }
 
-        # VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-        if ad.videoClickThroughURLTemplate?
-            for creative in wrappedAd.creatives
-                if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
-                    creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
+        // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+        if (ad.videoClickThroughURLTemplate != null) {
+            return (() => {
+                const result = [];
+                for (creative of Array.from(wrappedAd.creatives)) {
+                    if ((creative.type === 'linear') && (creative.videoClickThroughURLTemplate == null)) {
+                        result.push(creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate);
+                    } else {
+                        result.push(undefined);
+                    }
+                }
+                return result;
+            })();
+        }
+    }
 
-    parseAdElement: (adElement) ->
-        for adTypeElement in adElement.childNodes
-            continue unless adTypeElement.nodeName in ["Wrapper", "InLine"]
+    parseAdElement(adElement) {
+        for (let adTypeElement of Array.from(adElement.childNodes)) {
+            if (!["Wrapper", "InLine"].includes(adTypeElement.nodeName)) { continue; }
 
-            @utils.copyNodeAttribute "id", adElement, adTypeElement
-            @utils.copyNodeAttribute "sequence", adElement, adTypeElement
+            this.utils.copyNodeAttribute("id", adElement, adTypeElement);
+            this.utils.copyNodeAttribute("sequence", adElement, adTypeElement);
 
-            if adTypeElement.nodeName is "Wrapper"
-                return @parseWrapperElement adTypeElement
-            else if adTypeElement.nodeName is "InLine"
-                return @adParser.parse adTypeElement
+            if (adTypeElement.nodeName === "Wrapper") {
+                return this.parseWrapperElement(adTypeElement);
+            } else if (adTypeElement.nodeName === "InLine") {
+                return this.adParser.parse(adTypeElement);
+            }
+        }
+    }
 
-    parseWrapperElement: (wrapperElement) ->
-        ad = @adParser.parse wrapperElement
-        wrapperURLElement = @utils.childByName wrapperElement, "VASTAdTagURI"
-        if wrapperURLElement?
-            ad.nextWrapperURL = @utils.parseNodeText wrapperURLElement
-        else
-            wrapperURLElement = @utils.childByName wrapperElement, "VASTAdTagURL"
-            if wrapperURLElement?
-                ad.nextWrapperURL = @utils.parseNodeText @utils.childByName wrapperURLElement, "URL"
+    parseWrapperElement(wrapperElement) {
+        const ad = this.adParser.parse(wrapperElement);
+        let wrapperURLElement = this.utils.childByName(wrapperElement, "VASTAdTagURI");
+        if (wrapperURLElement != null) {
+            ad.nextWrapperURL = this.utils.parseNodeText(wrapperURLElement);
+        } else {
+            wrapperURLElement = this.utils.childByName(wrapperElement, "VASTAdTagURL");
+            if (wrapperURLElement != null) {
+                ad.nextWrapperURL = this.utils.parseNodeText(this.utils.childByName(wrapperURLElement, "URL"));
+            }
+        }
 
-        for wrapperCreativeElement in ad.creatives
-            if wrapperCreativeElement.type in ['linear', 'nonlinear']
-                # TrackingEvents Linear / NonLinear
-                if wrapperCreativeElement.trackingEvents?
-                    ad.trackingEvents or= {}
-                    ad.trackingEvents[wrapperCreativeElement.type] or= {}
-                    for eventName, urls of wrapperCreativeElement.trackingEvents
-                        ad.trackingEvents[wrapperCreativeElement.type][eventName] or= []
-                        ad.trackingEvents[wrapperCreativeElement.type][eventName].push url for url in urls
-                # ClickTracking
-                if wrapperCreativeElement.videoClickTrackingURLTemplates?
-                    ad.videoClickTrackingURLTemplates or= [] # tmp property to save wrapper tracking URLs until they are merged
-                    ad.videoClickTrackingURLTemplates.push item for item in wrapperCreativeElement.videoClickTrackingURLTemplates
-                # ClickThrough
-                if wrapperCreativeElement.videoClickThroughURLTemplate?
-                    ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate
-                # CustomClick
-                if wrapperCreativeElement.videoCustomClickURLTemplates?
-                    ad.videoCustomClickURLTemplates or= [] # tmp property to save wrapper tracking URLs until they are merged
-                    ad.videoCustomClickURLTemplates.push item for item in wrapperCreativeElement.videoCustomClickURLTemplates
+        for (let wrapperCreativeElement of Array.from(ad.creatives)) {
+            if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
+                // TrackingEvents Linear / NonLinear
+                var item;
+                if (wrapperCreativeElement.trackingEvents != null) {
+                    if (!ad.trackingEvents) { ad.trackingEvents = {}; }
+                    if (!ad.trackingEvents[wrapperCreativeElement.type]) { ad.trackingEvents[wrapperCreativeElement.type] = {}; }
+                    for (let eventName in wrapperCreativeElement.trackingEvents) {
+                        const urls = wrapperCreativeElement.trackingEvents[eventName];
+                        if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) { ad.trackingEvents[wrapperCreativeElement.type][eventName] = []; }
+                        for (let url of Array.from(urls)) { ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url); }
+                    }
+                }
+                // ClickTracking
+                if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
+                    if (!ad.videoClickTrackingURLTemplates) { ad.videoClickTrackingURLTemplates = []; } // tmp property to save wrapper tracking URLs until they are merged
+                    for (item of Array.from(wrapperCreativeElement.videoClickTrackingURLTemplates)) { ad.videoClickTrackingURLTemplates.push(item); }
+                }
+                // ClickThrough
+                if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
+                    ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate;
+                }
+                // CustomClick
+                if (wrapperCreativeElement.videoCustomClickURLTemplates != null) {
+                    if (!ad.videoCustomClickURLTemplates) { ad.videoCustomClickURLTemplates = []; } // tmp property to save wrapper tracking URLs until they are merged
+                    for (item of Array.from(wrapperCreativeElement.videoCustomClickURLTemplates)) { ad.videoCustomClickURLTemplates.push(item); }
+                }
+            }
+        }
 
-        if ad.nextWrapperURL?
-            return ad
+        if (ad.nextWrapperURL != null) {
+            return ad;
+        }
+    }
+}
 
-module.exports = VASTParser
+module.exports = VASTParser;
