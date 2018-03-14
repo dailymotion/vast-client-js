@@ -12,56 +12,58 @@ DEFAULT_EVENT_DATA =
     extensions : []
 
 class VASTParser
-    maxWrapperDepth = null
-    URLTemplateFilters = []
-    @utils = new ParserUtils();
-    @adParser = new AdParser()
-    @vastUtil = new VASTUtil()
-    @urlHandler = new URLHandler()
+    constructor: ->
+        @maxWrapperDepth = null
+        @URLTemplateFilters = []
+        @utils = new ParserUtils();
+        @adParser = new AdParser()
+        @vastUtil = new VASTUtil()
+        @urlHandler = new URLHandler()
+        @vent = new EventEmitter()
 
-    @addURLTemplateFilter: (func) ->
-        URLTemplateFilters.push(func) if typeof func is 'function'
+    addURLTemplateFilter: (func) ->
+        @URLTemplateFilters.push(func) if typeof func is 'function'
         return
 
-    @removeURLTemplateFilter: () -> URLTemplateFilters.pop()
-    @countURLTemplateFilters: () -> URLTemplateFilters.length
-    @clearUrlTemplateFilters: () -> URLTemplateFilters = []
+    removeURLTemplateFilter: () -> @URLTemplateFilters.pop()
+    countURLTemplateFilters: () -> @URLTemplateFilters.length
+    clearUrlTemplateFilters: () -> @URLTemplateFilters = []
 
-    @parse: (url, options, cb) ->
+    parse: (url, options, cb) ->
         if not cb
             cb = options if typeof options is 'function'
             options = {}
 
-        maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH
+        @maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_WIDTH
         options.wrapperDepth = 0
 
         @_parse url, null, options, (err, response) ->
             cb(response, err)
 
-    @load: (xml, options, cb) ->
+    load: (xml, options, cb) ->
         if not cb
             cb = options if typeof options is 'function'
             options = {}
 
         @parseXmlDocument(null, [], options, xml, cb)
 
-    @vent = new EventEmitter()
-    @track: (templates, errorCode, data...) ->
+    track: (templates, errorCode, data...) ->
         @vent.emit 'VAST-error', @vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, data...)
         @vastUtil.track(templates, errorCode)
 
-    @on: (eventName, cb) ->
+    on: (eventName, cb) ->
         @vent.on eventName, cb
 
-    @once: (eventName, cb) ->
+    once: (eventName, cb) ->
         @vent.once eventName, cb
 
-    @off: (eventName, cb) ->
+    off: (eventName, cb) ->
         @vent.removeListener eventName, cb
 
-    @_parse: (url, parentURLs, options, cb) ->
+    _parse: (url, parentURLs, options, cb) ->
         # Process url with defined filter
-        url = filter(url) for filter in URLTemplateFilters
+        url = filter(url) for filter in @URLTemplateFilters
+        console.log(url)
 
         parentURLs ?= []
         parentURLs.push url
@@ -74,7 +76,7 @@ class VASTParser
             return cb(err) if err?
             @parseXmlDocument(url, parentURLs, options, xml, cb)
 
-    @parseXmlDocument: (url, parentURLs, options, xml, cb) =>
+    parseXmlDocument: (url, parentURLs, options, xml, cb) =>
         # Current VAST depth
         wrapperDepth = options.wrapperDepth++
 
@@ -130,7 +132,7 @@ class VASTParser
             ad = response.ads[loopIndex]
             continue unless ad.nextWrapperURL?
             do (ad) =>
-                if parentURLs.length >= maxWrapperDepth or ad.nextWrapperURL in parentURLs
+                if parentURLs.length >= @maxWrapperDepth or ad.nextWrapperURL in parentURLs
                     # Wrapper limit reached, as defined by the video player.
                     # Too many Wrapper responses have been received with no InLine response.
                     ad.errorCode = 302
@@ -170,7 +172,7 @@ class VASTParser
         complete()
 
     # Convert relative vastAdTagUri
-    @resolveVastAdTagURI: (vastAdTagUrl, originalUrl) ->
+    resolveVastAdTagURI: (vastAdTagUrl, originalUrl) ->
         if vastAdTagUrl.indexOf('//') == 0
             protocol = location.protocol
             return "#{protocol}#{vastAdTagUrl}"
@@ -183,7 +185,7 @@ class VASTParser
         return vastAdTagUrl
 
     # Merge ad tracking URLs / extensions data into wrappedAd
-    @mergeWrapperAdData: (wrappedAd, ad) ->
+    mergeWrapperAdData: (wrappedAd, ad) ->
         wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat wrappedAd.errorURLTemplates
         wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat wrappedAd.impressionURLTemplates
         wrappedAd.extensions = ad.extensions.concat wrappedAd.extensions
@@ -210,7 +212,7 @@ class VASTParser
                 if creative.type is 'linear' and not creative.videoClickThroughURLTemplate?
                     creative.videoClickThroughURLTemplate = ad.videoClickThroughURLTemplate
 
-    @parseAdElement: (adElement) ->
+    parseAdElement: (adElement) ->
         for adTypeElement in adElement.childNodes
             continue unless adTypeElement.nodeName in ["Wrapper", "InLine"]
 
@@ -222,7 +224,7 @@ class VASTParser
             else if adTypeElement.nodeName is "InLine"
                 return @adParser.parse adTypeElement
 
-    @parseWrapperElement: (wrapperElement) ->
+    parseWrapperElement: (wrapperElement) ->
         ad = @adParser.parse wrapperElement
         wrapperURLElement = @utils.childByName wrapperElement, "VASTAdTagURI"
         if wrapperURLElement?

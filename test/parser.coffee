@@ -3,6 +3,8 @@ path = require 'path'
 VASTParser = require '../src/parser/parser'
 VASTResponse = require '../src/response'
 
+vastParser = new VASTParser()
+
 urlfor = (relpath) ->
     return 'file://' + path.resolve(path.dirname(module.filename), 'vastfiles', relpath).replace(/\\/g, '/')
 
@@ -16,25 +18,25 @@ describe 'VASTParser', ->
         before (done) =>
             eventsTriggered = []
 
-            VASTParser.on 'resolving', (variables) ->
+            vastParser.on 'resolving', (variables) ->
                 eventsTriggered.push { name: 'resolving', data: variables }
-            VASTParser.on 'resolved', (variables) ->
+            vastParser.on 'resolved', (variables) ->
                 eventsTriggered.push { name: 'resolved', data: variables }
 
-            VASTParser.addURLTemplateFilter (url) =>
+            vastParser.addURLTemplateFilter (url) =>
               @templateFilterCalls.push url
               return url
-            VASTParser.parse urlfor('wrapper-notracking.xml'), (@response) =>
+            vastParser.parse urlfor('wrapper-notracking.xml'), (@response) =>
                 _response = @response
                 done()
 
         after () =>
             eventsTriggered = []
-            VASTParser.vent.removeAllListeners()
-            VASTParser.clearUrlTemplateFilters()
+            vastParser.vent.removeAllListeners()
+            vastParser.clearUrlTemplateFilters()
 
         it 'should have 1 filter defined', =>
-            VASTParser.countURLTemplateFilters().should.equal 1
+            vastParser.countURLTemplateFilters().should.equal 1
 
         it 'should have called 4 times URLtemplateFilter ', =>
             @templateFilterCalls.should.have.length 4
@@ -62,13 +64,13 @@ describe 'VASTParser', ->
             for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
                 do (item) ->
                     it "should not return NaN for `#{item}`", ->
-                        isNaN(VASTParser.utils.parseDuration(item)).should.eql false
+                        isNaN(vastParser.utils.parseDuration(item)).should.eql false
 
         describe '#duration', ->
             for item in [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test']
                 do (item) ->
                     it "should not return NaN for `#{item}`", ->
-                        isNaN(VASTParser.utils.parseDuration(item)).should.eql false
+                        isNaN(vastParser.utils.parseDuration(item)).should.eql false
 
         describe '#For the 1st ad', ->
             ad1 = null
@@ -543,7 +545,7 @@ describe 'VASTParser', ->
             @response = null
 
             before (done) =>
-                VASTParser.parse urlfor('vpaid.xml'), (@response) =>
+                vastParser.parse urlfor('vpaid.xml'), (@response) =>
                     done()
 
             it 'should have apiFramework set', =>
@@ -558,11 +560,11 @@ describe 'VASTParser', ->
         @templateFilterCalls = []
 
         before (done) =>
-            VASTParser.addURLTemplateFilter (url) =>
+            vastParser.addURLTemplateFilter (url) =>
                 @templateFilterCalls.push url
                 return url
             url = urlfor('wrapper-notracking.xml')
-            VASTParser.urlHandler.get url, {}, (err, xml) =>
+            vastParser.urlHandler.get url, {}, (err, xml) =>
                 # `VAST > Wrapper > VASTAdTagURI` in the VAST must be an absolute URL
                 for node in xml.documentElement.childNodes
                     if node.nodeName is 'Ad'
@@ -570,19 +572,19 @@ describe 'VASTParser', ->
                             if node.nodeName is 'Wrapper'
                                 for node in node.childNodes
                                     if node.nodeName is 'VASTAdTagURI'
-                                        node.textContent = urlfor(VASTParser.utils.parseNodeText node)
+                                        node.textContent = urlfor(vastParser.utils.parseNodeText node)
                                         break
-                VASTParser.load xml, (err, response) =>
+                vastParser.load xml, (err, response) =>
                     @response = response
                     done()
 
         after () =>
-            VASTParser.clearUrlTemplateFilters()
+            vastParser.clearUrlTemplateFilters()
 
         it 'should have 1 filter defined', =>
-            VASTParser.countURLTemplateFilters().should.equal 1
+            vastParser.countURLTemplateFilters().should.equal 1
 
-        it 'should have called 4 times URLtemplateFilter ', =>
+        it 'should have called 3 times URLtemplateFilter ', =>
             @templateFilterCalls.should.have.length 3
             @templateFilterCalls.should.eql [urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]
 
@@ -598,14 +600,14 @@ describe 'VASTParser', ->
         dataTriggered = null
 
         beforeEach =>
-            VASTParser.vent.removeAllListeners()
+            vastParser.vent.removeAllListeners()
             dataTriggered = []
             trackCalls = []
 
-            VASTParser.on 'VAST-error', (variables) ->
+            vastParser.on 'VAST-error', (variables) ->
                 dataTriggered.push variables
 
-            VASTParser.vastUtil.track = (templates, variables) =>
+            vastParser.vastUtil.track = (templates, variables) =>
                 trackCalls.push {
                     templates : templates
                     variables : variables
@@ -613,7 +615,7 @@ describe 'VASTParser', ->
 
         describe '#No-Ad', ->
             it 'emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('empty-no-ad.xml'), (response) =>
+                vastParser.parse urlfor('empty-no-ad.xml'), (response) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
@@ -627,7 +629,7 @@ describe 'VASTParser', ->
                     done()
 
             it 'when wrapped, emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('wrapper-empty.xml'), (response) =>
+                vastParser.parse urlfor('wrapper-empty.xml'), (response) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
@@ -643,7 +645,7 @@ describe 'VASTParser', ->
 
         describe '#Ad with no creatives', ->
             it 'emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('empty-no-creative.xml'), (response) =>
+                vastParser.parse urlfor('empty-no-creative.xml'), (response) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
@@ -658,7 +660,7 @@ describe 'VASTParser', ->
                     done()
 
             it 'when wrapped, emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('wrapper-empty-no-creative.xml'), (response) =>
+                vastParser.parse urlfor('wrapper-empty-no-creative.xml'), (response) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # Error has been triggered
@@ -676,7 +678,7 @@ describe 'VASTParser', ->
 
         describe '#Invalid XML file (pasing error)', ->
             it 'returns an error', (done) ->
-                VASTParser.parse urlfor('invalid-xmlfile.xml'), (response, err) =>
+                vastParser.parse urlfor('invalid-xmlfile.xml'), (response, err) =>
                     # No response returned
                     should.not.exist(response)
                     # Error returned
@@ -684,7 +686,7 @@ describe 'VASTParser', ->
                     done()
 
             it 'when wrapped, emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('wrapper-invalid-xmlfile.xml'), (response, err) =>
+                vastParser.parse urlfor('wrapper-invalid-xmlfile.xml'), (response, err) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # No error returned
@@ -702,7 +704,7 @@ describe 'VASTParser', ->
 
         describe '#Wrapper limit reached', ->
             it 'emits a VAST-error & track', (done) ->
-                VASTParser.parse urlfor('wrapper-a.xml'), { wrapperLimit: 1 }, (response, err) =>
+                vastParser.parse urlfor('wrapper-a.xml'), { wrapperLimit: 1 }, (response, err) =>
                     # Response doesn't have any ads
                     response.ads.should.eql []
                     # No error returned
@@ -720,11 +722,12 @@ describe 'VASTParser', ->
 
 
     describe '#legacy', ->
+
         beforeEach =>
-            VASTParser.vent.removeAllListeners()
+            vastParser.vent.removeAllListeners()
 
         it 'correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', (done) ->
-            VASTParser.parse urlfor('wrapper-legacy.xml'), (response) =>
+            vastParser.parse urlfor('wrapper-legacy.xml'), (response) =>
                 it 'should have found 1 ad', =>
                     response.ads.should.have.length 1
 

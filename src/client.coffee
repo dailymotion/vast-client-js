@@ -7,6 +7,7 @@ class VASTClient
     @options:
         withCredentials : false,
         timeout : 0
+    @vastParser = new VASTParser()
 
     @get: (url, opts, cb) ->
         now = +new Date()
@@ -44,7 +45,7 @@ class VASTClient
             cb(null, new Error("VAST call canceled – (#{@cappingMinimumTimeInterval})ms minimum interval reached"))
             return
 
-        VASTParser.parse url, options, (response, err) =>
+        @vastParser.parse url, options, (response, err) =>
             cb(response, err)
 
 
