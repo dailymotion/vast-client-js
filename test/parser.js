@@ -30,30 +30,30 @@ describe('VASTParser', function() {
               this.templateFilterCalls.push(url);
               return url;
             });
-            return vastParser.parse(urlfor('wrapper-notracking.xml'), response => {
+            vastParser.parse(urlfor('wrapper-notracking.xml'), response => {
                 this.response = response;
                 _response = this.response;
-                return done();
+                done();
             });
         });
 
         after(() => {
             eventsTriggered = [];
             vastParser.vent.removeAllListeners();
-            return vastParser.clearUrlTemplateFilters();
+            vastParser.clearUrlTemplateFilters();
         });
 
         it('should have 1 filter defined', () => {
-            return vastParser.countURLTemplateFilters().should.equal(1);
+            vastParser.countURLTemplateFilters().should.equal(1);
         });
 
         it('should have called 4 times URLtemplateFilter ', () => {
             this.templateFilterCalls.should.have.length(4);
-            return this.templateFilterCalls.should.eql([urlfor('wrapper-notracking.xml'), urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]);
+            this.templateFilterCalls.should.eql([urlfor('wrapper-notracking.xml'), urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]);
     });
 
         it('should have emiited resolving/resolved events', () => {
-            return eventsTriggered.should.eql([
+            eventsTriggered.should.eql([
                 { name : 'resolving', data : { url : urlfor('wrapper-notracking.xml') }},
                 { name : 'resolved',  data : { url : urlfor('wrapper-notracking.xml') }},
                 { name : 'resolving', data : { url : urlfor('wrapper-a.xml') }},
@@ -66,11 +66,11 @@ describe('VASTParser', function() {
     });
 
         it('should have found 2 ads', () => {
-            return this.response.ads.should.have.length(2);
+            this.response.ads.should.have.length(2);
         });
 
         it('should have returned a VAST response object', () => {
-            return this.response.should.be.an.instanceOf(VASTResponse);
+            this.response.should.be.an.instanceOf(VASTResponse);
         });
 
         describe('#duration', () =>
@@ -91,16 +91,16 @@ describe('VASTParser', function() {
             let ad1 = null;
 
             before(() => {
-                return ad1 = _response.ads[0];
+                ad1 = _response.ads[0];
         });
 
             after(() => {
-                return ad1 = null;
+                ad1 = null;
             });
 
             it('should have retrieved Ad attributes', () => {
                 ad1.id.should.eql("ad_id_0001");
-                return ad1.sequence.should.eql("1");
+                ad1.sequence.should.eql("1");
             });
 
             it('should have retrieved Ad sub-elements values', () => {
@@ -112,11 +112,11 @@ describe('VASTParser', function() {
                 ad1.pricing.value.should.eql("1.09");
                 ad1.pricing.model.should.eql("CPM");
                 ad1.pricing.currency.should.eql("USD");
-                return ad1.survey.should.eql("http://example.com/survey");
+                ad1.survey.should.eql("http://example.com/survey");
             });
 
             it('should have merged wrapped ad error URLs', () => {
-                return ad1.errorURLTemplates.should.eql([
+                ad1.errorURLTemplates.should.eql([
                     "http://example.com/wrapperNoTracking-error",
                     "http://example.com/wrapperA-error",
                     "http://example.com/wrapperB-error",
@@ -125,7 +125,7 @@ describe('VASTParser', function() {
         });
 
             it('should have merged impression URLs', () => {
-                return ad1.impressionURLTemplates.should.eql([
+                ad1.impressionURLTemplates.should.eql([
                     "http://example.com/wrapperNoTracking-impression",
                     "http://example.com/wrapperA-impression",
                     "http://example.com/wrapperB-impression1",
@@ -137,18 +137,18 @@ describe('VASTParser', function() {
         });
 
             it('should have 3 creatives', () => {
-                return ad1.creatives.should.have.length(3);
+                ad1.creatives.should.have.length(3);
             });
 
             it('should have 4 extensions', () => {
-                return ad1.extensions.should.have.length(4);
+                ad1.extensions.should.have.length(4);
             });
 
             it('validate first extension', () => {
                 ad1.extensions[0].attributes['type'].should.eql("WrapperExtension");
                 ad1.extensions[0].children.should.have.length(1);
                 ad1.extensions[0].children[0].name.should.eql("extension_tag");
-                return ad1.extensions[0].children[0].value.should.eql("extension_value");
+                ad1.extensions[0].children[0].value.should.eql("extension_value");
             });
 
             it('validate second extension', () => {
@@ -158,37 +158,37 @@ describe('VASTParser', function() {
                 ad1.extensions[1].children[0].value.should.eql("0");
                 ad1.extensions[1].children[0].attributes['model'].should.eql("CPM");
                 ad1.extensions[1].children[0].attributes['currency'].should.eql("USD");
-                return ad1.extensions[1].children[0].attributes['source'].should.eql("someone");
+                ad1.extensions[1].children[0].attributes['source'].should.eql("someone");
             });
 
             it('validate third extension', () => {
                 ad1.extensions[2].attributes['type'].should.eql("Count");
                 ad1.extensions[2].children.should.have.length(1);
                 ad1.extensions[2].children[0].name.should.eql("#cdata-section");
-                return ad1.extensions[2].children[0].value.should.eql("4");
+                ad1.extensions[2].children[0].value.should.eql("4");
             });
 
             it('validate fourth extension', () => {
                 ad1.extensions[3].attributes.should.eql({});
                 ad1.extensions[3].children.should.have.length(1);
                 ad1.extensions[3].children[0].name.should.eql("#text");
-                return ad1.extensions[3].children[0].value.should.eql("{ foo: bar }");
+                ad1.extensions[3].children[0].value.should.eql("{ foo: bar }");
             });
 
             it('should not have trackingEvents property', () => {
-                return should.equal(ad1.trackingEvents, undefined);
+                should.equal(ad1.trackingEvents, undefined);
             });
 
             it('should not have videoClickTrackingURLTemplates property', () => {
-                return should.equal(ad1.videoClickTrackingURLTemplates, undefined);
+                should.equal(ad1.videoClickTrackingURLTemplates, undefined);
             });
 
             it('should not have videoClickThroughURLTemplate property', () => {
-                return should.equal(ad1.videoClickThroughURLTemplate, undefined);
+                should.equal(ad1.videoClickThroughURLTemplate, undefined);
             });
 
             it('should not have videoCustomClickURLTemplates property', () => {
-                return should.equal(ad1.videoCustomClickURLTemplates, undefined);
+                should.equal(ad1.videoCustomClickURLTemplates, undefined);
             });
 
             //Linear
@@ -196,46 +196,46 @@ describe('VASTParser', function() {
                 let linear = null;
 
                 before(() => {
-                    return linear = _response.ads[0].creatives[0];
+                    linear = _response.ads[0].creatives[0];
             });
 
                 after(() => {
-                    return linear = null;
+                    linear = null;
                 });
 
                 it('should have linear type', () => {
-                    return linear.type.should.equal("linear");
+                    linear.type.should.equal("linear");
                 });
 
                 it('should have an id', () => {
-                    return linear.id.should.equal("id130984");
+                    linear.id.should.equal("id130984");
                 });
 
                 it('should have an adId', () => {
-                    return linear.adId.should.equal("adId345690");
+                    linear.adId.should.equal("adId345690");
                 });
 
                 it('should have a sequence', () => {
-                    return linear.sequence.should.equal("1");
+                    linear.sequence.should.equal("1");
                 });
 
                 it('should not have an apiFramework', () => {
-                    return should.equal(linear.apiFramework, null);
+                    should.equal(linear.apiFramework, null);
                 });
 
                 it('should have a duration of 90.123s', () => {
-                    return linear.duration.should.equal(90.123);
+                    linear.duration.should.equal(90.123);
                 });
 
                 it('should have 2 media file', () => {
-                    return linear.mediaFiles.should.have.length(2);
+                    linear.mediaFiles.should.have.length(2);
                 });
 
                 it('should have parsed 1st media file attributes', () => {
                     linear.mediaFiles[0].width.should.equal(512);
                     linear.mediaFiles[0].height.should.equal(288);
                     linear.mediaFiles[0].mimeType.should.equal("video/mp4");
-                    return linear.mediaFiles[0].fileURL.should.equal("http://example.com/linear-asset.mp4");
+                    linear.mediaFiles[0].fileURL.should.equal("http://example.com/linear-asset.mp4");
                 });
 
                 it('should have parsed 2nd media file attributes', () => {
@@ -244,15 +244,15 @@ describe('VASTParser', function() {
                     linear.mediaFiles[1].mimeType.should.equal("application/javascript");
                     linear.mediaFiles[1].apiFramework.should.equal("VPAID");
                     linear.mediaFiles[1].deliveryType.should.equal("progressive");
-                    return linear.mediaFiles[1].fileURL.should.equal("parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D");
+                    linear.mediaFiles[1].fileURL.should.equal("parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D");
                 });
 
                 it('should have 1 URL for clickthrough', () => {
-                    return linear.videoClickThroughURLTemplate.should.eql('http://example.com/linear-clickthrough');
+                    linear.videoClickThroughURLTemplate.should.eql('http://example.com/linear-clickthrough');
                 });
 
                 it('should have 5 URLs for clicktracking', () => {
-                    return linear.videoClickTrackingURLTemplates.should.eql([
+                    linear.videoClickTrackingURLTemplates.should.eql([
                         'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]',
                         'http://example.com/linear-clicktracking2',
                         'http://example.com/wrapperB-linear-clicktracking',
@@ -263,15 +263,15 @@ describe('VASTParser', function() {
             });
 
                 it('should have 2 URLs for customclick', () => {
-                    return linear.videoCustomClickURLTemplates.should.eql(['http://example.com/linear-customclick', 'http://example.com/wrapperA-linear-customclick']);
+                    linear.videoCustomClickURLTemplates.should.eql(['http://example.com/linear-customclick', 'http://example.com/wrapperA-linear-customclick']);
             });
 
                 it('should have 8 tracking events', () => {
-                    return linear.trackingEvents.should.have.keys('start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%');
+                    linear.trackingEvents.should.have.keys('start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile', 'progress-30', 'progress-60%');
                 });
 
                 it('should have 4 URLs for start event', () => {
-                    return linear.trackingEvents['start'].should.eql([
+                    linear.trackingEvents['start'].should.eql([
                         'http://example.com/linear-start',
                         'http://example.com/wrapperB-linear-start',
                         'http://example.com/wrapperA-linear-start1',
@@ -280,7 +280,7 @@ describe('VASTParser', function() {
             });
 
                 it('should have 3 URLs for complete event', () => {
-                    return linear.trackingEvents['complete'].should.eql([
+                    linear.trackingEvents['complete'].should.eql([
                         'http://example.com/linear-complete',
                         'http://example.com/wrapperB-linear-complete',
                         'http://example.com/wrapperA-linear-complete'
@@ -288,7 +288,7 @@ describe('VASTParser', function() {
             });
 
                 it('should have 3 URLs for progress-30 event VAST 3.0', () => {
-                    return linear.trackingEvents['progress-30'].should.eql([
+                    linear.trackingEvents['progress-30'].should.eql([
                         'http://example.com/linear-progress-30sec',
                         'http://example.com/wrapperB-linear-progress-30sec',
                         'http://example.com/wrapperA-linear-progress-30sec'
@@ -296,7 +296,7 @@ describe('VASTParser', function() {
             });
 
                 it('should have 3 URLs for progress-60% event VAST 3.0', () => {
-                    return linear.trackingEvents['progress-60%'].should.eql([
+                    linear.trackingEvents['progress-60%'].should.eql([
                         'http://example.com/linear-progress-60%',
                         'http://example.com/wrapperB-linear-progress-60%',
                         'http://example.com/wrapperA-linear-progress-60%'
@@ -304,12 +304,12 @@ describe('VASTParser', function() {
             });
 
                 it('should have 3 URLs for progress-90% event VAST 3.0', () => {
-                    return linear.trackingEvents['progress-90%'].should.eql([
+                    linear.trackingEvents['progress-90%'].should.eql([
                         'http://example.com/wrapperA-linear-progress-90%'
                     ]);
             });
 
-                return it('should have parsed icons element', () => {
+                it('should have parsed icons element', () => {
                     const icon = linear.icons[0];
                     icon.program.should.equal("ad1");
                     icon.height.should.equal(20);
@@ -323,7 +323,7 @@ describe('VASTParser', function() {
                     icon.staticResource.should.equal("http://example.com/linear-icon.gif");
                     icon.iconClickThroughURLTemplate.should.equal("http://example.com/linear-clickthrough");
                     icon.iconClickTrackingURLTemplates.should.eql(["http://example.com/linear-clicktracking1", "http://example.com/linear-clicktracking2"]);
-                    return icon.iconViewTrackingURLTemplate.should.equal("http://example.com/linear-viewtracking");
+                    icon.iconViewTrackingURLTemplate.should.equal("http://example.com/linear-viewtracking");
                 });
             });
 
@@ -332,196 +332,196 @@ describe('VASTParser', function() {
                 let companions = null;
 
                 before(() => {
-                    return companions = _response.ads[0].creatives[1];
+                    companions = _response.ads[0].creatives[1];
             });
 
                 after(() => {
-                    return companions = null;
+                    companions = null;
                 });
 
                 it('should have companion type', () => {
-                    return companions.type.should.equal("companion");
+                    companions.type.should.equal("companion");
                 });
 
                 it('should have an id', () => {
-                    return companions.id.should.equal("id130985");
+                    companions.id.should.equal("id130985");
                 });
 
                 it('should have an adId', () => {
-                    return companions.adId.should.equal("adId345691");
+                    companions.adId.should.equal("adId345691");
                 });
 
                 it('should have a sequence', () => {
-                    return companions.sequence.should.equal("2");
+                    companions.sequence.should.equal("2");
                 });
 
                 it('should not have an apiFramework', () => {
-                    return should.equal(companions.apiFramework, null);
+                    should.equal(companions.apiFramework, null);
                 });
 
                 it('should have 3 variations', () => {
-                    return companions.variations.should.have.length(3);
+                    companions.variations.should.have.length(3);
                 });
 
                 //Companion
-                return describe('#Companion', function() {
+                describe('#Companion', function() {
                     let companion = null;
 
                     describe('as image/jpeg', function() {
                         before(() => {
-                            return companion = companions.variations[0];
+                            companion = companions.variations[0];
                     });
 
                         after(() => {
-                            return companion = null;
+                            companion = null;
                         });
 
                         it('should have parsed size and type attributes', () => {
                             companion.width.should.equal('300');
                             companion.height.should.equal('60');
-                            return companion.type.should.equal('image/jpeg');
+                            companion.type.should.equal('image/jpeg');
                         });
 
                         it('should have 1 tracking event', () => {
-                            return companion.trackingEvents.should.have.keys('creativeView');
+                            companion.trackingEvents.should.have.keys('creativeView');
                         });
 
                         it('should have 1 url for creativeView event', () => {
-                            return companion.trackingEvents['creativeView'].should.eql(['http://example.com/companion1-creativeview']);
+                            companion.trackingEvents['creativeView'].should.eql(['http://example.com/companion1-creativeview']);
                     });
 
                         it('should have checked that AltText exists', () => {
-                            return companion.should.have.property('altText');
+                            companion.should.have.property('altText');
                         });
 
                         it('should have parsed AltText for companion and its equal', () => {
-                            return companion.altText.should.equal('Sample Alt Text Content!!!!');
+                            companion.altText.should.equal('Sample Alt Text Content!!!!');
                         });
 
                         it('should have 1 companion clickthrough url', () => {
-                            return companion.companionClickThroughURLTemplate.should.equal('http://example.com/companion1-clickthrough');
+                            companion.companionClickThroughURLTemplate.should.equal('http://example.com/companion1-clickthrough');
                         });
 
                         it('should store the first companion clicktracking url', () => {
-                            return companion.companionClickTrackingURLTemplate.should.equal('http://example.com/companion1-clicktracking-first');
+                            companion.companionClickTrackingURLTemplate.should.equal('http://example.com/companion1-clicktracking-first');
                         });
 
-                        return it('should have 2 companion clicktracking urls', () => {
-                            return companion.companionClickTrackingURLTemplates.should.eql(['http://example.com/companion1-clicktracking-first', 'http://example.com/companion1-clicktracking-second']);
+                        it('should have 2 companion clicktracking urls', () => {
+                            companion.companionClickTrackingURLTemplates.should.eql(['http://example.com/companion1-clicktracking-first', 'http://example.com/companion1-clicktracking-second']);
                     });
                 });
 
                     describe('as IFrameResource', function() {
                       before(() => {
-                          return companion = companions.variations[1];
+                          companion = companions.variations[1];
                   });
 
                       after(() => {
-                          return companion = null;
+                          companion = null;
                       });
 
                       it('should have parsed size and type attributes', () => {
                           companion.width.should.equal('300');
                           companion.height.should.equal('60');
-                          return companion.type.should.equal(0);
+                          companion.type.should.equal(0);
                       });
 
                       it('does not have tracking events', () => {
-                        return companion.trackingEvents.should.be.empty;
+                        companion.trackingEvents.should.be.empty;
                       });
 
-                      return it('has the #iframeResource set', () => companion.iframeResource.should.equal('http://www.example.com/companion2-example.php'));
+                      it('has the #iframeResource set', () => companion.iframeResource.should.equal('http://www.example.com/companion2-example.php'));
                     });
 
-                    return describe('as text/html', function() {
+                    describe('as text/html', function() {
                         before(() => {
-                            return companion = companions.variations[2];
+                            companion = companions.variations[2];
                     });
 
                         after(() => {
-                          return companion = null;
+                          companion = null;
                         });
 
                         it('should have parsed size and type attributes', () => {
                             companion.width.should.equal('300');
                             companion.height.should.equal('60');
-                            return companion.type.should.equal('text/html');
+                            companion.type.should.equal('text/html');
                         });
 
                         it('should have 1 tracking event', () => {
-                            return companion.trackingEvents.should.be.empty;
+                            companion.trackingEvents.should.be.empty;
                         });
 
                         it('should have 1 companion clickthrough url', () => {
-                            return companion.companionClickThroughURLTemplate.should.equal('http://www.example.com/companion3-clickthrough');
+                            companion.companionClickThroughURLTemplate.should.equal('http://www.example.com/companion3-clickthrough');
                         });
 
-                        return it('has #htmlResource available', () => companion.htmlResource.should.equal("<a href=\"http://www.example.com\" target=\"_blank\">Some call to action HTML!</a>"));
+                        it('has #htmlResource available', () => companion.htmlResource.should.equal("<a href=\"http://www.example.com\" target=\"_blank\">Some call to action HTML!</a>"));
                     });
                 });
             });
 
             //Nonlinear
-            return describe('3rd creative (Nonlinears)', function() {
+            describe('3rd creative (Nonlinears)', function() {
                 let nonlinears = null;
 
                 before(() => {
-                    return nonlinears = _response.ads[0].creatives[2];
+                    nonlinears = _response.ads[0].creatives[2];
             });
 
                 after(() => {
-                    return nonlinears = null;
+                    nonlinears = null;
                 });
 
                 it('should have nonlinear type', () => {
-                    return nonlinears.type.should.equal("nonlinear");
+                    nonlinears.type.should.equal("nonlinear");
                 });
 
                 it('should not have an id', () => {
-                    return should.equal(nonlinears.id, null);
+                    should.equal(nonlinears.id, null);
                 });
 
                 it('should not have an adId', () => {
-                    return should.equal(nonlinears.adId, null);
+                    should.equal(nonlinears.adId, null);
                 });
 
                 it('should not have a sequence', () => {
-                    return should.equal(nonlinears.sequence, null);
+                    should.equal(nonlinears.sequence, null);
                 });
 
                 it('should not have an apiFramework', () => {
-                    return should.equal(nonlinears.apiFramework, null);
+                    should.equal(nonlinears.apiFramework, null);
                 });
 
                 it('should have 1 variation', () => {
-                    return nonlinears.variations.should.have.length(1);
+                    nonlinears.variations.should.have.length(1);
                 });
 
                 //NonLinear
-                return describe('#NonLinear', function() {
+                describe('#NonLinear', function() {
                     let nonlinear = null;
 
                     describe('trackingEvents', function() {
                         it('should have 6 tracking events', () => {
-                            return nonlinears.trackingEvents.should.have.keys('start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile');
+                            nonlinears.trackingEvents.should.have.keys('start', 'close', 'midpoint', 'complete', 'firstQuartile', 'thirdQuartile');
                         });
 
                         it('should have 3 URLs for start event', () => {
-                            return nonlinears.trackingEvents['start'].should.eql(['http://example.com/nonlinear-start', 'http://example.com/wrapperB-nonlinear-start', 'http://example.com/wrapperA-nonlinear-start']);
+                            nonlinears.trackingEvents['start'].should.eql(['http://example.com/nonlinear-start', 'http://example.com/wrapperB-nonlinear-start', 'http://example.com/wrapperA-nonlinear-start']);
                     });
 
-                        return it('should have 3 URLs for complete event', () => {
-                            return nonlinears.trackingEvents['complete'].should.eql(['http://example.com/nonlinear-complete', 'http://example.com/wrapperB-nonlinear-complete', 'http://example.com/wrapperA-nonlinear-complete']);
+                        it('should have 3 URLs for complete event', () => {
+                            nonlinears.trackingEvents['complete'].should.eql(['http://example.com/nonlinear-complete', 'http://example.com/wrapperB-nonlinear-complete', 'http://example.com/wrapperA-nonlinear-complete']);
                     });
                 });
 
-                    return describe('as image/jpeg', function() {
+                    describe('as image/jpeg', function() {
                         before(() => {
-                            return nonlinear = nonlinears.variations[0];
+                            nonlinear = nonlinears.variations[0];
                     });
 
                         after(() => {
-                            return nonlinear = null;
+                            nonlinear = null;
                         });
 
                         it('should have parsed attributes', () => {
@@ -533,19 +533,19 @@ describe('VASTParser', function() {
                             nonlinear.maintainAspectRatio.should.equal(true);
                             nonlinear.minSuggestedDuration.should.equal(100);
                             nonlinear.apiFramework.should.equal("someAPI");
-                            return nonlinear.type.should.equal('image/jpeg');
+                            nonlinear.type.should.equal('image/jpeg');
                         });
 
                         it('should have 1 nonlinear clickthrough url', () => {
-                            return nonlinear.nonlinearClickThroughURLTemplate.should.equal('http://example.com/nonlinear-clickthrough');
+                            nonlinear.nonlinearClickThroughURLTemplate.should.equal('http://example.com/nonlinear-clickthrough');
                         });
 
                         it('should have 2 nonlinear clicktracking urls', () => {
-                            return nonlinear.nonlinearClickTrackingURLTemplates.should.eql(['http://example.com/nonlinear-clicktracking-1', 'http://example.com/nonlinear-clicktracking-2']);
+                            nonlinear.nonlinearClickTrackingURLTemplates.should.eql(['http://example.com/nonlinear-clicktracking-1', 'http://example.com/nonlinear-clicktracking-2']);
                     });
 
-                        return it('should have AdParameter', () => {
-                            return nonlinear.adParameters.should.equal('{"key":"value"}');
+                        it('should have AdParameter', () => {
+                            nonlinear.adParameters.should.equal('{"key":"value"}');
                         });
                     });
                 });
@@ -556,16 +556,16 @@ describe('VASTParser', function() {
             let ad2 = null;
 
             before(() => {
-                return ad2 = _response.ads[1];
+                ad2 = _response.ads[1];
         });
 
             after(() => {
-                return ad2 = null;
+                ad2 = null;
             });
 
             it('should have retrieved Ad attributes', () => {
                 _response.ads[1].id.should.eql("ad_id_0002");
-                return should.equal(_response.ads[1].sequence, null);
+                should.equal(_response.ads[1].sequence, null);
             });
 
             it('should have retrieved Ad sub-elements values', () => {
@@ -575,11 +575,11 @@ describe('VASTParser', function() {
                 should.equal(ad2.advertiser, null);
                 should.equal(ad2.description, null);
                 should.equal(ad2.pricing, null);
-                return should.equal(ad2.survey, null);
+                should.equal(ad2.survey, null);
             });
 
             it('should have merged error URLs', () => {
-                return ad2.errorURLTemplates.should.eql([
+                ad2.errorURLTemplates.should.eql([
                     "http://example.com/wrapperNoTracking-error",
                     "http://example.com/wrapperA-error",
                     "http://example.com/wrapperB-error"
@@ -587,7 +587,7 @@ describe('VASTParser', function() {
         });
 
             it('should have merged impression URLs', () => {
-                return ad2.impressionURLTemplates.should.eql([
+                ad2.impressionURLTemplates.should.eql([
                     "http://example.com/wrapperNoTracking-impression",
                     "http://example.com/wrapperA-impression",
                     "http://example.com/wrapperB-impression1",
@@ -597,66 +597,66 @@ describe('VASTParser', function() {
         });
 
             it('should have 1 creative', () => {
-                return ad2.creatives.should.have.length(1);
+                ad2.creatives.should.have.length(1);
             });
 
             it('should have 1 extension (from the wrapper)', () => {
-                return ad2.extensions.should.have.length(1);
+                ad2.extensions.should.have.length(1);
             });
 
             it('validate the extension', () => {
                 ad2.extensions[0].attributes['type'].should.eql("WrapperExtension");
                 ad2.extensions[0].children.should.have.length(1);
                 ad2.extensions[0].children[0].name.should.eql("extension_tag");
-                return ad2.extensions[0].children[0].value.should.eql("extension_value");
+                ad2.extensions[0].children[0].value.should.eql("extension_value");
             });
 
             //Linear
-            return describe('1st creative (Linear)', function() {
+            describe('1st creative (Linear)', function() {
                 let linear = null;
 
                 before(() => {
-                    return linear = ad2.creatives[0];
+                    linear = ad2.creatives[0];
             });
 
                 after(() => {
-                    return linear = null;
+                    linear = null;
                 });
 
                 it('should have linear type', () => {
-                    return linear.type.should.equal("linear");
+                    linear.type.should.equal("linear");
                 });
 
                 it('should have an id', () => {
-                    return linear.id.should.equal("id873421");
+                    linear.id.should.equal("id873421");
                 });
 
                 it('should have an adId', () => {
-                    return linear.adId.should.equal("adId221144");
+                    linear.adId.should.equal("adId221144");
                 });
 
                 it('should not have a sequence', () => {
-                    return should.equal(linear.sequence, null);
+                    should.equal(linear.sequence, null);
                 });
 
                 it('should have an apiFramework', () => {
-                    return linear.apiFramework.should.equal("VPAID");
+                    linear.apiFramework.should.equal("VPAID");
                 });
 
                 it('should have a duration of 30', () => {
-                    return linear.duration.should.equal(30);
+                    linear.duration.should.equal(30);
                 });
 
                 it('should have wrapper clickthrough URL', () => {
-                    return linear.videoClickThroughURLTemplate.should.eql("http://example.com/wrapperB-linear-clickthrough");
+                    linear.videoClickThroughURLTemplate.should.eql("http://example.com/wrapperB-linear-clickthrough");
                 });
 
                 it('should have wrapper customclick URL', () => {
-                    return linear.videoCustomClickURLTemplates.should.eql(["http://example.com/wrapperA-linear-customclick"]);
+                    linear.videoCustomClickURLTemplates.should.eql(["http://example.com/wrapperA-linear-customclick"]);
             });
 
-                return it('should have 5 URLs for clicktracking', () => {
-                    return linear.videoClickTrackingURLTemplates.should.eql([
+                it('should have 5 URLs for clicktracking', () => {
+                    linear.videoClickTrackingURLTemplates.should.eql([
                         'http://example.com/linear-clicktracking',
                         'http://example.com/wrapperB-linear-clicktracking',
                         'http://example.com/wrapperA-linear-clicktracking1',
@@ -668,22 +668,22 @@ describe('VASTParser', function() {
     });
 
 
-        return describe('#VPAID', function() {
+        describe('#VPAID', function() {
             this.response = null;
 
             before(done => {
-                return vastParser.parse(urlfor('vpaid.xml'), response => {
+                vastParser.parse(urlfor('vpaid.xml'), response => {
                     this.response = response;
-                    return done();
+                    done();
                 });
             });
 
             it('should have apiFramework set', () => {
-                return this.response.ads[0].creatives[0].mediaFiles[0].apiFramework.should.be.equal("VPAID");
+                this.response.ads[0].creatives[0].mediaFiles[0].apiFramework.should.be.equal("VPAID");
             });
 
-            return it('should have duration set to -1', () => {
-                return this.response.ads[0].creatives[0].duration.should.be.equal(-1);
+            it('should have duration set to -1', () => {
+                this.response.ads[0].creatives[0].duration.should.be.equal(-1);
             });
         });
     });
@@ -699,7 +699,7 @@ describe('VASTParser', function() {
                 return url;
             });
             const url = urlfor('wrapper-notracking.xml');
-            return vastParser.urlHandler.get(url, {}, (err, xml) => {
+            vastParser.urlHandler.get(url, {}, (err, xml) => {
                 // `VAST > Wrapper > VASTAdTagURI` in the VAST must be an absolute URL
                 for (let node of Array.from(xml.documentElement.childNodes)) {
                     if (node.nodeName === 'Ad') {
@@ -715,32 +715,32 @@ describe('VASTParser', function() {
                         }
                     }
                 }
-                return vastParser.load(xml, (err, response) => {
+                vastParser.load(xml, (err, response) => {
                     this.response = response;
-                    return done();
+                    done();
                 });
             });
         });
 
         after(() => {
-            return vastParser.clearUrlTemplateFilters();
+            vastParser.clearUrlTemplateFilters();
         });
 
         it('should have 1 filter defined', () => {
-            return vastParser.countURLTemplateFilters().should.equal(1);
+            vastParser.countURLTemplateFilters().should.equal(1);
         });
 
         it('should have called 3 times URLtemplateFilter ', () => {
             this.templateFilterCalls.should.have.length(3);
-            return this.templateFilterCalls.should.eql([urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]);
+            this.templateFilterCalls.should.eql([urlfor('wrapper-a.xml'), urlfor('wrapper-b.xml'), urlfor('sample.xml')]);
     });
 
         it('should have found 2 ads', () => {
-            return this.response.ads.should.have.length(2);
+            this.response.ads.should.have.length(2);
         });
 
-        return it('should have returned a VAST response object', () => {
-            return this.response.should.be.an.instanceOf(VASTResponse);
+        it('should have returned a VAST response object', () => {
+            this.response.should.be.an.instanceOf(VASTResponse);
         });
     });
 
@@ -756,8 +756,8 @@ describe('VASTParser', function() {
 
             vastParser.on('VAST-error', variables => dataTriggered.push(variables));
 
-            return vastParser.vastUtil.track = (templates, variables) => {
-                return trackCalls.push({
+            vastParser.vastUtil.track = (templates, variables) => {
+                trackCalls.push({
                     templates,
                     variables
                 });
@@ -777,11 +777,11 @@ describe('VASTParser', function() {
                     trackCalls.length.should.eql(1);
                     trackCalls[0].templates.should.eql([ 'http://example.com/empty-no-ad' ]);
                     trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-                    return done();
+                    done();
                 })
             );
 
-            return it('when wrapped, emits a VAST-error & track', done =>
+            it('when wrapped, emits a VAST-error & track', done =>
                 vastParser.parse(urlfor('wrapper-empty.xml'), response => {
                     // Response doesn't have any ads
                     response.ads.should.eql([]);
@@ -794,7 +794,7 @@ describe('VASTParser', function() {
                     trackCalls.length.should.eql(1);
                     trackCalls[0].templates.should.eql([ 'http://example.com/wrapper-empty_wrapper-error', 'http://example.com/empty-no-ad' ]);
                     trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-                    return done();
+                    done();
                 })
             );
         });
@@ -813,11 +813,11 @@ describe('VASTParser', function() {
                     trackCalls.length.should.eql(1);
                     trackCalls[0].templates.should.eql([ 'http://example.com/empty-no-creative_inline-error' ]);
                     trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-                    return done();
+                    done();
                 })
             );
 
-            return it('when wrapped, emits a VAST-error & track', done =>
+            it('when wrapped, emits a VAST-error & track', done =>
                 vastParser.parse(urlfor('wrapper-empty-no-creative.xml'), response => {
                     // Response doesn't have any ads
                     response.ads.should.eql([]);
@@ -832,7 +832,7 @@ describe('VASTParser', function() {
                     trackCalls.length.should.eql(1);
                     trackCalls[0].templates.should.eql([ 'http://example.com/wrapper-no-creative_wrapper-error' , 'http://example.com/empty-no-creative_inline-error' ]);
                     trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-                    return done();
+                    done();
                 })
             );
         });
@@ -844,11 +844,11 @@ describe('VASTParser', function() {
                     should.not.exist(response);
                     // Error returned
                     err.should.be.instanceof(Error).and.have.property('message', 'Invalid VAST XMLDocument');
-                    return done();
+                    done();
                 })
             );
 
-            return it('when wrapped, emits a VAST-error & track', done =>
+            it('when wrapped, emits a VAST-error & track', done =>
                 vastParser.parse(urlfor('wrapper-invalid-xmlfile.xml'), (response, err) => {
                     // Response doesn't have any ads
                     response.ads.should.eql([]);
@@ -863,12 +863,12 @@ describe('VASTParser', function() {
                     trackCalls.length.should.eql(1);
                     trackCalls[0].templates.should.eql([ 'http://example.com/wrapper-invalid-xmlfile_wrapper-error' ]);
                     trackCalls[0].variables.should.eql({ ERRORCODE: 301 });
-                    return done();
+                    done();
                 })
             );
         });
 
-        return describe('#Wrapper limit reached', () =>
+        describe('#Wrapper limit reached', () =>
             it('emits a VAST-error & track', done =>
                 vastParser.parse(urlfor('wrapper-a.xml'), { wrapperLimit: 1 }, (response, err) => {
                     // Response doesn't have any ads
@@ -884,27 +884,27 @@ describe('VASTParser', function() {
                     trackCalls.length.should.eql(1);
                     trackCalls[0].templates.should.eql([ 'http://example.com/wrapperA-error' ]);
                     trackCalls[0].variables.should.eql({ ERRORCODE: 302 });
-                    return done();
+                    done();
                 })
             )
         );
     });
 
 
-    return describe('#legacy', function() {
+    describe('#legacy', function() {
 
         beforeEach(() => {
-            return vastParser.vent.removeAllListeners();
+            vastParser.vent.removeAllListeners();
         });
 
-        return it('correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', done =>
+        it('correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', done =>
             vastParser.parse(urlfor('wrapper-legacy.xml'), response => {
                 it('should have found 1 ad', () => {
-                    return response.ads.should.have.length(1);
+                    response.ads.should.have.length(1);
                 });
 
                 it('should have returned a VAST response object', () => {
-                    return response.should.be.an.instanceOf(VASTResponse);
+                    response.should.be.an.instanceOf(VASTResponse);
                 });
 
                 // we just want to make sure that the sample.xml was loaded correctly
@@ -914,10 +914,10 @@ describe('VASTParser', function() {
                     mediaFile.width.should.equal(512);
                     mediaFile.height.should.equal(288);
                     mediaFile.mimeType.should.equal("video/mp4");
-                    return mediaFile.fileURL.should.equal("http://example.com/asset.mp4");
+                    mediaFile.fileURL.should.equal("http://example.com/asset.mp4");
                 });
 
-                return done();
+                done();
             })
         );
     });
