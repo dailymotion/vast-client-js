@@ -57,7 +57,7 @@ class CreativeNonLinearParser {
             }
 
             nonlinearAd.nonlinearClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(nonlinearResource, "NonLinearClickThrough"));
-            for (let clickTrackingElement of Array.from(this.utils.childrenByName(nonlinearResource, "NonLinearClickTracking"))) {
+            for (let clickTrackingElement of this.utils.childrenByName(nonlinearResource, "NonLinearClickTracking")) {
                 nonlinearAd.nonlinearClickTrackingURLTemplates.push(this.utils.parseNodeText(clickTrackingElement));
             }
 
