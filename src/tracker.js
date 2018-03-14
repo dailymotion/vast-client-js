@@ -1,4 +1,4 @@
-const VASTClient = require('./client.coffee');
+const VASTClient = require('./client.js');
 const VASTUtil = require('./util.js');
 const { VASTCreativeLinear } = require('./creative.js');
 const VASTNonLinear = require('./nonlinear.js');
