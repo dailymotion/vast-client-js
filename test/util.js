@@ -1,11 +1,11 @@
-const should = require('should');
-const sinon  = require('sinon');
-const VASTUtil = require('../src/util');
+import should from 'should';
+import sinon from 'sinon';
+import { Util } from '../src/util';
 
 const now      = new Date();
 const playhead = '00:12:30.212';
 const assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-\[{bar';
-const util = new VASTUtil();
+const util = new Util();
 
 const resolve = (URLTemplate, variables) => util.resolveURLTemplates([URLTemplate], variables)[0];
 
@@ -15,16 +15,13 @@ const encodedAssetURI  = encodeRFC3986(assetURI);
 const encodedPlayhead  = encodeRFC3986(playhead);
 const encodedTimestamp = encodeRFC3986(now.toISOString());
 
-describe('VASTUtil', function() {
+describe('Util', function() {
     before(() => {
-        this.sinon = sinon.sandbox.create();
-        this.sinon.stub(Math, 'random').returns(0.0012);
         this.clock = sinon.useFakeTimers(now.getTime());
     });
 
     after(() => {
         this.clock.restore();
-        this.sinon.restore();
     });
 
     describe('#resolveURLTemplates', function() {
@@ -36,9 +33,9 @@ describe('VASTUtil', function() {
         });
 
         describe('cacheBusting', function() {
-            it('should resolve cache busting', () => resolve("http://test.com/[CACHEBUSTING]").should.match(/^http:\/\/test.com\/00120000$/));
+            it('should resolve cache busting', () => resolve("http://test.com/[CACHEBUSTING]").should.match(/^http:\/\/test.com\/[0-9]+$/));
 
-            it('should resolve cache buster, with percents', () => resolve("http://test.com/%%CACHEBUSTING%%", {CACHEBUSTING: 178}).should.match(/^http:\/\/test.com\/00120000$/));
+            it('should resolve cache buster, with percents', () => resolve("http://test.com/%%CACHEBUSTING%%", {CACHEBUSTING: 178}).should.match(/^http:\/\/test.com\/[0-9]+$/));
         });
 
         describe('contentPlayhead', function() {

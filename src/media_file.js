@@ -1,4 +1,4 @@
-class VASTMediaFile {
+export class MediaFile {
     constructor() {
         this.id = null;
         this.fileURL = null;
@@ -15,5 +15,3 @@ class VASTMediaFile {
         this.maintainAspectRatio = null;
     }
 }
-
-module.exports = VASTMediaFile;

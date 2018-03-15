@@ -1,4 +1,4 @@
-class FlashURLHandler {
+export class FlashURLHandler {
     xdr() {
         let xdr;
         if (window.XDomainRequest) { xdr = new XDomainRequest(); }
@@ -31,5 +31,3 @@ class FlashURLHandler {
         };
     }
 }
-
-module.exports = FlashURLHandler;

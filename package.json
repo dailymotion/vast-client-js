@@ -24,7 +24,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --compilers coffee:coffeescript/register --reporter spec test/*.coffee test/*.js",
+    "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "dev": "webpack --watch",
     "build": "webpack --config=webpack.min.config.js",
     "postinstall": "coffee --compile --output dist/ src/"

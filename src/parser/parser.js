@@ -1,9 +1,9 @@
-const AdParser = require('./ad_parser.js');
-const ParserUtils = require('./parser_utils.js');
-const URLHandler = require('../urlhandler.js');
-const VASTResponse = require('../response.js');
-const VASTUtil = require('../util.js');
-const { EventEmitter } = require('events');
+import { AdParser } from './ad_parser';
+import { EventEmitter } from 'events';
+import { ParserUtils } from './parser_utils';
+import { URLHandler } from '../url_handler';
+import { Util } from '../util';
+import { VASTResponse } from '../vast_response';
 
 const DEFAULT_MAX_WRAPPER_WIDTH = 10;
 
@@ -12,14 +12,14 @@ const DEFAULT_EVENT_DATA = {
     extensions : []
 };
 
-class VASTParser {
+export class VASTParser {
     constructor() {
         this.parseXmlDocument = this.parseXmlDocument.bind(this);
         this.maxWrapperDepth = null;
         this.URLTemplateFilters = [];
-        this.utils = new ParserUtils();
+        this.parserUtils = new ParserUtils();
         this.adParser = new AdParser();
-        this.vastUtil = new VASTUtil();
+        this.util = new Util();
         this.urlHandler = new URLHandler();
         this.vent = new EventEmitter();
     }
@@ -54,8 +54,8 @@ class VASTParser {
     }
 
     track(templates, errorCode, ...data) {
-        this.vent.emit('VAST-error', this.vastUtil.merge(DEFAULT_EVENT_DATA, errorCode, ...data));
-        this.vastUtil.track(templates, errorCode);
+        this.vent.emit('VAST-error', this.util.merge(DEFAULT_EVENT_DATA, errorCode, ...data));
+        this.util.track(templates, errorCode);
     }
 
     on(eventName, cb) {
@@ -103,7 +103,7 @@ class VASTParser {
             const node = childNodes[nodeKey];
 
             if (node.nodeName === 'Error') {
-                response.errorURLTemplates.push((this.utils.parseNodeText(node)));
+                response.errorURLTemplates.push((this.parserUtils.parseNodeText(node)));
             }
 
             if (node.nodeName === 'Ad') {
@@ -275,8 +275,8 @@ class VASTParser {
 
             if (!["Wrapper", "InLine"].includes(adTypeElement.nodeName)) { continue; }
 
-            this.utils.copyNodeAttribute("id", adElement, adTypeElement);
-            this.utils.copyNodeAttribute("sequence", adElement, adTypeElement);
+            this.parserUtils.copyNodeAttribute("id", adElement, adTypeElement);
+            this.parserUtils.copyNodeAttribute("sequence", adElement, adTypeElement);
 
             if (adTypeElement.nodeName === "Wrapper") {
                 return this.parseWrapperElement(adTypeElement);
@@ -288,13 +288,13 @@ class VASTParser {
 
     parseWrapperElement(wrapperElement) {
         const ad = this.adParser.parse(wrapperElement);
-        let wrapperURLElement = this.utils.childByName(wrapperElement, "VASTAdTagURI");
+        let wrapperURLElement = this.parserUtils.childByName(wrapperElement, "VASTAdTagURI");
         if (wrapperURLElement != null) {
-            ad.nextWrapperURL = this.utils.parseNodeText(wrapperURLElement);
+            ad.nextWrapperURL = this.parserUtils.parseNodeText(wrapperURLElement);
         } else {
-            wrapperURLElement = this.utils.childByName(wrapperElement, "VASTAdTagURL");
+            wrapperURLElement = this.parserUtils.childByName(wrapperElement, "VASTAdTagURL");
             if (wrapperURLElement != null) {
-                ad.nextWrapperURL = this.utils.parseNodeText(this.utils.childByName(wrapperURLElement, "URL"));
+                ad.nextWrapperURL = this.parserUtils.parseNodeText(this.parserUtils.childByName(wrapperURLElement, "URL"));
             }
         }
 
@@ -333,5 +333,3 @@ class VASTParser {
         }
     }
 }
-
-module.exports = VASTParser;

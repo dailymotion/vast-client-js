@@ -1,17 +1,17 @@
-const VASTClient = require('./client.js');
-const VASTUtil = require('./util.js');
-const { VASTCreativeLinear } = require('./creative.js');
-const VASTNonLinear = require('./nonlinear.js');
-const VASTCompanionAd = require('./companionad.js');
-const { EventEmitter } = require('events');
+import { CompanionAd } from './companion_ad';
+import { CreativeLinear } from './creative/creative_linear';
+import { EventEmitter } from 'events';
+import { NonLinearAd } from './non_linear_ad';
+import { Util } from './util';
+import { VASTClient } from './client';
 
-class VASTTracker extends EventEmitter {
+export class VASTTracker extends EventEmitter {
     constructor(ad, creative, variation = null) {
         super();
         this.ad = ad;
         this.creative = creative;
         this.variation = variation;
-        this.vastUtil = new VASTUtil();
+        this.util = new Util();
         this.muted = false;
         this.impressed = false;
         this.skipable = false;
@@ -29,7 +29,7 @@ class VASTTracker extends EventEmitter {
             const events = this.creative.trackingEvents[eventName];
             this.trackingEvents[eventName] = events.slice(0);
         }
-        if (this.creative instanceof VASTCreativeLinear) {
+        if (this.creative instanceof CreativeLinear) {
             this.setDuration(this.creative.duration);
 
             this.skipDelay = this.creative.skipDelay;
@@ -42,10 +42,10 @@ class VASTTracker extends EventEmitter {
             this.linear = false;
             // Used variation has been specified
             if (this.variation) {
-                if (this.variation instanceof VASTNonLinear) {
+                if (this.variation instanceof NonLinearAd) {
                     this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
                     this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
-                } else if (this.variation instanceof VASTCompanionAd) {
+                } else if (this.variation instanceof CompanionAd) {
                     this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
                     this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
                 }
@@ -188,7 +188,7 @@ class VASTTracker extends EventEmitter {
             if (this.linear) {
                 variables = {CONTENTPLAYHEAD: this.progressFormated()};
             }
-            const clickThroughURL = this.vastUtil.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
+            const clickThroughURL = this.util.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
 
             this.emit("clickthrough", clickThroughURL);
         }
@@ -226,7 +226,7 @@ class VASTTracker extends EventEmitter {
             variables["CONTENTPLAYHEAD"] = this.progressFormated();
         }
 
-        this.vastUtil.track(URLTemplates, variables);
+        this.util.track(URLTemplates, variables);
     }
 
     progressFormated() {
@@ -241,5 +241,3 @@ class VASTTracker extends EventEmitter {
         return `${h}:${m}:${s}.${ms}`;
     }
 }
-
-module.exports = VASTTracker;

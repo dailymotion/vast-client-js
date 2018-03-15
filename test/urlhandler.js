@@ -1,6 +1,6 @@
-const should = require('should');
-const path = require('path');
-const URLHandler = require('../src/urlhandler');
+import path from 'path';
+import should from 'should';
+import { URLHandler } from '../src/url_handler';
 
 const urlHandler = new URLHandler();
 

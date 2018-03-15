@@ -1,7 +1,7 @@
-const should = require('should');
-const path = require('path');
-const VASTParser = require('../src/parser/parser');
-const VASTResponse = require('../src/response');
+import path from 'path';
+import should from 'should';
+import { VASTParser } from '../src/parser/parser';
+import { VASTResponse } from '../src/vast_response';
 
 const vastParser = new VASTParser();
 
@@ -70,14 +70,14 @@ describe('VASTParser', function() {
         describe('#duration', () =>
             [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test'].map((item) =>
                 (item =>
-                    it(`should not return NaN for \`${item}\``, () => isNaN(vastParser.utils.parseDuration(item)).should.eql(false))
+                    it(`should not return NaN for \`${item}\``, () => isNaN(vastParser.parserUtils.parseDuration(item)).should.eql(false))
                 )(item))
         );
 
         describe('#duration', () =>
             [null, undefined, -1, 0, 1, '1', '00:00', '00:00:00:00', 'test', '00:test:01', '00:00:01.001', '00:00:01.test'].map((item) =>
                 (item =>
-                    it(`should not return NaN for \`${item}\``, () => isNaN(vastParser.utils.parseDuration(item)).should.eql(false))
+                    it(`should not return NaN for \`${item}\``, () => isNaN(vastParser.parserUtils.parseDuration(item)).should.eql(false))
                 )(item))
         );
 
@@ -701,7 +701,7 @@ describe('VASTParser', function() {
                             if (node.nodeName === 'Wrapper') {
                                 for (node of Array.from(node.childNodes)) {
                                     if (node.nodeName === 'VASTAdTagURI') {
-                                        node.textContent = urlfor(vastParser.utils.parseNodeText(node));
+                                        node.textContent = urlfor(vastParser.parserUtils.parseNodeText(node));
                                         break;
                                     }
                                 }
@@ -750,7 +750,7 @@ describe('VASTParser', function() {
 
             vastParser.on('VAST-error', variables => dataTriggered.push(variables));
 
-            vastParser.vastUtil.track = (templates, variables) => {
+            vastParser.util.track = (templates, variables) => {
                 trackCalls.push({
                     templates,
                     variables

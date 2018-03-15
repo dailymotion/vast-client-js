@@ -1,4 +1,4 @@
-class VASTCompanionAd {
+export class CompanionAd {
     constructor() {
         this.id = null;
         this.width = 0;
@@ -13,5 +13,3 @@ class VASTCompanionAd {
         this.trackingEvents = {};
     }
 }
-
-module.exports = VASTCompanionAd;

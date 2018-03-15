@@ -1,8 +1,8 @@
-const XHRURLHandler = require('./urlhandlers/xmlhttprequest.js');
-const FlashURLHandler = require('./urlhandlers/flash.js');
-const NodeURLHandler = require('./urlhandlers/node.js');
+import { FlashURLHandler } from './urlhandlers/flash_url_handler';
+import { NodeURLHandler } from './urlhandlers/node_url_handler';
+import { XHRURLHandler } from './urlhandlers/xhr_url_handler';
 
-class URLHandler {
+export class URLHandler {
     constructor() {
         this.flash = new FlashURLHandler();
         this.node = new NodeURLHandler();
@@ -36,5 +36,3 @@ class URLHandler {
         }
     }
 }
-
-module.exports = URLHandler;

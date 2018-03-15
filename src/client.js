@@ -1,7 +1,7 @@
-const VASTParser = require('./parser/parser.js');
-const VASTUtil = require('./util.js');
+import { Util } from './util';
+import { VASTParser } from './parser/parser';
 
-class VASTClient {
+export class VASTClient {
     constructor() {
         this.cappingFreeLunch = 0;
         this.cappingMinimumTimeInterval = 0;
@@ -10,8 +10,8 @@ class VASTClient {
             timeout : 0
         };
         this.vastParser = new VASTParser();
-        this.vastUtil = new VASTUtil();
-        this.storage = this.vastUtil.getStorage();
+        this.util = new Util();
+        this.storage = this.util.getStorage();
 
         // Init values if not already set
         if (this.lastSuccessfullAd == null) { this.lastSuccessfullAd = 0; }
@@ -82,5 +82,3 @@ class VASTClient {
         });
     }
 }
-
-module.exports = VASTClient;

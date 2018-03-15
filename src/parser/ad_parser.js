@@ -1,22 +1,22 @@
-const CreativeCompanionParser = require('./creative_companion_parser.js');
-const CreativeLinearParser = require('./creative_linear_parser.js');
-const CreativeNonLinearParser = require('./creative_non_linear_parser.js');
-const ParserUtils = require('./parser_utils.js');
-const VASTAd = require('../ad.js');
-const VASTAdExtension = require('../extension.js');
-const VASTAdExtensionChild = require('../extensionchild.js');
+import { Ad } from '../ad'
+import { AdExtension } from '../ad_extension'
+import { AdExtensionChild } from '../ad_extension_child'
+import { CreativeCompanionParser } from './creative_companion_parser';
+import { CreativeLinearParser } from './creative_linear_parser';
+import { CreativeNonLinearParser } from './creative_non_linear_parser';
+import { ParserUtils } from './parser_utils';
 
-class AdParser {
+export class AdParser {
     constructor() {
         this.creativeCompanionParser = new CreativeCompanionParser();
         this.creativeNonLinearParser = new CreativeNonLinearParser();
         this.creativeLinearParser = new CreativeLinearParser();
-        this.utils = new ParserUtils();
+        this.parserUtils = new ParserUtils();
     }
 
     parse(inLineElement) {
         const childNodes = inLineElement.childNodes;
-        const ad = new VASTAd();
+        const ad = new Ad();
         ad.id = inLineElement.getAttribute("id") || null;
         ad.sequence = inLineElement.getAttribute("sequence") || null;
 
@@ -25,15 +25,15 @@ class AdParser {
 
             switch (node.nodeName) {
                 case "Error":
-                    ad.errorURLTemplates.push((this.utils.parseNodeText(node)));
+                    ad.errorURLTemplates.push((this.parserUtils.parseNodeText(node)));
                     break;
 
                 case "Impression":
-                    ad.impressionURLTemplates.push((this.utils.parseNodeText(node)));
+                    ad.impressionURLTemplates.push((this.parserUtils.parseNodeText(node)));
                     break;
 
                 case "Creatives":
-                    for (let creativeElement of this.utils.childrenByName(node, "Creative")) {
+                    for (let creativeElement of this.parserUtils.childrenByName(node, "Creative")) {
                         const creativeAttributes = {
                             id           : creativeElement.getAttribute('id') || null,
                             adId         : this.parseCreativeAdIdAttribute(creativeElement),
@@ -68,38 +68,38 @@ class AdParser {
                     }
                     break;
                 case "Extensions":
-                    this.parseExtension(ad.extensions, this.utils.childrenByName(node, "Extension"));
+                    this.parseExtension(ad.extensions, this.parserUtils.childrenByName(node, "Extension"));
                     break;
 
                 case "AdSystem":
                     ad.system = {
-                        value : this.utils.parseNodeText(node),
+                        value : this.parserUtils.parseNodeText(node),
                         version : node.getAttribute("version") || null
                     };
                     break;
 
                 case "AdTitle":
-                    ad.title = this.utils.parseNodeText(node);
+                    ad.title = this.parserUtils.parseNodeText(node);
                     break;
 
                 case "Description":
-                    ad.description = this.utils.parseNodeText(node);
+                    ad.description = this.parserUtils.parseNodeText(node);
                     break;
 
                 case "Advertiser":
-                    ad.advertiser = this.utils.parseNodeText(node);
+                    ad.advertiser = this.parserUtils.parseNodeText(node);
                     break;
 
                 case "Pricing":
                     ad.pricing = {
-                        value    : this.utils.parseNodeText(node),
+                        value    : this.parserUtils.parseNodeText(node),
                         model    : node.getAttribute("model") || null,
                         currency : node.getAttribute("currency") || null
                     };
                     break;
 
                 case "Survey":
-                    ad.survey = this.utils.parseNodeText(node);
+                    ad.survey = this.parserUtils.parseNodeText(node);
                     break;
             }
         }
@@ -109,7 +109,7 @@ class AdParser {
 
     parseExtension(collection, extensions) {
         for (let extNode of extensions) {
-            const ext = new VASTAdExtension();
+            const ext = new AdExtension();
             const extNodeAttrs = extNode.attributes;
             const childNodes = extNode.childNodes;
 
@@ -125,11 +125,11 @@ class AdParser {
 
             for (let childNodeKey in childNodes) {
                 const childNode = childNodes[childNodeKey];
-                const txt = this.utils.parseNodeText(childNode);
+                const txt = this.parserUtils.parseNodeText(childNode);
 
                 // ignore comments / empty value
                 if ((childNode.nodeName !== '#comment') && (txt !== '')) {
-                    const extChild = new VASTAdExtensionChild();
+                    const extChild = new AdExtensionChild();
                     extChild.name = childNode.nodeName;
                     extChild.value = txt;
 
@@ -158,5 +158,3 @@ class AdParser {
                null;
     }
 }
-
-module.exports = AdParser;

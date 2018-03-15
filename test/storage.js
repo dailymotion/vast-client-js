@@ -1,6 +1,6 @@
-const should = require('should');
-const path = require('path');
-const VASTClient = require('../src/client');
+import path from 'path';
+import should from 'should';
+import { VASTClient } from '../src/client';
 
 const vastClient = new VASTClient();
 

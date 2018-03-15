@@ -1,4 +1,4 @@
-class VASTNonLinear {
+export class NonLinearAd {
     constructor() {
         this.id = null;
         this.width = 0;
@@ -18,5 +18,3 @@ class VASTNonLinear {
         this.adParameters = null;
     }
 }
-
-module.exports = VASTNonLinear;

@@ -1,6 +1,9 @@
-module.exports = {
-    client: require('./client.js'),
-    tracker: require('./tracker.js'),
-    parser: require('./parser/parser.js'),
-    util: require('./util.js')
-};
+import { VASTParser } from './parser/parser.js';
+import { VASTClient } from './client.js';
+import { VASTTracker } from './tracker.js';
+
+export {
+    VASTClient,
+    VASTParser,
+    VASTTracker
+}

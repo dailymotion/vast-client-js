@@ -1,10 +1,10 @@
-const uri = require('url');
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
-const { DOMParser } = require('xmldom');
+import uri from 'url';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import { DOMParser } from 'xmldom';
 
-class NodeURLHandler {
+export class NodeURLHandler {
     get(url, options, cb) {
 
         url = uri.parse(url);
@@ -47,5 +47,3 @@ class NodeURLHandler {
         }
     }
 }
-
-module.exports = NodeURLHandler;

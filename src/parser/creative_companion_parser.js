@@ -1,56 +1,54 @@
-const VASTCompanionAd = require('../companionad.js');
-const { VASTCreativeCompanion } = require('../creative.js');
-const ParserUtils = require('./parser_utils.js');
+import { CompanionAd } from '../companion_ad';
+import { CreativeCompanion } from '../creative/creative_companion';
+import { ParserUtils } from './parser_utils';
 
-class CreativeCompanionParser {
+export class CreativeCompanionParser {
     constructor() {
-        this.utils = new ParserUtils();
+        this.parserUtils = new ParserUtils();
     }
 
     parse(creativeElement, creativeAttributes) {
-        const creative = new VASTCreativeCompanion(creativeAttributes);
+        const creative = new CreativeCompanion(creativeAttributes);
 
-        for (let companionResource of this.utils.childrenByName(creativeElement, "Companion")) {
-            const companionAd = new VASTCompanionAd();
+        for (let companionResource of this.parserUtils.childrenByName(creativeElement, "Companion")) {
+            const companionAd = new CompanionAd();
             companionAd.id = companionResource.getAttribute("id") || null;
             companionAd.width = companionResource.getAttribute("width");
             companionAd.height = companionResource.getAttribute("height");
             companionAd.companionClickTrackingURLTemplates = [];
-            for (let htmlElement of this.utils.childrenByName(companionResource, "HTMLResource")) {
+            for (let htmlElement of this.parserUtils.childrenByName(companionResource, "HTMLResource")) {
                 companionAd.type = htmlElement.getAttribute("creativeType") || 'text/html';
-                companionAd.htmlResource = this.utils.parseNodeText(htmlElement);
+                companionAd.htmlResource = this.parserUtils.parseNodeText(htmlElement);
             }
-            for (let iframeElement of this.utils.childrenByName(companionResource, "IFrameResource")) {
+            for (let iframeElement of this.parserUtils.childrenByName(companionResource, "IFrameResource")) {
                 companionAd.type = iframeElement.getAttribute("creativeType") || 0;
-                companionAd.iframeResource = this.utils.parseNodeText(iframeElement);
+                companionAd.iframeResource = this.parserUtils.parseNodeText(iframeElement);
             }
-            for (let staticElement of this.utils.childrenByName(companionResource, "StaticResource")) {
+            for (let staticElement of this.parserUtils.childrenByName(companionResource, "StaticResource")) {
                 companionAd.type = staticElement.getAttribute("creativeType") || 0;
-                for (let child of this.utils.childrenByName(companionResource, "AltText")) {
-                    companionAd.altText = this.utils.parseNodeText(child);
+                for (let child of this.parserUtils.childrenByName(companionResource, "AltText")) {
+                    companionAd.altText = this.parserUtils.parseNodeText(child);
                 }
-                companionAd.staticResource = this.utils.parseNodeText(staticElement);
+                companionAd.staticResource = this.parserUtils.parseNodeText(staticElement);
             }
-            for (let trackingEventsElement of this.utils.childrenByName(companionResource, "TrackingEvents")) {
-                for (let trackingElement of this.utils.childrenByName(trackingEventsElement, "Tracking")) {
+            for (let trackingEventsElement of this.parserUtils.childrenByName(companionResource, "TrackingEvents")) {
+                for (let trackingElement of this.parserUtils.childrenByName(trackingEventsElement, "Tracking")) {
                     const eventName = trackingElement.getAttribute("event");
-                    const trackingURLTemplate = this.utils.parseNodeText(trackingElement);
+                    const trackingURLTemplate = this.parserUtils.parseNodeText(trackingElement);
                     if ((eventName != null) && (trackingURLTemplate != null)) {
                         if (companionAd.trackingEvents[eventName] == null) { companionAd.trackingEvents[eventName] = []; }
                         companionAd.trackingEvents[eventName].push(trackingURLTemplate);
                     }
                 }
             }
-            for (let clickTrackingElement of this.utils.childrenByName(companionResource, "CompanionClickTracking")) {
-                companionAd.companionClickTrackingURLTemplates.push(this.utils.parseNodeText(clickTrackingElement));
+            for (let clickTrackingElement of this.parserUtils.childrenByName(companionResource, "CompanionClickTracking")) {
+                companionAd.companionClickTrackingURLTemplates.push(this.parserUtils.parseNodeText(clickTrackingElement));
             }
-            companionAd.companionClickThroughURLTemplate = this.utils.parseNodeText(this.utils.childByName(companionResource, "CompanionClickThrough"));
-            companionAd.companionClickTrackingURLTemplate = this.utils.parseNodeText(this.utils.childByName(companionResource, "CompanionClickTracking"));
+            companionAd.companionClickThroughURLTemplate = this.parserUtils.parseNodeText(this.parserUtils.childByName(companionResource, "CompanionClickThrough"));
+            companionAd.companionClickTrackingURLTemplate = this.parserUtils.parseNodeText(this.parserUtils.childByName(companionResource, "CompanionClickTracking"));
             creative.variations.push(companionAd);
         }
 
         return creative;
     }
 }
-
-module.exports = CreativeCompanionParser;

@@ -1,4 +1,4 @@
-class XHRURLHandler {
+export class XHRURLHandler {
     xhr() {
         const xhr = new window.XMLHttpRequest();
         if ('withCredentials' in xhr) { // check CORS support
@@ -36,5 +36,3 @@ class XHRURLHandler {
         }
     }
 }
-
-module.exports = XHRURLHandler;

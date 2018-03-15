@@ -1,6 +1,6 @@
 let storage = null;
 
-class VASTUtil {
+export class Util {
     constructor() {
         this.storage = this.initStorage();
     }
@@ -137,5 +137,3 @@ class VASTUtil {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 }
-
-module.exports = VASTUtil;

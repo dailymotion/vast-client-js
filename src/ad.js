@@ -1,4 +1,4 @@
-class VASTAd {
+export class Ad {
     constructor() {
         this.id = null;
         this.sequence = null;
@@ -14,5 +14,3 @@ class VASTAd {
         this.extensions = [];
     }
 }
-
-module.exports = VASTAd;

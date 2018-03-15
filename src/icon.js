@@ -1,4 +1,4 @@
-class VASTIcon {
+export class Icon {
     constructor() {
         this.program = null;
         this.height = 0;
@@ -17,5 +17,3 @@ class VASTIcon {
         this.iconViewTrackingURLTemplate = null;
     }
 }
-
-module.exports = VASTIcon;

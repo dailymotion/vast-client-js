@@ -1,8 +1,8 @@
-const VASTUtil = require('../util.js');
+import { Util } from '../util';
 
-class ParserUtils {
+export class ParserUtils {
     constructor() {
-        this.vastUtil = new VASTUtil();
+        this.util = new Util();
     }
 
     childByName(node, name) {
@@ -52,7 +52,7 @@ class ParserUtils {
             return -1;
         }
         // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
-        if (this.vastUtil.isNumeric(durationString)) {
+        if (this.util.isNumeric(durationString)) {
             return parseInt(durationString);
         }
 
@@ -76,5 +76,3 @@ class ParserUtils {
         return hours + minutes + seconds;
     }
 }
-
-module.exports = ParserUtils;
