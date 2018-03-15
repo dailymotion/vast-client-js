@@ -22,18 +22,18 @@
   "engines": {
     "node": "8.9.4"
   },
-  "main": "dist/index.js",
+  "main": "vast-client.min.js",
+  "module": "src/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "dev": "webpack --watch",
-    "build": "webpack --config=webpack.min.config.js",
-    "postinstall": "coffee --compile --output dist/ src/"
+    "build": "webpack --config=webpack.prod.config.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.3",
+    "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-env": "^1.6.1",
-    "coffee-loader": "^0.9.0",
     "mocha": "^3.4.2",
     "should": "^11.2.1",
     "sinon": "^2.3.6",
@@ -43,11 +43,7 @@
   "dependencies": {
     "browserify": "~14.4.0",
     "cli-input": "^0.2.0",
-    "coffeescript": "^2.2.2",
-    "colors": "^1.2.1",
-    "commander": "^2.15.0",
     "path": "^0.12.7",
-    "replace": "^0.3.0",
     "xmldom": "~0.1.27"
   }
 }

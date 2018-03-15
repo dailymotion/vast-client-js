@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     mode: 'production',
-    entry: './src/index.coffee',
+    entry: './src/index.js',
     output: {
         path: __dirname,
         filename: 'vast-client.min.js'
