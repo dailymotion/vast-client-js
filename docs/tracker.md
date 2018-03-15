@@ -1,6 +1,11 @@
 # VASTTracker
 
-The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
+The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance by importing and using the class constructor:
+``` javascript
+import { VASTTracker } from 'vast-client'
+
+const vastTracker = new VASTTracker( ad , creative [, variation] )
+```
 
 - `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
 - `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
@@ -8,10 +13,10 @@ The VAST tracker constructor will process the tracking URLs of the selected ad/c
 
 ``` javascript
 // Create a VAST Tracker instance for a linear ad
-var vastTracker = new DMVAST.tracker(ad, creative);
+const vastTracker = new VASTTracker(ad, creative);
 
 // Create a VAST Tracker instance for a companion ad
-var vastTracker = new DMVAST.tracker(ad, creative, companion);
+const vastTracker = new VASTTracker(ad, creative, companion);
 ```
 
 ## Methods
