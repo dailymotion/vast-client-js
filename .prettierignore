@@ -6,5 +6,4 @@ node_modules
 .prettierrc
 .gitignore
 test/*.xml
-vast-client-js.js
-vast-client.min.js
+vast-client.js

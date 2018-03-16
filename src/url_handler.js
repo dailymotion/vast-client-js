@@ -29,7 +29,6 @@ export class URLHandler {
       // explicitly supply your own URLHandler object
       return options.urlhandler.get(url, options, cb);
     } else if (typeof window === 'undefined' || window === null) {
-      // prevents browserify from including this file
       return this.node.get(url, options, cb);
     } else if (this.xhr.supported()) {
       return this.xhr.get(url, options, cb);

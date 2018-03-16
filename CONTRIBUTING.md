@@ -18,15 +18,7 @@ Run the tests :
 
 ### Bundle
 
-The project uses webpack to bundle the assets, currently two bundling modes are supported :
- - development
- - production
-
-To bundle the assets for development (output will be `vast-client.js`):
-
-    npm run dev
-
-To bundle the assets for production (output will be `vast-client.min.js`):
+The project uses webpack to bundle the assets (output will be `vast-client.js`):
 
     npm run build
 

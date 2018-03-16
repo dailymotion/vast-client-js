@@ -22,12 +22,10 @@
   "engines": {
     "node": "8.9.4"
   },
-  "main": "vast-client.min.js",
-  "module": "src/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
-    "dev": "webpack --watch",
-    "build": "webpack --config=webpack.prod.config.js",
+    "build": "webpack",
     "precommit": "pretty-quick --staged"
   },
   "devDependencies": {
@@ -45,8 +43,6 @@
     "webpack-cli": "^2.0.9"
   },
   "dependencies": {
-    "browserify": "~14.4.0",
-    "cli-input": "^0.2.0",
     "path": "^0.12.7",
     "xmldom": "~0.1.27"
   }
