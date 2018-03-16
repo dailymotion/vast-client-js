@@ -1,6 +1,6 @@
 export class VASTResponse {
-    constructor() {
-        this.ads = [];
-        this.errorURLTemplates = [];
-    }
+  constructor() {
+    this.ads = [];
+    this.errorURLTemplates = [];
+  }
 }

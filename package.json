@@ -27,14 +27,18 @@
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "dev": "webpack --watch",
-    "build": "webpack --config=webpack.prod.config.js"
+    "build": "webpack --config=webpack.prod.config.js",
+    "precommit": "pretty-quick --staged"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.3",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-env": "^1.6.1",
+    "husky": "^0.14.3",
     "mocha": "^3.4.2",
+    "prettier": "^1.11.1",
+    "pretty-quick": "^1.4.1",
     "should": "^11.2.1",
     "sinon": "^2.3.6",
     "webpack": "^4.0.1",
