@@ -70,7 +70,6 @@ export class Util {
     for (let URL of URLs) {
       if (typeof window !== 'undefined' && window !== null) {
         const i = new Image();
-        result.push((i.src = URL));
       }
     }
   }
