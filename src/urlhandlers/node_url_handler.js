@@ -41,7 +41,7 @@ export class NodeURLHandler {
         cb(err);
       });
 
-      var fn = timeout_wrapper(req);
+      const fn = timeout_wrapper(req);
       timing = setTimeout(fn, options.timeout || 120000);
     }
   }

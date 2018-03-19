@@ -381,7 +381,6 @@ export class VASTParser {
     for (let wrapperCreativeElement of ad.creatives) {
       if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
         // TrackingEvents Linear / NonLinear
-        var item;
         if (wrapperCreativeElement.trackingEvents != null) {
           if (!ad.trackingEvents) {
             ad.trackingEvents = {};
@@ -406,7 +405,7 @@ export class VASTParser {
           if (!ad.videoClickTrackingURLTemplates) {
             ad.videoClickTrackingURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
-          for (item of wrapperCreativeElement.videoClickTrackingURLTemplates) {
+          for (let item of wrapperCreativeElement.videoClickTrackingURLTemplates) {
             ad.videoClickTrackingURLTemplates.push(item);
           }
         }
@@ -420,7 +419,7 @@ export class VASTParser {
           if (!ad.videoCustomClickURLTemplates) {
             ad.videoCustomClickURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
-          for (item of wrapperCreativeElement.videoCustomClickURLTemplates) {
+          for (let item of wrapperCreativeElement.videoCustomClickURLTemplates) {
             ad.videoCustomClickURLTemplates.push(item);
           }
         }

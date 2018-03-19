@@ -50,30 +50,30 @@ export class AdParser {
 
               switch (creativeTypeElement.nodeName) {
                 case 'Linear':
-                  var creative = this.creativeLinearParser.parse(
+                  let creativeLinear = this.creativeLinearParser.parse(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (creative) {
-                    ad.creatives.push(creative);
+                  if (creativeLinear) {
+                    ad.creatives.push(creativeLinear);
                   }
                   break;
                 case 'NonLinearAds':
-                  creative = this.creativeNonLinearParser.parse(
+                  let creativeNonLinear = this.creativeNonLinearParser.parse(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (creative) {
-                    ad.creatives.push(creative);
+                  if (creativeNonLinear) {
+                    ad.creatives.push(creativeNonLinear);
                   }
                   break;
                 case 'CompanionAds':
-                  creative = this.creativeCompanionParser.parse(
+                  let creativeCompanion = this.creativeCompanionParser.parse(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (creative) {
-                    ad.creatives.push(creative);
+                  if (creativeCompanion) {
+                    ad.creatives.push(creativeCompanion);
                   }
                   break;
               }
