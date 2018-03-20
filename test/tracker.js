@@ -1,11 +1,13 @@
 import path from 'path';
 import sinon from 'sinon';
 import should from 'should';
+import { VASTClient } from '../src/client';
 import { VASTParser } from '../src/parser/parser';
 import { VASTTracker } from '../src/tracker';
 
 const now = new Date();
 const vastParser = new VASTParser();
+const vastClient = new VASTClient();
 
 const urlfor = relpath =>
   `file://${path
@@ -48,7 +50,7 @@ describe('VASTTracker', function() {
         // Init tracker
         const ad = this.response.ads[0];
         const creative = this.response.ads[0].creatives[0];
-        this.Tracker = new VASTTracker(ad, creative);
+        this.Tracker = new VASTTracker(vastClient, ad, creative);
         // Mock emit
         this.Tracker.emit = event => {
           _eventsSent.push(event);
@@ -424,7 +426,7 @@ describe('VASTTracker', function() {
         const ad = this.response.ads[0];
         const creative = ad.creatives[1];
         const variation = creative.variations[0];
-        this.Tracker = new VASTTracker(ad, creative, variation);
+        this.Tracker = new VASTTracker(vastClient, ad, creative, variation);
         // Mock emit
         this.Tracker.emit = (event, ...args) => {
           _eventsSent.push({ event, args });
@@ -466,7 +468,7 @@ describe('VASTTracker', function() {
         const ad = this.response.ads[0];
         const creative = ad.creatives[2];
         const variation = creative.variations[0];
-        this.Tracker = new VASTTracker(ad, creative, variation);
+        this.Tracker = new VASTTracker(vastClient, ad, creative, variation);
         // Mock emit
         this.Tracker.emit = (event, ...args) => {
           _eventsSent.push({ event, args });

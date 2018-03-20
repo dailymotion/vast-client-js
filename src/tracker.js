@@ -3,11 +3,11 @@ import { CreativeLinear } from './creative/creative_linear';
 import { EventEmitter } from 'events';
 import { NonLinearAd } from './non_linear_ad';
 import { Util } from './util';
-import { VASTClient } from './client';
 
 export class VASTTracker extends EventEmitter {
-  constructor(ad, creative, variation = null) {
+  constructor(client, ad, creative, variation = null) {
     super();
+    this.client = client;
     this.ad = ad;
     this.creative = creative;
     this.variation = variation;
@@ -62,11 +62,11 @@ export class VASTTracker extends EventEmitter {
     }
 
     this.on('start', function() {
-      VASTClient.lastSuccessfullAd = +new Date();
+      this.client.lastSuccessfullAd = +new Date();
     });
   }
 
-  static off(eventName, cb) {
+  off(eventName, cb) {
     this.removeListener(eventName, cb);
   }
 
