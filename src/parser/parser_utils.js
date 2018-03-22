@@ -31,6 +31,26 @@ export class ParserUtils {
     return children;
   }
 
+  // Convert relative vastAdTagUri
+  resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
+    if (!originalUrl) {
+      return vastAdTagUrl;
+    }
+
+    if (vastAdTagUrl.indexOf('//') === 0) {
+      const { protocol } = location;
+      return `${protocol}${vastAdTagUrl}`;
+    }
+
+    if (vastAdTagUrl.indexOf('://') === -1) {
+      // Resolve relative URLs (mainly for unit testing)
+      const baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
+      return `${baseURL}/${vastAdTagUrl}`;
+    }
+
+    return vastAdTagUrl;
+  }
+
   parseBoolean(booleanString) {
     return ['true', 'TRUE', '1'].includes(booleanString);
   }

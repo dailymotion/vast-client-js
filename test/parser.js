@@ -11,7 +11,7 @@ const urlfor = relpath =>
     .replace(/\\/g, '/')}`;
 
 describe('VASTParser', function() {
-  describe('#parse', function() {
+  describe('#getAndParse', function() {
     this.response = null;
     let _response = null;
     this.templateFilterCalls = [];
@@ -31,17 +31,20 @@ describe('VASTParser', function() {
         this.templateFilterCalls.push(url);
         return url;
       });
-      vastParser.parse(urlfor('wrapper-notracking.xml'), response => {
-        this.response = response;
-        _response = this.response;
-        done();
-      });
+      vastParser.getAndParse(
+        urlfor('wrapper-notracking.xml'),
+        (err, response) => {
+          this.response = response;
+          _response = this.response;
+          done();
+        }
+      );
     });
 
     after(() => {
       eventsTriggered = [];
-      vastParser.vent.removeAllListeners();
-      vastParser.clearUrlTemplateFilters();
+      vastParser.removeAllListeners();
+      vastParser.clearURLTemplateFilters();
     });
 
     it('should have 1 filter defined', () => {
@@ -58,7 +61,7 @@ describe('VASTParser', function() {
       ]);
     });
 
-    it('should have emiited resolving/resolved events', () => {
+    it('should have emitted resolving/resolved events', () => {
       eventsTriggered.should.eql([
         { name: 'resolving', data: { url: urlfor('wrapper-notracking.xml') } },
         { name: 'resolved', data: { url: urlfor('wrapper-notracking.xml') } },
@@ -777,7 +780,7 @@ describe('VASTParser', function() {
       this.response = null;
 
       before(done => {
-        vastParser.parse(urlfor('vpaid.xml'), response => {
+        vastParser.getAndParse(urlfor('vpaid.xml'), (err, response) => {
           this.response = response;
           done();
         });
@@ -795,7 +798,7 @@ describe('VASTParser', function() {
     });
   });
 
-  describe('#load', function() {
+  describe('#parse', function() {
     this.response = null;
     this.templateFilterCalls = [];
 
@@ -823,7 +826,7 @@ describe('VASTParser', function() {
             }
           }
         }
-        vastParser.load(xml, (err, response) => {
+        vastParser.parse(xml, (err, response) => {
           this.response = response;
           done();
         });
@@ -831,7 +834,7 @@ describe('VASTParser', function() {
     });
 
     after(() => {
-      vastParser.clearUrlTemplateFilters();
+      vastParser.clearURLTemplateFilters();
     });
 
     it('should have 1 filter defined', () => {
@@ -861,7 +864,7 @@ describe('VASTParser', function() {
     let dataTriggered = null;
 
     beforeEach(() => {
-      vastParser.vent.removeAllListeners();
+      vastParser.removeAllListeners();
       dataTriggered = [];
       trackCalls = [];
 
@@ -877,7 +880,7 @@ describe('VASTParser', function() {
 
     describe('#No-Ad', function() {
       it('emits a VAST-error & track', done =>
-        vastParser.parse(urlfor('empty-no-ad.xml'), response => {
+        vastParser.getAndParse(urlfor('empty-no-ad.xml'), (err, response) => {
           // Response doesn't have any ads
           response.ads.should.eql([]);
           // Error has been triggered
@@ -894,7 +897,7 @@ describe('VASTParser', function() {
         }));
 
       it('when wrapped, emits a VAST-error & track', done =>
-        vastParser.parse(urlfor('wrapper-empty.xml'), response => {
+        vastParser.getAndParse(urlfor('wrapper-empty.xml'), (err, response) => {
           // Response doesn't have any ads
           response.ads.should.eql([]);
           // Error has been triggered
@@ -919,73 +922,82 @@ describe('VASTParser', function() {
 
     describe('#Ad with no creatives', function() {
       it('emits a VAST-error & track', done =>
-        vastParser.parse(urlfor('empty-no-creative.xml'), response => {
-          // Response doesn't have any ads
-          response.ads.should.eql([]);
-          // Error has been triggered
-          dataTriggered.length.should.eql(1);
-          dataTriggered[0].ERRORCODE.should.eql(303);
-          dataTriggered[0].extensions[0].children[0].name.should.eql(
-            'paramEmptyNoCreative'
-          );
-          dataTriggered[0].extensions[0].children[0].value.should.eql(
-            'valueEmptyNoCreative'
-          );
-          // Tracking has been done
-          trackCalls.length.should.eql(1);
-          trackCalls[0].templates.should.eql([
-            'http://example.com/empty-no-creative_inline-error'
-          ]);
-          trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-          done();
-        }));
+        vastParser.getAndParse(
+          urlfor('empty-no-creative.xml'),
+          (err, response) => {
+            // Response doesn't have any ads
+            response.ads.should.eql([]);
+            // Error has been triggered
+            dataTriggered.length.should.eql(1);
+            dataTriggered[0].ERRORCODE.should.eql(303);
+            dataTriggered[0].extensions[0].children[0].name.should.eql(
+              'paramEmptyNoCreative'
+            );
+            dataTriggered[0].extensions[0].children[0].value.should.eql(
+              'valueEmptyNoCreative'
+            );
+            // Tracking has been done
+            trackCalls.length.should.eql(1);
+            trackCalls[0].templates.should.eql([
+              'http://example.com/empty-no-creative_inline-error'
+            ]);
+            trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
+            done();
+          }
+        ));
 
       it('when wrapped, emits a VAST-error & track', done =>
-        vastParser.parse(urlfor('wrapper-empty-no-creative.xml'), response => {
-          // Response doesn't have any ads
-          response.ads.should.eql([]);
-          // Error has been triggered
-          dataTriggered.length.should.eql(1);
-          dataTriggered[0].ERRORCODE.should.eql(303);
-          dataTriggered[0].extensions[0].children[0].name.should.eql(
-            'paramWrapperEmptyNoCreative'
-          );
-          dataTriggered[0].extensions[0].children[0].value.should.eql(
-            'valueWrapperEmptyNoCreative'
-          );
-          dataTriggered[0].extensions[1].children[0].name.should.eql(
-            'paramEmptyNoCreative'
-          );
-          dataTriggered[0].extensions[1].children[0].value.should.eql(
-            'valueEmptyNoCreative'
-          );
-          // Tracking has been done
-          trackCalls.length.should.eql(1);
-          trackCalls[0].templates.should.eql([
-            'http://example.com/wrapper-no-creative_wrapper-error',
-            'http://example.com/empty-no-creative_inline-error'
-          ]);
-          trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-          done();
-        }));
+        vastParser.getAndParse(
+          urlfor('wrapper-empty-no-creative.xml'),
+          (err, response) => {
+            // Response doesn't have any ads
+            response.ads.should.eql([]);
+            // Error has been triggered
+            dataTriggered.length.should.eql(1);
+            dataTriggered[0].ERRORCODE.should.eql(303);
+            dataTriggered[0].extensions[0].children[0].name.should.eql(
+              'paramWrapperEmptyNoCreative'
+            );
+            dataTriggered[0].extensions[0].children[0].value.should.eql(
+              'valueWrapperEmptyNoCreative'
+            );
+            dataTriggered[0].extensions[1].children[0].name.should.eql(
+              'paramEmptyNoCreative'
+            );
+            dataTriggered[0].extensions[1].children[0].value.should.eql(
+              'valueEmptyNoCreative'
+            );
+            // Tracking has been done
+            trackCalls.length.should.eql(1);
+            trackCalls[0].templates.should.eql([
+              'http://example.com/wrapper-no-creative_wrapper-error',
+              'http://example.com/empty-no-creative_inline-error'
+            ]);
+            trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
+            done();
+          }
+        ));
     });
 
-    describe('#Invalid XML file (pasing error)', function() {
+    describe('#Invalid XML file (parsing error)', function() {
       it('returns an error', done =>
-        vastParser.parse(urlfor('invalid-xmlfile.xml'), (response, err) => {
-          // No response returned
-          should.not.exist(response);
-          // Error returned
-          err.should.be
-            .instanceof(Error)
-            .and.have.property('message', 'Invalid VAST XMLDocument');
-          done();
-        }));
+        vastParser.getAndParse(
+          urlfor('invalid-xmlfile.xml'),
+          (err, response) => {
+            // No response returned
+            should.not.exist(response);
+            // Error returned
+            err.should.be
+              .instanceof(Error)
+              .and.have.property('message', 'Invalid VAST XMLDocument');
+            done();
+          }
+        ));
 
       it('when wrapped, emits a VAST-error & track', done =>
-        vastParser.parse(
+        vastParser.getAndParse(
           urlfor('wrapper-invalid-xmlfile.xml'),
-          (response, err) => {
+          (err, response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // No error returned
@@ -1012,10 +1024,10 @@ describe('VASTParser', function() {
 
     describe('#Wrapper limit reached', () =>
       it('emits a VAST-error & track', done =>
-        vastParser.parse(
+        vastParser.getAndParse(
           urlfor('wrapper-a.xml'),
           { wrapperLimit: 1 },
-          (response, err) => {
+          (err, response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // No error returned
@@ -1042,11 +1054,11 @@ describe('VASTParser', function() {
 
   describe('#legacy', function() {
     beforeEach(() => {
-      vastParser.vent.removeAllListeners();
+      vastParser.removeAllListeners();
     });
 
     it('correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', done =>
-      vastParser.parse(urlfor('wrapper-legacy.xml'), response => {
+      vastParser.getAndParse(urlfor('wrapper-legacy.xml'), (err, response) => {
         it('should have found 1 ad', () => {
           response.ads.should.have.length(1);
         });

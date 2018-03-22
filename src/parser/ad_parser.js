@@ -14,7 +14,29 @@ export class AdParser {
     this.parserUtils = new ParserUtils();
   }
 
-  parse(inLineElement) {
+  // Parse an Ad element (can be either be a Wrapper or an InLine)
+  parse(adElement) {
+    const childNodes = adElement.childNodes;
+
+    for (let adTypeElementKey in childNodes) {
+      const adTypeElement = childNodes[adTypeElementKey];
+
+      if (!['Wrapper', 'InLine'].includes(adTypeElement.nodeName)) {
+        continue;
+      }
+
+      this.parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
+      this.parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
+
+      if (adTypeElement.nodeName === 'Wrapper') {
+        return this.parseWrapper(adTypeElement);
+      } else if (adTypeElement.nodeName === 'InLine') {
+        return this.parseInLine(adTypeElement);
+      }
+    }
+  }
+
+  parseInLine(inLineElement) {
     const childNodes = inLineElement.childNodes;
     const ad = new Ad();
     ad.id = inLineElement.getAttribute('id') || null;
@@ -121,6 +143,81 @@ export class AdParser {
     }
 
     return ad;
+  }
+
+  parseWrapper(wrapperElement) {
+    const ad = this.parseInLine(wrapperElement);
+    let wrapperURLElement = this.parserUtils.childByName(
+      wrapperElement,
+      'VASTAdTagURI'
+    );
+
+    if (wrapperURLElement != null) {
+      ad.nextWrapperURL = this.parserUtils.parseNodeText(wrapperURLElement);
+    } else {
+      wrapperURLElement = this.parserUtils.childByName(
+        wrapperElement,
+        'VASTAdTagURL'
+      );
+
+      if (wrapperURLElement != null) {
+        ad.nextWrapperURL = this.parserUtils.parseNodeText(
+          this.parserUtils.childByName(wrapperURLElement, 'URL')
+        );
+      }
+    }
+
+    for (let wrapperCreativeElement of ad.creatives) {
+      if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
+        // TrackingEvents Linear / NonLinear
+        if (wrapperCreativeElement.trackingEvents != null) {
+          if (!ad.trackingEvents) {
+            ad.trackingEvents = {};
+          }
+          if (!ad.trackingEvents[wrapperCreativeElement.type]) {
+            ad.trackingEvents[wrapperCreativeElement.type] = {};
+          }
+          for (let eventName in wrapperCreativeElement.trackingEvents) {
+            const urls = wrapperCreativeElement.trackingEvents[eventName];
+            if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
+              ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
+            }
+            for (let url of urls) {
+              ad.trackingEvents[wrapperCreativeElement.type][eventName].push(
+                url
+              );
+            }
+          }
+        }
+        // ClickTracking
+        if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
+          if (!ad.videoClickTrackingURLTemplates) {
+            ad.videoClickTrackingURLTemplates = [];
+          } // tmp property to save wrapper tracking URLs until they are merged
+          for (let item of wrapperCreativeElement.videoClickTrackingURLTemplates) {
+            ad.videoClickTrackingURLTemplates.push(item);
+          }
+        }
+        // ClickThrough
+        if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
+          ad.videoClickThroughURLTemplate =
+            wrapperCreativeElement.videoClickThroughURLTemplate;
+        }
+        // CustomClick
+        if (wrapperCreativeElement.videoCustomClickURLTemplates != null) {
+          if (!ad.videoCustomClickURLTemplates) {
+            ad.videoCustomClickURLTemplates = [];
+          } // tmp property to save wrapper tracking URLs until they are merged
+          for (let item of wrapperCreativeElement.videoCustomClickURLTemplates) {
+            ad.videoCustomClickURLTemplates.push(item);
+          }
+        }
+      }
+    }
+
+    if (ad.nextWrapperURL != null) {
+      return ad;
+    }
   }
 
   parseExtension(collection, extensions) {
