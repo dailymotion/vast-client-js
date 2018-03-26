@@ -1,8 +1,9 @@
-import { Util } from './util';
+import { Storage } from './util/storage';
+import { Util } from './util/util';
 import { VASTParser } from './parser/parser';
 
 export class VASTClient {
-  constructor(cappingFreeLunch, cappingMinimumTimeInterval) {
+  constructor(cappingFreeLunch, cappingMinimumTimeInterval, customStorage) {
     this.cappingFreeLunch = cappingFreeLunch || 0;
     this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
     this.defaultOptions = {
@@ -11,7 +12,7 @@ export class VASTClient {
     };
     this.vastParser = new VASTParser();
     this.util = new Util();
-    this.storage = this.util.getStorage();
+    this.storage = customStorage || new Storage();
 
     // Init values if not already set
     if (this.lastSuccessfullAd == null) {

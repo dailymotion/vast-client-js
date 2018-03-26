@@ -2,7 +2,7 @@ import { CompanionAd } from './companion_ad';
 import { CreativeLinear } from './creative/creative_linear';
 import { EventEmitter } from 'events';
 import { NonLinearAd } from './non_linear_ad';
-import { Util } from './util';
+import { Util } from './util/util';
 
 export class VASTTracker extends EventEmitter {
   constructor(client, ad, creative, variation = null) {

@@ -1,6 +1,6 @@
 import should from 'should';
 import sinon from 'sinon';
-import { Util } from '../src/util';
+import { Util } from '../src/util/util';
 
 const now = new Date();
 const playhead = '00:12:30.212';
