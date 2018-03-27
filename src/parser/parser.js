@@ -11,7 +11,17 @@ const DEFAULT_EVENT_DATA = {
   extensions: []
 };
 
+/**
+ * This class provides methods to fetch and parse a VAST document.
+ * @export
+ * @class VASTParser
+ * @extends EventEmitter
+ */
 export class VASTParser extends EventEmitter {
+  /**
+   * Creates an instance of VASTParser.
+   * @constructor
+   */
   constructor() {
     super();
 
@@ -24,32 +34,63 @@ export class VASTParser extends EventEmitter {
     this.urlHandler = new URLHandler();
   }
 
+  /**
+   * Adds a filter function to the array of filters which are called before fetching a VAST document.
+   * @param  {function} filter - The filter function to be added at the end of the array.
+   * @return {void}
+   */
   addURLTemplateFilter(filter) {
     if (typeof filter === 'function') {
       this.URLTemplateFilters.push(filter);
     }
   }
 
+  /**
+   * Removes the last element of the url templates filters array.
+   * @return {void}
+   */
   removeURLTemplateFilter() {
     this.URLTemplateFilters.pop();
   }
 
+  /**
+   * Returns the number of filters of the url templates filters array.
+   * @return {Number}
+   */
   countURLTemplateFilters() {
     return this.URLTemplateFilters.length;
   }
 
+  /**
+   * Removes all the filter functions from the url templates filters array.
+   * @return {void}
+   */
   clearURLTemplateFilters() {
     this.URLTemplateFilters = [];
   }
 
-  track(templates, errorCode, ...data) {
+  /**
+   * Tracks the error provided in the errorCode parameter and emits a VAST-error event for the given error.
+   * @param  {Array} urlTemplates - An Array of url templates to use to make the tracking call.
+   * @param  {Object} errorCode - An Object containing the error data.
+   * @param  {Object} data - One (or more) Object containing additional data.
+   * @return {void}
+   */
+  trackVastError(urlTemplates, errorCode, ...data) {
     this.emit(
       'VAST-error',
       this.util.merge(DEFAULT_EVENT_DATA, errorCode, ...data)
     );
-    this.util.track(templates, errorCode);
+    this.util.track(urlTemplates, errorCode);
   }
 
+  /**
+   * Fetches a VAST document for the given url.
+   * Returns a Promise which resolves,rejects according to the result of the request.
+   * @param  {String} url - The url to request the VAST document.
+   * @param  {Object} options - An optional Object of parameters to be used in the request.
+   * @return {Promise}
+   */
   fetchVAST(url, options) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
@@ -72,6 +113,13 @@ export class VASTParser extends EventEmitter {
     });
   }
 
+  /**
+   * Fetches and parses a VAST for the given url.
+   * Executes the callback with either an error or the fully parsed VASTResponse.
+   * @param    {String} url - The url to request the VAST document.
+   * @param    {Object} options - An optional Object of parameters to be used in the request.
+   * @callback cb
+   */
   getAndParse(url, options, cb) {
     if (!cb) {
       if (typeof options === 'function') {
@@ -94,6 +142,13 @@ export class VASTParser extends EventEmitter {
       .catch(err => cb(err));
   }
 
+  /**
+   * Parses the given xml Object into a VASTResponse.
+   * Executes the callback with either an error or the fully parsed VASTResponse.
+   * @param    {Object} vastXml - An object representing an xml document.
+   * @param    {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @callback cb
+   */
   parse(vastXml, options, cb) {
     if (!cb) {
       if (typeof options === 'function') {
@@ -140,7 +195,9 @@ export class VASTParser extends EventEmitter {
           vastResponse.ads.push(ad);
         } else {
           // VAST version of response not supported.
-          this.track(vastResponse.errorURLTemplates, { ERRORCODE: 101 });
+          this.trackVastError(vastResponse.errorURLTemplates, {
+            ERRORCODE: 101
+          });
         }
       }
     }
@@ -152,6 +209,13 @@ export class VASTParser extends EventEmitter {
     this.resolveWrappers(vastResponse, options, cb);
   }
 
+  /**
+   * Resolves the wrappers contained in the given VASTResponse in a recursive way.
+   * Executes the callback with either an error or the fully resolved VASTResponse.
+   * @param    {VASTResponse} vastResponse - An already parsed VASTResponse that may contain some unresolved wrappers.
+   * @param    {Object} options - An optional Object of parameters to be used in the resolving process.
+   * @callback cb
+   */
   resolveWrappers(vastResponse, options, cb) {
     const wrapperDepth = options.wrapperDepth++;
 
@@ -224,6 +288,13 @@ export class VASTParser extends EventEmitter {
     this.completeWrapperResolving(vastResponse, wrapperDepth, cb);
   }
 
+  /**
+   * Helper function for resolveWrappers. Has to be called for every resolved wrapper and takes care of handling errors
+   * and calling the callback with the resolved VASTResponse.
+   * @param    {VASTResponse} vastResponse - A resolved VASTResponse.
+   * @param    {Number} wrapperDepth - The wrapper chain depth (used to check if every wrapper has been resolved).
+   * @callback cb
+   */
   completeWrapperResolving(vastResponse, wrapperDepth, cb) {
     for (let index = vastResponse.ads.length - 1; index >= 0; index--) {
       // Still some Wrappers URL to be resolved -> continue
@@ -239,7 +310,7 @@ export class VASTParser extends EventEmitter {
     if (wrapperDepth === 0) {
       // No Ad case - The parser never bump into an <Ad> element
       if (vastResponse.ads.length === 0) {
-        this.track(vastResponse.errorURLTemplates, { ERRORCODE: 303 });
+        this.trackVastError(vastResponse.errorURLTemplates, { ERRORCODE: 303 });
       } else {
         for (let index = vastResponse.ads.length - 1; index >= 0; index--) {
           // - Error encountred while parsing
@@ -247,7 +318,7 @@ export class VASTParser extends EventEmitter {
           // but no creative was found
           let ad = vastResponse.ads[index];
           if (ad.errorCode || ad.creatives.length === 0) {
-            this.track(
+            this.trackVastError(
               ad.errorURLTemplates.concat(vastResponse.errorURLTemplates),
               { ERRORCODE: ad.errorCode || 303 },
               { ERRORMESSAGE: ad.errorMessage || '' },
@@ -263,6 +334,12 @@ export class VASTParser extends EventEmitter {
     cb(null, vastResponse);
   }
 
+  /**
+   * Merges the wrapper data with the given ad data.
+   * @param  {Ad} wrappedAd - The wrapper Ad.
+   * @param  {Ad} ad - The 'unwrapped' Ad.
+   * @return {void}
+   */
   mergeWrapperAdData(wrappedAd, ad) {
     wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(
       wrappedAd.errorURLTemplates
