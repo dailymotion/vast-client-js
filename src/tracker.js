@@ -4,17 +4,32 @@ import { EventEmitter } from 'events';
 import { NonLinearAd } from './non_linear_ad';
 import { Util } from './util/util';
 
+/**
+ * This class provides methods to track an ad execution.
+ *
+ * @export
+ * @class VASTTracker
+ * @extends EventEmitter
+ */
 export class VASTTracker extends EventEmitter {
+  /**
+   * Creates an instance of VASTTracker.
+   *
+   * @param {VASTClient} client - An instance of VASTClient that can be updated by the tracker. [optional]
+   * @param {Ad} ad - The ad to track.
+   * @param {Creative} creative - The creative to track.
+   * @param {CompanionAd|NonLinearAd} [variation=null] - An optional variation of the creative.
+   * @constructor
+   */
   constructor(client, ad, creative, variation = null) {
     super();
-    this.client = client;
     this.ad = ad;
     this.creative = creative;
     this.variation = variation;
     this.util = new Util();
     this.muted = false;
     this.impressed = false;
-    this.skipable = false;
+    this.skippable = false;
     this.skipDelayDefault = -1;
     this.trackingEvents = {};
     // Tracker listeners should be notified with some events
@@ -61,15 +76,20 @@ export class VASTTracker extends EventEmitter {
       }
     }
 
-    this.on('start', function() {
-      this.client.lastSuccessfullAd = +new Date();
-    });
+    // If the tracker is associated with a client we add a listener to the start event
+    // to update the lastSuccessfulAd property.
+    if (client) {
+      this.on('start', function() {
+        client.lastSuccessfullAd = +new Date();
+      });
+    }
   }
 
-  off(eventName, cb) {
-    this.removeListener(eventName, cb);
-  }
-
+  /**
+   * Sets the duration of the ad and updates the quartiles based on that.
+   *
+   * @param  {Number} duration - The duration of the ad.
+   */
   setDuration(duration) {
     this.assetDuration = duration;
     // beware of key names, theses are also used as event names
@@ -80,15 +100,22 @@ export class VASTTracker extends EventEmitter {
     };
   }
 
+  /**
+   * Sets the progress of the ad.
+   *
+   * @param {Number} progress - The progress of the ad.
+   * @emits VASTTracker#skip-countdown
+   * @emits VASTTracker#progress-[]
+   * @emits VASTTracker#rewind
+   */
   setProgress(progress) {
-    const skipDelay =
-      this.skipDelay === null ? this.skipDelayDefault : this.skipDelay;
+    const skipDelay = this.skipDelay || this.skipDelayDefault;
 
-    if (skipDelay !== -1 && !this.skipable) {
+    if (skipDelay !== -1 && !this.skippable) {
       if (skipDelay > progress) {
         this.emit('skip-countdown', skipDelay - progress);
       } else {
-        this.skipable = true;
+        this.skippable = true;
         this.emit('skip-countdown', 0);
       }
     }
@@ -97,9 +124,9 @@ export class VASTTracker extends EventEmitter {
       const events = [];
 
       if (progress > 0) {
-        events.push('start');
-
         const percent = Math.round(progress / this.assetDuration * 100);
+
+        events.push('start');
         events.push(`progress-${percent}%`);
         events.push(`progress-${Math.round(progress)}`);
 
@@ -123,6 +150,13 @@ export class VASTTracker extends EventEmitter {
     this.progress = progress;
   }
 
+  /**
+   * Sets the muted status on the ad.
+   *
+   * @param {Boolean} muted - The muted status.
+   * @emits VASTTracker#mute
+   * @emits VASTTracker#unmute
+   */
   setMuted(muted) {
     if (this.muted !== muted) {
       this.track(muted ? 'mute' : 'unmute');
@@ -130,6 +164,13 @@ export class VASTTracker extends EventEmitter {
     this.muted = muted;
   }
 
+  /**
+   * Sets the paused status on the ad.
+   *
+   * @param {Boolean} paused - The paused status.
+   * @emits VASTTracker#pause
+   * @emits VASTTracker#resume
+   */
   setPaused(paused) {
     if (this.paused !== paused) {
       this.track(paused ? 'pause' : 'resume');
@@ -137,6 +178,13 @@ export class VASTTracker extends EventEmitter {
     this.paused = paused;
   }
 
+  /**
+   * Sets the fullscreen status on the ad.
+   *
+   * @param {Boolean} fullscreen - The fullscreen status.
+   * @emits VASTTracker#fullscreen
+   * @emits VASTTracker#exitFullscreen
+   */
   setFullscreen(fullscreen) {
     if (this.fullscreen !== fullscreen) {
       this.track(fullscreen ? 'fullscreen' : 'exitFullscreen');
@@ -144,6 +192,13 @@ export class VASTTracker extends EventEmitter {
     this.fullscreen = fullscreen;
   }
 
+  /**
+   * Sets the expanded status on the ad.
+   *
+   * @param {Boolean} expanded - The expanded status.
+   * @emits VASTTracker#expand
+   * @emits VASTTracker#collapse
+   */
   setExpand(expanded) {
     if (this.expanded !== expanded) {
       this.track(expanded ? 'expand' : 'collapse');
@@ -151,14 +206,23 @@ export class VASTTracker extends EventEmitter {
     this.expanded = expanded;
   }
 
+  /**
+   * Sets the skip delay.
+   *
+   * @param {Number} duration - The skip delay.
+   */
   setSkipDelay(duration) {
     if (typeof duration === 'number') {
       this.skipDelay = duration;
     }
   }
 
-  // To be called when the video started to log the impression
-  load() {
+  /**
+   * Tracks an impression (can be called only once).
+   *
+   * @emits VASTTracker#creativeView
+   */
+  trackImpression() {
     if (!this.impressed) {
       this.impressed = true;
       this.trackURLs(this.ad.impressionURLTemplates);
@@ -166,46 +230,63 @@ export class VASTTracker extends EventEmitter {
     }
   }
 
-  // To be called when an error happen with the proper error code
+  /**
+   * To be called when an error happen with the proper error code.
+   *
+   * @param {Number|String} errorCode - A string or number defining the error code.
+   */
   errorWithCode(errorCode) {
     this.trackURLs(this.ad.errorURLTemplates, { ERRORCODE: errorCode });
   }
 
-  // To be called when the user watched the creative until it's end
+  /**
+   * Must be called when the user watched the linear creative until its end.
+   *
+   * @emits VASTTracker#complete
+   */
   complete() {
     this.track('complete');
   }
 
-  // To be called when the player or the window is closed during the ad
+  /**
+   * Must be called when the player or the window is closed during the ad.
+   *
+   * @emits VASTTracker#closeLinear
+   * @emits VASTTracker#close
+   */
   close() {
     this.track(this.linear ? 'closeLinear' : 'close');
   }
 
-  // Deprecated
-  stop() {}
-  // noop for backward compat
-
-  // To be called when the skip button is clicked
+  /**
+   * Must be called when the skip button is clicked.0
+   *
+   * @emits VASTTracker#skip
+   */
   skip() {
     this.track('skip');
     this.trackingEvents = [];
   }
 
-  // To be called when the user clicks on the creative
+  /**
+   * Must be called when the user clicks on the creative.
+   * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
+   * clickthrough URL when done.
+   *
+   * @emits VASTTracker#clickthrough
+   */
   click() {
     if (
-      this.clickTrackingURLTemplates != null
-        ? this.clickTrackingURLTemplates.length
-        : undefined
+      this.clickTrackingURLTemplates &&
+      this.clickTrackingURLTemplates.length
     ) {
       this.trackURLs(this.clickTrackingURLTemplates);
     }
 
-    if (this.clickThroughURLTemplate != null) {
-      let variables;
-      if (this.linear) {
-        variables = { CONTENTPLAYHEAD: this.progressFormated() };
-      }
+    if (this.clickThroughURLTemplate) {
+      const variables = this.linear
+        ? { CONTENTPLAYHEAD: this.progressFormatted() }
+        : {};
       const clickThroughURL = this.util.resolveURLTemplates(
         [this.clickThroughURLTemplate],
         variables
@@ -215,42 +296,51 @@ export class VASTTracker extends EventEmitter {
     }
   }
 
-  track(eventName, once) {
+  /**
+   * Calls the tracking URLs for the given eventName and emits the event.
+   *
+   * @param {String} eventName - The name of the event.
+   * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
+   */
+  track(eventName, once = false) {
     // closeLinear event was introduced in VAST 3.0
     // Fallback to vast 2.0 close event if necessary
-    if (once == null) {
-      once = false;
-    }
     if (
       eventName === 'closeLinear' &&
-      (this.trackingEvents[eventName] == null &&
-        this.trackingEvents['close'] != null)
+      !this.trackingEvents[eventName] &&
+      this.trackingEvents['close']
     ) {
       eventName = 'close';
     }
 
     const trackingURLTemplates = this.trackingEvents[eventName];
-    const idx = this.emitAlwaysEvents.indexOf(eventName);
+    const isAlwaysEmitEvent = this.emitAlwaysEvents.indexOf(eventName) > -1;
 
-    if (trackingURLTemplates != null) {
+    if (trackingURLTemplates) {
       this.emit(eventName, '');
       this.trackURLs(trackingURLTemplates);
-    } else if (idx !== -1) {
+    } else if (isAlwaysEmitEvent) {
       this.emit(eventName, '');
     }
 
     if (once === true) {
       delete this.trackingEvents[eventName];
-      if (idx > -1) {
-        this.emitAlwaysEvents.splice(idx, 1);
+      if (isAlwaysEmitEvent) {
+        this.emitAlwaysEvents.splice(
+          this.emitAlwaysEvents.indexOf(eventName),
+          1
+        );
       }
     }
   }
 
-  trackURLs(URLTemplates, variables) {
-    if (variables == null) {
-      variables = {};
-    }
+  /**
+   * Calls the tracking urls templates with the given variables.
+   *
+   * @param {Array} URLTemplates - An array of tracking url templates.
+   * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+   */
+  trackURLs(URLTemplates, variables = {}) {
     if (this.linear) {
       if (
         (this.creative.mediaFiles[0] != null
@@ -259,13 +349,18 @@ export class VASTTracker extends EventEmitter {
       ) {
         variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-      variables['CONTENTPLAYHEAD'] = this.progressFormated();
+      variables['CONTENTPLAYHEAD'] = this.progressFormatted();
     }
 
     this.util.track(URLTemplates, variables);
   }
 
-  progressFormated() {
+  /**
+   * Formats time progress in a readable string.
+   *
+   * @return {String}
+   */
+  progressFormatted() {
     const seconds = parseInt(this.progress);
     let h = seconds / (60 * 60);
     if (h.length < 2) {

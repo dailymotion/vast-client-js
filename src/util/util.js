@@ -10,10 +10,7 @@ export class Util {
     });
   }
 
-  resolveURLTemplates(URLTemplates, variables) {
-    if (variables == null) {
-      variables = {};
-    }
+  resolveURLTemplates(URLTemplates, variables = {}) {
     const URLs = [];
 
     // Encode String variables, when given

@@ -270,13 +270,13 @@ describe('VASTTracker', function() {
         });
       });
 
-      describe('#load', () => {
+      describe('#trackImpression', () => {
         before(done => {
           _eventsSent = [];
           this.Tracker.util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
-          this.Tracker.load();
+          this.Tracker.trackImpression();
           done();
         });
 
@@ -294,7 +294,7 @@ describe('VASTTracker', function() {
 
         it('should only be called once', () => {
           _eventsSent = [];
-          this.Tracker.load();
+          this.Tracker.trackImpression();
           _eventsSent.should.eql([]);
         });
       });
