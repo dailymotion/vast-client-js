@@ -79,6 +79,30 @@ describe('VASTClient', () => {
     });
   });
 
+  describe('when custom storage is provided', () => {
+    let getCount = 0;
+    let setCount = 0;
+    const customStorage = {
+      getItem() {
+        getCount++;
+      },
+      setItem() {
+        setCount++;
+      }
+    };
+
+    it('should use the custom storage', () => {
+      const vastClient = new VASTClient(0, 0, customStorage);
+
+      should.equal(getCount, 3);
+      should.equal(setCount, 3);
+
+      vastClient.lastSuccessfullAd;
+
+      should.equal(getCount, 4);
+    });
+  });
+
   describe('get', () => {
     const vastClient = new VASTClient();
 

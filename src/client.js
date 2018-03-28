@@ -28,19 +28,21 @@ export class VASTClient {
     this.storage = customStorage || new Storage();
 
     // Init values if not already set
-    if (this.lastSuccessfullAd == null) {
+    if (this.lastSuccessfullAd === undefined) {
       this.lastSuccessfullAd = 0;
     }
-    if (this.totalCalls == null) {
+    if (this.totalCalls === undefined) {
       this.totalCalls = 0;
     }
-    if (this.totalCallsTimeout == null) {
+    if (this.totalCallsTimeout === undefined) {
       this.totalCallsTimeout = 0;
     }
   }
 
   get lastSuccessfullAd() {
-    return this.storage.getItem('vast-client-last-successfull-ad');
+    const lastSuccessfullAd = this.storage.getItem(
+      'vast-client-last-successfull-ad'
+    );
   }
 
   set lastSuccessfullAd(value) {
