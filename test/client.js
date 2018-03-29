@@ -50,7 +50,7 @@ describe('VASTClient', () => {
     describe('the 1st call', () => {
       it('should be successfull', done => {
         vastClient.get(wrapperUrl, (err, response) => {
-          vastClient.lastSuccessfullAd = +new Date();
+          vastClient.lastSuccessfulAd = +new Date();
           should.notEqual(response, null);
           done();
         });
@@ -97,7 +97,7 @@ describe('VASTClient', () => {
       should.equal(getCount, 3);
       should.equal(setCount, 3);
 
-      vastClient.lastSuccessfullAd;
+      vastClient.lastSuccessfulAd;
 
       should.equal(getCount, 4);
     });

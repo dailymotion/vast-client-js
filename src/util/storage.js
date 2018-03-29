@@ -1,6 +1,31 @@
 let storage = null;
 
 /**
+ * This Object represents a default storage to be used in case no other storage is available.
+ * @constant
+ * @type {Object}
+ */
+const DEFAULT_STORAGE = {
+  data: {},
+  length: 0,
+  getItem(key) {
+    return this.data[key];
+  },
+  setItem(key, value) {
+    this.data[key] = value;
+    this.length = Object.keys(this.data).length;
+  },
+  removeItem(key) {
+    delete data[key];
+    this.length = Object.keys(this.data).length;
+  },
+  clear() {
+    this.data = {};
+    this.length = 0;
+  }
+};
+
+/**
  * This class provides an wrapper interface to the a key-value storage.
  * It uses localStorage, sessionStorage or a custom storage if none of the two is available.
  * @export
@@ -20,7 +45,7 @@ export class Storage {
    * @return {Object}
    */
   initStorage() {
-    if (storage != null) {
+    if (storage) {
       return storage;
     }
 
@@ -33,47 +58,32 @@ export class Storage {
       storage = null;
     }
 
-    // In Safari (Mac + iOS) when private browsing is ON,
-    // localStorage is read only
-    // http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
-    const isDisabled = function(store) {
-      try {
-        const testValue = '__VASTStorage__';
-        store.setItem(testValue, testValue);
-        if (store.getItem(testValue) !== testValue) {
-          store.removeItem(testValue);
-          return true;
-        }
-      } catch (e) {
-        return true;
-      }
-      store.removeItem(testValue);
-      return false;
-    };
-
-    if (storage == null || isDisabled(storage)) {
-      let data = {};
-      storage = {
-        length: 0,
-        getItem(key) {
-          return data[key];
-        },
-        setItem(key, value) {
-          data[key] = value;
-          this.length = Object.keys(data).length;
-        },
-        removeItem(key) {
-          delete data[key];
-          this.length = Object.keys(data).length;
-        },
-        clear() {
-          data = {};
-          this.length = 0;
-        }
-      };
+    if (!storage || this.isStorageDisabled(storage)) {
+      storage = DEFAULT_STORAGE;
+      storage.clear();
     }
 
     return storage;
+  }
+
+  /**
+   * Check if storage is disabled (like in certain cases with private browsing).
+   * @param {Object} storage - The storage to check.
+   * @return {Boolean}
+   */
+  isStorageDisabled(storage) {
+    try {
+      const testValue = '__VASTStorage__';
+      storage.setItem(testValue, testValue);
+      if (storage.getItem(testValue) !== testValue) {
+        storage.removeItem(testValue);
+        return true;
+      }
+    } catch (e) {
+      return true;
+    }
+    storage.removeItem(testValue);
+    return false;
   }
 
   /**

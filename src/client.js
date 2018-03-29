@@ -28,9 +28,10 @@ export class VASTClient {
     this.storage = customStorage || new Storage();
 
     // Init values if not already set
-    if (this.lastSuccessfullAd === undefined) {
-      this.lastSuccessfullAd = 0;
+    if (this.lastSuccessfulAd === undefined) {
+      this.lastSuccessfulAd = 0;
     }
+
     if (this.totalCalls === undefined) {
       this.totalCalls = 0;
     }
@@ -39,14 +40,12 @@ export class VASTClient {
     }
   }
 
-  get lastSuccessfullAd() {
-    const lastSuccessfullAd = this.storage.getItem(
-      'vast-client-last-successfull-ad'
-    );
+  get lastSuccessfulAd() {
+    return this.storage.getItem('vast-client-last-successful-ad');
   }
 
-  set lastSuccessfullAd(value) {
-    this.storage.setItem('vast-client-last-successfull-ad', value);
+  set lastSuccessfulAd(value) {
+    this.storage.setItem('vast-client-last-successful-ad', value);
   }
 
   get totalCalls() {
@@ -108,12 +107,12 @@ export class VASTClient {
       );
     }
 
-    const timeSinceLastCall = now - this.lastSuccessfullAd;
+    const timeSinceLastCall = now - this.lastSuccessfulAd;
 
     // Check timeSinceLastCall to be a positive number. If not, this mean the
     // previous was made in the future. We reset lastSuccessfullAd value
     if (timeSinceLastCall < 0) {
-      this.lastSuccessfullAd = 0;
+      this.lastSuccessfulAd = 0;
     } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
       return cb(
         new Error(
