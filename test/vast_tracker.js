@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import should from 'should';
 import { VASTClient } from '../src/vast_client';
 import { VASTParser } from '../src/parser/vast_parser';
-import { VASTTracker } from '../src/tracker';
+import { VASTTracker } from '../src/vast_tracker';
 
 const now = new Date();
 const vastParser = new VASTParser();

@@ -79,7 +79,7 @@ export class VASTTracker extends EventEmitter {
     // If the tracker is associated with a client we add a listener to the start event
     // to update the lastSuccessfulAd property.
     if (client) {
-      this.on('start', function() {
+      this.on('start', () => {
         client.lastSuccessfullAd = +new Date();
       });
     }
