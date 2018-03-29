@@ -1,6 +1,6 @@
 import path from 'path';
 import should from 'should';
-import { VASTParser } from '../src/parser/parser';
+import { VASTParser } from '../src/parser/vast_parser';
 import { VASTResponse } from '../src/vast_response';
 
 const vastParser = new VASTParser();

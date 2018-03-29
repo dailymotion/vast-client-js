@@ -2,7 +2,7 @@ import path from 'path';
 import sinon from 'sinon';
 import should from 'should';
 import { VASTClient } from '../src/vast_client';
-import { VASTParser } from '../src/parser/parser';
+import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/tracker';
 
 const now = new Date();
