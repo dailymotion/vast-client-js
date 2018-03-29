@@ -1,7 +1,7 @@
 import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
-import { VASTClient } from '../src/client';
+import { VASTClient } from '../src/vast_client';
 
 describe('VASTClient', () => {
   const urlfor = relpath =>
