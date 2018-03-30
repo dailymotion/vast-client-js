@@ -1,5 +1,10 @@
 # VAST Parser
-The VAST Parser is accessed through *DMVAST.parser* object.
+Get an instance of the `VASTParser` by importing and using the class constructor:
+``` javascript
+import { VASTParser } from 'vast-client'
+
+const parser = new VASTParser();
+```
 
 Whenever an error occurs during the VAST parsing, the parser will call on his own all related tracking error URLs. Reported errors are:
 
@@ -21,7 +26,7 @@ Once the VAST document parsed, a callback method is called with an array [`VASTA
 Add the *replace* function at the end of the `URLTemplateFilters` array. All functions in `URLTemplateFilters`  will be called with the VAST URL as parameter before fetching the VAST URL document.
 
 ``` javascript
-DMVAST.parser.addURLTemplateFilter(function(vastUrl) {
+parser.addURLTemplateFilter(function(vastUrl) {
     return url.replace('[DOMAIN]', 'mywebsite.com')
 });
 // For a VASTAdTagURI defined as :
@@ -34,11 +39,11 @@ DMVAST.parser.addURLTemplateFilter(function(vastUrl) {
 Reset `URLTemplateFilters` to empty, previous *replace* function set with `addURLTemplateFilter()` are no longer called.
 
 ``` javascript
-DMVAST.parser.addURLTemplateFilter(function(vastUrl) {
+parser.addURLTemplateFilter(function(vastUrl) {
     return url.replace('[DOMAIN]', 'mywebsite.com')
 });
 
-DMVAST.parser.clearUrlTemplateFilters();
+parser.clearUrlTemplateFilters();
 // [DOMAIN] placeholder is no longer replaced
 ```
 
@@ -46,11 +51,11 @@ DMVAST.parser.clearUrlTemplateFilters();
 Returns how many *replace* function are set (ie: `URLTemplateFilters` length)
 
 ``` javascript
-DMVAST.parser.addURLTemplateFilter(function(vastUrl) {
+parser.addURLTemplateFilter(function(vastUrl) {
     return url.replace('[DOMAIN]', 'mywebsite.com')
 });
 
-DMVAST.parser.clearUrlTemplateFilters();
+parser.clearUrlTemplateFilters();
 // return 1
 ```
 
@@ -75,7 +80,7 @@ var options = {
     wrapperLimit : 5
 };
 
-DMVAST.parser.load(xml, options, function(error, response) {
+parser.load(xml, options, function(error, response) {
   // process the VAST response
 });
 ```
@@ -84,12 +89,12 @@ DMVAST.parser.load(xml, options, function(error, response) {
 Add the *listener* function for the event named *eventName*. *eventName* value can be :
 * `String` *VAST-error* – emitted when the parser encountered a VAST error (ie: no ads, warapper timeout...). The VAST error code is passed to the *listener* function as a parameter.
 ``` javascript
-DMVAST.parser.on(`VAST-error`, function(error) {
+parser.on(`VAST-error`, function(error) {
     console.log('error:', error)
 });
 
 // Parsing a no ad VAST xml document
-DMVAST.parser.load(xmlNoAds, options, function(error, response) {});
+parser.load(xmlNoAds, options, function(error, response) {});
 // Will log => "error: {ERRORCODE: 303}""
 ```
 
@@ -115,7 +120,7 @@ var options = {
     wrapperLimit : 5
 };
 
-DMVAST.parser.parse(url, options, function(response, error) {
+parser.parse(url, options, function(response, error) {
   // process the VAST response
 });
 ```
@@ -131,8 +136,8 @@ var replaceDomain = function() {
     return url.replace('[DOMAIN]', 'mywebsite.com')
 };
 
-DMVAST.parser.addURLTemplateFilter(replaceDomain);
+parser.addURLTemplateFilter(replaceDomain);
 // ...
-DMVAST.parser.removeURLTemplateFilter(replaceDomain);
+parser.removeURLTemplateFilter(replaceDomain);
 // [DOMAIN] placeholder is no longer replaced
 ```
