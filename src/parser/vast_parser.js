@@ -94,9 +94,9 @@ export class VASTParser extends EventEmitter {
   fetchVAST(url, options) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
-      for (let filter of this.URLTemplateFilters) {
+      this.URLTemplateFilters.forEach(filter => {
         url = filter(url);
-      }
+      });
 
       this.parentURLs.push(url);
       this.emit('resolving', { url });
@@ -275,10 +275,10 @@ export class VASTParser extends EventEmitter {
           let index = vastResponse.ads.indexOf(ad);
           vastResponse.ads.splice(index, 1);
 
-          for (let wrappedAd of wrappedResponse.ads) {
+          wrappedResponse.ads.forEach(wrappedAd => {
             this.mergeWrapperAdData(wrappedAd, ad);
             vastResponse.ads.splice(++index, 0, wrappedAd);
-          }
+          });
         }
 
         this.completeWrapperResolving(vastResponse, wrapperDepth, cb);
@@ -349,7 +349,7 @@ export class VASTParser extends EventEmitter {
     );
     wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
 
-    for (let creative of wrappedAd.creatives) {
+    wrappedAd.creatives.forEach(creative => {
       if (
         (ad.trackingEvents != null
           ? ad.trackingEvents[creative.type]
@@ -365,20 +365,20 @@ export class VASTParser extends EventEmitter {
           ].concat(urls);
         }
       }
-    }
+    });
 
     if (
       ad.videoClickTrackingURLTemplates != null
         ? ad.videoClickTrackingURLTemplates.length
         : undefined
     ) {
-      for (let creative of wrappedAd.creatives) {
+      wrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
           creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(
             ad.videoClickTrackingURLTemplates
           );
         }
-      }
+      });
     }
 
     if (
@@ -386,18 +386,18 @@ export class VASTParser extends EventEmitter {
         ? ad.videoCustomClickURLTemplates.length
         : undefined
     ) {
-      for (let creative of wrappedAd.creatives) {
+      wrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
           creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(
             ad.videoCustomClickURLTemplates
           );
         }
-      }
+      });
     }
 
     // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
     if (ad.videoClickThroughURLTemplate != null) {
-      for (let creative of wrappedAd.creatives) {
+      wrappedAd.creatives.forEach(creative => {
         if (
           creative.type === 'linear' &&
           creative.videoClickThroughURLTemplate == null
@@ -405,7 +405,7 @@ export class VASTParser extends EventEmitter {
           creative.videoClickThroughURLTemplate =
             ad.videoClickThroughURLTemplate;
         }
-      }
+      });
     }
   }
 }
