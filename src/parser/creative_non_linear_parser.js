@@ -2,11 +2,25 @@ import { CreativeNonLinear } from '../creative/creative_non_linear';
 import { NonLinearAd } from '../non_linear_ad';
 import { ParserUtils } from './parser_utils';
 
+/**
+ * This class provides methods to parse a VAST NonLinear Element.
+ * @export
+ * @class CreativeNonLinearParser
+ */
 export class CreativeNonLinearParser {
+  /**
+   * Creates an instance of CreativeNonLinearParser.
+   */
   constructor() {
     this.parserUtils = new ParserUtils();
   }
 
+  /**
+   * Parses a NonLinear element.
+   * @param  {any} creativeElement - The VAST NonLinear element to parse.
+   * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
+   * @return {CreativeNonLinear}
+   */
   parse(creativeElement, creativeAttributes) {
     const creative = new CreativeNonLinear(creativeAttributes);
 

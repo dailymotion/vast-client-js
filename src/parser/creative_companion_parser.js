@@ -2,11 +2,25 @@ import { CompanionAd } from '../companion_ad';
 import { CreativeCompanion } from '../creative/creative_companion';
 import { ParserUtils } from './parser_utils';
 
+/**
+ * This class provides methods to parse a VAST CompanionAd Element.
+ * @export
+ * @class CreativeCompanionParser
+ */
 export class CreativeCompanionParser {
+  /**
+   * Creates an instance of CreativeCompanionParser.
+   */
   constructor() {
     this.parserUtils = new ParserUtils();
   }
 
+  /**
+   * Parses a CompanionAd.
+   * @param  {Object} creativeElement - The VAST CompanionAd element to parse.
+   * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
+   * @return {CreativeCompanion}
+   */
   parse(creativeElement, creativeAttributes) {
     const creative = new CreativeCompanion(creativeAttributes);
 

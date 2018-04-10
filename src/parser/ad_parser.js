@@ -6,7 +6,15 @@ import { CreativeLinearParser } from './creative_linear_parser';
 import { CreativeNonLinearParser } from './creative_non_linear_parser';
 import { ParserUtils } from './parser_utils';
 
+/**
+ * This class provides methods to parse a VAST Ad Element.
+ * @export
+ * @class AdParser
+ */
 export class AdParser {
+  /**
+   * Creates an instance of AdParser.
+   */
   constructor() {
     this.creativeCompanionParser = new CreativeCompanionParser();
     this.creativeNonLinearParser = new CreativeNonLinearParser();
@@ -14,7 +22,11 @@ export class AdParser {
     this.parserUtils = new ParserUtils();
   }
 
-  // Parse an Ad element (can be either be a Wrapper or an InLine)
+  /**
+   * Parses an Ad element (can either be a Wrapper or an InLine).
+   * @param  {Object} adElement - The VAST Ad element to parse.
+   * @return {Ad}
+   */
   parse(adElement) {
     const childNodes = adElement.childNodes;
 
@@ -36,6 +48,11 @@ export class AdParser {
     }
   }
 
+  /**
+   * Parses an Inline element.
+   * @param  {Object} inLineElement - The VAST Inline element to parse.
+   * @return {Ad}
+   */
   parseInLine(inLineElement) {
     const childNodes = inLineElement.childNodes;
     const ad = new Ad();
@@ -104,7 +121,7 @@ export class AdParser {
           break;
 
         case 'Extensions':
-          this.parseExtension(
+          this.parseExtensions(
             ad.extensions,
             this.parserUtils.childrenByName(node, 'Extension')
           );
@@ -146,6 +163,11 @@ export class AdParser {
     return ad;
   }
 
+  /**
+   * Parses a Wrapper element without resolving the wrapped urls.
+   * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+   * @return {Ad}
+   */
   parseWrapper(wrapperElement) {
     const ad = this.parseInLine(wrapperElement);
     let wrapperURLElement = this.parserUtils.childByName(
@@ -223,7 +245,12 @@ export class AdParser {
     }
   }
 
-  parseExtension(collection, extensions) {
+  /**
+   * Parses an array of Extension elements.
+   * @param  {Array} collection - The array used to store the parsed extensions.
+   * @param  {Array} extensions - The array of extensions to parse.
+   */
+  parseExtensions(collection, extensions) {
     extensions.forEach(extNode => {
       const ext = new AdExtension();
       const extNodeAttrs = extNode.attributes;
@@ -268,6 +295,11 @@ export class AdParser {
     });
   }
 
+  /**
+   * Parses the creative adId Attribute.
+   * @param  {any} creativeElement - The creative element to retrieve the adId from.
+   * @return {String|null}
+   */
   parseCreativeAdIdAttribute(creativeElement) {
     return (
       creativeElement.getAttribute('AdID') || // VAST 2 spec

@@ -3,11 +3,25 @@ import { Icon } from '../icon';
 import { MediaFile } from '../media_file';
 import { ParserUtils } from './parser_utils';
 
+/**
+ * This class provides methods to parse a VAST Linear Element.
+ * @export
+ * @class CreativeLinearParser
+ */
 export class CreativeLinearParser {
+  /**
+   * Creates an instance of CreativeLinearParser.
+   */
   constructor() {
     this.parserUtils = new ParserUtils();
   }
 
+  /**
+   * Parses a Linear element.
+   * @param  {Object} creativeElement - The VAST Linear element to parse.
+   * @param  {any} creativeAttributes - The attributes of the Linear (optional).
+   * @return {CreativeLinear}
+   */
   parse(creativeElement, creativeAttributes) {
     let offset;
     const creative = new CreativeLinear(creativeAttributes);
@@ -240,6 +254,11 @@ export class CreativeLinearParser {
     return creative;
   }
 
+  /**
+   * Parses an horizontal position into a String ('left' or 'right') or into a Number.
+   * @param  {String} xPosition - The x position to parse.
+   * @return {String|Number}
+   */
   parseXPosition(xPosition) {
     if (['left', 'right'].includes(xPosition)) {
       return xPosition;
@@ -248,6 +267,11 @@ export class CreativeLinearParser {
     return parseInt(xPosition || 0);
   }
 
+  /**
+   * Parses an vertical position into a String ('top' or 'bottom') or into a Number.
+   * @param  {String} yPosition - The x position to parse.
+   * @return {String|Number}
+   */
   parseYPosition(yPosition) {
     if (['top', 'bottom'].includes(yPosition)) {
       return yPosition;
