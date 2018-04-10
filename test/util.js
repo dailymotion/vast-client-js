@@ -94,19 +94,4 @@ describe('Util', function() {
     it('should handle undefined', () =>
       should(resolve(undefined)).equal(undefined));
   });
-
-  describe('#merge', function() {
-    it('should merge 2 objects', function() {
-      const foo = { a: 1, b: 1 };
-      const bar = { b: 2, c: 3 };
-      util.merge(foo, bar).should.eql({ a: 1, b: 2, c: 3 });
-    });
-
-    it('should merge 3 objects', function() {
-      const foo = { a: 1, b: 1 };
-      const bar = { b: 2, c: 3 };
-      const lol = { b: 7, d: 4 };
-      util.merge(foo, bar, lol).should.eql({ a: 1, b: 7, c: 3, d: 4 });
-    });
-  });
 });

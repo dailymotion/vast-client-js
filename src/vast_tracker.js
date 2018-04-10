@@ -101,12 +101,18 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Sets the progress of the ad.
+   * Sets the duration of the ad and updates the quartiles based on that.
+   * This is required for tracking time related events.
    *
-   * @param {Number} progress - The progress of the ad.
+   * @param {Number} progress - Current playback time in seconds.
+   * @emits VASTTracker#start
    * @emits VASTTracker#skip-countdown
-   * @emits VASTTracker#progress-[]
+   * @emits VASTTracker#progress-[0-100]%
+   * @emits VASTTracker#progress-[currentTime]
    * @emits VASTTracker#rewind
+   * @emits VASTTracker#firstQuartile
+   * @emits VASTTracker#midpoint
+   * @emits VASTTracker#thirdQuartile
    */
   setProgress(progress) {
     const skipDelay = this.skipDelay || this.skipDelayDefault;
@@ -151,9 +157,9 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Sets the muted status on the ad.
+   * Updates the mute state and calls the mute/unmute tracking URLs.
    *
-   * @param {Boolean} muted - The muted status.
+   * @param {Boolean} muted - Indicates if the video is muted or not.
    * @emits VASTTracker#mute
    * @emits VASTTracker#unmute
    */
@@ -165,9 +171,9 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Sets the paused status on the ad.
+   * Update the pause state and call the resume/pause tracking URLs.
    *
-   * @param {Boolean} paused - The paused status.
+   * @param {Boolean} paused - Indicates if the video is paused or not.
    * @emits VASTTracker#pause
    * @emits VASTTracker#resume
    */
@@ -179,9 +185,9 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Sets the fullscreen status on the ad.
+   * Updates the fullscreen state and calls the fullscreen tracking URLs.
    *
-   * @param {Boolean} fullscreen - The fullscreen status.
+   * @param {Boolean} fullscreen - Indicates if the video is in fulscreen mode or not.
    * @emits VASTTracker#fullscreen
    * @emits VASTTracker#exitFullscreen
    */
@@ -193,9 +199,9 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Sets the expanded status on the ad.
+   * Updates the expand state and calls the expand/collapse tracking URLs.
    *
-   * @param {Boolean} expanded - The expanded status.
+   * @param {Boolean} expanded - Indicates if the video is expanded or not.
    * @emits VASTTracker#expand
    * @emits VASTTracker#collapse
    */
@@ -207,9 +213,12 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Sets the skip delay.
+   * Must be called if you want to overwrite the <Linear> Skipoffset value.
+   * This will init the skip countdown duration. Then, every time setProgress() is called,
+   * it will decrease the countdown and emit a skip-countdown event with the remaining time.
+   * Do not call this method if you want to keep the original Skipoffset value.
    *
-   * @param {Number} duration - The skip delay.
+   * @param {Number} duration - The time in seconds until the skip button is displayed.
    */
   setSkipDelay(duration) {
     if (typeof duration === 'number') {
@@ -231,9 +240,10 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * To be called when an error happen with the proper error code.
+   * Send a request to the URI provided by the VAST <Error> element.
+   * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
    *
-   * @param {Number|String} errorCode - A string or number defining the error code.
+   * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
    */
   errorWithCode(errorCode) {
     this.trackURLs(this.ad.errorURLTemplates, { ERRORCODE: errorCode });
@@ -241,6 +251,7 @@ export class VASTTracker extends EventEmitter {
 
   /**
    * Must be called when the user watched the linear creative until its end.
+   * Calls the complete tracking URLs.
    *
    * @emits VASTTracker#complete
    */
@@ -250,6 +261,7 @@ export class VASTTracker extends EventEmitter {
 
   /**
    * Must be called when the player or the window is closed during the ad.
+   * Calls the `closeLinear` (in VAST 3.0) and `close` tracking URLs.
    *
    * @emits VASTTracker#closeLinear
    * @emits VASTTracker#close
@@ -259,7 +271,7 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Must be called when the skip button is clicked.0
+   * Must be called when the skip button is clicked. Calls the skip tracking URLs.
    *
    * @emits VASTTracker#skip
    */

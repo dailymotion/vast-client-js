@@ -95,10 +95,6 @@ export class Util {
     return range;
   }
 
-  merge(...xs) {
-    return Object.assign(...xs);
-  }
-
   isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }

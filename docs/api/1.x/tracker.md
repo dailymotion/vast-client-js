@@ -1,11 +1,6 @@
 # VASTTracker
 
-The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance by importing and using the class constructor:
-``` javascript
-import { VASTTracker } from 'vast-client'
-
-const vastTracker = new VASTTracker( ad , creative [, variation] )
-```
+The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
 
 - `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
 - `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
@@ -13,10 +8,10 @@ const vastTracker = new VASTTracker( ad , creative [, variation] )
 
 ``` javascript
 // Create a VAST Tracker instance for a linear ad
-const vastTracker = new VASTTracker(ad, creative);
+var vastTracker = new DMVAST.tracker(ad, creative);
 
 // Create a VAST Tracker instance for a companion ad
-const vastTracker = new VASTTracker(ad, creative, companion);
+var vastTracker = new DMVAST.tracker(ad, creative, companion);
 ```
 
 ## Methods
@@ -231,33 +226,6 @@ player.addEventListener('timeupdate', function(e) {
 
 vastTracker.on('firstQuartile', function() {
   // firstQuartile tracking URLs have been called
-});
-```
-
-### setExpand( expanded )
-Update the expand state and call the *expand*/*collapse* tracking URLs. Emit a *expand* or *collapse* event.
-
-- `Boolean` *expanded* – Indicate if the video is expanded or not.
-
-``` javascript
-// Sample function for a button that increase/decrease player size
-var playerExpanded = false
-expandButton.addEventListener('click',  function(e) {
-  playerExpanded = !playerExpanded
-  if (playerExpanded) {
-    increasePlayerSize()
-  } else {
-    decreasePlayerSize()
-  }
-  vastTracker.setExpand(playerExpanded);
-});
-
-vastTracker.on('expand', function() {
-  // expand tracking URLs have been called
-});
-
-vastTracker.on('collapse', function() {
-  // collapse tracking URLs have been called
 });
 ```
 

@@ -20,11 +20,11 @@ describe('VASTParser', function() {
     before(done => {
       eventsTriggered = [];
 
-      vastParser.on('resolving', variables =>
-        eventsTriggered.push({ name: 'resolving', data: variables })
+      vastParser.on('VAST-resolving', variables =>
+        eventsTriggered.push({ name: 'VAST-resolving', data: variables })
       );
-      vastParser.on('resolved', variables =>
-        eventsTriggered.push({ name: 'resolved', data: variables })
+      vastParser.on('VAST-resolved', variables =>
+        eventsTriggered.push({ name: 'VAST-resolved', data: variables })
       );
 
       vastParser.addURLTemplateFilter(url => {
@@ -63,14 +63,20 @@ describe('VASTParser', function() {
 
     it('should have emitted resolving/resolved events', () => {
       eventsTriggered.should.eql([
-        { name: 'resolving', data: { url: urlfor('wrapper-notracking.xml') } },
-        { name: 'resolved', data: { url: urlfor('wrapper-notracking.xml') } },
-        { name: 'resolving', data: { url: urlfor('wrapper-a.xml') } },
-        { name: 'resolved', data: { url: urlfor('wrapper-a.xml') } },
-        { name: 'resolving', data: { url: urlfor('wrapper-b.xml') } },
-        { name: 'resolved', data: { url: urlfor('wrapper-b.xml') } },
-        { name: 'resolving', data: { url: urlfor('sample.xml') } },
-        { name: 'resolved', data: { url: urlfor('sample.xml') } }
+        {
+          name: 'VAST-resolving',
+          data: { url: urlfor('wrapper-notracking.xml') }
+        },
+        {
+          name: 'VAST-resolved',
+          data: { url: urlfor('wrapper-notracking.xml') }
+        },
+        { name: 'VAST-resolving', data: { url: urlfor('wrapper-a.xml') } },
+        { name: 'VAST-resolved', data: { url: urlfor('wrapper-a.xml') } },
+        { name: 'VAST-resolving', data: { url: urlfor('wrapper-b.xml') } },
+        { name: 'VAST-resolved', data: { url: urlfor('wrapper-b.xml') } },
+        { name: 'VAST-resolving', data: { url: urlfor('sample.xml') } },
+        { name: 'VAST-resolved', data: { url: urlfor('sample.xml') } }
       ]);
     });
 
