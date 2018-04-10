@@ -810,14 +810,20 @@ describe('VASTParser', function() {
       const url = urlfor('wrapper-notracking.xml');
       vastParser.urlHandler.get(url, {}, (err, xml) => {
         // `VAST > Wrapper > VASTAdTagURI` in the VAST must be an absolute URL
-        for (let node of Array.from(xml.documentElement.childNodes)) {
+        for (let nodeKey in xml.documentElement.childNodes) {
+          const node = xml.documentElement.childNodes[nodeKey];
+
           if (node.nodeName === 'Ad') {
-            for (node of Array.from(node.childNodes)) {
-              if (node.nodeName === 'Wrapper') {
-                for (node of Array.from(node.childNodes)) {
-                  if (node.nodeName === 'VASTAdTagURI') {
-                    node.textContent = urlfor(
-                      vastParser.parserUtils.parseNodeText(node)
+            for (let adNodeKey in node.childNodes) {
+              const adNode = node.childNodes[adNodeKey];
+
+              if (adNode.nodeName === 'Wrapper') {
+                for (let wrapperNodeKey in adNode.childNodes) {
+                  const wrapperNode = adNode.childNodes[wrapperNodeKey];
+
+                  if (wrapperNode.nodeName === 'VASTAdTagURI') {
+                    wrapperNode.textContent = urlfor(
+                      vastParser.parserUtils.parseNodeText(wrapperNode)
                     );
                     break;
                   }

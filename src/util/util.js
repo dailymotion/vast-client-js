@@ -2,11 +2,12 @@ export class Util {
   track(URLTemplates, variables) {
     const URLs = this.resolveURLTemplates(URLTemplates, variables);
 
-    for (let URL of URLs) {
+    URLs.forEach(URL => {
       if (typeof window !== 'undefined' && window !== null) {
         const i = new Image();
+        i.src = URL;
       }
-    }
+    });
   }
 
   resolveURLTemplates(URLTemplates, variables) {
@@ -46,11 +47,13 @@ export class Util {
     // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
     variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
-    for (let URLTemplate of URLTemplates) {
-      let resolveURL = URLTemplate;
+    for (let URLTemplateKey in URLTemplates) {
+      let resolveURL = URLTemplates[URLTemplateKey];
+
       if (!resolveURL) {
         continue;
       }
+
       for (let key in variables) {
         const value = variables[key];
         const macro1 = `[${key}]`;

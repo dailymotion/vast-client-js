@@ -111,9 +111,9 @@ export class VASTTracker extends EventEmitter {
         }
       }
 
-      for (let eventName of events) {
+      events.forEach(eventName => {
         this.track(eventName, true);
-      }
+      });
 
       if (progress < this.progress) {
         this.track('rewind');
