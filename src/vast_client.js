@@ -84,7 +84,7 @@ export class VASTClient {
       }
     }
 
-    const now = +new Date();
+    const now = Date.now();
     options = Object.assign(this.defaultOptions, options);
 
     // Check totalCallsTimeout (first call + 1 hour), if older than now,
