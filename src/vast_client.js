@@ -1,6 +1,6 @@
 import { Storage } from './util/storage';
 import { Util } from './util/util';
-import { VASTParser } from './parser/parser';
+import { VASTParser } from './parser/vast_parser';
 
 /**
  * This class provides methods to fetch and parse a VAST document using VASTParser.
@@ -123,7 +123,7 @@ export class VASTClient {
       );
     }
 
-    return this.vastParser.parse(url, options, (response, err) => {
+    return this.vastParser.getAndParse(url, options, (err, response) => {
       return cb(err, response);
     });
   }

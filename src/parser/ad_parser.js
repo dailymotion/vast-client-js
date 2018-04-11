@@ -6,7 +6,15 @@ import { CreativeLinearParser } from './creative_linear_parser';
 import { CreativeNonLinearParser } from './creative_non_linear_parser';
 import { ParserUtils } from './parser_utils';
 
+/**
+ * This class provides methods to parse a VAST Ad Element.
+ * @export
+ * @class AdParser
+ */
 export class AdParser {
+  /**
+   * Creates an instance of AdParser.
+   */
   constructor() {
     this.creativeCompanionParser = new CreativeCompanionParser();
     this.creativeNonLinearParser = new CreativeNonLinearParser();
@@ -14,7 +22,38 @@ export class AdParser {
     this.parserUtils = new ParserUtils();
   }
 
-  parse(inLineElement) {
+  /**
+   * Parses an Ad element (can either be a Wrapper or an InLine).
+   * @param  {Object} adElement - The VAST Ad element to parse.
+   * @return {Ad}
+   */
+  parse(adElement) {
+    const childNodes = adElement.childNodes;
+
+    for (let adTypeElementKey in childNodes) {
+      const adTypeElement = childNodes[adTypeElementKey];
+
+      if (!['Wrapper', 'InLine'].includes(adTypeElement.nodeName)) {
+        continue;
+      }
+
+      this.parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
+      this.parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
+
+      if (adTypeElement.nodeName === 'Wrapper') {
+        return this.parseWrapper(adTypeElement);
+      } else if (adTypeElement.nodeName === 'InLine') {
+        return this.parseInLine(adTypeElement);
+      }
+    }
+  }
+
+  /**
+   * Parses an Inline element.
+   * @param  {Object} inLineElement - The VAST Inline element to parse.
+   * @return {Ad}
+   */
+  parseInLine(inLineElement) {
     const childNodes = inLineElement.childNodes;
     const ad = new Ad();
     ad.id = inLineElement.getAttribute('id') || null;
@@ -33,55 +72,56 @@ export class AdParser {
           break;
 
         case 'Creatives':
-          for (let creativeElement of this.parserUtils.childrenByName(
-            node,
-            'Creative'
-          )) {
-            const creativeAttributes = {
-              id: creativeElement.getAttribute('id') || null,
-              adId: this.parseCreativeAdIdAttribute(creativeElement),
-              sequence: creativeElement.getAttribute('sequence') || null,
-              apiFramework: creativeElement.getAttribute('apiFramework') || null
-            };
+          this.parserUtils
+            .childrenByName(node, 'Creative')
+            .forEach(creativeElement => {
+              const creativeAttributes = {
+                id: creativeElement.getAttribute('id') || null,
+                adId: this.parseCreativeAdIdAttribute(creativeElement),
+                sequence: creativeElement.getAttribute('sequence') || null,
+                apiFramework:
+                  creativeElement.getAttribute('apiFramework') || null
+              };
 
-            for (let creativeTypeElementKey in creativeElement.childNodes) {
-              const creativeTypeElement =
-                creativeElement.childNodes[creativeTypeElementKey];
+              for (let creativeTypeElementKey in creativeElement.childNodes) {
+                const creativeTypeElement =
+                  creativeElement.childNodes[creativeTypeElementKey];
 
-              switch (creativeTypeElement.nodeName) {
-                case 'Linear':
-                  let creativeLinear = this.creativeLinearParser.parse(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  if (creativeLinear) {
-                    ad.creatives.push(creativeLinear);
-                  }
-                  break;
-                case 'NonLinearAds':
-                  let creativeNonLinear = this.creativeNonLinearParser.parse(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  if (creativeNonLinear) {
-                    ad.creatives.push(creativeNonLinear);
-                  }
-                  break;
-                case 'CompanionAds':
-                  let creativeCompanion = this.creativeCompanionParser.parse(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  if (creativeCompanion) {
-                    ad.creatives.push(creativeCompanion);
-                  }
-                  break;
+                switch (creativeTypeElement.nodeName) {
+                  case 'Linear':
+                    let creativeLinear = this.creativeLinearParser.parse(
+                      creativeTypeElement,
+                      creativeAttributes
+                    );
+                    if (creativeLinear) {
+                      ad.creatives.push(creativeLinear);
+                    }
+                    break;
+                  case 'NonLinearAds':
+                    let creativeNonLinear = this.creativeNonLinearParser.parse(
+                      creativeTypeElement,
+                      creativeAttributes
+                    );
+                    if (creativeNonLinear) {
+                      ad.creatives.push(creativeNonLinear);
+                    }
+                    break;
+                  case 'CompanionAds':
+                    let creativeCompanion = this.creativeCompanionParser.parse(
+                      creativeTypeElement,
+                      creativeAttributes
+                    );
+                    if (creativeCompanion) {
+                      ad.creatives.push(creativeCompanion);
+                    }
+                    break;
+                }
               }
-            }
-          }
+            });
           break;
+
         case 'Extensions':
-          this.parseExtension(
+          this.parseExtensions(
             ad.extensions,
             this.parserUtils.childrenByName(node, 'Extension')
           );
@@ -123,8 +163,95 @@ export class AdParser {
     return ad;
   }
 
-  parseExtension(collection, extensions) {
-    for (let extNode of extensions) {
+  /**
+   * Parses a Wrapper element without resolving the wrapped urls.
+   * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+   * @return {Ad}
+   */
+  parseWrapper(wrapperElement) {
+    const ad = this.parseInLine(wrapperElement);
+    let wrapperURLElement = this.parserUtils.childByName(
+      wrapperElement,
+      'VASTAdTagURI'
+    );
+
+    if (wrapperURLElement != null) {
+      ad.nextWrapperURL = this.parserUtils.parseNodeText(wrapperURLElement);
+    } else {
+      wrapperURLElement = this.parserUtils.childByName(
+        wrapperElement,
+        'VASTAdTagURL'
+      );
+
+      if (wrapperURLElement != null) {
+        ad.nextWrapperURL = this.parserUtils.parseNodeText(
+          this.parserUtils.childByName(wrapperURLElement, 'URL')
+        );
+      }
+    }
+
+    ad.creatives.forEach(wrapperCreativeElement => {
+      if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
+        // TrackingEvents Linear / NonLinear
+        if (wrapperCreativeElement.trackingEvents != null) {
+          if (!ad.trackingEvents) {
+            ad.trackingEvents = {};
+          }
+          if (!ad.trackingEvents[wrapperCreativeElement.type]) {
+            ad.trackingEvents[wrapperCreativeElement.type] = {};
+          }
+          for (let eventName in wrapperCreativeElement.trackingEvents) {
+            const urls = wrapperCreativeElement.trackingEvents[eventName];
+            if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
+              ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
+            }
+            urls.forEach(url => {
+              ad.trackingEvents[wrapperCreativeElement.type][eventName].push(
+                url
+              );
+            });
+          }
+        }
+        // ClickTracking
+        if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
+          if (!ad.videoClickTrackingURLTemplates) {
+            ad.videoClickTrackingURLTemplates = [];
+          } // tmp property to save wrapper tracking URLs until they are merged
+          wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(
+            item => {
+              ad.videoClickTrackingURLTemplates.push(item);
+            }
+          );
+        }
+        // ClickThrough
+        if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
+          ad.videoClickThroughURLTemplate =
+            wrapperCreativeElement.videoClickThroughURLTemplate;
+        }
+        // CustomClick
+        if (wrapperCreativeElement.videoCustomClickURLTemplates != null) {
+          if (!ad.videoCustomClickURLTemplates) {
+            ad.videoCustomClickURLTemplates = [];
+          } // tmp property to save wrapper tracking URLs until they are merged
+          wrapperCreativeElement.videoCustomClickURLTemplates.forEach(item => {
+            ad.videoCustomClickURLTemplates.push(item);
+          });
+        }
+      }
+    });
+
+    if (ad.nextWrapperURL != null) {
+      return ad;
+    }
+  }
+
+  /**
+   * Parses an array of Extension elements.
+   * @param  {Array} collection - The array used to store the parsed extensions.
+   * @param  {Array} extensions - The array of extensions to parse.
+   */
+  parseExtensions(collection, extensions) {
+    extensions.forEach(extNode => {
       const ext = new AdExtension();
       const extNodeAttrs = extNode.attributes;
       const childNodes = extNode.childNodes;
@@ -165,9 +292,14 @@ export class AdParser {
       }
 
       collection.push(ext);
-    }
+    });
   }
 
+  /**
+   * Parses the creative adId Attribute.
+   * @param  {any} creativeElement - The creative element to retrieve the adId from.
+   * @return {String|null}
+   */
   parseCreativeAdIdAttribute(creativeElement) {
     return (
       creativeElement.getAttribute('AdID') || // VAST 2 spec
