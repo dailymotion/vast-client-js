@@ -80,7 +80,7 @@ export class VASTTracker extends EventEmitter {
     // to update the lastSuccessfulAd property.
     if (client) {
       this.on('start', () => {
-        client.lastSuccessfullAd = +new Date();
+        client.lastSuccessfullAd = Date.now();
       });
     }
   }
@@ -323,7 +323,7 @@ export class VASTTracker extends EventEmitter {
       this.emit(eventName, '');
     }
 
-    if (once === true) {
+    if (once) {
       delete this.trackingEvents[eventName];
       if (isAlwaysEmitEvent) {
         this.emitAlwaysEvents.splice(
