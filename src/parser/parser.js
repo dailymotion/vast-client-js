@@ -2,7 +2,7 @@ import { AdParser } from './ad_parser';
 import { EventEmitter } from 'events';
 import { ParserUtils } from './parser_utils';
 import { URLHandler } from '../url_handler';
-import { Util } from '../util';
+import { Util } from '../util/util';
 import { VASTResponse } from '../vast_response';
 
 const DEFAULT_MAX_WRAPPER_WIDTH = 10;
