@@ -1,9 +1,9 @@
 import path from 'path';
 import sinon from 'sinon';
 import should from 'should';
-import { VASTClient } from '../src/client';
-import { VASTParser } from '../src/parser/parser';
-import { VASTTracker } from '../src/tracker';
+import { VASTClient } from '../src/vast_client';
+import { VASTParser } from '../src/parser/vast_parser';
+import { VASTTracker } from '../src/vast_tracker';
 
 const now = new Date();
 const vastParser = new VASTParser();
@@ -35,14 +35,14 @@ describe('VASTTracker', function() {
         return url;
       });
 
-      vastParser.parse(urlfor('wrapper-a.xml'), response => {
+      vastParser.getAndParse(urlfor('wrapper-a.xml'), (err, response) => {
         this.response = response;
         done();
       });
     });
 
     after(() => {
-      vastParser.clearUrlTemplateFilters();
+      vastParser.clearURLTemplateFilters();
     });
 
     describe('#linear', () => {
@@ -270,13 +270,13 @@ describe('VASTTracker', function() {
         });
       });
 
-      describe('#load', () => {
+      describe('#trackImpression', () => {
         before(done => {
           _eventsSent = [];
           this.Tracker.util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
-          this.Tracker.load();
+          this.Tracker.trackImpression();
           done();
         });
 
@@ -294,7 +294,7 @@ describe('VASTTracker', function() {
 
         it('should only be called once', () => {
           _eventsSent = [];
-          this.Tracker.load();
+          this.Tracker.trackImpression();
           _eventsSent.should.eql([]);
         });
       });

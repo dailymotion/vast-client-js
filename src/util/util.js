@@ -1,83 +1,16 @@
-let storage = null;
-
 export class Util {
-  constructor() {
-    this.storage = this.initStorage();
-  }
-
-  initStorage() {
-    if (storage != null) {
-      return storage;
-    }
-
-    try {
-      storage =
-        typeof window !== 'undefined' && window !== null
-          ? window.localStorage || window.sessionStorage
-          : null;
-    } catch (storageError) {
-      storage = null;
-    }
-
-    // In Safari (Mac + iOS) when private browsing is ON,
-    // localStorage is read only
-    // http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
-    const isDisabled = function(store) {
-      try {
-        const testValue = '__VASTUtil__';
-        store.setItem(testValue, testValue);
-        if (store.getItem(testValue) !== testValue) {
-          return true;
-        }
-      } catch (e) {
-        return true;
-      }
-      return false;
-    };
-
-    if (storage == null || isDisabled(storage)) {
-      let data = {};
-      storage = {
-        length: 0,
-        getItem(key) {
-          return data[key];
-        },
-        setItem(key, value) {
-          data[key] = value;
-          this.length = Object.keys(data).length;
-        },
-        removeItem(key) {
-          delete data[key];
-          this.length = Object.keys(data).length;
-        },
-        clear() {
-          data = {};
-          this.length = 0;
-        }
-      };
-    }
-
-    return storage;
-  }
-
-  getStorage() {
-    return this.storage;
-  }
-
   track(URLTemplates, variables) {
     const URLs = this.resolveURLTemplates(URLTemplates, variables);
 
-    for (let URL of URLs) {
+    URLs.forEach(URL => {
       if (typeof window !== 'undefined' && window !== null) {
         const i = new Image();
+        i.src = URL;
       }
-    }
+    });
   }
 
-  resolveURLTemplates(URLTemplates, variables) {
-    if (variables == null) {
-      variables = {};
-    }
+  resolveURLTemplates(URLTemplates, variables = {}) {
     const URLs = [];
 
     // Encode String variables, when given
@@ -111,11 +44,13 @@ export class Util {
     // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
     variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
-    for (let URLTemplate of URLTemplates) {
-      let resolveURL = URLTemplate;
+    for (let URLTemplateKey in URLTemplates) {
+      let resolveURL = URLTemplates[URLTemplateKey];
+
       if (!resolveURL) {
         continue;
       }
+
       for (let key in variables) {
         const value = variables[key];
         const macro1 = `[${key}]`;
