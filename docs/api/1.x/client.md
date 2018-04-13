@@ -10,7 +10,7 @@ Used for ignoring the first `n` calls. Automatically reset 1 hour after the 1st 
 // Ignore the first 2 calls
 DMVAST.client.cappingFreeLunch = 2;
 
-// Those following DMVAST.client.get calls won't be done
+// The following DMVAST.client.get calls won't be done
 DMVAST.client.get(VASTUrl, cb);
 DMVAST.client.get(VASTUrl, cb);
 

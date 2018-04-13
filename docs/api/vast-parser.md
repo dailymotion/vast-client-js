@@ -8,7 +8,7 @@ The behavior of this component may be confused with the one of `VASTClient`, sin
 
 `VASTParser` provides methods to fetch a VAST resource because of his ability to resolving the wrapper chain (recursive fetch and parse).
 
-Use directly an instance of this class only if you don't need any control on multiple calls, otherwise access it through an instance of `VASTClient`.
+Use an instance of this class directly only if you don't need any control on multiple calls, otherwise access it through an instance of `VASTClient`.
 
 * [Constructor](#constructor)
 * [Events](#events)
@@ -16,7 +16,7 @@ Use directly an instance of this class only if you don't need any control on mul
 * [Methods](#methods)
 
 ### Error tracking
-Whenever an error occurs during the VAST parsing, the parser will call on his own all related tracking error URLs. Reported errors are:
+Whenever an error occurs during the VAST parsing, the parser will call automatically all related tracking error URLs. Reported errors are:
 
 * `no_ad`: The VAST document is empty
 

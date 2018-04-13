@@ -16,7 +16,7 @@ constructor(client, ad, creative, variation = null)
  * **`client: VASTClient`** - An optional instance of VASTClient that can be updated by the tracker.
  * **`ad: Ad`** - The ad to track
  * **`creative: Creative`** - The creative to track
- * **`variation: CompanionAd|NonLinearAd`** - An optional variation of the creative, for Comapnion and NonLinear Ads
+ * **`variation: CompanionAd|NonLinearAd`** - An optional variation of the creative, for Companion and NonLinear Ads
 
 #### Example
 To get an instance of `VASTTracker`, simply import it and create one using the constructor:
@@ -45,25 +45,25 @@ vastTracker.on('exitFullscreen', () => {
 ```
 
 Here is the list of event emitted by the class:
- * **`complete`** - Only for linear ad with a duration. Emitted after `complete()` has been called.
+ * **`complete`** - Only for linear ads with a duration. Emitted after `complete()` has been called.
  * **`clickthrough`** - Emitted when calling `click()` if there is at least one <clickThroughURLTemplate> element. A URL will be passed as a data
- * **`close`** - Only for non-linear ad, emitted when `close()` is called
- * **`closeLinear`** - Only for linear ad, emitted when `close()` is called
+ * **`close`** - Only for non-linear ads, emitted when `close()` is called
+ * **`closeLinear`** - Only for linear ads, emitted when `close()` is called
  * **`creativeView`** - Emitted after `load()` method has been called.
  * **`exitFullscreen`** - Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false
- * **`firstQuartile`** - Only for linear ad with a duration. Emitted when the adunit has reached 25% of its duration
+ * **`firstQuartile`** - Only for linear ads with a duration. Emitted when the adunit has reached 25% of its duration
  * **`fullscreen`** - Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from false to true
- * **`midpoint`** - Only for linear ad with a duration. Emitted when the adunit has reached 50% of its duration
+ * **`midpoint`** - Only for linear ads with a duration. Emitted when the adunit has reached 50% of its duration
  * **`mute`** - Emitted when calling `setMuted(muted)` and changing the mute state from false to true
  * **`pause`** - Emitted when calling `setPaused(paused)` and changing the pause state from false to true
- * **`progress-[0-100]%`** - Only for linear ad with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion
- * **`progress-[currentTime]`** - Only for linear ad with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time
+ * **`progress-[0-100]%`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion
+ * **`progress-[currentTime]`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time
  * **`resume`** - Emitted when calling `setPaused(paused)` and changing the pause state from true to false
  * **`rewind`** - Emitted when `setProgress(duration)` is called with a smaller duration than the previous one
  * **`skip`** - Emitted after calling `skip()`
- * **`skip-countdown`** - Only for linear ad with a duration. Emitted on every `setProgress(duration)` calls, the updated countdown will be passed as a data
- * **`start`** - Only for linear ad with a duration. Emitted on the 1st non-null `setProgress(duration)` call
- * **`thirdQuartile`** - Only for linear ad with a duration. Emitted when the adunit has reached 75% of its duration
+ * **`skip-countdown`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, the updated countdown will be passed as a data
+ * **`start`** - Only for linear ads with a duration. Emitted on the 1st non-null `setProgress(duration)` call
+ * **`thirdQuartile`** - Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration
  * **`unmute`** - Emitted when calling `setMuted(muted)` and changing the mute state from true to false
 
 ## Methods<a name="methods"></a>

@@ -15,14 +15,14 @@ For the full API documentation go [here](#api).
 Complies with the [VAST 3.0 specification](http://www.iab.net/media/file/VASTv3.0.pdf) provided by the [Interactive Advertising Bureau (IAB)](https://www.iab.com/).
 
 ## Get Started
-VAST Client JS is available as a npm package and can be easily installed with:
+VAST Client JS is available as an NPM package and can be easily installed with:
 ```Bash
 npm i vast-client
 ```
 Then import the components you need.
 
 ### VASTClient
-If you need to fetch and parse one (or multiple) VAST documents you can use the **VASTClient**:
+If you need to fetch and parse VAST documents, you can use the **VASTClient**:
 ```javascript
 import { VASTClient } from 'vast-client'
 
@@ -32,7 +32,7 @@ vastClient.get('https://www.exampleVast.com/vast.xml', (err, res) => {
   // Do something with the parsed VAST response
 });
 ```
-In addition to fetching and parsing a VAST resource, **VASTClient** provides option to filter a sequence of call based on count and time of execution, together with the possibility to track urls using **VASTTracker**.
+In addition to fetching and parsing a VAST resource, **VASTClient** provides options to filter a sequence of calls based on count and time of execution, together with the possibility to track URLs using **VASTTracker**.
 
 ### VASTParser
 To directly parse a VAST XML you can use the **VASTParser**:
@@ -69,9 +69,9 @@ The API documentation is organized by components:
 Read the [**2.0 migration guide**](docs/api/2.0-migration.md) to update your project or follow the [**1.x API documentation**](docs/api/1.x) if you're still using the old version.
 
 ## Support and compatibility
-The library is 100% written in JavaScript and the source code uses modern features like `es6 modules`, be sure to use it in an environment which support them or to transpile the library correctly when bundling your project.
+The library is 100% written in JavaScript and the source code uses modern features like `es6 modules`. Make sure your environment supports these features, or transpile the library when bundling your project.
 
-An already bundled version of VAST Client JS is available: [`vast-client.js`](vast-client.js), you can directly add the script to your page and access the library's components through the `VAST` object.
+A pre-bundled version of VAST Client JS is available: [`vast-client.js`](vast-client.js). You can add the script directly to your page and access the library's components through the `VAST` object.
 
 ## Build / Contribute
 

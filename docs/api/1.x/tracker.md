@@ -1,6 +1,6 @@
 # VASTTracker
 
-The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
+The VAST tracker constructor will process the tracking URLs of the selected ad/creative and return an instance of `VASTTracker`. You can create an instance with `new DMVAST.tracker( ad , creative [, variation] )`.
 
 - `Object` *ad* – Reference to the `<Ad>` element of the selected creative.
 - `Object` *creative* – Reference to the `<Creative>` element of the selected creative.
