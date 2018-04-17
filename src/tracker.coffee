@@ -19,6 +19,8 @@ class VASTTracker extends EventEmitter
             'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete',
             'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'
         ]
+        # Have to save already triggered quartile, to not trigger again
+        @_alreadyTriggeredQuartiles = {}
         # Duplicate the creative's trackingEvents property so we can alter it
         for eventName, events of @creative.trackingEvents
             @trackingEvents[eventName] = events.slice(0)
@@ -78,7 +80,9 @@ class VASTTracker extends EventEmitter
                 events.push "progress-#{Math.round(progress)}"
 
                 for quartile, time of @quartiles
-                    events.push quartile if time <= progress <= (time + 1)
+                    if @isQuartileReached(quartile, time, progress)
+                        events.push quartile
+                        @_alreadyTriggeredQuartiles[quartile] = true
 
             for eventName in events
                 @track eventName, yes
@@ -87,6 +91,13 @@ class VASTTracker extends EventEmitter
                 @track "rewind"
 
         @progress = progress
+
+    isQuartileReached: (quartile, time, progress) ->
+        quartileReached = false
+        # if quartile time already reached and never triggered
+        if time <= progress and !@_alreadyTriggeredQuartiles[quartile]
+            quartileReached = true
+        return quartileReached
 
     setMuted: (muted) ->
         if @muted != muted
