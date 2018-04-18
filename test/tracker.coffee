@@ -326,6 +326,28 @@ describe 'VASTTracker', ->
                 it 'should have sent clickthrough event', =>
                     _eventsSent[1].should.eql 'clickthrough'
 
+        describe '#linear seek ads', =>
+            before () =>
+                # Init tracker
+                ad = @response.ads[0]
+                creative = @response.ads[0].creatives[0]
+                @Tracker = new VASTTracker ad, creative
+                # Mock emit
+                @Tracker.emit = (event) =>
+                    _eventsSent.push(event)
+
+            describe '#setProgress seek ads IOS', =>
+                beforeEach (done) =>
+                    _eventsSent = []
+                    done()
+
+                it 'should send start firstQuartile  midpoint thirdQuartile event if seeked', =>
+                    @Tracker.setProgress 68
+                    _eventsSent.should.containEql "start"
+                    _eventsSent.should.containEql "firstQuartile"
+                    _eventsSent.should.containEql "midpoint"
+                    _eventsSent.should.containEql "thirdQuartile"
+
         describe '#companion', =>
             before () =>
                 # Init tracker
