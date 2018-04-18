@@ -420,6 +420,34 @@ describe('VASTTracker', function() {
       });
     });
 
+    describe('#linear seek ads', () => {
+      before(() => {
+        // Init tracker
+        const ad = this.response.ads[0];
+        const creative = this.response.ads[0].creatives[0];
+        this.Tracker = new VASTTracker(vastClient, ad, creative);
+        // Mock emit
+        this.Tracker.emit = event => {
+          _eventsSent.push(event);
+        };
+      });
+
+      describe('#setProgress seek ads IOS', () => {
+        beforeEach(done => {
+          _eventsSent = [];
+          done();
+        });
+
+        it('should send thirdQuartile event', () => {
+          this.Tracker.setProgress(68);
+          _eventsSent.should.containEql('start');
+          _eventsSent.should.containEql('firstQuartile');
+          _eventsSent.should.containEql('midpoint');
+          _eventsSent.should.containEql('thirdQuartile');
+        });
+      });
+    });
+
     describe('#companion', () => {
       before(() => {
         // Init tracker

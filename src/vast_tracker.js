@@ -48,6 +48,8 @@ export class VASTTracker extends EventEmitter {
       'closeLinear',
       'close'
     ];
+    // Have to save already triggered quartile, to not trigger again
+    this._alreadyTriggeredQuartiles = {};
     // Duplicate the creative's trackingEvents property so we can alter it
     for (let eventName in this.creative.trackingEvents) {
       const events = this.creative.trackingEvents[eventName];
@@ -137,9 +139,11 @@ export class VASTTracker extends EventEmitter {
         events.push(`progress-${Math.round(progress)}`);
 
         for (let quartile in this.quartiles) {
-          const time = this.quartiles[quartile];
-          if (time <= progress && progress <= time + 1) {
+          if (
+            this.isQuartileReached(quartile, this.quartiles[quartile], progress)
+          ) {
             events.push(quartile);
+            this._alreadyTriggeredQuartiles[quartile] = true;
           }
         }
       }
@@ -154,6 +158,24 @@ export class VASTTracker extends EventEmitter {
     }
 
     this.progress = progress;
+  }
+
+  /**
+   * Checks if a quartile has been reached without have being triggered already.
+   *
+   * @param {String} quartile - Quartile name
+   * @param {Number} time - Time offset, when this quartile is reached in seconds.
+   * @param {Number} progress - Current progress of the ads in seconds.
+   *
+   * @return {Boolean}
+   */
+  isQuartileReached(quartile, time, progress) {
+    let quartileReached = false;
+    // if quartile time already reached and never triggered
+    if (time <= progress && !this._alreadyTriggeredQuartiles[quartile]) {
+      quartileReached = true;
+    }
+    return quartileReached;
   }
 
   /**
