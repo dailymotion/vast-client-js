@@ -84,7 +84,7 @@ npm test
 
 ### Bundle
 
-The project uses webpack to bundle the assets (output will be `vast-client.js`):
+The project uses rollup to bundle the assets (output will be in `dist` folder):
 ```Bash
 npm run build
 ```
