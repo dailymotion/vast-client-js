@@ -83,7 +83,8 @@ class VASTParser
             if node.nodeName is 'Ad'
                 ad = @parseAdElement node
                 if ad?
-                    if options.determinedSequence?
+                    if options.determinedSequence? and not ad.sequence?
+                        # Set sequence from wrapper if there isn't one on the ad
                         ad.sequence = options.determinedSequence
 
                     response.ads.push ad
