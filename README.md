@@ -12,7 +12,7 @@ This library provides:
  * A VAST tracker, which batches the tracking urls and provides methods for calling them.
 
 
-Complies with [VAST 3.0 spec](http://www.iab.net/media/file/VASTv3.0.pdf).
+Complies with [VAST 3.0 spec](https://www.iab.com/wp-content/uploads/2015/06/VASTv3_0.pdf).
 
 ## Documentation
 The [client](docs/client.md) documentation contains the basic information to parse a VAST URL/Document. For more advanced use of the parser, see the [parser](docs/parser.md) documentation.
