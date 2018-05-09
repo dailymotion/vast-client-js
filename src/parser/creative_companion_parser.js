@@ -78,7 +78,7 @@ export class CreativeCompanionParser {
                 const trackingURLTemplate = this.parserUtils.parseNodeText(
                   trackingElement
                 );
-                if (eventName != null && trackingURLTemplate != null) {
+                if (eventName && trackingURLTemplate) {
                   if (companionAd.trackingEvents[eventName] == null) {
                     companionAd.trackingEvents[eventName] = [];
                   }

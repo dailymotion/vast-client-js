@@ -36,7 +36,7 @@ export class CreativeNonLinearParser {
               trackingElement
             );
 
-            if (eventName != null && trackingURLTemplate != null) {
+            if (eventName && trackingURLTemplate) {
               if (creative.trackingEvents[eventName] == null) {
                 creative.trackingEvents[eventName] = [];
               }
@@ -103,7 +103,7 @@ export class CreativeNonLinearParser {
           nonlinearResource,
           'AdParameters'
         );
-        if (adParamsElement != null) {
+        if (adParamsElement) {
           nonlinearAd.adParameters = this.parserUtils.parseNodeText(
             adParamsElement
           );

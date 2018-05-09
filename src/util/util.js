@@ -14,22 +14,19 @@ export class Util {
     const URLs = [];
 
     // Encode String variables, when given
-    if (variables['ASSETURI'] != null) {
+    if (variables['ASSETURI']) {
       variables['ASSETURI'] = this.encodeURIComponentRFC3986(
         variables['ASSETURI']
       );
     }
-    if (variables['CONTENTPLAYHEAD'] != null) {
+    if (variables['CONTENTPLAYHEAD']) {
       variables['CONTENTPLAYHEAD'] = this.encodeURIComponentRFC3986(
         variables['CONTENTPLAYHEAD']
       );
     }
 
     // Set default value for invalid ERRORCODE
-    if (
-      variables['ERRORCODE'] != null &&
-      !/^[0-9]{3}$/.test(variables['ERRORCODE'])
-    ) {
+    if (variables['ERRORCODE'] && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
       variables['ERRORCODE'] = 900;
     }
 

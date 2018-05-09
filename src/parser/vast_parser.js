@@ -198,7 +198,7 @@ export class VASTParser extends EventEmitter {
       if (node.nodeName === 'Ad') {
         const ad = this.adParser.parse(node);
 
-        if (ad != null) {
+        if (ad) {
           vastResponse.ads.push(ad);
         } else {
           // VAST version of response not supported.
@@ -256,7 +256,7 @@ export class VASTParser extends EventEmitter {
       this.getAndParse(ad.nextWrapperURL, options, (err, wrappedResponse) => {
         delete ad.nextWrapperURL;
 
-        if (err != null) {
+        if (err) {
           // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
           // (URI was either unavailable or reached a timeout as defined by the video player.)
           ad.errorCode = 301;
@@ -265,11 +265,7 @@ export class VASTParser extends EventEmitter {
           return;
         }
 
-        if (
-          (wrappedResponse != null
-            ? wrappedResponse.errorURLTemplates
-            : undefined) != null
-        ) {
+        if (wrappedResponse && wrappedResponse.errorURLTemplates) {
           vastResponse.errorURLTemplates = vastResponse.errorURLTemplates.concat(
             wrappedResponse.errorURLTemplates
           );
@@ -306,7 +302,7 @@ export class VASTParser extends EventEmitter {
     for (let index = vastResponse.ads.length - 1; index >= 0; index--) {
       // Still some Wrappers URL to be resolved -> continue
       let ad = vastResponse.ads[index];
-      if (ad.nextWrapperURL != null) {
+      if (ad.nextWrapperURL) {
         return;
       }
     }
@@ -357,11 +353,7 @@ export class VASTParser extends EventEmitter {
     wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
 
     wrappedAd.creatives.forEach(creative => {
-      if (
-        (ad.trackingEvents != null
-          ? ad.trackingEvents[creative.type]
-          : undefined) != null
-      ) {
+      if (ad.trackingEvents && ad.trackingEvents[creative.type]) {
         for (let eventName in ad.trackingEvents[creative.type]) {
           const urls = ad.trackingEvents[creative.type][eventName];
           if (!creative.trackingEvents[eventName]) {
@@ -375,9 +367,8 @@ export class VASTParser extends EventEmitter {
     });
 
     if (
-      ad.videoClickTrackingURLTemplates != null
-        ? ad.videoClickTrackingURLTemplates.length
-        : undefined
+      ad.videoClickTrackingURLTemplates &&
+      ad.videoClickTrackingURLTemplates.length
     ) {
       wrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
@@ -389,9 +380,8 @@ export class VASTParser extends EventEmitter {
     }
 
     if (
-      ad.videoCustomClickURLTemplates != null
-        ? ad.videoCustomClickURLTemplates.length
-        : undefined
+      ad.videoCustomClickURLTemplates &&
+      ad.videoCustomClickURLTemplates.length
     ) {
       wrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
@@ -403,7 +393,7 @@ export class VASTParser extends EventEmitter {
     }
 
     // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-    if (ad.videoClickThroughURLTemplate != null) {
+    if (ad.videoClickThroughURLTemplate) {
       wrappedAd.creatives.forEach(creative => {
         if (
           creative.type === 'linear' &&

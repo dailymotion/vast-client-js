@@ -377,9 +377,10 @@ export class VASTTracker extends EventEmitter {
   trackURLs(URLTemplates, variables = {}) {
     if (this.linear) {
       if (
-        (this.creative.mediaFiles[0] != null
-          ? this.creative.mediaFiles[0].fileURL
-          : undefined) != null
+        this.creative &&
+        this.creative.mediaFiles &&
+        this.creative.mediaFiles[0] &&
+        this.creative.mediaFiles[0].fileURL
       ) {
         variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
