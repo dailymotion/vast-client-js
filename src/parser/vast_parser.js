@@ -265,7 +265,7 @@ export class VASTParser extends EventEmitter {
           return;
         }
 
-        if (wrappedResponse ? wrappedResponse.errorURLTemplates : undefined) {
+        if (wrappedResponse && wrappedResponse.errorURLTemplates) {
           vastResponse.errorURLTemplates = vastResponse.errorURLTemplates.concat(
             wrappedResponse.errorURLTemplates
           );
@@ -353,7 +353,7 @@ export class VASTParser extends EventEmitter {
     wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
 
     wrappedAd.creatives.forEach(creative => {
-      if (ad.trackingEvents ? ad.trackingEvents[creative.type] : undefined) {
+      if (ad.trackingEvents && ad.trackingEvents[creative.type]) {
         for (let eventName in ad.trackingEvents[creative.type]) {
           const urls = ad.trackingEvents[creative.type][eventName];
           if (!creative.trackingEvents[eventName]) {
@@ -367,9 +367,8 @@ export class VASTParser extends EventEmitter {
     });
 
     if (
-      ad.videoClickTrackingURLTemplates
-        ? ad.videoClickTrackingURLTemplates.length
-        : undefined
+      ad.videoClickTrackingURLTemplates &&
+      ad.videoClickTrackingURLTemplates.length
     ) {
       wrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
@@ -381,9 +380,8 @@ export class VASTParser extends EventEmitter {
     }
 
     if (
-      ad.videoCustomClickURLTemplates
-        ? ad.videoCustomClickURLTemplates.length
-        : undefined
+      ad.videoCustomClickURLTemplates &&
+      ad.videoCustomClickURLTemplates.length
     ) {
       wrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
