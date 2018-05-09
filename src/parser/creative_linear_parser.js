@@ -49,7 +49,7 @@ export class CreativeLinearParser {
       creativeElement,
       'VideoClicks'
     );
-    if (videoClicksElement != null) {
+    if (videoClicksElement) {
       creative.videoClickThroughURLTemplate = this.parserUtils.parseNodeText(
         this.parserUtils.childByName(videoClicksElement, 'ClickThrough')
       );
@@ -75,7 +75,7 @@ export class CreativeLinearParser {
       creativeElement,
       'AdParameters'
     );
-    if (adParamsElement != null) {
+    if (adParamsElement) {
       creative.adParameters = this.parserUtils.parseNodeText(adParamsElement);
     }
 
@@ -89,7 +89,7 @@ export class CreativeLinearParser {
             const trackingURLTemplate = this.parserUtils.parseNodeText(
               trackingElement
             );
-            if (eventName != null && trackingURLTemplate != null) {
+            if (eventName && trackingURLTemplate) {
               if (eventName === 'progress') {
                 offset = trackingElement.getAttribute('offset');
                 if (!offset) {
@@ -175,7 +175,7 @@ export class CreativeLinearParser {
       });
 
     const iconsElement = this.parserUtils.childByName(creativeElement, 'Icons');
-    if (iconsElement != null) {
+    if (iconsElement) {
       this.parserUtils
         .childrenByName(iconsElement, 'Icon')
         .forEach(iconElement => {
@@ -227,7 +227,7 @@ export class CreativeLinearParser {
             iconElement,
             'IconClicks'
           );
-          if (iconClicksElement != null) {
+          if (iconClicksElement) {
             icon.iconClickThroughURLTemplate = this.parserUtils.parseNodeText(
               this.parserUtils.childByName(
                 iconClicksElement,

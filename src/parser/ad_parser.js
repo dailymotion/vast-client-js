@@ -175,7 +175,7 @@ export class AdParser {
       'VASTAdTagURI'
     );
 
-    if (wrapperURLElement != null) {
+    if (wrapperURLElement) {
       ad.nextWrapperURL = this.parserUtils.parseNodeText(wrapperURLElement);
     } else {
       wrapperURLElement = this.parserUtils.childByName(
@@ -183,7 +183,7 @@ export class AdParser {
         'VASTAdTagURL'
       );
 
-      if (wrapperURLElement != null) {
+      if (wrapperURLElement) {
         ad.nextWrapperURL = this.parserUtils.parseNodeText(
           this.parserUtils.childByName(wrapperURLElement, 'URL')
         );
@@ -193,7 +193,7 @@ export class AdParser {
     ad.creatives.forEach(wrapperCreativeElement => {
       if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
         // TrackingEvents Linear / NonLinear
-        if (wrapperCreativeElement.trackingEvents != null) {
+        if (wrapperCreativeElement.trackingEvents) {
           if (!ad.trackingEvents) {
             ad.trackingEvents = {};
           }
@@ -213,7 +213,7 @@ export class AdParser {
           }
         }
         // ClickTracking
-        if (wrapperCreativeElement.videoClickTrackingURLTemplates != null) {
+        if (wrapperCreativeElement.videoClickTrackingURLTemplates) {
           if (!ad.videoClickTrackingURLTemplates) {
             ad.videoClickTrackingURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
@@ -224,12 +224,12 @@ export class AdParser {
           );
         }
         // ClickThrough
-        if (wrapperCreativeElement.videoClickThroughURLTemplate != null) {
+        if (wrapperCreativeElement.videoClickThroughURLTemplate) {
           ad.videoClickThroughURLTemplate =
             wrapperCreativeElement.videoClickThroughURLTemplate;
         }
         // CustomClick
-        if (wrapperCreativeElement.videoCustomClickURLTemplates != null) {
+        if (wrapperCreativeElement.videoCustomClickURLTemplates) {
           if (!ad.videoCustomClickURLTemplates) {
             ad.videoCustomClickURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
@@ -240,7 +240,7 @@ export class AdParser {
       }
     });
 
-    if (ad.nextWrapperURL != null) {
+    if (ad.nextWrapperURL) {
       return ad;
     }
   }
