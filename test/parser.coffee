@@ -432,6 +432,8 @@ describe 'VASTParser', ->
 
             it 'should have retrieved Ad attributes', =>
                 _response.ads[1].id.should.eql "ad_id_0002"
+
+            it 'should have ignored the wrapper\'s sequence', =>
                 should.equal _response.ads[1].sequence, null
 
             it 'should have retrieved Ad sub-elements values', =>
@@ -514,6 +516,23 @@ describe 'VASTParser', ->
                         'http://example.com/wrapperA-linear-clicktracking3'
                     ]
 
+        describe '#For the wrapper-1 ad', ->
+            @response = null
+            @templateFilterCalls = []
+
+            before (done) =>
+                VASTParser.addURLTemplateFilter (url) =>
+                    @templateFilterCalls.push url
+                    return url
+                VASTParser.parse urlfor('wrapper-1.xml'), (@response) =>
+                    done()
+
+            it 'should have called 2 times URLtemplateFilter ', =>
+                @templateFilterCalls.should.have.length 2
+                @templateFilterCalls.should.eql [urlfor('wrapper-1.xml'), urlfor('sample-1.xml')]
+
+            it 'should have carried sequence over from wrapper', =>
+                @response.ads[0].sequence.should.eql "1"
 
         describe '#VAST', ->
             @response = null
