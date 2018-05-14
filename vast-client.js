@@ -776,7 +776,7 @@ VASTParser = (function() {
   };
 
   VASTParser.parseXmlDocument = function(url, parentURLs, options, xml, cb) {
-    var ad, complete, i, j, len, len1, loopIndex, node, ref, ref1, response;
+    var ad, adNode, adNodes, complete, i, j, k, len, len1, len2, loopIndex, node, ref, ref1, response;
     response = new VASTResponse();
     if (!(((xml != null ? xml.documentElement : void 0) != null) && xml.documentElement.nodeName === "VAST")) {
       return cb(new Error('Invalid VAST XMLDocument'));
@@ -788,22 +788,31 @@ VASTParser = (function() {
         response.errorURLTemplates.push(VASTParser.parseNodeText(node));
       }
     }
+    adNodes = [];
     ref1 = xml.documentElement.childNodes;
     for (j = 0, len1 = ref1.length; j < len1; j++) {
       node = ref1[j];
       if (node.nodeName === 'Ad') {
-        ad = VASTParser.parseAdElement(node);
-        if (ad != null) {
-          response.ads.push(ad);
-        } else {
-          VASTParser.track(response.errorURLTemplates, {
-            ERRORCODE: 101
-          });
+        adNodes.push(node);
+      }
+    }
+    for (k = 0, len2 = adNodes.length; k < len2; k++) {
+      adNode = adNodes[k];
+      ad = VASTParser.parseAdElement(adNode);
+      if (ad != null) {
+        if ((options.wrapperSequence != null) && (ad.sequence == null) && adNodes.length === 1) {
+          ad.sequence = options.wrapperSequence;
+          options.wrapperSequence = null;
         }
+        response.ads.push(ad);
+      } else {
+        VASTParser.track(response.errorURLTemplates, {
+          ERRORCODE: 101
+        });
       }
     }
     complete = function(error, errorAlreadyRaised) {
-      var k, len2, noCreatives, ref2;
+      var l, len3, noCreatives, ref2;
       if (error == null) {
         error = null;
       }
@@ -815,8 +824,8 @@ VASTParser = (function() {
       }
       noCreatives = true;
       ref2 = response.ads;
-      for (k = 0, len2 = ref2.length; k < len2; k++) {
-        ad = ref2[k];
+      for (l = 0, len3 = ref2.length; l < len3; l++) {
+        ad = ref2[l];
         if (ad.nextWrapperURL != null) {
           return;
         }
@@ -856,8 +865,9 @@ VASTParser = (function() {
         if (url != null) {
           ad.nextWrapperURL = VASTParser.resolveVastAdTagURI(ad.nextWrapperURL, url);
         }
+        options.wrapperSequence = ad.sequence;
         return VASTParser._parse(ad.nextWrapperURL, parentURLs, options, function(err, wrappedResponse) {
-          var errorAlreadyRaised, index, k, len2, ref3, wrappedAd;
+          var errorAlreadyRaised, index, l, len3, ref3, wrappedAd;
           errorAlreadyRaised = false;
           if (err != null) {
             VASTParser.track(ad.errorURLTemplates, {
@@ -876,8 +886,8 @@ VASTParser = (function() {
             index = response.ads.indexOf(ad);
             response.ads.splice(index, 1);
             ref3 = wrappedResponse.ads;
-            for (k = 0, len2 = ref3.length; k < len2; k++) {
-              wrappedAd = ref3[k];
+            for (l = 0, len3 = ref3.length; l < len3; l++) {
+              wrappedAd = ref3[l];
               VASTParser.mergeWrapperAdData(wrappedAd, ad);
               response.ads.splice(++index, 0, wrappedAd);
             }
