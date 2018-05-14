@@ -79,14 +79,22 @@ class VASTParser
             if node.nodeName is 'Error'
                 response.errorURLTemplates.push (@parseNodeText node)
 
+        adNodes = []
         for node in xml.documentElement.childNodes
             if node.nodeName is 'Ad'
-                ad = @parseAdElement node
-                if ad?
-                    response.ads.push ad
-                else
-                    # VAST version of response not supported.
-                    @track(response.errorURLTemplates, ERRORCODE: 101)
+                adNodes.push node
+
+        for adNode in adNodes
+            ad = @parseAdElement adNode
+            if ad?
+                if options.wrapperSequence? and not ad.sequence? and adNodes.length == 1
+                    ad.sequence = options.wrapperSequence
+                    options.wrapperSequence = null
+
+                response.ads.push ad
+            else
+                # VAST version of response not supported.
+                @track(response.errorURLTemplates, ERRORCODE: 101)
 
         complete = (error = null, errorAlreadyRaised = false) =>
             return unless response
@@ -123,6 +131,8 @@ class VASTParser
                     # Get full URL if url is defined
                     ad.nextWrapperURL = @resolveVastAdTagURI(ad.nextWrapperURL, url)
 
+                 # sequence doesn't carry over in wrapper element
+                options.wrapperSequence = ad.sequence
                 @_parse ad.nextWrapperURL, parentURLs, options, (err, wrappedResponse) =>
                     errorAlreadyRaised = false
                     if err?
