@@ -12,7 +12,7 @@ This library provides three components:
 
 For the full API documentation go [here](#api).
 
-Complies with the [VAST 3.0 specification](http://www.iab.net/media/file/VASTv3.0.pdf) provided by the [Interactive Advertising Bureau (IAB)](https://www.iab.com/).
+Complies with the [VAST 3.0 specification](https://www.iab.com/wp-content/uploads/2015/06/VASTv3_0.pdf) provided by the [Interactive Advertising Bureau (IAB)](https://www.iab.com/).
 
 ## Get Started
 VAST Client JS is available as an NPM package and can be easily installed with:
