@@ -1,7 +1,7 @@
 {
   "name": "vast-client",
   "author": "Olivier Poitrey <rs@dailymotion.com>",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Javascript VAST Client",
   "keywords": [
     "vast",
