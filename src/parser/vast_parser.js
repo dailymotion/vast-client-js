@@ -209,6 +209,21 @@ export class VASTParser extends EventEmitter {
       }
     }
 
+    const adsCount = vastResponse.ads.length;
+    const lastAddedAd = vastResponse.ads[adsCount - 1];
+    // if in child nodes we have only one ads
+    // and wrapperSequence is defined
+    // and this ads doesn't already have sequence
+    if (
+      adsCount === 1 &&
+      options.wrapperSequence !== undefined &&
+      options.wrapperSequence !== null &&
+      lastAddedAd &&
+      !lastAddedAd.sequence
+    ) {
+      lastAddedAd.sequence = options.wrapperSequence;
+    }
+
     // vastResponse.ads is an array of Ads which can either be Inline
     // or wrapper: we need to recursively resolve all the wrappers
     // The recursion chain is:
@@ -253,6 +268,8 @@ export class VASTParser extends EventEmitter {
         options.originalUrl
       );
 
+      // sequence doesn't carry over in wrapper element
+      options.wrapperSequence = ad.sequence;
       this.getAndParse(ad.nextWrapperURL, options, (err, wrappedResponse) => {
         delete ad.nextWrapperURL;
 
