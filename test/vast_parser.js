@@ -676,6 +676,8 @@ describe('VASTParser', function() {
 
       it('should have retrieved Ad attributes', () => {
         _response.ads[1].id.should.eql('ad_id_0002');
+      });
+      it("should have ignored the wrapper's sequence", () => {
         should.equal(_response.ads[1].sequence, null);
       });
 
@@ -779,6 +781,37 @@ describe('VASTParser', function() {
             'http://example.com/wrapperA-linear-clicktracking3'
           ]);
         });
+      });
+    });
+
+    describe('#For the wrapper-1 ad', function() {
+      this.response = null;
+      this.templateFilterCalls = [];
+
+      before(done => {
+        vastParser.addURLTemplateFilter(url => {
+          this.templateFilterCalls.push(url);
+          return url;
+        });
+        vastParser.getAndParse(
+          urlfor('wrapper-sequence.xml'),
+          (err, response) => {
+            this.response = response;
+            done();
+          }
+        );
+      });
+
+      it('should have called 2 times URLtemplateFilter ', () => {
+        this.templateFilterCalls.should.have.length(2);
+        this.templateFilterCalls.should.eql([
+          urlfor('wrapper-sequence.xml'),
+          urlfor('sample-wrapped.xml')
+        ]);
+      });
+
+      it('should have carried sequence over from wrapper', () => {
+        this.response.ads[0].sequence.should.eql('1');
       });
     });
 
