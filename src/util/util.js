@@ -95,4 +95,12 @@ export class Util {
   isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
+
+  flatten(arr) {
+    return arr.reduce((flat, toFlatten) => {
+      return flat.concat(
+        Array.isArray(toFlatten) ? this.flatten(toFlatten) : toFlatten
+      );
+    }, []);
+  }
 }

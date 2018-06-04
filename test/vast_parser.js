@@ -11,7 +11,7 @@ const urlfor = relpath =>
     .replace(/\\/g, '/')}`;
 
 describe('VASTParser', function() {
-  describe('#getAndParse', function() {
+  describe('#getAndParseVAST', function() {
     this.response = null;
     let _response = null;
     this.templateFilterCalls = [];
@@ -31,7 +31,7 @@ describe('VASTParser', function() {
         this.templateFilterCalls.push(url);
         return url;
       });
-      vastParser.getAndParse(
+      vastParser.getAndParseVAST(
         urlfor('wrapper-notracking.xml'),
         (err, response) => {
           this.response = response;
@@ -793,7 +793,7 @@ describe('VASTParser', function() {
           this.templateFilterCalls.push(url);
           return url;
         });
-        vastParser.getAndParse(
+        vastParser.getAndParseVAST(
           urlfor('wrapper-sequence.xml'),
           (err, response) => {
             this.response = response;
@@ -819,7 +819,7 @@ describe('VASTParser', function() {
       this.response = null;
 
       before(done => {
-        vastParser.getAndParse(urlfor('vpaid.xml'), (err, response) => {
+        vastParser.getAndParseVAST(urlfor('vpaid.xml'), (err, response) => {
           this.response = response;
           done();
         });
@@ -837,7 +837,7 @@ describe('VASTParser', function() {
     });
   });
 
-  describe('#parse', function() {
+  describe('#parseVAST', function() {
     this.response = null;
     this.templateFilterCalls = [];
 
@@ -871,7 +871,8 @@ describe('VASTParser', function() {
             }
           }
         }
-        vastParser.parse(xml, (err, response) => {
+
+        vastParser.parseVAST(xml, (err, response) => {
           this.response = response;
           done();
         });
@@ -925,49 +926,55 @@ describe('VASTParser', function() {
 
     describe('#No-Ad', function() {
       it('emits a VAST-error & track', done =>
-        vastParser.getAndParse(urlfor('empty-no-ad.xml'), (err, response) => {
-          // Response doesn't have any ads
-          response.ads.should.eql([]);
-          // Error has been triggered
-          dataTriggered.length.should.eql(1);
-          dataTriggered[0].ERRORCODE.should.eql(303);
-          dataTriggered[0].extensions.should.eql([]);
-          // Tracking has been done
-          trackCalls.length.should.eql(1);
-          trackCalls[0].templates.should.eql([
-            'http://example.com/empty-no-ad'
-          ]);
-          trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-          done();
-        }));
+        vastParser.getAndParseVAST(
+          urlfor('empty-no-ad.xml'),
+          (err, response) => {
+            // Response doesn't have any ads
+            response.ads.should.eql([]);
+            // Error has been triggered
+            dataTriggered.length.should.eql(1);
+            dataTriggered[0].ERRORCODE.should.eql(303);
+            dataTriggered[0].extensions.should.eql([]);
+            // Tracking has been done
+            trackCalls.length.should.eql(1);
+            trackCalls[0].templates.should.eql([
+              'http://example.com/empty-no-ad'
+            ]);
+            trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
+            done();
+          }
+        ));
 
       it('when wrapped, emits a VAST-error & track', done =>
-        vastParser.getAndParse(urlfor('wrapper-empty.xml'), (err, response) => {
-          // Response doesn't have any ads
-          response.ads.should.eql([]);
-          // Error has been triggered
-          dataTriggered.length.should.eql(1);
-          dataTriggered[0].ERRORCODE.should.eql(303);
-          dataTriggered[0].extensions[0].children[0].name.should.eql(
-            'paramWrapperEmptyNoAd'
-          );
-          dataTriggered[0].extensions[0].children[0].value.should.eql(
-            'valueWrapperEmptyNoAd'
-          );
-          // Tracking has been done
-          trackCalls.length.should.eql(1);
-          trackCalls[0].templates.should.eql([
-            'http://example.com/wrapper-empty_wrapper-error',
-            'http://example.com/empty-no-ad'
-          ]);
-          trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
-          done();
-        }));
+        vastParser.getAndParseVAST(
+          urlfor('wrapper-empty.xml'),
+          (err, response) => {
+            // Response doesn't have any ads
+            response.ads.should.eql([]);
+            // Error has been triggered
+            dataTriggered.length.should.eql(1);
+            dataTriggered[0].ERRORCODE.should.eql(303);
+            dataTriggered[0].extensions[0].children[0].name.should.eql(
+              'paramWrapperEmptyNoAd'
+            );
+            dataTriggered[0].extensions[0].children[0].value.should.eql(
+              'valueWrapperEmptyNoAd'
+            );
+            // Tracking has been done
+            trackCalls.length.should.eql(1);
+            trackCalls[0].templates.should.eql([
+              'http://example.com/wrapper-empty_wrapper-error',
+              'http://example.com/empty-no-ad'
+            ]);
+            trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
+            done();
+          }
+        ));
     });
 
     describe('#Ad with no creatives', function() {
       it('emits a VAST-error & track', done =>
-        vastParser.getAndParse(
+        vastParser.getAndParseVAST(
           urlfor('empty-no-creative.xml'),
           (err, response) => {
             // Response doesn't have any ads
@@ -992,7 +999,7 @@ describe('VASTParser', function() {
         ));
 
       it('when wrapped, emits a VAST-error & track', done =>
-        vastParser.getAndParse(
+        vastParser.getAndParseVAST(
           urlfor('wrapper-empty-no-creative.xml'),
           (err, response) => {
             // Response doesn't have any ads
@@ -1026,7 +1033,7 @@ describe('VASTParser', function() {
 
     describe('#Invalid XML file (parsing error)', function() {
       it('returns an error', done =>
-        vastParser.getAndParse(
+        vastParser.getAndParseVAST(
           urlfor('invalid-xmlfile.xml'),
           (err, response) => {
             // No response returned
@@ -1040,7 +1047,7 @@ describe('VASTParser', function() {
         ));
 
       it('when wrapped, emits a VAST-error & track', done =>
-        vastParser.getAndParse(
+        vastParser.getAndParseVAST(
           urlfor('wrapper-invalid-xmlfile.xml'),
           (err, response) => {
             // Response doesn't have any ads
@@ -1069,7 +1076,7 @@ describe('VASTParser', function() {
 
     describe('#Wrapper limit reached', () =>
       it('emits a VAST-error & track', done =>
-        vastParser.getAndParse(
+        vastParser.getAndParseVAST(
           urlfor('wrapper-a.xml'),
           { wrapperLimit: 1 },
           (err, response) => {
@@ -1103,26 +1110,29 @@ describe('VASTParser', function() {
     });
 
     it('correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', done =>
-      vastParser.getAndParse(urlfor('wrapper-legacy.xml'), (err, response) => {
-        it('should have found 1 ad', () => {
-          response.ads.should.have.length(1);
-        });
+      vastParser.getAndParseVAST(
+        urlfor('wrapper-legacy.xml'),
+        (err, response) => {
+          it('should have found 1 ad', () => {
+            response.ads.should.have.length(1);
+          });
 
-        it('should have returned a VAST response object', () => {
-          response.should.be.an.instanceOf(VASTResponse);
-        });
+          it('should have returned a VAST response object', () => {
+            response.should.be.an.instanceOf(VASTResponse);
+          });
 
-        // we just want to make sure that the sample.xml was loaded correctly
-        const linear = response.ads[0].creatives[0];
-        it('should have parsed media file attributes', () => {
-          const mediaFile = linear.mediaFiles[0];
-          mediaFile.width.should.equal(512);
-          mediaFile.height.should.equal(288);
-          mediaFile.mimeType.should.equal('video/mp4');
-          mediaFile.fileURL.should.equal('http://example.com/asset.mp4');
-        });
+          // we just want to make sure that the sample.xml was loaded correctly
+          const linear = response.ads[0].creatives[0];
+          it('should have parsed media file attributes', () => {
+            const mediaFile = linear.mediaFiles[0];
+            mediaFile.width.should.equal(512);
+            mediaFile.height.should.equal(288);
+            mediaFile.mimeType.should.equal('video/mp4');
+            mediaFile.fileURL.should.equal('http://example.com/asset.mp4');
+          });
 
-        done();
-      }));
+          done();
+        }
+      ));
   });
 });

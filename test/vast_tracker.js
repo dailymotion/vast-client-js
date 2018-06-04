@@ -35,7 +35,7 @@ describe('VASTTracker', function() {
         return url;
       });
 
-      vastParser.getAndParse(urlfor('wrapper-a.xml'), (err, response) => {
+      vastParser.getAndParseVAST(urlfor('wrapper-a.xml'), (err, response) => {
         this.response = response;
         done();
       });

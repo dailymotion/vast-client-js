@@ -114,10 +114,10 @@ describe('VASTClient', () => {
         withCredentials: true,
         timeout: 0
       };
-      vastClient.vastParser.parse = sinon.spy();
+      vastClient.vastParser.parseVAST = sinon.spy();
 
       vastClient.get(wrapperUrl, options, (err, response) => {
-        vastClient.vastParser.parse.should.be.alwaysCalledWith(
+        vastClient.vastParser.parseVAST.should.be.alwaysCalledWith(
           wrapperUrl,
           mergedOptions
         );
