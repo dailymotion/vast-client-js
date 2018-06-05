@@ -28,6 +28,10 @@ export class VASTParser extends EventEmitter {
     this.maxWrapperDepth = null;
     this.URLTemplateFilters = [];
     this.parentURLs = [];
+    this.parentURLs = [];
+    this.errorURLTemplates = [];
+    this.fetchingOptions = {};
+
     this.parserUtils = new ParserUtils();
     this.adParser = new AdParser();
     this.util = new Util();
@@ -116,11 +120,18 @@ export class VASTParser extends EventEmitter {
     });
   }
 
-  initParsingStatus(options) {
+  /**
+   * Inits the parsing properties of the class with the custom values provided as options.
+   * @param {Object} options - The options to initialize a parsing sequence
+   */
+  initParsingStatus(options = {}) {
     this.parentURLs = [];
     this.errorURLTemplates = [];
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
-    this.fetchingOptions = options;
+    this.fetchingOptions = {
+      timeout: options.timeout,
+      withCredentials: options.withCredentials
+    };
   }
 
   /**
@@ -161,6 +172,15 @@ export class VASTParser extends EventEmitter {
       .catch(err => cb(err));
   }
 
+  /**
+   * Parses the given xml Object into a VASTResponse.
+   * Executes the callback with either an error or the fully parsed VASTResponse.
+   * @param    {Object} vastXml - An object representing a vast xml document.
+   * @param    {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits    VASTParserr#VAST-resolving
+   * @emits    VASTParserr#VAST-resolved
+   * @callback cb
+   */
   parseVAST(vastXml, options, cb) {
     if (!cb) {
       if (typeof options === 'function') {
@@ -186,12 +206,13 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Parses the given xml Object into a VASTResponse.
-   * Executes the callback with either an error or the fully parsed VASTResponse.
-   * @param    {Object} vastXml - An object representing an xml document.
-   * @param    {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits    VASTParserr#VAST-resolving
-   * @emits    VASTParserr#VAST-resolved
+   * Parses the given xml Object into an array of ads
+   * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
+   * @param  {Object} vastXml - An object representing an xml document.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParserr#VAST-resolving
+   * @emits  VASTParserr#VAST-resolved
+   * @return {Promise}
    */
   parse(
     vastXml,
@@ -274,10 +295,12 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Resolves the wrappers contained in the given VASTResponse in a recursive way.
-   * Executes the callback with either an error or the fully resolved VASTResponse.
-   * @param    {VASTResponse} vastResponse - An already parsed VASTResponse that may contain some unresolved wrappers.
-   * @param    {Object} options - An optional Object of parameters to be used in the resolving process.
+   * Resolves the wrappers for the given ad in a recursive way.
+   * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
+   * @param  {Ad} ad - An ad to be unwrapped.
+   * @param  {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
+   * @param  {String} originalUrl - The original vast url.
+   * @return {Promise}
    */
   resolveWrappers(ad, wrapperDepth, originalUrl) {
     return new Promise((resolve, reject) => {
@@ -343,10 +366,8 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Helper function for resolveWrappers. Has to be called for every resolved wrapper and takes care of handling errors
-   * and calling the callback with the resolved VASTResponse.
-   * @param    {VASTResponse} vastResponse - A resolved VASTResponse.
-   * @param    {Number} wrapperDepth - The wrapper chain depth (used to check if every wrapper has been resolved).
+   * Takes care of handling errors when the wrappers are resolved.
+   * @param {VASTResponse} vastResponse - A resolved VASTResponse.
    */
   completeWrapperResolving(vastResponse) {
     // We've to wait for all <Ad> elements to be parsed before handling error so we can:
@@ -377,24 +398,24 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Merges the wrapper data with the given ad data.
-   * @param  {Ad} wrappedAd - The wrapper Ad.
-   * @param  {Ad} ad - The 'unwrapped' Ad.
+   * Merges the data between an unwrapped ad and his wrapper.
+   * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
+   * @param  {Ad} wrapper - The wrapper Ad.
    * @return {void}
    */
-  mergeWrapperAdData(wrappedAd, ad) {
-    wrappedAd.errorURLTemplates = ad.errorURLTemplates.concat(
-      wrappedAd.errorURLTemplates
+  mergeWrapperAdData(unwrappedAd, wrapper) {
+    unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(
+      unwrappedAd.errorURLTemplates
     );
-    wrappedAd.impressionURLTemplates = ad.impressionURLTemplates.concat(
-      wrappedAd.impressionURLTemplates
+    unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(
+      unwrappedAd.impressionURLTemplates
     );
-    wrappedAd.extensions = ad.extensions.concat(wrappedAd.extensions);
+    unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
-    wrappedAd.creatives.forEach(creative => {
-      if (ad.trackingEvents && ad.trackingEvents[creative.type]) {
-        for (let eventName in ad.trackingEvents[creative.type]) {
-          const urls = ad.trackingEvents[creative.type][eventName];
+    unwrappedAd.creatives.forEach(creative => {
+      if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
+        for (let eventName in wrapper.trackingEvents[creative.type]) {
+          const urls = wrapper.trackingEvents[creative.type][eventName];
           if (!creative.trackingEvents[eventName]) {
             creative.trackingEvents[eventName] = [];
           }
@@ -406,40 +427,40 @@ export class VASTParser extends EventEmitter {
     });
 
     if (
-      ad.videoClickTrackingURLTemplates &&
-      ad.videoClickTrackingURLTemplates.length
+      wrapper.videoClickTrackingURLTemplates &&
+      wrapper.videoClickTrackingURLTemplates.length
     ) {
-      wrappedAd.creatives.forEach(creative => {
+      unwrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
           creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(
-            ad.videoClickTrackingURLTemplates
+            wrapper.videoClickTrackingURLTemplates
           );
         }
       });
     }
 
     if (
-      ad.videoCustomClickURLTemplates &&
-      ad.videoCustomClickURLTemplates.length
+      wrapper.videoCustomClickURLTemplates &&
+      wrapper.videoCustomClickURLTemplates.length
     ) {
-      wrappedAd.creatives.forEach(creative => {
+      unwrappedAd.creatives.forEach(creative => {
         if (creative.type === 'linear') {
           creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(
-            ad.videoCustomClickURLTemplates
+            wrapper.videoCustomClickURLTemplates
           );
         }
       });
     }
 
     // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-    if (ad.videoClickThroughURLTemplate) {
-      wrappedAd.creatives.forEach(creative => {
+    if (wrapper.videoClickThroughURLTemplate) {
+      unwrappedAd.creatives.forEach(creative => {
         if (
           creative.type === 'linear' &&
           creative.videoClickThroughURLTemplate == null
         ) {
           creative.videoClickThroughURLTemplate =
-            ad.videoClickThroughURLTemplate;
+            wrapper.videoClickThroughURLTemplate;
         }
       });
     }
