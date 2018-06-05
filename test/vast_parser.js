@@ -835,6 +835,29 @@ describe('VASTParser', function() {
         this.response.ads[0].creatives[0].duration.should.be.equal(-1);
       });
     });
+
+    describe('#Ad Pod', function() {
+      this.response = null;
+
+      before(done => {
+        vastParser.getAndParseVAST(
+          urlfor('wrapper-ad-pod.xml'),
+          (err, response) => {
+            this.response = response;
+            done();
+          }
+        );
+      });
+
+      it('should have parsed 2 ads', () => {
+        this.response.ads.should.have.length(2);
+      });
+
+      it('should have maintened the sequence when resolving wrappers', () => {
+        this.response.ads[0].sequence.should.be.equal('1');
+        this.response.ads[1].sequence.should.be.equal('2');
+      });
+    });
   });
 
   describe('#parseVAST', function() {
