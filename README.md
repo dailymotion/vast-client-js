@@ -41,7 +41,7 @@ import { VASTParser } from 'vast-client'
 
 const vastParser = new VASTParser();
 
-vastParser.parse(vastXml, (err, res) => {
+vastParser.parseVAST(vastXml, (err, res) => {
   // Do something with the parsed VAST XML
 });
 ```

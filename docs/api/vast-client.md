@@ -87,7 +87,7 @@ vastClient.vastParser.clearUrlTemplateFilters();
 #### storage: Storage
 Instance of a class which implements the `Storage` interface. Should be set up only once through the constructor.
 
-## Methods<a name="methods"></a>
+## Public Methods 💚 <a name="methods"></a>
 
 ### get(url, [options,] cb)
 Gets a parsed VAST document for the given url, applying the skipping rules defined (`cappingFreeLunch` and `cappingMinimumTimeInterval`).

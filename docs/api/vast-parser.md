@@ -59,15 +59,6 @@ Here is the list of event emitted by the class:
 
 ## Properties<a name="properties"></a>
 
-#### maxWrapperDepth: Number
-The max reachable depth in the wrapper chain.
-
-#### parentURLs: Array
-Array of parent urls in the wrapper chain.
-
-#### URLTemplateFilters: Array
-Array of url filter functions to be applied in before a request.
-
 #### urlHandler: URLHandler
 Instance of the support class `URLHandler`, is used to make the requests.
 
@@ -173,7 +164,7 @@ Fetches and parses a VAST for the given url. Executes the callback with either a
 
 #### Example
 ```Javascript
-vastParser.getAndParse('http://example.dailymotion.com/vast.xml', (err, res) => {
+vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', (err, res) => {
   // Do something with the parsed VASTResponse
 });
 
@@ -183,7 +174,7 @@ const options = {
   withCredentials: true,
   wrapperLimit: 7
 }
-vastParser.getAndParse('http://example.dailymotion.com/vast.xml', options, (err, res) => {
+vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options, (err, res) => {
   // Do something with the parsed VASTResponse
 });
 ```
@@ -207,7 +198,7 @@ Parses the given xml Object into a `VASTResponse`. Executes the callback with ei
 ```Javascript
 const vastXml = (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
 
-vastParser.parse(vastXml, (err, res) => {
+vastParser.parseVAST(vastXml, (err, res) => {
   // Do something with the parsed VASTResponse
 });
 ```
