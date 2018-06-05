@@ -93,7 +93,6 @@ export class VASTParser extends EventEmitter {
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
-   * @param  {Object} options - An optional Object of parameters to be used in the request.
    * @emits  VASTParserr#VAST-resolving
    * @emits  VASTParserr#VAST-resolved
    * @return {Promise}
