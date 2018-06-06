@@ -74,8 +74,9 @@ export class Storage {
    * @return {Boolean}
    */
   isStorageDisabled(storage) {
+    const testValue = '__VASTStorage__';
+
     try {
-      const testValue = '__VASTStorage__';
       storage.setItem(testValue, testValue);
       if (storage.getItem(testValue) !== testValue) {
         storage.removeItem(testValue);
