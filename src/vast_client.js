@@ -40,6 +40,10 @@ export class VASTClient {
     }
   }
 
+  getParser() {
+    return this.vastParser;
+  }
+
   get lastSuccessfulAd() {
     return this.storage.getItem('vast-client-last-successful-ad');
   }
