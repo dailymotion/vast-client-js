@@ -35,7 +35,6 @@ export class VASTParser extends EventEmitter {
     this.parserUtils = new ParserUtils();
     this.adParser = new AdParser();
     this.util = new Util();
-    this.urlHandler = new URLHandler();
   }
 
   /**
@@ -131,6 +130,8 @@ export class VASTParser extends EventEmitter {
       timeout: options.timeout,
       withCredentials: options.withCredentials
     };
+
+    this.urlHandler = options.urlhandler || new URLHandler();
   }
 
   /**
