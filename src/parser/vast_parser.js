@@ -345,9 +345,9 @@ export class VASTParser extends EventEmitter {
               }
 
               unwrappedAds.forEach(unwrappedAd => {
-                // console.log('here', unwrappedAd.id);
-                // console.log(unwrappedAd);
-                this.mergeWrapperAdData(unwrappedAd, ad);
+                if (unwrappedAd) {
+                  this.mergeWrapperAdData(unwrappedAd, ad);
+                }
               });
 
               resolve(unwrappedAds);
