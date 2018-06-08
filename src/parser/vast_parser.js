@@ -28,7 +28,6 @@ export class VASTParser extends EventEmitter {
     this.maxWrapperDepth = null;
     this.URLTemplateFilters = [];
     this.parentURLs = [];
-    this.parentURLs = [];
     this.errorURLTemplates = [];
     this.fetchingOptions = {};
 
@@ -78,7 +77,7 @@ export class VASTParser extends EventEmitter {
    * @param  {Array} urlTemplates - An Array of url templates to use to make the tracking call.
    * @param  {Object} errorCode - An Object containing the error data.
    * @param  {Object} data - One (or more) Object containing additional data.
-   * @emits  VASTParserr#VAST-error
+   * @emits  VASTParser#VAST-error
    * @return {void}
    */
   trackVastError(urlTemplates, errorCode, ...data) {
@@ -93,8 +92,8 @@ export class VASTParser extends EventEmitter {
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
-   * @emits  VASTParserr#VAST-resolving
-   * @emits  VASTParserr#VAST-resolved
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
   fetchVAST(url) {
@@ -138,8 +137,8 @@ export class VASTParser extends EventEmitter {
    * Executes the callback with either an error or the fully parsed VASTResponse.
    * @param    {String} url - The url to request the VAST document.
    * @param    {Object} options - An optional Object of parameters to be used in the request.
-   * @emits    VASTParserr#VAST-resolving
-   * @emits    VASTParserr#VAST-resolved
+   * @emits    VASTParser#VAST-resolving
+   * @emits    VASTParser#VAST-resolved
    * @callback cb
    */
   getAndParseVAST(url, options, cb) {
@@ -176,8 +175,8 @@ export class VASTParser extends EventEmitter {
    * Executes the callback with either an error or the fully parsed VASTResponse.
    * @param    {Object} vastXml - An object representing a vast xml document.
    * @param    {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits    VASTParserr#VAST-resolving
-   * @emits    VASTParserr#VAST-resolved
+   * @emits    VASTParser#VAST-resolving
+   * @emits    VASTParser#VAST-resolved
    * @callback cb
    */
   parseVAST(vastXml, options, cb) {
@@ -209,8 +208,8 @@ export class VASTParser extends EventEmitter {
    * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
    * @param  {Object} vastXml - An object representing an xml document.
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits  VASTParserr#VAST-resolving
-   * @emits  VASTParserr#VAST-resolved
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
   parse(
