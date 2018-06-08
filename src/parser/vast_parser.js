@@ -34,7 +34,6 @@ export class VASTParser extends EventEmitter {
     this.parserUtils = new ParserUtils();
     this.adParser = new AdParser();
     this.util = new Util();
-    this.urlHandler = new URLHandler();
   }
 
   /**
@@ -130,6 +129,8 @@ export class VASTParser extends EventEmitter {
       timeout: options.timeout,
       withCredentials: options.withCredentials
     };
+
+    this.urlHandler = options.urlhandler || new URLHandler();
   }
 
   /**
@@ -286,7 +287,6 @@ export class VASTParser extends EventEmitter {
           resolve(res);
         })
         .catch(err => {
-          console.log(err);
           reject(err);
         });
     });
@@ -304,7 +304,6 @@ export class VASTParser extends EventEmitter {
     return new Promise((resolve, reject) => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
-
       // We already have a resolved VAST ad, no need to resolve wrapper
       if (!ad.nextWrapperURL) {
         resolve(ad);
@@ -343,9 +342,9 @@ export class VASTParser extends EventEmitter {
               }
 
               unwrappedAds.forEach(unwrappedAd => {
-                // console.log('here', unwrappedAd.id);
-                // console.log(unwrappedAd);
-                this.mergeWrapperAdData(unwrappedAd, ad);
+                if (unwrappedAd) {
+                  this.mergeWrapperAdData(unwrappedAd, ad);
+                }
               });
 
               resolve(unwrappedAds);
