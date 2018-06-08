@@ -74,16 +74,6 @@ vastClient.get(VASTUrl, cb);
 vastClient.get(VASTUrl, cb);
 ```
 
-#### vastParser: VASTParser
-The instance of `VASTParser` used by the client to parse the VAST. Use it to directly call a method provided by the `VASTParser` class.
-
-```Javascript
-const vastClient = new VASTClient();
-
-// Clear the url template filters used
-vastClient.vastParser.clearUrlTemplateFilters();
-```
-
 #### storage: Storage
 Instance of a class which implements the `Storage` interface. Should be set up only once through the constructor.
 
@@ -100,6 +90,7 @@ When done executes the callback with either an Error or the fully parsed [`VASTR
     * `timeout: Number` - A custom timeout for the requests (default `0`)
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
+    * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
  * **`cb: function`** - Error first callback which will be called once the parsing is done
 
 #### Example
@@ -119,4 +110,15 @@ const options = {
 vastClient.get('http://example.dailymotion.com/vast.xml', options, (err, res) => {
   // Do something with the parsed VASTResponse
 });
+```
+
+#### getParser()
+Returns the instance of `VASTParser` used by the client to parse the VAST. Use it to directly call a method provided by the `VASTParser` class.
+
+```Javascript
+const vastClient = new VASTClient();
+const vastParser = vastClient.getParser();
+
+// Clear the url template filters used
+vastParser.clearUrlTemplateFilters();
 ```

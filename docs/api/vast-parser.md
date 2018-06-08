@@ -142,6 +142,7 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves or
  * **`options: Object`** - An optional Object of parameters to be used in the request
     * `timeout: Number` - A custom timeout for the requests (default `0`)
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
+    * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
 
 #### Events emitted
  * **`VAST-resolved`**
@@ -156,6 +157,7 @@ Fetches and parses a VAST for the given url. Executes the callback with either a
     * `timeout: Number` - A custom timeout for the requests (default `0`)
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
+    * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
  * **`cb: function`** - Error first callback which will be called once the parsing is done
 
 #### Events emitted
@@ -188,6 +190,7 @@ Parses the given xml Object into a `VASTResponse`. Executes the callback with ei
     * `timeout: Number` - A custom timeout for the possible wrapper resolving requests (default `0`)
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
+    * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
  * **`cb: function`** - Error first callback which will be called once the parsing is done
 
 #### Events emitted

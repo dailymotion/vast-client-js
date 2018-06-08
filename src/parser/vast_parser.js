@@ -288,7 +288,6 @@ export class VASTParser extends EventEmitter {
           resolve(res);
         })
         .catch(err => {
-          console.log(err);
           reject(err);
         });
     });
@@ -306,7 +305,6 @@ export class VASTParser extends EventEmitter {
     return new Promise((resolve, reject) => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
-
       // We already have a resolved VAST ad, no need to resolve wrapper
       if (!ad.nextWrapperURL) {
         resolve(ad);
