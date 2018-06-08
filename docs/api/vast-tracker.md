@@ -66,7 +66,7 @@ Here is the list of event emitted by the class:
  * **`thirdQuartile`** - Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration
  * **`unmute`** - Emitted when calling `setMuted(muted)` and changing the mute state from true to false
 
-## Methods<a name="methods"></a>
+## Public Methods 💚 <a name="methods"></a>
 
 ### errorWithCode(errorCode)
 Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substituted with `errorCode`.

@@ -123,7 +123,7 @@ export class VASTClient {
       );
     }
 
-    return this.vastParser.getAndParse(url, options, (err, response) => {
+    return this.vastParser.getAndParseVAST(url, options, (err, response) => {
       return cb(err, response);
     });
   }

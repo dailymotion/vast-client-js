@@ -1,6 +1,6 @@
 # VASTParser
 
-The `VASTParser` class provides a parser to manage the fetching ([`getandparse`](#getandparse) method) and direct parsing ([`parse`](#parse) method) of VAST documents.
+The `VASTParser` class provides a parser to manage the fetching ([`getAndParseVAST`](#getandparse) method) and direct parsing ([`parseVAST`](#parse) method) of VAST documents.
 
 The behavior of this component may be confused with the one of `VASTClient`, since they both provide a way to fetch and parse a VAST document.
 
@@ -59,20 +59,11 @@ Here is the list of event emitted by the class:
 
 ## Properties<a name="properties"></a>
 
-#### maxWrapperDepth: Number
-The max reachable depth in the wrapper chain.
-
-#### parentURLs: Array
-Array of parent urls in the wrapper chain.
-
-#### URLTemplateFilters: Array
-Array of url filter functions to be applied in before a request.
-
 #### urlHandler: URLHandler
 Instance of the support class `URLHandler`, is used to make the requests.
 
 
-## Methods<a name="methods"></a>
+## Public Methods 💚 <a name="methods"></a>
 
 ### addURLTemplateFilter(filter)
 Adds a filter function to the array of filters which are called before fetching a VAST document.
@@ -156,7 +147,7 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves or
  * **`VAST-resolved`**
  * **`VAST-resolving`**
 
-### getAndParse(url, options, cb)<a name="getandparse"></a>
+### getAndParseVAST(url, options, cb)<a name="getandparse"></a>
 Fetches and parses a VAST for the given url. Executes the callback with either an error or the fully parsed `VASTResponse`.
 
 #### Parameters
@@ -173,7 +164,7 @@ Fetches and parses a VAST for the given url. Executes the callback with either a
 
 #### Example
 ```Javascript
-vastParser.getAndParse('http://example.dailymotion.com/vast.xml', (err, res) => {
+vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', (err, res) => {
   // Do something with the parsed VASTResponse
 });
 
@@ -183,12 +174,12 @@ const options = {
   withCredentials: true,
   wrapperLimit: 7
 }
-vastParser.getAndParse('http://example.dailymotion.com/vast.xml', options, (err, res) => {
+vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options, (err, res) => {
   // Do something with the parsed VASTResponse
 });
 ```
 
-### parse(vastXml, options, cb)<a name="parse"></a>
+### parseVAST(vastXml, options, cb)<a name="parse"></a>
 Parses the given xml Object into a `VASTResponse`. Executes the callback with either an error or the fully parsed `VASTResponse`.
 
 #### Parameters
@@ -207,29 +198,38 @@ Parses the given xml Object into a `VASTResponse`. Executes the callback with ei
 ```Javascript
 const vastXml = (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
 
-vastParser.parse(vastXml, (err, res) => {
+vastParser.parseVAST(vastXml, (err, res) => {
   // Do something with the parsed VASTResponse
 });
 ```
-### resolveWrappers(vastResponse, options, cb)
-Resolves the wrappers contained in the given `VASTResponse` in a recursive way. Executes the callback with either an error or the fully resolved `VASTResponse`.
+
+## Private Methods :warning:<a name="private-methods"></a>
+These methods documentation is provided in order to make the parser internal logic clearer. It should not be considered as part of the class public API
+
+### parse(vastXml, options)
+Parses the given xml Object into an array of ads. Returns a `Promise` which resolves with the array or rejects with an error according to the result of the parsing.
 
 #### Parameters
- * **`vastResponse: VASTResponse`** - An already parsed `VASTResponse` that may contain some unresolved wrappers
- * **`options: Object`** - An optional Object of parameters to be used in the resolving process (same structure as the one accepted by `getAndPArse` and `parse`)
- * **`cb: function`** - Error first callback which will be called once the parsing is done
+ * **`vastXml: Object`** - An object representing an xml document.
+ * **`options: Object`** - An optional Object of parameters to be used in the parsing process.
 
-### completeWrapperResolving(vastResponse, wrapperDepth, cb)
-Helper function for `resolveWrappers`. Has to be called for every resolved wrapper and takes care of handling errors and calling the callback with the resolved `VASTResponse`.
+### resolveWrappers(ad, wrapperDepth, originalUrl)
+Resolves the wrappers for the given ad in a recursive way. Returns a `Promise` which resolves with the unwrapped ad or rejects with an error.
+
+#### Parameters
+ * **`ad: Ad`** - An ad to be unwrapped.
+ * **`wrapperDepth: Number`** - The reached depth in the wrapper resolving chain.
+ * **`originalUrl: String`** - The original vast url.
+
+### completeWrapperResolving(vastResponse)
+Takes care of handling errors when the wrappers are resolved.
 
 #### Parameters
  * **`vastResponse: VASTResponse`** - A resolved VASTResponse
- * **`wrapperDepth: Number`** - The wrapper chain depth (used to check if every wrapper has been resolved)
- * **`cb: function`** - Error first callback which will be called once the parsing is done
 
-### mergeWrapperAdData(wrappedAd, ad)
-Merges the wrapper data with the given ad data.
+### mergeWrapperAdData(unwrappedAd, wrapper)
+Merges the data between an unwrapped ad and his wrapper.
 
 #### Parameters
- * **`wrappedAd: Ad`** - The wrapper Ad
- * **`ad: Ad`** - The 'unwrapped' Ad
+ * **`unwrappedAd: Ad`** - The 'unwrapped' Ad.
+ * **`wrapper: Ad`** - The wrapper Ad.
