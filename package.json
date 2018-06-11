@@ -32,7 +32,7 @@
     "postinstall": "coffee --compile --output dist/ src/"
   },
   "devDependencies": {
-    "mocha": "^3.4.2",
+    "mocha": "^5.2.0",
     "should": "^11.2.1",
     "sinon": "^2.3.6"
   },
