@@ -24,4 +24,6 @@ class FlashURLHandler
              xmlDocument.loadXML(xdr.responseText)
              cb(null, xmlDocument)
 
+        return xdr
+
 module.exports = FlashURLHandler
