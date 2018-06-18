@@ -135,73 +135,67 @@ export class VASTParser extends EventEmitter {
 
   /**
    * Fetches and parses a VAST for the given url.
-   * Executes the callback with either an error or the fully parsed VASTResponse.
-   * @param    {String} url - The url to request the VAST document.
-   * @param    {Object} options - An optional Object of parameters to be used in the request.
-   * @emits    VASTParser#VAST-resolving
-   * @emits    VASTParser#VAST-resolved
-   * @callback cb
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param  {String} url - The url to request the VAST document.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
+   * @return {Promise}
    */
-  getAndParseVAST(url, options, cb) {
-    if (!cb) {
-      if (typeof options === 'function') {
-        cb = options;
-        options = {};
-      } else {
-        throw new Error('Method called without valid callback function');
-      }
-    }
-
+  getAndParseVAST(url, options = {}) {
     this.initParsingStatus(options);
 
-    this.fetchVAST(url)
-      .then(xml => {
-        options.originalUrl = url;
-        this.parse(xml, options)
-          .then(ads => {
-            const response = new VASTResponse();
-            response.ads = ads;
-            response.errorURLTemplates = this.errorURLTemplates;
-            this.completeWrapperResolving(response);
+    return new Promise((resolve, reject) => {
+      this.fetchVAST(url)
+        .then(xml => {
+          options.originalUrl = url;
+          this.parse(xml, options)
+            .then(ads => {
+              const response = this.buildVASTResponse(ads);
 
-            cb(null, response);
-          })
-          .catch(err => cb(err));
-      })
-      .catch(err => cb(err));
+              resolve(response);
+            })
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
   }
 
   /**
    * Parses the given xml Object into a VASTResponse.
-   * Executes the callback with either an error or the fully parsed VASTResponse.
-   * @param    {Object} vastXml - An object representing a vast xml document.
-   * @param    {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits    VASTParser#VAST-resolving
-   * @emits    VASTParser#VAST-resolved
-   * @callback cb
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param  {Object} vastXml - An object representing a vast xml document.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
+   * @return {Promise}
    */
-  parseVAST(vastXml, options, cb) {
-    if (!cb) {
-      if (typeof options === 'function') {
-        cb = options;
-        options = {};
-      } else {
-        throw new Error('Method called without valid callback function');
-      }
-    }
-
+  parseVAST(vastXml, options = {}) {
     this.initParsingStatus(options);
 
-    this.parse(vastXml, options)
-      .then(ads => {
-        const response = new VASTResponse();
-        response.ads = ads;
-        response.errorURLTemplates = this.errorURLTemplates;
-        this.completeWrapperResolving(response);
+    return new Promise((resolve, reject) => {
+      this.parse(vastXml, options)
+        .then(ads => {
+          const response = this.buildVASTResponse(ads);
 
-        cb(null, response);
-      })
-      .catch(err => cb(err));
+          resolve(response);
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  /**
+   * Builds a VASTResponse which can be returned.
+   * @param  {Array} ads - An Array of unwrapped ads
+   * @return {VASTResponse}
+   */
+  buildVASTResponse(ads) {
+    const response = new VASTResponse();
+    response.ads = ads;
+    response.errorURLTemplates = this.errorURLTemplates;
+    this.completeWrapperResolving(response);
+
+    return response;
   }
 
   /**

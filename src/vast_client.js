@@ -70,24 +70,12 @@ export class VASTClient {
 
   /**
    * Gets a parsed VAST document for the given url, applying the skipping rules defined.
-   * Executes the callback with either an Error or the fully parsed VASTResponse.
-   * @param    {String} url - The url to use to fecth the VAST document.
-   * @param    {Object} options - An optional Object of parameters to be applied in the process.
-   * @callback cb
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param  {String} url - The url to use to fecth the VAST document.
+   * @param  {Object} options - An optional Object of parameters to be applied in the process.
+   * @return {Promise}
    */
-  get(url, options, cb) {
-    // options parameter is optional
-    if (!cb) {
-      if (typeof options === 'function') {
-        cb = options;
-        options = {};
-      } else {
-        throw new Error(
-          'VASTClient get method called without valid callback function'
-        );
-      }
-    }
-
+  get(url, options = {}) {
     const now = Date.now();
     options = Object.assign(this.defaultOptions, options);
 
@@ -101,34 +89,37 @@ export class VASTClient {
       this.totalCalls++;
     }
 
-    if (this.cappingFreeLunch >= this.totalCalls) {
-      return cb(
-        new Error(
-          `VAST call canceled – FreeLunch capping not reached yet ${
-            this.totalCalls
-          }/${this.cappingFreeLunch}`
-        )
-      );
-    }
+    return new Promise((resolve, reject) => {
+      if (this.cappingFreeLunch >= this.totalCalls) {
+        reject(
+          new Error(
+            `VAST call canceled – FreeLunch capping not reached yet ${
+              this.totalCalls
+            }/${this.cappingFreeLunch}`
+          )
+        );
+      }
 
-    const timeSinceLastCall = now - this.lastSuccessfulAd;
+      const timeSinceLastCall = now - this.lastSuccessfulAd;
 
-    // Check timeSinceLastCall to be a positive number. If not, this mean the
-    // previous was made in the future. We reset lastSuccessfullAd value
-    if (timeSinceLastCall < 0) {
-      this.lastSuccessfulAd = 0;
-    } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
-      return cb(
-        new Error(
-          `VAST call canceled – (${
-            this.cappingMinimumTimeInterval
-          })ms minimum interval reached`
-        )
-      );
-    }
+      // Check timeSinceLastCall to be a positive number. If not, this mean the
+      // previous was made in the future. We reset lastSuccessfullAd value
+      if (timeSinceLastCall < 0) {
+        this.lastSuccessfulAd = 0;
+      } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
+        reject(
+          new Error(
+            `VAST call canceled – (${
+              this.cappingMinimumTimeInterval
+            })ms minimum interval reached`
+          )
+        );
+      }
 
-    return this.vastParser.getAndParseVAST(url, options, (err, response) => {
-      return cb(err, response);
+      this.vastParser
+        .getAndParseVAST(url, options)
+        .then(response => resolve(response))
+        .catch(err => reject(err));
     });
   }
 }

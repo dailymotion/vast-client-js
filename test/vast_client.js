@@ -15,12 +15,11 @@ describe('VASTClient', () => {
 
     describe('the 1st call', () => {
       it('should be ignored', done => {
-        vastClient.get(wrapperUrl, (err, response) => {
+        vastClient.get(wrapperUrl).catch(err => {
           should.equal(
             err.message,
             'VAST call canceled – FreeLunch capping not reached yet 1/1'
           );
-          should.equal(response, null);
           done();
         });
       });
@@ -32,7 +31,7 @@ describe('VASTClient', () => {
 
     describe('the 2nd call', () => {
       it('should be successfull', done => {
-        vastClient.get(wrapperUrl, (err, response) => {
+        vastClient.get(wrapperUrl).then(response => {
           should.notEqual(response, null);
           done();
         });
@@ -49,7 +48,7 @@ describe('VASTClient', () => {
 
     describe('the 1st call', () => {
       it('should be successfull', done => {
-        vastClient.get(wrapperUrl, (err, response) => {
+        vastClient.get(wrapperUrl).then(response => {
           vastClient.lastSuccessfulAd = +new Date();
           should.notEqual(response, null);
           done();
@@ -63,12 +62,11 @@ describe('VASTClient', () => {
 
     describe('the 2nd call (executed before 30 seconds)', () => {
       it('should be ignored', done => {
-        vastClient.get(wrapperUrl, (err, response) => {
+        vastClient.get(wrapperUrl).catch(err => {
           should.equal(
             err.message,
             'VAST call canceled – (30000)ms minimum interval reached'
           );
-          should.equal(response, null);
           done();
         });
       });
@@ -105,36 +103,30 @@ describe('VASTClient', () => {
 
   describe('get', () => {
     const vastClient = new VASTClient();
+    const vastParser = vastClient.getParser();
 
-    it('should merge options when called with options parameter', () => {
+    beforeEach('when called with options parameter', done => {
       const options = {
         withCredentials: true
       };
+      vastParser.getAndParseVAST = sinon.spy();
+
+      vastClient
+        .get(wrapperUrl, options)
+        .then(response => done())
+        .catch(err => done());
+    });
+
+    it('should merge options', () => {
       const mergedOptions = {
         withCredentials: true,
         timeout: 0
       };
-      vastClient.vastParser.parseVAST = sinon.spy();
 
-      vastClient.get(wrapperUrl, options, (err, response) => {
-        vastClient.vastParser.parseVAST.should.be.alwaysCalledWith(
-          wrapperUrl,
-          mergedOptions
-        );
-        done();
-      });
-    });
-
-    it('should throw an error if no callback is provided', () => {
-      should(() => vastClient.get(wrapperUrl)).throw(
-        new Error(
-          'VASTClient get method called without valid callback function'
-        )
-      );
-      should(() => vastClient.get(wrapperUrl, {})).throw(
-        new Error(
-          'VASTClient get method called without valid callback function'
-        )
+      sinon.assert.calledWith(
+        vastParser.getAndParseVAST,
+        wrapperUrl,
+        mergedOptions
       );
     });
   });
