@@ -48,11 +48,11 @@ Example: if set to `3`, the first 3 VAST requests will not be executed.
 vastClient.cappingFreeLunch = 2;
 
 // Those following vastClient.get calls won't be done
-vastClient.get(VASTUrl, cb);
-vastClient.get(VASTUrl, cb);
+vastClient.get(VASTUrl);
+vastClient.get(VASTUrl);
 
 // VASTUrl will be called
-vastClient.get(VASTUrl, cb);
+vastClient.get(VASTUrl);
 ```
 
 #### cappingMinimumTimeInterval: Number
@@ -65,13 +65,13 @@ Example: if set to `2000`, any call which will be requested less than 2 seconds 
 vastClient.cappingMinimumTimeInterval = 5 * 60 * 1000;
 
 // The call is made
-vastClient.get(VASTUrl, cb);
+vastClient.get(VASTUrl);
 
 // 2 minutes later: The call is ignored
-vastClient.get(VASTUrl, cb);
+vastClient.get(VASTUrl);
 
 // d minutes later: The call is made
-vastClient.get(VASTUrl, cb);
+vastClient.get(VASTUrl);
 ```
 
 #### storage: Storage
@@ -79,10 +79,10 @@ Instance of a class which implements the `Storage` interface. Should be set up o
 
 ## Public Methods 💚 <a name="methods"></a>
 
-### get(url, [options,] cb)
+### get(url, [options,] cb): Promise
 Gets a parsed VAST document for the given url, applying the skipping rules defined (`cappingFreeLunch` and `cappingMinimumTimeInterval`).
 
-When done executes the callback with either an Error or the fully parsed [`VASTResponse`](../../src/vast_response.js).
+Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
 #### Parameters
  * **`url: String`** - The url to use to fecth the VAST document
@@ -91,15 +91,18 @@ When done executes the callback with either an Error or the fully parsed [`VASTR
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
- * **`cb: function`** - Error first callback which will be called once the parsing is done
 
 #### Example
 ```Javascript
 const vastClient = new VASTClient();
 
-vastClient.get('http://example.dailymotion.com/vast.xml', (err, res) => {
-  // Do something with the parsed VASTResponse
-});
+vastClient.get('http://example.dailymotion.com/vast.xml')
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 
 // With the options optional parameter
 const options = {
@@ -107,9 +110,13 @@ const options = {
   wrapperLimit: 7
 };
 
-vastClient.get('http://example.dailymotion.com/vast.xml', options, (err, res) => {
-  // Do something with the parsed VASTResponse
-});
+vastClient.get('http://example.dailymotion.com/vast.xml', options)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 ```
 
 #### getParser()
