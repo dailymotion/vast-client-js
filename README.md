@@ -28,8 +28,13 @@ import { VASTClient } from 'vast-client'
 
 const vastClient = new VASTClient();
 
-vastClient.get('https://www.exampleVast.com/vast.xml', (err, res) => {
-  // Do something with the parsed VAST response
+vastClient.get('https://www.examplevast.com/vast.xml')
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 });
 ```
 In addition to fetching and parsing a VAST resource, **VASTClient** provides options to filter a sequence of calls based on count and time of execution, together with the possibility to track URLs using **VASTTracker**.
@@ -42,7 +47,12 @@ import { VASTParser } from 'vast-client'
 const vastParser = new VASTParser();
 
 vastParser.parseVAST(vastXml, (err, res) => {
-  // Do something with the parsed VAST XML
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 });
 ```
 

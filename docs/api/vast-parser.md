@@ -135,7 +135,7 @@ Tracks the error provided in the errorCode parameter and emits a `VAST-error` ev
  * **`data: Object`** - One (or more) Object containing additional data
 
 ### fetchVAST(url, options)
-Fetches a VAST document for the given url. Returns a `Promise` which resolves or rejects according to the result of the request.
+Fetches a VAST document for the given url. Returns a `Promise` which resolves with the fetched xml or rejects with an error, according to the result of the request.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
@@ -149,7 +149,8 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves or
  * **`VAST-resolving`**
 
 ### getAndParseVAST(url, options, cb)<a name="getandparse"></a>
-Fetches and parses a VAST for the given url. Executes the callback with either an error or the fully parsed `VASTResponse`.
+Fetches and parses a VAST for the given url.
+Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
@@ -158,7 +159,6 @@ Fetches and parses a VAST for the given url. Executes the callback with either a
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
- * **`cb: function`** - Error first callback which will be called once the parsing is done
 
 #### Events emitted
  * **`VAST-resolved`**
@@ -166,9 +166,13 @@ Fetches and parses a VAST for the given url. Executes the callback with either a
 
 #### Example
 ```Javascript
-vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', (err, res) => {
-  // Do something with the parsed VASTResponse
-});
+vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml')
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 
 // With some options
 const options = {
@@ -176,13 +180,18 @@ const options = {
   withCredentials: true,
   wrapperLimit: 7
 }
-vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options, (err, res) => {
-  // Do something with the parsed VASTResponse
-});
+vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 ```
 
 ### parseVAST(vastXml, options, cb)<a name="parse"></a>
-Parses the given xml Object into a `VASTResponse`. Executes the callback with either an error or the fully parsed `VASTResponse`.
+Parses the given xml Object into a `VASTResponse`.
+Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
 #### Parameters
  * **`vastXml: Object`** - An object representing an xml document
@@ -191,7 +200,6 @@ Parses the given xml Object into a `VASTResponse`. Executes the callback with ei
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
- * **`cb: function`** - Error first callback which will be called once the parsing is done
 
 #### Events emitted
  * **`VAST-resolved`**
@@ -201,9 +209,13 @@ Parses the given xml Object into a `VASTResponse`. Executes the callback with ei
 ```Javascript
 const vastXml = (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
 
-vastParser.parseVAST(vastXml, (err, res) => {
-  // Do something with the parsed VASTResponse
-});
+vastParser.parseVAST(vastXml)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
 ```
 
 ## Private Methods :warning:<a name="private-methods"></a>
