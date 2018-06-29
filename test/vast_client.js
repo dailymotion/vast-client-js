@@ -119,6 +119,7 @@ describe('VASTClient', () => {
 
     it('should merge options', () => {
       const mergedOptions = {
+        resolveAll: false,
         withCredentials: true,
         timeout: 0
       };

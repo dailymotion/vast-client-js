@@ -79,6 +79,11 @@ export class VASTClient {
     const now = Date.now();
     options = Object.assign(this.defaultOptions, options);
 
+    // By default the client resolves only the first Ad or AdPod
+    if (!options.hasOwnProperty('resolveAll')) {
+      options.resolveAll = false;
+    }
+
     // Check totalCallsTimeout (first call + 1 hour), if older than now,
     // reset totalCalls number, by this way the client will be eligible again
     // for freelunch capping

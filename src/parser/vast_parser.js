@@ -25,10 +25,11 @@ export class VASTParser extends EventEmitter {
   constructor() {
     super();
 
-    this.maxWrapperDepth = null;
-    this.URLTemplateFilters = [];
+    this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
+    this.maxWrapperDepth = null;
+    this.URLTemplateFilters = [];
     this.fetchingOptions = {};
 
     this.parserUtils = new ParserUtils();
@@ -139,12 +140,12 @@ export class VASTParser extends EventEmitter {
    * @return {Boolean}
    */
   hasRemainingAds() {
-    return !!this.remainingAds;
+    return this.remainingAds.length === 0;
   }
 
   /**
    * Resolves the next group of ads. If all is true resolves all the remaining ads.
-   * @param  {Boolean} parseAll - If true all the remaining ads are resolved
+   * @param  {Boolean} all - If true all the remaining ads are resolved
    * @return {Promise}
    */
   getNextAds(all) {
@@ -153,7 +154,7 @@ export class VASTParser extends EventEmitter {
         resolve([]);
       }
 
-      this.resolveAds(this.remainingAds, { parseAll: all })
+      this.resolveAds(this.remainingAds, { resolveAll: all })
         .then(res => resolve(res))
         .catch(err => reject(err));
     });
@@ -236,7 +237,7 @@ export class VASTParser extends EventEmitter {
   parse(
     vastXml,
     {
-      parseAll = true,
+      resolveAll = true,
       wrapperSequence = null,
       originalUrl = null,
       wrapperDepth = 0
@@ -294,7 +295,7 @@ export class VASTParser extends EventEmitter {
         lastAddedAd.sequence = wrapperSequence;
       }
 
-      this.resolveAds(ads, { parseAll, wrapperDepth, originalUrl })
+      this.resolveAds(ads, { resolveAll, wrapperDepth, originalUrl })
         .then(res => resolve(res))
         .catch(err => reject(err));
     });
@@ -307,33 +308,37 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - An options Object containing resolving parameters
    * @return {Promise}
    */
-  resolveAds(ads, { parseAll, wrapperDepth, originalUrl }) {
+  resolveAds(ads, { resolveAll, wrapperDepth, originalUrl }) {
     return this.splitAndResolveAds(ads, {
-      parseAll,
+      resolveAll,
       wrapperDepth,
       originalUrl
     }).then(resolvedAds => {
       if (!resolvedAds && this.remainingAds) {
-        return this.resolveAds(ads, { parseAll, wrapperDepth, originalUrl });
+        return this.resolveAds(this.remainingAds, {
+          resolveAll,
+          wrapperDepth,
+          originalUrl
+        });
       }
       return resolvedAds;
     });
   }
 
   /**
-   * Splits an array of ads by the first Ad/AdPod and the remaining ads if the parseAll
+   * Splits an array of ads by the first Ad/AdPod and the remaining ads if the resolveAll
    * parameter is set to true. It then returns a Promise resolving with the resolved ads for the given group.
    * @param {Array} ads - An array of ads to resolve
    * @param {Object} options - An options Object containing resolving parameters
    * @return {Promise}
    */
-  splitAndResolveAds(ads, { parseAll, wrapperDepth, originalUrl }) {
+  splitAndResolveAds(ads, { resolveAll, wrapperDepth, originalUrl }) {
     return new Promise((resolve, reject) => {
       const resolveWrappersPromises = [];
       let adsToParse = [];
 
-      // Isolate the first Ad or AdPod and parse only this
-      if (!parseAll) {
+      // Isolate the first Ad or AdPod and resolve only this
+      if (!resolveAll) {
         let adPodSequenceCount = 0;
         let isAdPodOver = false;
 
