@@ -122,6 +122,7 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - The options to initialize a parsing sequence
    */
   initParsingStatus(options = {}) {
+    this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
@@ -268,9 +269,43 @@ export class VASTParser extends EventEmitter {
         lastAddedAd.sequence = wrapperSequence;
       }
 
+      this.resolveAds(ads, { parseAll, wrapperDepth, originalUrl })
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+  }
+
+  /**
+   * Resolves an Array of ads, recursively calling itself with the reamining ads if a no ad
+   * response is returned for the given array.
+   * @param {Array} ads - An array of ads to resolve
+   * @param {Object} options - An options Object containing resolving parameters
+   * @return {Promise}
+   */
+  resolveAds(ads, { parseAll, wrapperDepth, originalUrl }) {
+    return this.splitAndResolveAds(ads, {
+      parseAll,
+      wrapperDepth,
+      originalUrl
+    }).then(resolvedAds => {
+      if (!resolvedAds && this.remainingAds) {
+        return this.resolveAds(ads, { parseAll, wrapperDepth, originalUrl });
+      }
+      return resolvedAds;
+    });
+  }
+
+  /**
+   * Splits an array of ads by the first Ad/AdPod and the remaining ads if the parseAll
+   * parameter is set to true. It then returns a Promise resolving with the resolved ads for the given group.
+   * @param {Array} ads - An array of ads to resolve
+   * @param {Object} options - An options Object containing resolving parameters
+   * @return {Promise}
+   */
+  splitAndResolveAds(ads, { parseAll, wrapperDepth, originalUrl }) {
+    return new Promise((resolve, reject) => {
       const resolveWrappersPromises = [];
       let adsToParse = [];
-      let remainingAds = [];
 
       // Isolate the first Ad or AdPod and parse only this
       if (!parseAll) {
@@ -281,7 +316,7 @@ export class VASTParser extends EventEmitter {
         // AdsToParse is an array either containing a single Ad or an AdPod
         ads.forEach(ad => {
           if (isAdPodOver) {
-            remainingAds.push(ad);
+            this.remainingAds.push(ad);
           } else if (!ad.sequence) {
             adsToParse.push(ad);
             isAdPodOver = true;
@@ -289,7 +324,7 @@ export class VASTParser extends EventEmitter {
             adsToParse.push(ad);
             adPodSequenceCount++;
           } else {
-            remainingAds.push(ad);
+            this.remainingAds.push(ad);
             isAdPodOver = true;
           }
         });
@@ -307,14 +342,11 @@ export class VASTParser extends EventEmitter {
         resolveWrappersPromises.push(resolveWrappersPromise);
       });
 
-      Promise.all(resolveWrappersPromises)
-        .then(unwrappedAds => {
-          const res = this.util.flatten(unwrappedAds);
-          resolve(res);
+      resolve(
+        Promise.all(resolveWrappersPromises).then(unwrappedAds => {
+          return this.util.flatten(unwrappedAds);
         })
-        .catch(err => {
-          reject(err);
-        });
+      );
     });
   }
 
