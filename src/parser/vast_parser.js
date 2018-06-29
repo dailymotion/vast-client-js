@@ -209,7 +209,12 @@ export class VASTParser extends EventEmitter {
    */
   parse(
     vastXml,
-    { wrapperSequence = null, originalUrl = null, wrapperDepth = 0 }
+    {
+      parseAll = true,
+      wrapperSequence = null,
+      originalUrl = null,
+      wrapperDepth = 0
+    }
   ) {
     return new Promise((resolve, reject) => {
       // check if is a valid VAST document
@@ -264,8 +269,35 @@ export class VASTParser extends EventEmitter {
       }
 
       const resolveWrappersPromises = [];
+      let adsToParse = [];
+      let remainingAds = [];
 
-      ads.forEach(ad => {
+      // Isolate the first Ad or AdPod and parse only this
+      if (!parseAll) {
+        let adPodSequenceCount = 0;
+        let isAdPodOver = false;
+
+        // We divide ads by AdsToParse and RemainingAds
+        // AdsToParse is an array either containing a single Ad or an AdPod
+        ads.forEach(ad => {
+          if (isAdPodOver) {
+            remainingAds.push(ad);
+          } else if (!ad.sequence) {
+            adsToParse.push(ad);
+            isAdPodOver = true;
+          } else if (ad.sequence === adPodSequenceCount + 1) {
+            adsToParse.push(ad);
+            adPodSequenceCount++;
+          } else {
+            remainingAds.push(ad);
+            isAdPodOver = true;
+          }
+        });
+      } else {
+        adsToParse = ads;
+      }
+
+      adsToParse.forEach(ad => {
         const resolveWrappersPromise = this.resolveWrappers(
           ad,
           wrapperDepth,
