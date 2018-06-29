@@ -135,6 +135,31 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
+   * Returns a boolean indicating if there are more ads to resolve for the current parsing.
+   * @return {Boolean}
+   */
+  hasRemainingAds() {
+    return !!this.remainingAds;
+  }
+
+  /**
+   * Resolves the next group of ads. If all is true resolves all the remaining ads.
+   * @param  {Boolean} parseAll - If true all the remaining ads are resolved
+   * @return {Promise}
+   */
+  getNextAds(all) {
+    return new Promise((resolve, reject) => {
+      if (!this.remainingAds) {
+        resolve([]);
+      }
+
+      this.resolveAds(this.remainingAds, { parseAll: all })
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+  }
+
+  /**
    * Fetches and parses a VAST for the given url.
    * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
    * @param  {String} url - The url to request the VAST document.
