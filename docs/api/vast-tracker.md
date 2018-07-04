@@ -44,7 +44,7 @@ vastTracker.on('exitFullscreen', () => {
 });
 ```
 
-Here is the list of event emitted by the class:
+Here is the list of events emitted by the class:
  * **`complete`** - Only for linear ads with a duration. Emitted after `complete()` has been called.
  * **`clickthrough`** - Emitted when calling `click()` if there is at least one <clickThroughURLTemplate> element. A URL will be passed as a data
  * **`close`** - Only for non-linear ads, emitted when `close()` is called
@@ -337,7 +337,7 @@ Reports the impression URI. Can only be called once. Will report the following U
 ```Javascript
 // Bind canplay listener to the player
 player.on('canplay', () => {
-  vastTracker.load();
+  vastTracker.trackImpression();
 });
 
 vastTracker.on('creativeView', () => {
