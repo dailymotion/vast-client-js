@@ -302,6 +302,56 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
+   * Splits an Array of ads into an Array of Arrays of ads.
+   * Each subarray contains either one ad or multiple ads (an AdPod)
+   * @param  {Array} ads - An Array of ads to split
+   * @return {void}@memberof VASTParser
+   */
+  splitVAST(ads) {
+    this.splittedVAST = [];
+    let adPod = [];
+    let isAdPod = false;
+    let adPodSequence = null;
+
+    ads.forEach(ad => {
+      // Check if we are at the beginning of a new AdPod
+      if (ad.sequence === 1) {
+        // Check if we were already in the middle of an AdPod
+        // If so push the previous AdPod to the splittedVAST
+        if (isAdPod) {
+          this.splittedVAST.push(adPod);
+        }
+        // Clean up and start storing the new AdPod
+        adPod = [];
+        adPod.push(ad);
+        adPodSequence = 1;
+      } else {
+        // Check if we were already in the middle of an AdPod
+        if (isAdPod) {
+          // Check if the current ad is the next ad of the AdPod
+          if (ad.sequence === adPodSequence + 1) {
+            adPod.push(ad);
+            adPodSequence = ad.sequence;
+          } else {
+            // If the current ad is not the next in the AdPod and not the first of an AdPod,
+            // push the previous AdPod and the current ad to the splittedVAST and clean up
+            this.splittedVAST.push(adPod);
+            this.splittedVAST.push([ad]);
+            isAdPod = false;
+            adPodSequence = null;
+            adPod = [];
+          }
+        } else {
+          this.splittedVAST.push([ad]);
+          isAdPod = false;
+          adPodSequence = null;
+          adPod = [];
+        }
+      }
+    });
+  }
+
+  /**
    * Resolves an Array of ads, recursively calling itself with the reamining ads if a no ad
    * response is returned for the given array.
    * @param {Array} ads - An array of ads to resolve
