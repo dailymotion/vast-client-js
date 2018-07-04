@@ -134,21 +134,17 @@ Tracks the error provided in the errorCode parameter and emits a `VAST-error` ev
  * **`errorCode: Object`** - An Object containing the error data
  * **`data: Object`** - One (or more) Object containing additional data
 
-### fetchVAST(url, options)
+### fetchVAST(url)
 Fetches a VAST document for the given url. Returns a `Promise` which resolves with the fetched xml or rejects with an error, according to the result of the request.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
- * **`options: Object`** - An optional Object of parameters to be used in the request
-    * `timeout: Number` - A custom timeout for the requests (default `0`)
-    * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
-    * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
 
 #### Events emitted
  * **`VAST-resolved`**
  * **`VAST-resolving`**
 
-### getAndParseVAST(url, options, cb)<a name="getandparse"></a>
+### getAndParseVAST(url, options)<a name="getandparse"></a>
 Fetches and parses a VAST for the given url.
 Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
@@ -189,7 +185,7 @@ vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options)
   })
 ```
 
-### parseVAST(vastXml, options, cb)<a name="parse"></a>
+### parseVAST(vastXml, options)<a name="parse"></a>
 Parses the given xml Object into a `VASTResponse`.
 Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
@@ -210,6 +206,20 @@ Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`]
 const vastXml = (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
 
 vastParser.parseVAST(vastXml)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+// Or with some options
+const options = {
+  timoeut: 5000,
+  withCredentials: true,
+  wrapperLimit: 7
+}
+vastParser.parseVAST(vastXml, options)
   .then(res => {
     // Do something with the parsed VAST response
   })

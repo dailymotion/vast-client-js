@@ -79,7 +79,7 @@ Instance of a class which implements the `Storage` interface. Should be set up o
 
 ## Public Methods 💚 <a name="methods"></a>
 
-### get(url, [options,] cb): Promise
+### get(url, options): Promise
 Gets a parsed VAST document for the given url, applying the skipping rules defined (`cappingFreeLunch` and `cappingMinimumTimeInterval`).
 
 Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
