@@ -25,6 +25,7 @@ export class VASTParser extends EventEmitter {
   constructor() {
     super();
 
+    this.splittedVAST = [];
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
@@ -123,6 +124,7 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - The options to initialize a parsing sequence
    */
   initParsingStatus(options = {}) {
+    this.splittedVAST = [];
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
@@ -150,11 +152,13 @@ export class VASTParser extends EventEmitter {
    */
   getNextAds(all) {
     return new Promise((resolve, reject) => {
-      if (!this.remainingAds) {
-        resolve([]);
+      if (this.remainingAds.length === 0) {
+        reject(new Error('No more ads are available for the given VAST'));
       }
 
-      this.resolveAds(this.remainingAds, { resolveAll: all })
+      const ads = all ? this.remainingAds : this.remainingAds.shift();
+
+      this.resolveAds(ads)
         .then(res => resolve(res))
         .catch(err => reject(err));
     });
@@ -253,7 +257,7 @@ export class VASTParser extends EventEmitter {
         reject(new Error('Invalid VAST XMLDocument'));
       }
 
-      const ads = [];
+      let ads = [];
       const childNodes = vastXml.documentElement.childNodes;
 
       // Fill the VASTResponse object with ads and errorURLTemplates
@@ -295,59 +299,16 @@ export class VASTParser extends EventEmitter {
         lastAddedAd.sequence = wrapperSequence;
       }
 
+      // Split the VAST in case we don't want to resolve everything at the first time
+      if (resolveAll === false) {
+        this.remainingAds = this.splittedVAST = this.parserUtils.splitVAST(ads);
+        // Remove the first element from the remaining ads array, since we're going to resolve that element
+        ads = this.remainingAds.shift();
+      }
+
       this.resolveAds(ads, { resolveAll, wrapperDepth, originalUrl })
         .then(res => resolve(res))
         .catch(err => reject(err));
-    });
-  }
-
-  /**
-   * Splits an Array of ads into an Array of Arrays of ads.
-   * Each subarray contains either one ad or multiple ads (an AdPod)
-   * @param  {Array} ads - An Array of ads to split
-   * @return {void}@memberof VASTParser
-   */
-  splitVAST(ads) {
-    this.splittedVAST = [];
-    let adPod = [];
-    let isAdPod = false;
-    let adPodSequence = null;
-
-    ads.forEach(ad => {
-      // Check if we are at the beginning of a new AdPod
-      if (ad.sequence === 1) {
-        // Check if we were already in the middle of an AdPod
-        // If so push the previous AdPod to the splittedVAST
-        if (isAdPod) {
-          this.splittedVAST.push(adPod);
-        }
-        // Clean up and start storing the new AdPod
-        adPod = [];
-        adPod.push(ad);
-        adPodSequence = 1;
-      } else {
-        // Check if we were already in the middle of an AdPod
-        if (isAdPod) {
-          // Check if the current ad is the next ad of the AdPod
-          if (ad.sequence === adPodSequence + 1) {
-            adPod.push(ad);
-            adPodSequence = ad.sequence;
-          } else {
-            // If the current ad is not the next in the AdPod and not the first of an AdPod,
-            // push the previous AdPod and the current ad to the splittedVAST and clean up
-            this.splittedVAST.push(adPod);
-            this.splittedVAST.push([ad]);
-            isAdPod = false;
-            adPodSequence = null;
-            adPod = [];
-          }
-        } else {
-          this.splittedVAST.push([ad]);
-          isAdPod = false;
-          adPodSequence = null;
-          adPod = [];
-        }
-      }
     });
   }
 
@@ -358,61 +319,11 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - An options Object containing resolving parameters
    * @return {Promise}
    */
-  resolveAds(ads, { resolveAll, wrapperDepth, originalUrl }) {
-    return this.splitAndResolveAds(ads, {
-      resolveAll,
-      wrapperDepth,
-      originalUrl
-    }).then(resolvedAds => {
-      if (!resolvedAds && this.remainingAds) {
-        return this.resolveAds(this.remainingAds, {
-          resolveAll,
-          wrapperDepth,
-          originalUrl
-        });
-      }
-      return resolvedAds;
-    });
-  }
-
-  /**
-   * Splits an array of ads by the first Ad/AdPod and the remaining ads if the resolveAll
-   * parameter is set to true. It then returns a Promise resolving with the resolved ads for the given group.
-   * @param {Array} ads - An array of ads to resolve
-   * @param {Object} options - An options Object containing resolving parameters
-   * @return {Promise}
-   */
-  splitAndResolveAds(ads, { resolveAll, wrapperDepth, originalUrl }) {
+  resolveAds(ads, { wrapperDepth, originalUrl }) {
     return new Promise((resolve, reject) => {
       const resolveWrappersPromises = [];
-      let adsToParse = [];
 
-      // Isolate the first Ad or AdPod and resolve only this
-      if (!resolveAll) {
-        let adPodSequenceCount = 0;
-        let isAdPodOver = false;
-
-        // We divide ads by AdsToParse and RemainingAds
-        // AdsToParse is an array either containing a single Ad or an AdPod
-        ads.forEach(ad => {
-          if (isAdPodOver) {
-            this.remainingAds.push(ad);
-          } else if (!ad.sequence) {
-            adsToParse.push(ad);
-            isAdPodOver = true;
-          } else if (ad.sequence === adPodSequenceCount + 1) {
-            adsToParse.push(ad);
-            adPodSequenceCount++;
-          } else {
-            this.remainingAds.push(ad);
-            isAdPodOver = true;
-          }
-        });
-      } else {
-        adsToParse = ads;
-      }
-
-      adsToParse.forEach(ad => {
+      ads.forEach(ad => {
         const resolveWrappersPromise = this.resolveWrappers(
           ad,
           wrapperDepth,
@@ -427,6 +338,16 @@ export class VASTParser extends EventEmitter {
           return this.util.flatten(unwrappedAds);
         })
       );
+    }).then(resolvedAds => {
+      if (!resolvedAds && this.remainingAds.length > 0) {
+        const ads = this.remainingAds.shift();
+
+        return this.resolveAds(ads, {
+          wrapperDepth,
+          originalUrl
+        });
+      }
+      return resolvedAds;
     });
   }
 
