@@ -84,6 +84,8 @@ Gets a parsed VAST document for the given url, applying the skipping rules defin
 
 Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
+By default the fully parsed `VASTResponse` contains all the Ads contained in the `VAST` resource. It's possible to get only the first Ad or AdPod and then get the remaining ones on demand by passing `resolveAll: false` in the `options` parameter.
+
 #### Parameters
  * **`url: String`** - The url to use to fecth the VAST document
  * **`options: Object`** - An optional Object to configure the request:
@@ -114,6 +116,72 @@ const options = {
 vastClient.get('http://example.dailymotion.com/vast.xml', options)
   .then(res => {
     // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+```
+
+### hasRemainingAds(): Boolean
+Returns `true` if there are remaining ads not returned by the `get` method (in case `resolveAll` was passed as `false`). Returns `false` otherwise.
+
+#### Example
+```Javascript
+const vastClient = new VASTClient();
+
+// With the options optional parameter
+const options = {
+  resolveAll: false
+};
+
+// Getting a VAST which contains more than one Ad
+vastClient.get('http://example.dailymotion.com/vast.xml', options)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+vastClient.hasRemainingAds(); // Returns true
+```
+
+### getNextAds(all): Promise
+Returns a `Promise` which either resolves with the a `VASTResponse` or rejects with an Error.
+The resolved `VASTResponse` can contain either a single Ad or AdPod or all the remaining Ads if `all` parameter is passed as `true`.
+
+#### Example
+```Javascript
+const vastClient = new VASTClient();
+
+// With the options optional parameter
+const options = {
+  resolveAll: false
+};
+
+// Getting a VAST which contains more than one Ad
+vastClient.get('http://example.dailymotion.com/vast.xml', options)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+vastClient.hasRemainingAds(); // Returns true
+
+vastClient.getNextAds()
+  .then(res => {
+    // Do something with the next Ads
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+
+vastClient.getNextAds(true)
+  .then(res => {
+    // Do something with all the remaining Ads
   })
   .catch(err => {
     // Deal with the error

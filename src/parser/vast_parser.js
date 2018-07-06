@@ -151,7 +151,11 @@ export class VASTParser extends EventEmitter {
       const ads = all ? this.remainingAds : this.remainingAds.shift();
 
       this.resolveAds(ads)
-        .then(res => resolve(res))
+        .then(resolvedAds => {
+          const response = this.buildVASTResponse(resolvedAds);
+
+          resolve(response);
+        })
         .catch(err => reject(err));
     });
   }
