@@ -1,4 +1,3 @@
-import path from 'path';
 import should from 'should';
 import { ParserUtils } from '../src/parser/parser_utils.js';
 
