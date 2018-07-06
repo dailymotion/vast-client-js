@@ -305,7 +305,7 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Resolves an Array of ads, recursively calling itself with the reamining ads if a no ad
+   * Resolves an Array of ads, recursively calling itself with the remaining ads if a no ad
    * response is returned for the given array.
    * @param {Array} ads - An array of ads to resolve
    * @param {Object} options - An options Object containing resolving parameters
