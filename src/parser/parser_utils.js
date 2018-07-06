@@ -154,48 +154,25 @@ export class ParserUtils {
    * @return {Array}
    */
   splitVAST(ads) {
-    const splittedVAST = [];
-    let adPod = [];
-    let isAdPod = false;
-    let adPodSequence = null;
+    const pods = [];
 
-    ads.forEach(ad => {
-      // Check if we are at the beginning of a new AdPod
-      if (ad.sequence === 1) {
-        // Check if we were already in the middle of an AdPod
-        // If so push the previous AdPod to the splittedVAST
-        if (isAdPod) {
-          splittedVAST.push(adPod);
-        }
-        // Clean up and start storing the new AdPod
-        adPod = [];
-        adPod.push(ad);
-        adPodSequence = 1;
-      } else {
-        // Check if we were already in the middle of an AdPod
-        if (isAdPod) {
-          // Check if the current ad is the next ad of the AdPod
-          if (ad.sequence === adPodSequence + 1) {
-            adPod.push(ad);
-            adPodSequence = ad.sequence;
-          } else {
-            // If the current ad is not the next in the AdPod and not the first of an AdPod,
-            // push the previous AdPod and the current ad to the splittedVAST and clean up
-            splittedVAST.push(adPod);
-            splittedVAST.push([ad]);
-            isAdPod = false;
-            adPodSequence = null;
-            adPod = [];
+    ads.forEach((ad, i) => {
+      if (ad.sequence && ad.sequence > 1) {
+        const lastAdInFlatList = ads[i - 1];
+        if (lastAdInFlatList && lastAdInFlatList.sequence === ad.sequence - 1) {
+          // handling malformed pods sequences that not start with sequence = 1
+
+          const firstAdInLastPod = pods[pods.length - 1][0];
+          if (firstAdInLastPod && firstAdInLastPod.sequence === 1) {
+            // if the last pod started with sequence = 1
+            pods[pods.length - 1].push(ad); //the only time we push following sequence ad inside an existing pod
+            return;
           }
-        } else {
-          splittedVAST.push([ad]);
-          isAdPod = false;
-          adPodSequence = null;
-          adPod = [];
         }
       }
+      pods.push([ad]);
     });
 
-    return splittedVAST;
+    return pods;
   }
 }
