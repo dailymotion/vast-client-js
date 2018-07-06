@@ -138,19 +138,11 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Returns a boolean indicating if there are more ads to resolve for the current parsing.
-   * @return {Boolean}
-   */
-  hasRemainingAds() {
-    return this.remainingAds.length === 0;
-  }
-
-  /**
    * Resolves the next group of ads. If all is true resolves all the remaining ads.
    * @param  {Boolean} all - If true all the remaining ads are resolved
    * @return {Promise}
    */
-  getNextAds(all) {
+  getRemainingAds(all) {
     return new Promise((resolve, reject) => {
       if (this.remainingAds.length === 0) {
         reject(new Error('No more ads are available for the given VAST'));
