@@ -133,6 +133,7 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - The options to initialize a parsing sequence
    */
   initParsingStatus(options = {}) {
+    this.rootURL = '';
     this.splittedVAST = [];
     this.remainingAds = [];
     this.parentURLs = [];
@@ -158,10 +159,13 @@ export class VASTParser extends EventEmitter {
         reject(new Error('No more ads are available for the given VAST'));
       }
 
-      const ads = all ? this.remainingAds : this.remainingAds.shift();
+      const ads = all
+        ? this.util.flatten(this.remainingAds)
+        : this.remainingAds.shift();
       this.errorURLTemplates = [];
+      this.parentURLs = [];
 
-      this.resolveAds(ads)
+      this.resolveAds(ads, { wrapperDepth: 0, originalUrl: this.rootURL })
         .then(resolvedAds => {
           const response = this.buildVASTResponse(resolvedAds);
 
@@ -182,6 +186,7 @@ export class VASTParser extends EventEmitter {
    */
   getAndParseVAST(url, options = {}) {
     this.initParsingStatus(options);
+    this.rootURL = url;
 
     return new Promise((resolve, reject) => {
       this.fetchVAST(url)
@@ -316,7 +321,8 @@ export class VASTParser extends EventEmitter {
 
       // Split the VAST in case we don't want to resolve everything at the first time
       if (resolveAll === false) {
-        this.remainingAds = this.splittedVAST = this.parserUtils.splitVAST(ads);
+        this.splittedVAST = this.parserUtils.splitVAST(ads);
+        this.remainingAds = Object.assign([], this.splittedVAST);
         // Remove the first element from the remaining ads array, since we're going to resolve that element
         ads = this.remainingAds.shift();
       }

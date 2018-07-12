@@ -158,6 +158,9 @@ export class ParserUtils {
     let lastAdPod = null;
 
     ads.forEach((ad, i) => {
+      if (ad.sequence) {
+        ad.sequence = parseInt(ad.sequence);
+      }
       // The current Ad may be the next Ad of an AdPod
       if (ad.sequence > 1) {
         const lastAd = ads[i - 1];
