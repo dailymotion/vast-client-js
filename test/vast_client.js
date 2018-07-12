@@ -132,7 +132,7 @@ describe('VASTClient', () => {
     });
   });
 
-  describe.only('get with resolveAll option', () => {
+  describe('get with resolveAll option', () => {
     const vastUrl = urlfor('wrapper-multiple-ads.xml');
     const vastClient = new VASTClient();
     let vastResponse = null;
