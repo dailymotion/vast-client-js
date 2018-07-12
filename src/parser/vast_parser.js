@@ -29,6 +29,7 @@ export class VASTParser extends EventEmitter {
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
+    this.rootErrorURLTemplates = [];
     this.maxWrapperDepth = null;
     this.URLTemplateFilters = [];
     this.fetchingOptions = {};
@@ -90,6 +91,14 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
+   * Returns an array of errorURLTemplates for the VAST being parsed.
+   * @return {Array}
+   */
+  getErrorURLTemplates() {
+    return this.rootErrorURLTemplates.concat(this.errorURLTemplates);
+  }
+
+  /**
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
@@ -128,6 +137,7 @@ export class VASTParser extends EventEmitter {
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
+    this.rootErrorURLTemplates = [];
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.fetchingOptions = {
       timeout: options.timeout,
@@ -149,6 +159,7 @@ export class VASTParser extends EventEmitter {
       }
 
       const ads = all ? this.remainingAds : this.remainingAds.shift();
+      this.errorURLTemplates = [];
 
       this.resolveAds(ads)
         .then(resolvedAds => {
@@ -176,6 +187,8 @@ export class VASTParser extends EventEmitter {
       this.fetchVAST(url)
         .then(xml => {
           options.originalUrl = url;
+          options.isRootVAST = true;
+
           this.parse(xml, options)
             .then(ads => {
               const response = this.buildVASTResponse(ads);
@@ -201,6 +214,8 @@ export class VASTParser extends EventEmitter {
     this.initParsingStatus(options);
 
     return new Promise((resolve, reject) => {
+      options.isRootVAST = true;
+
       this.parse(vastXml, options)
         .then(ads => {
           const response = this.buildVASTResponse(ads);
@@ -219,7 +234,7 @@ export class VASTParser extends EventEmitter {
   buildVASTResponse(ads) {
     const response = new VASTResponse();
     response.ads = ads;
-    response.errorURLTemplates = this.errorURLTemplates;
+    response.errorURLTemplates = this.getErrorURLTemplates();
     this.completeWrapperResolving(response);
 
     return response;
@@ -240,7 +255,8 @@ export class VASTParser extends EventEmitter {
       resolveAll = true,
       wrapperSequence = null,
       originalUrl = null,
-      wrapperDepth = 0
+      wrapperDepth = 0,
+      isRootVAST = false
     }
   ) {
     return new Promise((resolve, reject) => {
@@ -263,7 +279,10 @@ export class VASTParser extends EventEmitter {
         if (node.nodeName === 'Error') {
           const errorURLTemplate = this.parserUtils.parseNodeText(node);
 
-          this.errorURLTemplates.push(errorURLTemplate);
+          // Distinguish root VAST url templates from ad specific ones
+          isRootVAST
+            ? this.rootErrorURLTemplates.push(errorURLTemplate)
+            : this.errorURLTemplates.push(errorURLTemplate);
         }
 
         if (node.nodeName === 'Ad') {
@@ -273,7 +292,7 @@ export class VASTParser extends EventEmitter {
             ads.push(ad);
           } else {
             // VAST version of response not supported.
-            this.trackVastError(this.errorURLTemplates, {
+            this.trackVastError(this.getErrorURLTemplates(), {
               ERRORCODE: 101
             });
           }
