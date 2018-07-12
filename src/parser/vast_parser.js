@@ -25,7 +25,6 @@ export class VASTParser extends EventEmitter {
   constructor() {
     super();
 
-    this.splittedVAST = [];
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
@@ -134,7 +133,6 @@ export class VASTParser extends EventEmitter {
    */
   initParsingStatus(options = {}) {
     this.rootURL = '';
-    this.splittedVAST = [];
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
@@ -321,8 +319,7 @@ export class VASTParser extends EventEmitter {
 
       // Split the VAST in case we don't want to resolve everything at the first time
       if (resolveAll === false) {
-        this.splittedVAST = this.parserUtils.splitVAST(ads);
-        this.remainingAds = Object.assign([], this.splittedVAST);
+        this.remainingAds = this.parserUtils.splitVAST(ads);
         // Remove the first element from the remaining ads array, since we're going to resolve that element
         ads = this.remainingAds.shift();
       }
