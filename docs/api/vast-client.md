@@ -122,6 +122,81 @@ vastClient.get('http://example.dailymotion.com/vast.xml', options)
   })
 ```
 
+#### How does resolveAll work
+Let's consider the VAST shown in the following image: it contains 4 ads, with the 2nd and 3rd defining an AdPod.
+
+![AdPod example](./img/adpods.jpg)
+
+Using `get` method with default `options` will return a `VASTResponse` containing all the ads resolved, which would look like this:
+
+```Javascript
+{
+  ads: [
+    ad1,
+    ad2,
+    ad3,
+    ad4
+  ],
+  errorURLTemplates
+}
+```
+
+The `resolveAll` parameter allows to request only the first Ad or AdPod. If we pass it as `true` the response would look like:
+
+```Javascript
+{
+  ads: [
+    ad1
+  ],
+  errorURLTemplates
+}
+```
+
+We can then request the remaining ads using `getNextAds` method:
+
+```Javascript
+// get the next ad or adPod
+vastClient.getNextAds()
+  .then(ads => {
+    console.log(ads);
+
+    /*
+    Will print something like
+
+    {
+      ads: [
+        ad2,
+        ad3
+      ],
+      errorURLTemplate
+    }
+    */
+  })
+
+// get al the remaining ads
+vastClient.getNextAds(true)
+  .then(ads => {
+    console.log(ads);
+
+    /*
+    Will print something like
+
+    {
+      ads: [
+        ad2,
+        ad3,
+        ad4
+      ],
+      errorURLTemplate
+    }
+    */
+  })
+```
+
+**Why should you use `resolveAll=false`?**
+
+Most times you will only need the first Ad or AdPod (following ones are usually either optional ads or fallback ones). Using `resolveAll=false` allows you to avoid useless calls to resolve every wrapper chain of the initial VAST.
+
 ### hasRemainingAds(): Boolean
 Returns `true` if there are remaining ads not returned by the `get` method (in case `resolveAll` was passed as `false`). Returns `false` otherwise.
 
@@ -147,7 +222,7 @@ vastClient.hasRemainingAds(); // Returns true
 ```
 
 ### getNextAds(all): Promise
-Returns a `Promise` which either resolves with the a `VASTResponse` or rejects with an Error.
+Returns a `Promise` which either resolves with a `VASTResponse` or rejects with an Error.
 The resolved `VASTResponse` can contain either a single Ad or AdPod or all the remaining Ads if `all` parameter is passed as `true`.
 
 #### Example
