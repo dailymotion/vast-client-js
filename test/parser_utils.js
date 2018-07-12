@@ -74,11 +74,7 @@ describe('ParserUtils', function() {
         { id: 3, sequence: 99 }
       ];
 
-      const expectedOutput = [
-        [{ id: 1, sequence: 99 }],
-        [{ id: 2, sequence: 99 }],
-        [{ id: 3, sequence: 99 }]
-      ];
+      const expectedOutput = [[{ id: 1 }], [{ id: 2 }], [{ id: 3 }]];
 
       const output = parserUtils.splitVAST(input);
 
@@ -102,10 +98,10 @@ describe('ParserUtils', function() {
       ];
 
       const expectedOutput = [
-        [{ id: 1, sequence: 2 }],
+        [{ id: 1 }],
         [{ id: 4 }],
-        [{ id: 98, sequence: 3 }],
-        [{ id: 99, sequence: 4 }],
+        [{ id: 98 }],
+        [{ id: 99 }],
         [
           { id: 5, sequence: 1 },
           { id: 6, sequence: 2 },
@@ -142,13 +138,13 @@ describe('ParserUtils', function() {
       ];
 
       const expectedOutput = [
-        [{ id: 1, sequence: 2 }],
-        [{ id: 2, sequence: 4 }],
+        [{ id: 1 }],
+        [{ id: 2 }],
         [{ id: 4 }],
-        [{ id: 98, sequence: 3 }],
-        [{ id: 99, sequence: 4 }],
-        [{ id: 100, sequence: 17 }],
-        [{ id: 101, sequence: 18 }],
+        [{ id: 98 }],
+        [{ id: 99 }],
+        [{ id: 100 }],
+        [{ id: 101 }],
         [
           { id: 5, sequence: 1 },
           { id: 6, sequence: 2 },

@@ -154,25 +154,27 @@ export class ParserUtils {
    * @return {Array}
    */
   splitVAST(ads) {
-    const pods = [];
+    const splittedVAST = [];
+    let lastAdPod = null;
 
     ads.forEach((ad, i) => {
-      if (ad.sequence && ad.sequence > 1) {
-        const lastAdInFlatList = ads[i - 1];
-        if (lastAdInFlatList && lastAdInFlatList.sequence === ad.sequence - 1) {
-          // handling malformed pods sequences that not start with sequence = 1
-
-          const firstAdInLastPod = pods[pods.length - 1][0];
-          if (firstAdInLastPod && firstAdInLastPod.sequence === 1) {
-            // if the last pod started with sequence = 1
-            pods[pods.length - 1].push(ad); //the only time we push following sequence ad inside an existing pod
-            return;
-          }
+      // The current Ad may be the next Ad of an AdPod
+      if (ad.sequence > 1) {
+        const lastAd = ads[i - 1];
+        // check if the current Ad is exactly the next one in the AdPod
+        if (lastAd && lastAd.sequence === ad.sequence - 1) {
+          lastAdPod && lastAdPod.push(ad);
+          return;
         }
+        // If the ad had a sequence attribute but it was not part of a correctly formed
+        // AdPod, let's remove the sequence attribute
+        delete ad.sequence;
       }
-      pods.push([ad]);
+
+      splittedVAST.push([ad]);
+      lastAdPod = splittedVAST[splittedVAST.length - 1];
     });
 
-    return pods;
+    return splittedVAST;
   }
 }
