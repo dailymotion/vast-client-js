@@ -84,6 +84,8 @@ Gets a parsed VAST document for the given url, applying the skipping rules defin
 
 Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
 
+By default the fully parsed `VASTResponse` contains all the Ads contained in the `VAST` resource. It's possible to get only the first Ad or AdPod and then get the remaining ones on demand by passing `resolveAll: false` in the `options` parameter.
+
 #### Parameters
  * **`url: String`** - The url to use to fecth the VAST document
  * **`options: Object`** - An optional Object to configure the request:
@@ -91,6 +93,7 @@ Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`]
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
+    * `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse them ad by ad or adPod by adPod (default `true`)
 
 #### Example
 ```Javascript
@@ -113,6 +116,147 @@ const options = {
 vastClient.get('http://example.dailymotion.com/vast.xml', options)
   .then(res => {
     // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+```
+
+#### How does resolveAll work
+Let's consider the VAST shown in the following image: it contains 4 ads, with the 2nd and 3rd defining an AdPod.
+
+![AdPod example](./img/adpods.jpg)
+
+Using `get` method with default `options` will return a `VASTResponse` containing all the ads resolved, which would look like this:
+
+```Javascript
+{
+  ads: [
+    ad1,
+    ad2,
+    ad3,
+    ad4
+  ],
+  errorURLTemplates
+}
+```
+
+The `resolveAll` parameter allows to request only the first Ad or AdPod. If we pass it as `true` the response would look like:
+
+```Javascript
+{
+  ads: [
+    ad1
+  ],
+  errorURLTemplates
+}
+```
+
+We can then request the remaining ads using `getNextAds` method:
+
+```Javascript
+// get the next ad or adPod
+vastClient.getNextAds()
+  .then(ads => {
+    console.log(ads);
+
+    /*
+    Will print something like
+
+    {
+      ads: [
+        ad2,
+        ad3
+      ],
+      errorURLTemplate
+    }
+    */
+  })
+
+// get al the remaining ads
+vastClient.getNextAds(true)
+  .then(ads => {
+    console.log(ads);
+
+    /*
+    Will print something like
+
+    {
+      ads: [
+        ad2,
+        ad3,
+        ad4
+      ],
+      errorURLTemplate
+    }
+    */
+  })
+```
+
+**Why should you use `resolveAll=false`?**
+
+Most times you will only need the first Ad or AdPod (following ones are usually either optional ads or fallback ones). Using `resolveAll=false` allows you to avoid useless calls to resolve every wrapper chain of the initial VAST.
+
+### hasRemainingAds(): Boolean
+Returns `true` if there are remaining ads not returned by the `get` method (in case `resolveAll` was passed as `false`). Returns `false` otherwise.
+
+#### Example
+```Javascript
+const vastClient = new VASTClient();
+
+// With the options optional parameter
+const options = {
+  resolveAll: false
+};
+
+// Getting a VAST which contains more than one Ad
+vastClient.get('http://example.dailymotion.com/vast.xml', options)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+vastClient.hasRemainingAds(); // Returns true
+```
+
+### getNextAds(all): Promise
+Returns a `Promise` which either resolves with a `VASTResponse` or rejects with an Error.
+The resolved `VASTResponse` can contain either a single Ad or AdPod or all the remaining Ads if `all` parameter is passed as `true`.
+
+#### Example
+```Javascript
+const vastClient = new VASTClient();
+
+// With the options optional parameter
+const options = {
+  resolveAll: false
+};
+
+// Getting a VAST which contains more than one Ad
+vastClient.get('http://example.dailymotion.com/vast.xml', options)
+  .then(res => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+vastClient.hasRemainingAds(); // Returns true
+
+vastClient.getNextAds()
+  .then(res => {
+    // Do something with the next Ads
+  })
+  .catch(err => {
+    // Deal with the error
+  })
+
+
+vastClient.getNextAds(true)
+  .then(res => {
+    // Do something with all the remaining Ads
   })
   .catch(err => {
     // Deal with the error

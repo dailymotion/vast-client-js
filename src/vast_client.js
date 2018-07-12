@@ -69,6 +69,23 @@ export class VASTClient {
   }
 
   /**
+   * Returns a boolean indicating if there are more ads to resolve for the current parsing.
+   * @return {Boolean}
+   */
+  hasRemainingAds() {
+    return this.vastParser.remainingAds.length > 0;
+  }
+
+  /**
+   * Resolves the next group of ads. If all is true resolves all the remaining ads.
+   * @param  {Boolean} all - If true all the remaining ads are resolved
+   * @return {Promise}
+   */
+  getNextAds(all) {
+    return this.vastParser.getRemainingAds(all);
+  }
+
+  /**
    * Gets a parsed VAST document for the given url, applying the skipping rules defined.
    * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
    * @param  {String} url - The url to use to fecth the VAST document.
@@ -78,6 +95,11 @@ export class VASTClient {
   get(url, options = {}) {
     const now = Date.now();
     options = Object.assign(this.defaultOptions, options);
+
+    // By default the client resolves only the first Ad or AdPod
+    if (!options.hasOwnProperty('resolveAll')) {
+      options.resolveAll = false;
+    }
 
     // Check totalCallsTimeout (first call + 1 hour), if older than now,
     // reset totalCalls number, by this way the client will be eligible again

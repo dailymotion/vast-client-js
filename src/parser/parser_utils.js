@@ -146,4 +146,38 @@ export class ParserUtils {
     }
     return hours + minutes + seconds;
   }
+
+  /**
+   * Splits an Array of ads into an Array of Arrays of ads.
+   * Each subarray contains either one ad or multiple ads (an AdPod)
+   * @param  {Array} ads - An Array of ads to split
+   * @return {Array}
+   */
+  splitVAST(ads) {
+    const splittedVAST = [];
+    let lastAdPod = null;
+
+    ads.forEach((ad, i) => {
+      if (ad.sequence) {
+        ad.sequence = parseInt(ad.sequence, 10);
+      }
+      // The current Ad may be the next Ad of an AdPod
+      if (ad.sequence > 1) {
+        const lastAd = ads[i - 1];
+        // check if the current Ad is exactly the next one in the AdPod
+        if (lastAd && lastAd.sequence === ad.sequence - 1) {
+          lastAdPod && lastAdPod.push(ad);
+          return;
+        }
+        // If the ad had a sequence attribute but it was not part of a correctly formed
+        // AdPod, let's remove the sequence attribute
+        delete ad.sequence;
+      }
+
+      lastAdPod = [ad];
+      splittedVAST.push(lastAdPod);
+    });
+
+    return splittedVAST;
+  }
 }

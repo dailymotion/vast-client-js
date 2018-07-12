@@ -119,6 +119,7 @@ describe('VASTClient', () => {
 
     it('should merge options', () => {
       const mergedOptions = {
+        resolveAll: false,
         withCredentials: true,
         timeout: 0
       };
@@ -128,6 +129,103 @@ describe('VASTClient', () => {
         wrapperUrl,
         mergedOptions
       );
+    });
+  });
+
+  describe('get with resolveAll option', () => {
+    const vastUrl = urlfor('wrapper-multiple-ads.xml');
+    const vastClient = new VASTClient();
+    let vastResponse = null;
+
+    describe('when set to false', () => {
+      const getOptions = {
+        resolveAll: false
+      };
+
+      it('should be successfull', done => {
+        vastClient.get(vastUrl, getOptions).then(response => {
+          vastResponse = response;
+          should.notEqual(response, null);
+          done();
+        });
+      });
+
+      it('should return a single ad', () => {
+        vastResponse.ads.length.should.equal(1);
+      });
+
+      it('should return only the errorURLs for the given ad', () => {
+        vastResponse.ads[0].errorURLTemplates.should.eql([
+          'http://example.com/error',
+          'http://example.com/error'
+        ]);
+      });
+
+      describe('hasRemainingAds', () => {
+        it('should return true', done => {
+          vastClient.get(vastUrl, getOptions).then(response => {
+            const hasRemainingAds = vastClient.hasRemainingAds();
+            hasRemainingAds.should.equal(true);
+            done();
+          });
+        });
+      });
+
+      describe('getNextAds', () => {
+        beforeEach(done => {
+          vastClient.get(vastUrl, getOptions).then(response => {
+            done();
+          });
+        });
+
+        describe('when all parameter is set to false', () => {
+          it('should only return the next ad', done => {
+            vastClient.getNextAds().then(res => {
+              should.notEqual(res, null);
+              res.ads.length.should.equal(2);
+              done();
+            });
+          });
+        });
+
+        describe('when all parameter is set to true', () => {
+          it('should return all the following ads', done => {
+            vastClient.getNextAds(true).then(res => {
+              should.notEqual(res, null);
+              res.ads.length.should.equal(3);
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    describe('when set to true', () => {
+      const getOptions = {
+        resolveAll: true
+      };
+
+      it('should be successfull', done => {
+        vastClient.get(vastUrl, getOptions).then(response => {
+          vastResponse = response;
+          should.notEqual(response, null);
+          done();
+        });
+      });
+
+      it('should return all the ads', () => {
+        vastResponse.ads.length.should.equal(4);
+      });
+
+      describe('hasRemainingAds', () => {
+        it('should return false', done => {
+          vastClient.get(vastUrl, getOptions).then(response => {
+            const hasRemainingAds = vastClient.hasRemainingAds();
+            hasRemainingAds.should.equal(false);
+            done();
+          });
+        });
+      });
     });
   });
 });
