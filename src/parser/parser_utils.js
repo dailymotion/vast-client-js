@@ -159,7 +159,7 @@ export class ParserUtils {
 
     ads.forEach((ad, i) => {
       if (ad.sequence) {
-        ad.sequence = parseInt(ad.sequence);
+        ad.sequence = parseInt(ad.sequence, 10);
       }
       // The current Ad may be the next Ad of an AdPod
       if (ad.sequence > 1) {
@@ -174,8 +174,8 @@ export class ParserUtils {
         delete ad.sequence;
       }
 
-      splittedVAST.push([ad]);
-      lastAdPod = splittedVAST[splittedVAST.length - 1];
+      lastAdPod = [ad];
+      splittedVAST.push(lastAdPod);
     });
 
     return splittedVAST;

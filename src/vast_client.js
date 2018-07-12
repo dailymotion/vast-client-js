@@ -73,7 +73,7 @@ export class VASTClient {
    * @return {Boolean}
    */
   hasRemainingAds() {
-    return !(this.vastParser.remainingAds.length === 0);
+    return this.vastParser.remainingAds.length > 0;
   }
 
   /**
