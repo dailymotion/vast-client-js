@@ -32,6 +32,10 @@ Pull requests are welcome. Here is a quick guide on how to start.
  * Make sure test are passing (`npm test`)
  * If you bundle the project, please don't commit the updated `vast-client.js` file in your PR. We'll take care of generating an updated build right before releasing a new tagged version.
  * Follow the commit guidelines below 👇
+ * Label your PR with one of these three tags (Maintainers will then make the right release according to that)
+    * `breaking-change`
+    * `enhancement`
+    * `fix`
 
 ## Commit messages
 In order to keep a clean and clear commit history, please commit to the repo following these guidelines:
