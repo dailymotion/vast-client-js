@@ -31,6 +31,33 @@ Pull requests are welcome. Here is a quick guide on how to start.
  * If you add some logic, add some tests too
  * Make sure test are passing (`npm test`)
  * If you bundle the project, please don't commit the updated `vast-client.js` file in your PR. We'll take care of generating an updated build right before releasing a new tagged version.
+ * Follow the commit guidelines below 👇
+
+## Commit messages
+In order to keep a clean and clear commit history, please commit to the repo following these guidelines:
+
+ * Mark each commit with one of the following tags:
+    * `[client]` for commits involving `VASTClient` logic
+    * `[parser]` for commits involving `VASTParser` logic
+    * `[tracker]` for commits involving `VASTTracker` logic
+    * `[util]` for commits involving utility components logic
+    * `[test]` for commits adding or fixing tests
+    * `[docs]` for commits involving documentation
+    * `[tools]` for commits involving tooling
+ * Add a short description of the changes made in the commit
+ * If needed add a longer description in the following lines
+
+Example:
+```
+[tag][subtag] short commit message
+optional longer description of
+what happens in this commit
+```
+```
+[client][test] add tests for new get method parameters
+This commit adds some tests for some new optional parameter
+which have been added to the get method of the VASTClient component
+```
 
 ## Setup the project
 
