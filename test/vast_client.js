@@ -142,6 +142,16 @@ describe('VASTClient', () => {
         resolveAll: false
       };
 
+      it('should handle correctly a no ad response', done => {
+        vastClient.get(urlfor('empty-no-ad.xml'), getOptions).then(response => {
+          vastResponse = response;
+          should.notEqual(response, null);
+          // Response doesn't have any ads
+          response.ads.should.eql([]);
+          done();
+        });
+      });
+
       it('should be successfull', done => {
         vastClient.get(vastUrl, getOptions).then(response => {
           vastResponse = response;
