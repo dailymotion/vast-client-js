@@ -337,7 +337,7 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - An options Object containing resolving parameters
    * @return {Promise}
    */
-  resolveAds(ads, { wrapperDepth, originalUrl }) {
+  resolveAds(ads = [], { wrapperDepth, originalUrl }) {
     return new Promise((resolve, reject) => {
       const resolveWrappersPromises = [];
 
