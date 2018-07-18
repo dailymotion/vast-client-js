@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<VAST version="2.0">
+  <Ad>
+    <Wrapper>
+      <AdSystem>VAST</AdSystem>
+      <VASTAdTagURI>invalid-xmlfile.xml</VASTAdTagURI>
+      <Error>http://example.com/wrapper-invalid-xmlfile_wrapper-error</Error>
+      <Impression>http://example.com/wrapper-invalid-xmlfile_impression</Impression>
+      <Creatives>
+        <Creative>
+          <CompanionAds>
+            <Companion id="urn:a2:287461:103" width="0" height="0">
+              <CompanionClickThrough><![CDATA[http://example.com/wrapper-invalid-xmlfile_companion_click-thru]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[http://example.com/wrapper-invalid-xmlfile_companion_click-tracking]]></CompanionClickTracking>
+              <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+        <Creative>
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-invalid-xmlfile_linear_start]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapper-invalid-xmlfile_linear_complete]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/wrapper-invalid-xmlfile_linear_clicktracking]]></ClickTracking>
+            </VideoClicks>
+          </Linear>
+        </Creative>
+      </Creatives>
+      <Extensions>
+        <Extension>
+            <paramWrapperInvalidXmlfile><![CDATA[valueWrapperInvalidXmlfile]]></paramWrapperInvalidXmlfile>
+        </Extension>
+      </Extensions>
+    </Wrapper>
+  </Ad>
+</VAST>
