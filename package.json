@@ -22,12 +22,12 @@
   "engines": {
     "node": ">=8.9.4"
   },
-  "main" : "vast-client.js",
-  "module" : "src/index.js",
-  "browser" : "vast-client.js",
+  "main": "vast-client-node.js",
+  "module": "src/index.js",
+  "browser": "vast-client.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
-    "build": "webpack",
+    "build": "webpack && webpack --env=node",
     "precommit": "pretty-quick --staged"
   },
   "devDependencies": {
@@ -37,6 +37,7 @@
     "babel-preset-env": "^1.6.1",
     "husky": "^0.14.3",
     "mocha": "^5.1.1",
+    "path": "^0.12.7",
     "prettier": "^1.11.1",
     "pretty-quick": "^1.4.1",
     "should": "^11.2.1",
@@ -45,7 +46,6 @@
     "webpack-cli": "^2.1.3"
   },
   "dependencies": {
-    "path": "^0.12.7",
     "xmldom": "~0.1.27"
   }
 }
