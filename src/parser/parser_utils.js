@@ -90,7 +90,7 @@ export class ParserUtils {
    * @param  {Object} node - The node to parse the text from.
    * @return {String}
    */
-  /**
+  
   parseNodeText(node) {
     if(node) {
       let TEXT;
