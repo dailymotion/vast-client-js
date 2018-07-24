@@ -90,8 +90,22 @@ export class ParserUtils {
    * @param  {Object} node - The node to parse the text from.
    * @return {String}
    */
+  /**
   parseNodeText(node) {
-    return node && (node.textContent || node.text || '').trim();
+    if(node) {
+      let TEXT;
+            // CDATA Node
+            if(node.childNodes.length === 3 && node.childNodes[1].nodeType === 4) {
+          TEXT = node.childNodes[1].nodeValue;
+            }
+
+            // Text Node
+            if(node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) {
+          TEXT = node.textContent;
+            }
+
+            return (TEXT || '').trim();
+    }
   }
 
   /**
