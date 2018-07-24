@@ -113,7 +113,7 @@ export class VASTClient {
 
     return new Promise((resolve, reject) => {
       if (this.cappingFreeLunch >= this.totalCalls) {
-        reject(
+        return reject(
           new Error(
             `VAST call canceled – FreeLunch capping not reached yet ${
               this.totalCalls
@@ -129,7 +129,7 @@ export class VASTClient {
       if (timeSinceLastCall < 0) {
         this.lastSuccessfulAd = 0;
       } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
-        reject(
+        return reject(
           new Error(
             `VAST call canceled – (${
               this.cappingMinimumTimeInterval
