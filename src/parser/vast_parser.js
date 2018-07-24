@@ -383,7 +383,8 @@ export class VASTParser extends EventEmitter {
       wrapperDepth++;
       // We already have a resolved VAST ad, no need to resolve wrapper
       if (!ad.nextWrapperURL) {
-        resolve(ad);
+        delete ad.nextWrapperURL;
+        return resolve(ad);
       }
 
       if (
@@ -394,7 +395,7 @@ export class VASTParser extends EventEmitter {
         // Too many Wrapper responses have been received with no InLine response.
         ad.errorCode = 302;
         delete ad.nextWrapperURL;
-        resolve(ad);
+        return resolve(ad);
       }
 
       // Get full URL
@@ -415,7 +416,7 @@ export class VASTParser extends EventEmitter {
               if (unwrappedAds.length === 0) {
                 // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
                 ad.creatives = [];
-                resolve(ad);
+                return resolve(ad);
               }
 
               unwrappedAds.forEach(unwrappedAd => {
