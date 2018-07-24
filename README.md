@@ -79,9 +79,13 @@ The API documentation is organized by components:
 Read the [**2.0 migration guide**](docs/api/2.0-migration.md) to update your project or follow the [**1.x API documentation**](docs/api/1.x) if you're still using the old version.
 
 ## Support and compatibility
-The library is 100% written in JavaScript and the source code uses modern features like `es6 modules`. Make sure your environment supports these features, or transpile the library when bundling your project.
+The library is 100% written in JavaScript and the source code uses modern features like `modules`, `classes`, ecc... . Make sure your environment supports these features, or transpile the library when bundling your project.
 
+### Browser
 A pre-bundled version of VAST Client JS is available: [`vast-client.js`](vast-client.js). You can add the script directly to your page and access the library's components through the `VAST` object.
+
+### Node
+A pre-bundled version for node is available too: [`vast-client-node.js`](vast-client-node.js)
 
 ## Build / Contribute
 
