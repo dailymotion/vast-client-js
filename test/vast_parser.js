@@ -1,5 +1,6 @@
 import path from 'path';
 import should from 'should';
+import sinon from 'sinon';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTResponse } from '../src/vast_response';
 
@@ -817,10 +818,18 @@ describe('VASTParser', function() {
       this.response = null;
 
       before(done => {
+        this.wrapperSpy = sinon.spy(
+          vastParser.parserUtils,
+          'resolveVastAdTagURI'
+        );
         vastParser.getAndParseVAST(urlfor('vpaid.xml')).then(response => {
           this.response = response;
           done();
         });
+      });
+
+      it('should not try to resolve wrappers', () => {
+        sinon.assert.notCalled(this.wrapperSpy);
       });
 
       it('should have apiFramework set', () => {
