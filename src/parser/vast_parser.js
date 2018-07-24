@@ -154,7 +154,9 @@ export class VASTParser extends EventEmitter {
   getRemainingAds(all) {
     return new Promise((resolve, reject) => {
       if (this.remainingAds.length === 0) {
-        reject(new Error('No more ads are available for the given VAST'));
+        return reject(
+          new Error('No more ads are available for the given VAST')
+        );
       }
 
       const ads = all
@@ -269,7 +271,7 @@ export class VASTParser extends EventEmitter {
         !vastXml.documentElement ||
         vastXml.documentElement.nodeName !== 'VAST'
       ) {
-        reject(new Error('Invalid VAST XMLDocument'));
+        return reject(new Error('Invalid VAST XMLDocument'));
       }
 
       let ads = [];
