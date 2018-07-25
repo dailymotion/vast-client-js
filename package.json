@@ -22,12 +22,12 @@
   "engines": {
     "node": ">=8.9.4"
   },
-  "main": "vast-client-node.js",
+  "main": "dist/vast-client-node.min.js",
   "module": "src/index.js",
-  "browser": "vast-client.js",
+  "browser": "dist/vast-client.min.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
-    "build": "webpack && webpack --env=node",
+    "build": "webpack && webpack --env=dev && webpack --env=node && webpack --env=node-dev",
     "precommit": "pretty-quick --staged"
   },
   "devDependencies": {
