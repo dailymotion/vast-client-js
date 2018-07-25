@@ -81,11 +81,16 @@ Read the [**2.0 migration guide**](docs/api/2.0-migration.md) to update your pro
 ## Support and compatibility
 The library is 100% written in JavaScript and the source code uses modern features like `modules`, `classes`, ecc... . Make sure your environment supports these features, or transpile the library when bundling your project.
 
-### Browser
-A pre-bundled version of VAST Client JS is available: [`vast-client.js`](vast-client.js). You can add the script directly to your page and access the library's components through the `VAST` object.
+### Pre-bundled versions
+We provide several pre-bundled versions of the client (see [`dist` directory](dist/))
 
-### Node
-A pre-bundled version for node is available too: [`vast-client-node.js`](vast-client-node.js)
+#### Browser
+A pre-bundled version of VAST Client JS is available: [`vast-client.js`](dist/vast-client.js) or [`vast-client.min.js`](dist/vast-client.minjs) [minified].
+
+You can add the script directly to your page and access the library's components through the `VAST` object.
+
+#### Node
+A pre-bundled version for node is available too: [`vast-client-node.js`](dist/vast-client-node.js) or [`vast-client-node.min.js`](dist/vast-client-node.min.js) [minified].
 
 ## Build / Contribute
 
