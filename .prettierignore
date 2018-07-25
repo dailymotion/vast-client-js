@@ -7,3 +7,4 @@ node_modules
 .gitignore
 test/*.xml
 vast-client.js
+dist/*
