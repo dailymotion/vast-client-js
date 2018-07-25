@@ -31,16 +31,12 @@ module.exports = env => {
   };
 
   if (env === 'node') {
-    config.resolve.alias = {
-      nodeUrlHandler: './urlhandlers/node_url_handler.js'
-    };
     config.target = 'node';
     config.output.filename = 'vast-client-node.js';
     config.output.libraryTarget = 'umd';
   } else {
-    config.resolve.alias = {
-      nodeUrlHandler: './urlhandlers/mock_node_url_handler.js'
-    };
+    config.resolve.alias['./urlhandlers/node_url_handler'] =
+      './urlhandlers/mock_node_url_handler';
     config.output.filename = 'vast-client.js';
     config.output.library = 'VAST';
     config.node = {
