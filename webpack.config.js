@@ -45,9 +45,6 @@ module.exports = env => {
     config.output.filename =
       env === 'dev' ? 'vast-client.js' : 'vast-client.min.js';
     config.output.library = 'VAST';
-    config.node = {
-      fs: 'empty'
-    };
   }
 
   return config;
