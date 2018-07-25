@@ -15,7 +15,7 @@ module.exports = env => {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['babel-preset-es2015', 'babel-preset-env'],
+              presets: ['babel-preset-es2015'],
               plugins: ['transform-object-assign']
             }
           }
