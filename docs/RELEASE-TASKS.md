@@ -8,8 +8,8 @@ For now, let's use this document to make sure everyone is on the same page.
 
 ``` Bash
 git checkout master
-npm run test
-npm run Build
+npm test
+npm run build
 git add . && git commit -m "Bundle release [release version number]"
 npm version <major|minor|patch> # depending on the changes
 npm publish
