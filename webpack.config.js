@@ -12,15 +12,10 @@ module.exports = env => {
         {
           test: /\.js$/,
           exclude: /(node_modules)/,
-          use: ['webpack-conditional-loader']
-        },
-        {
-          test: /\.js$/,
-          exclude: /(node_modules)/,
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['babel-preset-env'],
+              presets: ['babel-preset-es2015', 'babel-preset-env'],
               plugins: ['transform-object-assign']
             }
           }
