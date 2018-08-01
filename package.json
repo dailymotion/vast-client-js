@@ -24,7 +24,9 @@
   },
   "main": "dist/vast-client-node.min.js",
   "module": "src/index.js",
-  "browser": "dist/vast-client.min.js",
+  "browser": {
+    "dist/vast-client.min.js": "dist/vast-client.min.js"
+  },
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "build": "webpack && webpack --env=dev && webpack --env=node && webpack --env=node-dev",
