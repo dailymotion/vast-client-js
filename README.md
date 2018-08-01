@@ -89,8 +89,26 @@ A pre-bundled version of VAST Client JS is available: [`vast-client.js`](dist/va
 
 You can add the script directly to your page and access the library's components through the `VAST` object.
 
+```html
+<script src="vast-client.min.js"></script>
+```
+
+```javascript
+var vastClient = new VAST.VASTClient();
+var vastParser = new VAST.VASTParser();
+var vastTracker = new VAST.VASTTracker();
+```
+
 #### Node
 A pre-bundled version for node is available too: [`vast-client-node.js`](dist/vast-client-node.js) or [`vast-client-node.min.js`](dist/vast-client-node.min.js) [minified].
+
+```javascript
+const VAST = require('vast-client')
+
+const vastClient = new VAST.VASTClient();
+const vastParser = new VAST.VASTParser();
+const vastTracker = new VAST.VASTTracker();
+```
 
 ## Build / Contribute
 
