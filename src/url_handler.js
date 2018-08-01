@@ -1,5 +1,5 @@
 import { FlashURLHandler } from './urlhandlers/flash_url_handler';
-import { NodeURLHandler } from './urlhandlers/node_url_handler';
+import { NodeURLHandler } from './urlhandlers/mock_node_url_handler';
 import { XHRURLHandler } from './urlhandlers/xhr_url_handler';
 
 export class URLHandler {
