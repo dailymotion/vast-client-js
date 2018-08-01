@@ -18,12 +18,7 @@ export class URLHandler {
       options = {};
     }
 
-    if (options.response) {
-      // Trick: the VAST response XML document is passed as an option
-      const { response } = options;
-      delete options.response;
-      return cb(null, response);
-    } else if (options.urlhandler && options.urlhandler.supported()) {
+    if (options.urlhandler && options.urlhandler.supported()) {
       // explicitly supply your own URLHandler object
       return options.urlhandler.get(url, options, cb);
     } else if (typeof window === 'undefined' || window === null) {

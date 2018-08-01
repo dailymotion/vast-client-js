@@ -1,9 +1,13 @@
 export class XHRURLHandler {
   xhr() {
-    const xhr = new window.XMLHttpRequest();
-    if ('withCredentials' in xhr) {
-      // check CORS support
-      return xhr;
+    try {
+      const xhr = new window.XMLHttpRequest();
+      if ('withCredentials' in xhr) {
+        // check CORS support
+        return xhr;
+      }
+    } catch (err) {
+      return false;
     }
   }
 

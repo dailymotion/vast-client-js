@@ -1,13 +1,17 @@
 import path from 'path';
 import sinon from 'sinon';
-import should from 'should';
 import { VASTClient } from '../src/vast_client';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
+import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
 
 const now = new Date();
 const vastParser = new VASTParser();
 const vastClient = new VASTClient();
+const urlhandler = new NodeURLHandler();
+const options = {
+  urlhandler
+};
 
 const urlfor = relpath =>
   `file://${path
@@ -35,10 +39,12 @@ describe('VASTTracker', function() {
         return url;
       });
 
-      vastParser.getAndParseVAST(urlfor('wrapper-a.xml')).then(response => {
-        this.response = response;
-        done();
-      });
+      vastParser
+        .getAndParseVAST(urlfor('wrapper-a.xml'), options)
+        .then(response => {
+          this.response = response;
+          done();
+        });
     });
 
     after(() => {

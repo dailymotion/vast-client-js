@@ -2,20 +2,25 @@ import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
 import { VASTClient } from '../src/vast_client';
+import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
 
 describe('VASTClient', () => {
   const urlfor = relpath =>
     `file://${path
       .resolve(path.dirname(module.filename), 'vastfiles', relpath)
       .replace(/\\/g, '/')}`;
+  const urlhandler = new NodeURLHandler();
   const wrapperUrl = urlfor('wrapper-a.xml');
 
   describe('when cappingFreeLunch is set to 1', () => {
     const vastClient = new VASTClient(1);
+    const options = {
+      urlhandler
+    };
 
     describe('the 1st call', () => {
       it('should be ignored', done => {
-        vastClient.get(wrapperUrl).catch(err => {
+        vastClient.get(wrapperUrl, options).catch(err => {
           should.equal(
             err.message,
             'VAST call canceled – FreeLunch capping not reached yet 1/1'
@@ -31,10 +36,13 @@ describe('VASTClient', () => {
 
     describe('the 2nd call', () => {
       it('should be successfull', done => {
-        vastClient.get(wrapperUrl).then(response => {
-          should.notEqual(response, null);
-          done();
-        });
+        vastClient
+          .get(wrapperUrl, options)
+          .then(response => {
+            should.notEqual(response, null);
+            done();
+          })
+          .catch(err => console.log(err));
       });
 
       it('totalCalls should be equal to 2', () => {
@@ -45,10 +53,13 @@ describe('VASTClient', () => {
 
   describe('when cappingMinimumTimeInterval is set to 30 seconds', () => {
     const vastClient = new VASTClient(0, 30000);
+    const options = {
+      urlhandler
+    };
 
     describe('the 1st call', () => {
       it('should be successfull', done => {
-        vastClient.get(wrapperUrl).then(response => {
+        vastClient.get(wrapperUrl, options).then(response => {
           vastClient.lastSuccessfulAd = +new Date();
           should.notEqual(response, null);
           done();
@@ -62,7 +73,8 @@ describe('VASTClient', () => {
 
     describe('the 2nd call (executed before 30 seconds)', () => {
       it('should be ignored', done => {
-        vastClient.get(wrapperUrl).catch(err => {
+        console.log(options);
+        vastClient.get(wrapperUrl, options).catch(err => {
           should.equal(
             err.message,
             'VAST call canceled – (30000)ms minimum interval reached'
@@ -104,11 +116,12 @@ describe('VASTClient', () => {
   describe('get', () => {
     const vastClient = new VASTClient();
     const vastParser = vastClient.getParser();
+    const options = {
+      urlhandler,
+      withCredentials: true
+    };
 
     beforeEach('when called with options parameter', done => {
-      const options = {
-        withCredentials: true
-      };
       vastParser.getAndParseVAST = sinon.spy();
 
       vastClient
@@ -119,6 +132,7 @@ describe('VASTClient', () => {
 
     it('should merge options', () => {
       const mergedOptions = {
+        urlhandler,
         resolveAll: false,
         withCredentials: true,
         timeout: 0
@@ -138,12 +152,13 @@ describe('VASTClient', () => {
     let vastResponse = null;
 
     describe('when set to false', () => {
-      const getOptions = {
+      const options = {
+        urlhandler,
         resolveAll: false
       };
 
       it('should handle correctly a no ad response', done => {
-        vastClient.get(urlfor('empty-no-ad.xml'), getOptions).then(response => {
+        vastClient.get(urlfor('empty-no-ad.xml'), options).then(response => {
           vastResponse = response;
           should.notEqual(response, null);
           // Response doesn't have any ads
@@ -153,7 +168,7 @@ describe('VASTClient', () => {
       });
 
       it('should be successfull', done => {
-        vastClient.get(vastUrl, getOptions).then(response => {
+        vastClient.get(vastUrl, options).then(response => {
           vastResponse = response;
           should.notEqual(response, null);
           done();
@@ -173,7 +188,7 @@ describe('VASTClient', () => {
 
       describe('hasRemainingAds', () => {
         it('should return true', done => {
-          vastClient.get(vastUrl, getOptions).then(response => {
+          vastClient.get(vastUrl, options).then(response => {
             const hasRemainingAds = vastClient.hasRemainingAds();
             hasRemainingAds.should.equal(true);
             done();
@@ -183,7 +198,7 @@ describe('VASTClient', () => {
 
       describe('getNextAds', () => {
         beforeEach(done => {
-          vastClient.get(vastUrl, getOptions).then(response => {
+          vastClient.get(vastUrl, options).then(response => {
             done();
           });
         });
@@ -211,12 +226,13 @@ describe('VASTClient', () => {
     });
 
     describe('when set to true', () => {
-      const getOptions = {
+      const options = {
+        urlhandler,
         resolveAll: true
       };
 
       it('should be successfull', done => {
-        vastClient.get(vastUrl, getOptions).then(response => {
+        vastClient.get(vastUrl, options).then(response => {
           vastResponse = response;
           should.notEqual(response, null);
           done();
@@ -229,7 +245,7 @@ describe('VASTClient', () => {
 
       describe('hasRemainingAds', () => {
         it('should return false', done => {
-          vastClient.get(vastUrl, getOptions).then(response => {
+          vastClient.get(vastUrl, options).then(response => {
             const hasRemainingAds = vastClient.hasRemainingAds();
             hasRemainingAds.should.equal(false);
             done();
