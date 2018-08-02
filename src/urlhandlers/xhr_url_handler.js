@@ -6,8 +6,10 @@ export class XHRURLHandler {
         // check CORS support
         return xhr;
       }
+      return null;
     } catch (err) {
-      return false;
+      console.log('Error in XHRURLHandler support check:', err);
+      return null;
     }
   }
 
