@@ -34,8 +34,7 @@ vastClient.get('https://www.examplevast.com/vast.xml')
   })
   .catch(err => {
     // Deal with the error
-  })
-});
+  });
 ```
 In addition to fetching and parsing a VAST resource, **VASTClient** provides options to filter a sequence of calls based on count and time of execution, together with the possibility to track URLs using **VASTTracker**.
 
@@ -46,14 +45,13 @@ import { VASTParser } from 'vast-client'
 
 const vastParser = new VASTParser();
 
-vastParser.parseVAST(vastXml, (err, res) => {
+vastParser.parseVAST(vastXml)
   .then(res => {
     // Do something with the parsed VAST response
   })
   .catch(err => {
     // Deal with the error
-  })
-});
+  });
 ```
 
 ### VASTTracker

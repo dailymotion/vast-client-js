@@ -105,7 +105,7 @@ vastClient.get('http://example.dailymotion.com/vast.xml')
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 
 // With the options optional parameter
 const options = {
@@ -119,7 +119,7 @@ vastClient.get('http://example.dailymotion.com/vast.xml', options)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 ```
 
 #### How does resolveAll work
@@ -171,7 +171,7 @@ vastClient.getNextAds()
       errorURLTemplate
     }
     */
-  })
+  });
 
 // get al the remaining ads
 vastClient.getNextAds(true)
@@ -190,7 +190,7 @@ vastClient.getNextAds(true)
       errorURLTemplate
     }
     */
-  })
+  });
 ```
 
 **Why should you use `resolveAll=false`?**
@@ -216,7 +216,7 @@ vastClient.get('http://example.dailymotion.com/vast.xml', options)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 
 vastClient.hasRemainingAds(); // Returns true
 ```
@@ -241,7 +241,7 @@ vastClient.get('http://example.dailymotion.com/vast.xml', options)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 
 vastClient.hasRemainingAds(); // Returns true
 
@@ -251,7 +251,7 @@ vastClient.getNextAds()
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 
 
 vastClient.getNextAds(true)
@@ -260,7 +260,7 @@ vastClient.getNextAds(true)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 ```
 
 #### getParser()
