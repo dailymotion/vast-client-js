@@ -168,7 +168,7 @@ vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml')
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 
 // With some options
 const options = {
@@ -182,7 +182,7 @@ vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 ```
 
 ### parseVAST(vastXml, options)<a name="parse"></a>
@@ -211,7 +211,7 @@ vastParser.parseVAST(vastXml)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 
 // Or with some options
 const options = {
@@ -225,7 +225,7 @@ vastParser.parseVAST(vastXml, options)
   })
   .catch(err => {
     // Deal with the error
-  })
+  });
 ```
 
 ## Private Methods :warning:<a name="private-methods"></a>
