@@ -82,7 +82,7 @@ export class ParserUtils {
    * @return {Boolean}
    */
   parseBoolean(booleanString) {
-    return ['true', 'TRUE', '1'].includes(booleanString);
+    return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
   }
 
   /**

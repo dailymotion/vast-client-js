@@ -260,7 +260,7 @@ export class CreativeLinearParser {
    * @return {String|Number}
    */
   parseXPosition(xPosition) {
-    if (['left', 'right'].includes(xPosition)) {
+    if (['left', 'right'].indexOf(xPosition) !== -1) {
       return xPosition;
     }
 
@@ -273,7 +273,7 @@ export class CreativeLinearParser {
    * @return {String|Number}
    */
   parseYPosition(yPosition) {
-    if (['top', 'bottom'].includes(yPosition)) {
+    if (['top', 'bottom'].indexOf(yPosition) !== -1) {
       return yPosition;
     }
 
