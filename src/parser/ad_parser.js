@@ -33,7 +33,7 @@ export class AdParser {
     for (let adTypeElementKey in childNodes) {
       const adTypeElement = childNodes[adTypeElementKey];
 
-      if (!['Wrapper', 'InLine'].includes(adTypeElement.nodeName)) {
+      if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
         continue;
       }
 
@@ -191,7 +191,7 @@ export class AdParser {
     }
 
     ad.creatives.forEach(wrapperCreativeElement => {
-      if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
+      if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
         // TrackingEvents Linear / NonLinear
         if (wrapperCreativeElement.trackingEvents) {
           if (!ad.trackingEvents) {

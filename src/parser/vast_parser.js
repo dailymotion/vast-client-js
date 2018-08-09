@@ -391,7 +391,7 @@ export class VASTParser extends EventEmitter {
 
       if (
         wrapperDepth >= this.maxWrapperDepth ||
-        this.parentURLs.includes(ad.nextWrapperURL)
+        this.parentURLs.indexOf(ad.nextWrapperURL) !== -1
       ) {
         // Wrapper limit reached, as defined by the video player.
         // Too many Wrapper responses have been received with no InLine response.
