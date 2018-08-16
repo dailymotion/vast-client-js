@@ -339,7 +339,7 @@ var ParserUtils = function () {
   }, {
     key: 'parseBoolean',
     value: function parseBoolean(booleanString) {
-      return ['true', 'TRUE', '1'].includes(booleanString);
+      return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
     }
 
     /**
@@ -773,7 +773,7 @@ var CreativeLinearParser = function () {
   }, {
     key: 'parseXPosition',
     value: function parseXPosition(xPosition) {
-      if (['left', 'right'].includes(xPosition)) {
+      if (['left', 'right'].indexOf(xPosition) !== -1) {
         return xPosition;
       }
 
@@ -789,7 +789,7 @@ var CreativeLinearParser = function () {
   }, {
     key: 'parseYPosition',
     value: function parseYPosition(yPosition) {
-      if (['top', 'bottom'].includes(yPosition)) {
+      if (['top', 'bottom'].indexOf(yPosition) !== -1) {
         return yPosition;
       }
 
@@ -962,7 +962,7 @@ var AdParser = function () {
       for (var adTypeElementKey in childNodes) {
         var adTypeElement = childNodes[adTypeElementKey];
 
-        if (!['Wrapper', 'InLine'].includes(adTypeElement.nodeName)) {
+        if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
           continue;
         }
 
@@ -1104,7 +1104,7 @@ var AdParser = function () {
       }
 
       ad.creatives.forEach(function (wrapperCreativeElement) {
-        if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
+        if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
           // TrackingEvents Linear / NonLinear
           if (wrapperCreativeElement.trackingEvents) {
             if (!ad.trackingEvents) {
@@ -2308,7 +2308,7 @@ var VASTParser = function (_EventEmitter) {
           return resolve(ad);
         }
 
-        if (wrapperDepth >= _this8.maxWrapperDepth || _this8.parentURLs.includes(ad.nextWrapperURL)) {
+        if (wrapperDepth >= _this8.maxWrapperDepth || _this8.parentURLs.indexOf(ad.nextWrapperURL) !== -1) {
           // Wrapper limit reached, as defined by the video player.
           // Too many Wrapper responses have been received with no InLine response.
           ad.errorCode = 302;

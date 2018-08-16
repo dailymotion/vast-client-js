@@ -25,77 +25,71 @@ function onwarn(warning) {
   }
 }
 
+function minify(config) {
+  const minifiedConfig = Object.assign({}, config);
+  minifiedConfig.output = Object.assign({}, config.output);
+  minifiedConfig.plugins = Object.assign([], config.plugins);
+
+  const outputFile = minifiedConfig.output.file;
+  const extensionIndex = outputFile.lastIndexOf('.js');
+  minifiedConfig.output.file =
+    outputFile.substr(0, extensionIndex) +
+    '.min' +
+    outputFile.substr(extensionIndex);
+
+  minifiedConfig.plugins.push(uglify());
+
+  return minifiedConfig;
+}
+
+const browserConfig = {
+  input: 'src/index.js',
+  output: {
+    name: 'VAST',
+    format: 'iife',
+    file: 'dist/vast-client.js'
+  },
+  plugins: [
+    builtins(), // Needed for node EventEmitter class
+    babelPlugin
+  ]
+};
+
+const nodeConfig = {
+  input: 'src/index.js',
+  output: {
+    format: 'cjs',
+    file: 'dist/vast-client-node.js'
+  },
+  plugins: [
+    resolve(),
+    alias({
+      './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
+    }),
+    builtins(),
+    babelPlugin
+  ],
+  onwarn
+};
+
+const moduleConfig = {
+  input: 'src/index.js',
+  output: {
+    format: 'es',
+    file: 'dist/vast-client-module.min.js'
+  },
+  plugins: [builtins(), uglify()]
+};
+
 export default [
   // Browser-friendly UMD build [package.json "browser"]
-  {
-    input: 'src/index.js',
-    output: {
-      name: 'VAST',
-      format: 'iife',
-      file: 'dist/vast-client.min.js'
-    },
-    plugins: [
-      builtins(), // Needed for node EventEmitter class
-      babelPlugin,
-      uglify()
-    ]
-  },
-  {
-    input: 'src/index.js',
-    output: {
-      name: 'VAST',
-      format: 'iife',
-      file: 'dist/vast-client.js'
-    },
-    plugins: [
-      builtins(), // Needed for node EventEmitter class
-      babelPlugin
-    ]
-  },
+  browserConfig,
+  minify(browserConfig),
 
   // CommonJS build for Node usage [package.json "main"]
-  {
-    input: 'src/index.js',
-    output: {
-      format: 'cjs',
-      file: 'dist/vast-client-node.min.js'
-    },
-    plugins: [
-      resolve(),
-      alias({
-        './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
-      }),
-      builtins(),
-      babelPlugin,
-      uglify()
-    ],
-    onwarn
-  },
-
-  {
-    input: 'src/index.js',
-    output: {
-      format: 'cjs',
-      file: 'dist/vast-client-node.js'
-    },
-    plugins: [
-      resolve(),
-      alias({
-        './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
-      }),
-      builtins(),
-      babelPlugin
-    ],
-    onwarn
-  },
+  nodeConfig,
+  minify(nodeConfig),
 
   // Minified version with es6 module exports [package.json "module"]
-  {
-    input: 'src/index.js',
-    output: {
-      format: 'es',
-      file: 'dist/vast-client-module.min.js'
-    },
-    plugins: [builtins(), uglify()]
-  }
+  moduleConfig
 ];
