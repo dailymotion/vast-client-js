@@ -1,8 +1,7 @@
-import uri from 'url';
-import fs from 'fs';
-import http from 'http';
-import https from 'https';
-
+const uri = require('url');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const DOMParser = require('xmldom').DOMParser;
 
 export class NodeURLHandler {

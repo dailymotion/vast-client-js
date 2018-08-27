@@ -66,7 +66,7 @@ const nodeConfig = {
   },
   plugins: [
     resolve({
-      preferBuiltins: true
+      preferBuiltins: false
     }),
     alias({
       nodeUrlHandler: './urlhandlers/node_url_handler'
