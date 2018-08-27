@@ -2,7 +2,8 @@ import uri from 'url';
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
-import { DOMParser } from 'xmldom';
+
+const DOMParser = require('xmldom').DOMParser;
 
 export class NodeURLHandler {
   get(url, options, cb) {

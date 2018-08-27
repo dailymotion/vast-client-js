@@ -50,6 +50,9 @@ const browserConfig = {
     file: 'dist/vast-client.js'
   },
   plugins: [
+    alias({
+      nodeUrlHandler: './urlhandlers/mock_node_url_handler'
+    }),
     builtins(), // Needed for node EventEmitter class
     babelPlugin
   ]
@@ -62,9 +65,11 @@ const nodeConfig = {
     file: 'dist/vast-client-node.js'
   },
   plugins: [
-    resolve(),
+    resolve({
+      preferBuiltins: true
+    }),
     alias({
-      './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
+      nodeUrlHandler: './urlhandlers/node_url_handler'
     }),
     builtins(),
     babelPlugin
@@ -78,7 +83,13 @@ const moduleConfig = {
     format: 'es',
     file: 'dist/vast-client-module.min.js'
   },
-  plugins: [builtins(), uglify()]
+  plugins: [
+    alias({
+      nodeUrlHandler: './urlhandlers/mock_node_url_handler'
+    }),
+    builtins(),
+    uglify()
+  ]
 };
 
 export default [
