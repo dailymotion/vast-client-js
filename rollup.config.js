@@ -66,9 +66,8 @@ const nodeConfig = {
       './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
     }),
     resolve({
-      preferBuiltins: false
+      preferBuiltins: true
     }),
-    builtins(),
     babelPlugin
   ],
   onwarn
