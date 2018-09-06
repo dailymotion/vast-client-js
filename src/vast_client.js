@@ -125,7 +125,7 @@ export class VASTClient {
       const timeSinceLastCall = now - this.lastSuccessfulAd;
 
       // Check timeSinceLastCall to be a positive number. If not, this mean the
-      // previous was made in the future. We reset lastSuccessfullAd value
+      // previous was made in the future. We reset lastSuccessfulAd value
       if (timeSinceLastCall < 0) {
         this.lastSuccessfulAd = 0;
       } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
