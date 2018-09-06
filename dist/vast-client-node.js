@@ -2268,7 +2268,7 @@ var VASTClient = function () {
         var timeSinceLastCall = now - _this.lastSuccessfulAd;
 
         // Check timeSinceLastCall to be a positive number. If not, this mean the
-        // previous was made in the future. We reset lastSuccessfullAd value
+        // previous was made in the future. We reset lastSuccessfulAd value
         if (timeSinceLastCall < 0) {
           _this.lastSuccessfulAd = 0;
         } else if (timeSinceLastCall < _this.cappingMinimumTimeInterval) {
@@ -2381,7 +2381,7 @@ var VASTTracker = function (_EventEmitter) {
     // to update the lastSuccessfulAd property.
     if (client) {
       _this.on('start', function () {
-        client.lastSuccessfullAd = Date.now();
+        client.lastSuccessfulAd = Date.now();
       });
     }
     return _this;
