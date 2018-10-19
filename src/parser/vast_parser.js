@@ -412,33 +412,35 @@ export class VASTParser extends EventEmitter {
 
       this.fetchVAST(ad.nextWrapperURL)
         .then(xml => {
-          this.parse(xml, { originalUrl, wrapperSequence, wrapperDepth })
-            .then(unwrappedAds => {
-              delete ad.nextWrapperURL;
-              if (unwrappedAds.length === 0) {
-                // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
-                ad.creatives = [];
-                return resolve(ad);
+          return this.parse(xml, {
+            originalUrl,
+            wrapperSequence,
+            wrapperDepth
+          }).then(unwrappedAds => {
+            delete ad.nextWrapperURL;
+            if (unwrappedAds.length === 0) {
+              // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
+              ad.creatives = [];
+              return resolve(ad);
+            }
+
+            unwrappedAds.forEach(unwrappedAd => {
+              if (unwrappedAd) {
+                this.mergeWrapperAdData(unwrappedAd, ad);
               }
-
-              unwrappedAds.forEach(unwrappedAd => {
-                if (unwrappedAd) {
-                  this.mergeWrapperAdData(unwrappedAd, ad);
-                }
-              });
-
-              resolve(unwrappedAds);
-            })
-            .catch(err => {
-              // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-              // (URI was either unavailable or reached a timeout as defined by the video player.)
-              ad.errorCode = 301;
-              ad.errorMessage = err.message;
-
-              resolve(ad);
             });
+
+            resolve(unwrappedAds);
+          });
         })
-        .catch(err => reject(err));
+        .catch(err => {
+          // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+          // (URI was either unavailable or reached a timeout as defined by the video player.)
+          ad.errorCode = 301;
+          ad.errorMessage = err.message;
+
+          resolve(ad);
+        });
     });
   }
 
