@@ -1114,6 +1114,33 @@ describe('VASTParser', function() {
       });
     });
 
+    describe('#Wrapper URL unavailable/timeout', () => {
+      it('emits a VAST-error & track', done => {
+        vastParser
+          .getAndParseVAST(urlfor('wrapper-unavailable-url.xml'), options)
+          .then(response => {
+            // Response doesn't have any ads
+            response.ads.should.eql([]);
+            // Error has been triggered
+            dataTriggered.length.should.eql(1);
+            dataTriggered[0].ERRORCODE.should.eql(301);
+            dataTriggered[0].extensions[0].children[0].name.should.eql(
+              'paramWrapperInvalidXmlfile'
+            );
+            dataTriggered[0].extensions[0].children[0].value.should.eql(
+              'valueWrapperInvalidXmlfile'
+            );
+            // Tracking has been done
+            trackCalls.length.should.eql(1);
+            trackCalls[0].templates.should.eql([
+              'http://example.com/wrapper-invalid-xmlfile_wrapper-error'
+            ]);
+            trackCalls[0].variables.should.eql({ ERRORCODE: 301 });
+            done();
+          });
+      });
+    });
+
     describe('#Wrapper limit reached', () => {
       it('emits a VAST-error & track', done => {
         vastParser
