@@ -1898,7 +1898,11 @@ var VASTParser = function (_EventEmitter) {
         originalUrl = ad.nextWrapperURL;
 
         _this8.fetchVAST(ad.nextWrapperURL).then(function (xml) {
-          _this8.parse(xml, { originalUrl: originalUrl, wrapperSequence: wrapperSequence, wrapperDepth: wrapperDepth }).then(function (unwrappedAds) {
+          return _this8.parse(xml, {
+            originalUrl: originalUrl,
+            wrapperSequence: wrapperSequence,
+            wrapperDepth: wrapperDepth
+          }).then(function (unwrappedAds) {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {
               // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
@@ -1913,16 +1917,14 @@ var VASTParser = function (_EventEmitter) {
             });
 
             resolve(unwrappedAds);
-          }).catch(function (err) {
-            // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-            // (URI was either unavailable or reached a timeout as defined by the video player.)
-            ad.errorCode = 301;
-            ad.errorMessage = err.message;
-
-            resolve(ad);
           });
         }).catch(function (err) {
-          return reject(err);
+          // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+          // (URI was either unavailable or reached a timeout as defined by the video player.)
+          ad.errorCode = 301;
+          ad.errorMessage = err.message;
+
+          resolve(ad);
         });
       });
     }
