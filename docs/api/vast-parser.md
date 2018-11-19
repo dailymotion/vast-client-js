@@ -49,7 +49,11 @@ const vastParser = new VASTParser();
 Here is the list of event emitted by the class:
 ### VAST-error
 
-Event listener that provides an object with error information such as error code, error message, extensions and system.
+Event is triggered whenever there is an unsupported or empty VAST or a parsing error. It carries the following data:
+- `ERRORCODE: Number`
+- `ERRORMESSAGE: String [optional]`
+- `extensions: Array [optional]`
+- `system: Object [optional]`
 
 ```Javascript
 vastParser.on('VAST-error', ({ ERRORCODE, ERRORMESSAGE, extensions, system }) => {
@@ -59,7 +63,9 @@ vastParser.on('VAST-error', ({ ERRORCODE, ERRORMESSAGE, extensions, system }) =>
 
 ### VAST-resolved
 
-Event listener that provides an object with information such as url of VAST and possible error.
+Event is triggered when VAST url has been fetched. It carries the following data:
+- `url: Number`
+- `error: Error [optional]`
 
 ```Javascript
 vastParser.on('VAST-resolved', ({ url, error }) => {
@@ -69,7 +75,10 @@ vastParser.on('VAST-resolved', ({ url, error }) => {
 
 ### VAST-resolving
 
-Event listener that provides an object with information such as the current url of VAST, current depth of wrapper and original url of VAST.
+Event is triggered when `fetchVAST` function is called. It carries the following data:
+- `url: String`
+- `wrapperDepth: Number [optional]`
+- `originalUrl: String [optional]`
 
 ```Javascript
 vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
