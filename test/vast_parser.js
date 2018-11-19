@@ -70,18 +70,64 @@ describe('VASTParser', function() {
       eventsTriggered.should.eql([
         {
           name: 'VAST-resolving',
-          data: { url: urlfor('wrapper-notracking.xml') }
+          data: {
+            url: urlfor('wrapper-notracking.xml'),
+            wrapperDepth: undefined,
+            originalUrl: undefined
+          }
         },
         {
           name: 'VAST-resolved',
-          data: { url: urlfor('wrapper-notracking.xml') }
+          data: {
+            url: urlfor('wrapper-notracking.xml'),
+            error: null
+          }
         },
-        { name: 'VAST-resolving', data: { url: urlfor('wrapper-a.xml') } },
-        { name: 'VAST-resolved', data: { url: urlfor('wrapper-a.xml') } },
-        { name: 'VAST-resolving', data: { url: urlfor('wrapper-b.xml') } },
-        { name: 'VAST-resolved', data: { url: urlfor('wrapper-b.xml') } },
-        { name: 'VAST-resolving', data: { url: urlfor('sample.xml') } },
-        { name: 'VAST-resolved', data: { url: urlfor('sample.xml') } }
+        {
+          name: 'VAST-resolving',
+          data: {
+            url: urlfor('wrapper-a.xml'),
+            wrapperDepth: 1,
+            originalUrl: urlfor('wrapper-a.xml')
+          }
+        },
+        {
+          name: 'VAST-resolved',
+          data: {
+            url: urlfor('wrapper-a.xml'),
+            error: null
+          }
+        },
+        {
+          name: 'VAST-resolving',
+          data: {
+            url: urlfor('wrapper-b.xml'),
+            wrapperDepth: 2,
+            originalUrl: urlfor('wrapper-b.xml')
+          }
+        },
+        {
+          name: 'VAST-resolved',
+          data: {
+            url: urlfor('wrapper-b.xml'),
+            error: null
+          }
+        },
+        {
+          name: 'VAST-resolving',
+          data: {
+            url: urlfor('sample.xml'),
+            wrapperDepth: 3,
+            originalUrl: urlfor('sample.xml')
+          }
+        },
+        {
+          name: 'VAST-resolved',
+          data: {
+            url: urlfor('sample.xml'),
+            error: null
+          }
+        }
       ]);
     });
 
@@ -1206,6 +1252,30 @@ describe('VASTParser', function() {
 
           done();
         });
+    });
+  });
+
+  // Leave at the end
+  describe('parsing events', function() {
+    describe('failed wrapper resolution', function() {
+      let lastErr = null;
+      const vastParser = new VASTParser();
+
+      before(done => {
+        const options = { urlhandler: new NodeURLHandler() };
+        vastParser.on('VAST-resolved', variables => {
+          lastErr = variables.error;
+        });
+        vastParser
+          .getAndParseVAST(urlfor('wrapper-unavailable-url.xml'), options)
+          .then(() => {
+            done();
+          });
+      });
+
+      it('should show error when emitting resolved event', function() {
+        lastErr.should.not.equal(null);
+      });
     });
   });
 });
