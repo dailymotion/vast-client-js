@@ -1985,6 +1985,8 @@ var VAST = (function (exports) {
        * Fetches a VAST document for the given url.
        * Returns a Promise which resolves,rejects according to the result of the request.
        * @param  {String} url - The url to request the VAST document.
+       * @param {Number} wrapperDepth - how many times the current url has been wrapped
+       * @param {String} originalUrl - url of original wrapper
        * @emits  VASTParser#VAST-resolving
        * @emits  VASTParser#VAST-resolved
        * @return {Promise}
@@ -1992,7 +1994,7 @@ var VAST = (function (exports) {
 
     }, {
       key: 'fetchVAST',
-      value: function fetchVAST(url) {
+      value: function fetchVAST(url, wrapperDepth, originalUrl) {
         var _this2 = this;
 
         return new Promise(function (resolve, reject) {
@@ -2002,10 +2004,10 @@ var VAST = (function (exports) {
           });
 
           _this2.parentURLs.push(url);
-          _this2.emit('VAST-resolving', { url: url });
+          _this2.emit('VAST-resolving', { url: url, wrapperDepth: wrapperDepth, originalUrl: originalUrl });
 
           _this2.urlHandler.get(url, _this2.fetchingOptions, function (err, xml) {
-            _this2.emit('VAST-resolved', { url: url });
+            _this2.emit('VAST-resolved', { url: url, error: err });
 
             if (err) {
               reject(err);
@@ -2322,7 +2324,7 @@ var VAST = (function (exports) {
           var wrapperSequence = ad.sequence;
           originalUrl = ad.nextWrapperURL;
 
-          _this8.fetchVAST(ad.nextWrapperURL).then(function (xml) {
+          _this8.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl).then(function (xml) {
             return _this8.parse(xml, {
               originalUrl: originalUrl,
               wrapperSequence: wrapperSequence,
