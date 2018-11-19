@@ -101,11 +101,13 @@ export class VASTParser extends EventEmitter {
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
+   * @param {Number} wrapperDepth - how many times the current url has been wrapped
+   * @param {String} originalUrl - url of original wrapper
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-  fetchVAST(url) {
+  fetchVAST(url, wrapperDepth, originalUrl) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
       this.URLTemplateFilters.forEach(filter => {
@@ -113,10 +115,10 @@ export class VASTParser extends EventEmitter {
       });
 
       this.parentURLs.push(url);
-      this.emit('VAST-resolving', { url });
+      this.emit('VAST-resolving', { url, wrapperDepth, originalUrl });
 
       this.urlHandler.get(url, this.fetchingOptions, (err, xml) => {
-        this.emit('VAST-resolved', { url });
+        this.emit('VAST-resolved', { url, error: err });
 
         if (err) {
           reject(err);
@@ -410,7 +412,7 @@ export class VASTParser extends EventEmitter {
       const wrapperSequence = ad.sequence;
       originalUrl = ad.nextWrapperURL;
 
-      this.fetchVAST(ad.nextWrapperURL)
+      this.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl)
         .then(xml => {
           return this.parse(xml, {
             originalUrl,
