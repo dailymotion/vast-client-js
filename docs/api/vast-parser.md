@@ -45,17 +45,37 @@ const vastParser = new VASTParser();
 ```
 
 ## Events<a name="events"></a>
-`VASTParser` extends [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter), therefore is possible to add event listeners like this:
+`VASTParser` extends [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter), therefore is possible to add event listeners.
+Here is the list of event emitted by the class:
+### VAST-error
+
+Event listener that provides an object with error information such as error code, error message, extensions and system.
+
 ```Javascript
-vastParser.on('VAST-error', () => {
+vastParser.on('VAST-error', ({ ERRORCODE, ERRORMESSAGE, extensions, system }) => {
   // Deal with the error
 });
 ```
 
-Here is the list of event emitted by the class:
- * **`VAST-error`**
- * **`VAST-resolved`**
- * **`VAST-resolving`**
+### VAST-resolved
+
+Event listener that provides an object with information such as url of VAST and possible error.
+
+```Javascript
+vastParser.on('VAST-resolved', ({ url, error }) => {
+  // Access to the info
+});
+```
+
+### VAST-resolving
+
+Event listener that provides an object with information such as the current url of VAST, current depth of wrapper and original url of VAST.
+
+```Javascript
+vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
+  // Access to the info
+});
+```
 
 ## Properties<a name="properties"></a>
 
