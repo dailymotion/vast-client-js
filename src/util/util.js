@@ -44,7 +44,7 @@ export class Util {
     for (let URLTemplateKey in URLTemplates) {
       let resolveURL = URLTemplates[URLTemplateKey];
 
-      if (!resolveURL) {
+      if (typeof resolveURL !== 'string') {
         continue;
       }
 
