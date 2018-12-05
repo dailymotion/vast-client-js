@@ -91,7 +91,9 @@ describe('Util', function() {
         CONTENTPLAYHEAD: 120
       }).should.equal('http://test.com/120&120'));
 
-    it('should handle undefined', () =>
-      should(resolve(undefined)).equal(undefined));
+    it('should ignore other types than strings', () =>
+      [undefined, null, false, 123, {}, () => {}].forEach(URLTemplate =>
+        should(resolve(URLTemplate)).equal(undefined)
+      ));
   });
 });
