@@ -175,7 +175,7 @@ var Util = function () {
       for (var URLTemplateKey in URLTemplates) {
         var resolveURL = URLTemplates[URLTemplateKey];
 
-        if (!resolveURL) {
+        if (typeof resolveURL !== 'string') {
           continue;
         }
 
