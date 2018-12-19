@@ -82,7 +82,7 @@ Instance of a class which implements the `Storage` interface. Should be set up o
 ### get(url, options): Promise
 Gets a parsed VAST document for the given url, applying the skipping rules defined (`cappingFreeLunch` and `cappingMinimumTimeInterval`).
 
-Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
+Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/class-docs/docs/api/class-reference.md#vastresponse) or rejects with an `Error`.
 
 By default the fully parsed `VASTResponse` contains all the Ads contained in the `VAST` resource. It's possible to get only the first Ad or AdPod and then get the remaining ones on demand by passing `resolveAll: false` in the `options` parameter.
 
@@ -127,7 +127,7 @@ Let's consider the VAST shown in the following image: it contains 4 ads, with th
 
 ![AdPod example](./img/adpods.jpg)
 
-Using `get` method with default `options` will return a `VASTResponse` containing all the ads resolved, which would look like this:
+Using `get` method with default `options` will return a [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/class-docs/docs/api/class-reference.md#vastresponse) containing all the ads resolved, which would look like this:
 
 ```Javascript
 {
@@ -222,7 +222,7 @@ vastClient.hasRemainingAds(); // Returns true
 ```
 
 ### getNextAds(all): Promise
-Returns a `Promise` which either resolves with a `VASTResponse` or rejects with an Error.
+Returns a `Promise` which either resolves with a [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/class-docs/docs/api/class-reference.md#vastresponse) or rejects with an Error.
 The resolved `VASTResponse` can contain either a single Ad or AdPod or all the remaining Ads if `all` parameter is passed as `true`.
 
 #### Example

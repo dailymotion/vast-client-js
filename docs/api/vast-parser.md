@@ -175,7 +175,7 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves wi
 
 ### getAndParseVAST(url, options)<a name="getandparse"></a>
 Fetches and parses a VAST for the given url.
-Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
+Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/class-docs/docs/api/class-reference.md#vastresponse) or rejects with an `Error`.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
@@ -215,8 +215,8 @@ vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options)
 ```
 
 ### parseVAST(vastXml, options)<a name="parse"></a>
-Parses the given xml Object into a `VASTResponse`.
-Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](../../src/vast_response.js) or rejects with an `Error`.
+Parses the given xml Object into a [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/class-docs/docs/api/class-reference.md#vastresponse).
+Returns a `Promise` which either resolves with the fully parsed `VASTResponse` or rejects with an `Error`.
 
 #### Parameters
  * **`vastXml: Object`** - An object representing an xml document
