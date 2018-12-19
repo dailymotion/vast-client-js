@@ -11,6 +11,7 @@ This library provides three components:
  * A **VAST Tracker** to batch and call tracking URLs.
 
 For the full API documentation go [here](#api).
+For the full Class reference go [here](https://github.com/dailymotion/vast-client-js/blob/class-docs/docs/api/class-reference.md)
 
 Complies with the [VAST 3.0 specification](https://www.iab.com/wp-content/uploads/2015/06/VASTv3_0.pdf) provided by the [Interactive Advertising Bureau (IAB)](https://www.iab.com/).
 
