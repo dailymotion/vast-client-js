@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/dailymotion/vast-client-js.png)](https://travis-ci.org/dailymotion/vast-client-js)
 [![npm version](https://badgen.net/npm/v/vast-client)](https://badgen.net/npm/v/vast-client)
 [![downloads per week](https://badgen.net/npm/dw/vast-client)](https://badgen.net/npm/dw/vast-client)
 [![license](https://badgen.net/npm/license/vast-client)](https://badgen.net/npm/license/vast-client)
