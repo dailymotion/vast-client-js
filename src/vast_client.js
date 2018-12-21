@@ -1,5 +1,4 @@
 import { Storage } from './util/storage';
-import { Util } from './util/util';
 import { VASTParser } from './parser/vast_parser';
 
 /**
@@ -24,7 +23,6 @@ export class VASTClient {
       timeout: 0
     };
     this.vastParser = new VASTParser();
-    this.util = new Util();
     this.storage = customStorage || new Storage();
 
     // Init values if not already set

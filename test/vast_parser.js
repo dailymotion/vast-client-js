@@ -5,6 +5,7 @@ import { VASTParser } from '../src/parser/vast_parser';
 import { VASTResponse } from '../src/vast_response';
 import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { parserUtils } from '../src/parser/parser_utils.js';
+import { util } from '../src/util/util';
 
 const vastParser = new VASTParser();
 
@@ -1000,7 +1001,7 @@ describe('VASTParser', function() {
 
       vastParser.on('VAST-error', variables => dataTriggered.push(variables));
 
-      vastParser.util.track = (templates, variables) => {
+      util.track = (templates, variables) => {
         trackCalls.push({
           templates,
           variables

@@ -4,6 +4,7 @@ import { VASTClient } from '../src/vast_client';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
 import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { util } from '../src/util/util';
 
 const now = new Date();
 const vastParser = new VASTParser();
@@ -279,7 +280,7 @@ describe('VASTTracker', function() {
       describe('#trackImpression', () => {
         before(done => {
           _eventsSent = [];
-          this.Tracker.util.track = function(URLTemplates, variables) {
+          util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.trackImpression();
@@ -308,7 +309,7 @@ describe('VASTTracker', function() {
       describe('#errorWithCode', () => {
         before(done => {
           _eventsSent = [];
-          this.Tracker.util.track = function(URLTemplates, variables) {
+          util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.errorWithCode(405);
@@ -399,7 +400,7 @@ describe('VASTTracker', function() {
       describe('#click', () => {
         before(done => {
           _eventsSent = [];
-          this.Tracker.util.track = function(URLTemplates, variables) {
+          util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.click();
@@ -407,7 +408,7 @@ describe('VASTTracker', function() {
         });
 
         it('should have sent clicktracking events', () => {
-          const ISOTimeStamp = this.Tracker.util.encodeURIComponentRFC3986(
+          const ISOTimeStamp = util.encodeURIComponentRFC3986(
             new Date().toISOString()
           );
           _eventsSent[0].should.eql([
@@ -470,7 +471,7 @@ describe('VASTTracker', function() {
       describe('#click', () => {
         before(done => {
           _eventsSent = [];
-          this.Tracker.util.track = function(URLTemplates, variables) {
+          util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.click();
@@ -478,7 +479,7 @@ describe('VASTTracker', function() {
         });
 
         it('should have sent clicktracking events', () => {
-          const ISOTimeStamp = this.Tracker.util.encodeURIComponentRFC3986(
+          const ISOTimeStamp = util.encodeURIComponentRFC3986(
             new Date().toISOString()
           );
           _eventsSent[0].should.eql([
@@ -512,7 +513,7 @@ describe('VASTTracker', function() {
       describe('#click', () => {
         before(done => {
           _eventsSent = [];
-          this.Tracker.util.track = function(URLTemplates, variables) {
+          util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.click();
@@ -520,7 +521,7 @@ describe('VASTTracker', function() {
         });
 
         it('should have sent clicktracking events', () => {
-          const ISOTimeStamp = this.Tracker.util.encodeURIComponentRFC3986(
+          const ISOTimeStamp = util.encodeURIComponentRFC3986(
             new Date().toISOString()
           );
           _eventsSent[0].should.eql([
