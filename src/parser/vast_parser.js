@@ -1,6 +1,6 @@
 import { AdParser } from './ad_parser';
 import { EventEmitter } from 'events';
-import { ParserUtils } from './parser_utils';
+import { parserUtils } from './parser_utils';
 import { URLHandler } from '../url_handler';
 import { Util } from '../util/util';
 import { VASTResponse } from '../vast_response';
@@ -33,7 +33,6 @@ export class VASTParser extends EventEmitter {
     this.URLTemplateFilters = [];
     this.fetchingOptions = {};
 
-    this.parserUtils = new ParserUtils();
     this.adParser = new AdParser();
     this.util = new Util();
   }
@@ -266,7 +265,7 @@ export class VASTParser extends EventEmitter {
       const node = childNodes[nodeKey];
 
       if (node.nodeName === 'Error') {
-        const errorURLTemplate = this.parserUtils.parseNodeText(node);
+        const errorURLTemplate = parserUtils.parseNodeText(node);
 
         // Distinguish root VAST url templates from ad specific ones
         isRootVAST
@@ -305,7 +304,7 @@ export class VASTParser extends EventEmitter {
 
     // Split the VAST in case we don't want to resolve everything at the first time
     if (resolveAll === false) {
-      this.remainingAds = this.parserUtils.splitVAST(ads);
+      this.remainingAds = parserUtils.splitVAST(ads);
       // Remove the first element from the remaining ads array, since we're going to resolve that element
       ads = this.remainingAds.shift();
     }
@@ -377,7 +376,7 @@ export class VASTParser extends EventEmitter {
       }
 
       // Get full URL
-      ad.nextWrapperURL = this.parserUtils.resolveVastAdTagURI(
+      ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(
         ad.nextWrapperURL,
         originalUrl
       );
@@ -402,7 +401,7 @@ export class VASTParser extends EventEmitter {
 
             unwrappedAds.forEach(unwrappedAd => {
               if (unwrappedAd) {
-                this.parserUtils.mergeWrapperAdData(unwrappedAd, ad);
+                parserUtils.mergeWrapperAdData(unwrappedAd, ad);
               }
             });
 
