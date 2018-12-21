@@ -249,72 +249,68 @@ export class VASTParser extends EventEmitter {
       isRootVAST = false
     }
   ) {
-    return new Promise((resolve, reject) => {
-      // check if is a valid VAST document
-      if (
-        !vastXml ||
-        !vastXml.documentElement ||
-        vastXml.documentElement.nodeName !== 'VAST'
-      ) {
-        return reject(new Error('Invalid VAST XMLDocument'));
+    // check if is a valid VAST document
+    if (
+      !vastXml ||
+      !vastXml.documentElement ||
+      vastXml.documentElement.nodeName !== 'VAST'
+    ) {
+      return Promise.reject(new Error('Invalid VAST XMLDocument'));
+    }
+
+    let ads = [];
+    const childNodes = vastXml.documentElement.childNodes;
+
+    // Fill the VASTResponse object with ads and errorURLTemplates
+    for (let nodeKey in childNodes) {
+      const node = childNodes[nodeKey];
+
+      if (node.nodeName === 'Error') {
+        const errorURLTemplate = this.parserUtils.parseNodeText(node);
+
+        // Distinguish root VAST url templates from ad specific ones
+        isRootVAST
+          ? this.rootErrorURLTemplates.push(errorURLTemplate)
+          : this.errorURLTemplates.push(errorURLTemplate);
       }
 
-      let ads = [];
-      const childNodes = vastXml.documentElement.childNodes;
+      if (node.nodeName === 'Ad') {
+        const ad = this.adParser.parse(node);
 
-      // Fill the VASTResponse object with ads and errorURLTemplates
-      for (let nodeKey in childNodes) {
-        const node = childNodes[nodeKey];
-
-        if (node.nodeName === 'Error') {
-          const errorURLTemplate = this.parserUtils.parseNodeText(node);
-
-          // Distinguish root VAST url templates from ad specific ones
-          isRootVAST
-            ? this.rootErrorURLTemplates.push(errorURLTemplate)
-            : this.errorURLTemplates.push(errorURLTemplate);
-        }
-
-        if (node.nodeName === 'Ad') {
-          const ad = this.adParser.parse(node);
-
-          if (ad) {
-            ads.push(ad);
-          } else {
-            // VAST version of response not supported.
-            this.trackVastError(this.getErrorURLTemplates(), {
-              ERRORCODE: 101
-            });
-          }
+        if (ad) {
+          ads.push(ad);
+        } else {
+          // VAST version of response not supported.
+          this.trackVastError(this.getErrorURLTemplates(), {
+            ERRORCODE: 101
+          });
         }
       }
+    }
 
-      const adsCount = ads.length;
-      const lastAddedAd = ads[adsCount - 1];
-      // if in child nodes we have only one ads
-      // and wrapperSequence is defined
-      // and this ads doesn't already have sequence
-      if (
-        adsCount === 1 &&
-        wrapperSequence !== undefined &&
-        wrapperSequence !== null &&
-        lastAddedAd &&
-        !lastAddedAd.sequence
-      ) {
-        lastAddedAd.sequence = wrapperSequence;
-      }
+    const adsCount = ads.length;
+    const lastAddedAd = ads[adsCount - 1];
+    // if in child nodes we have only one ads
+    // and wrapperSequence is defined
+    // and this ads doesn't already have sequence
+    if (
+      adsCount === 1 &&
+      wrapperSequence !== undefined &&
+      wrapperSequence !== null &&
+      lastAddedAd &&
+      !lastAddedAd.sequence
+    ) {
+      lastAddedAd.sequence = wrapperSequence;
+    }
 
-      // Split the VAST in case we don't want to resolve everything at the first time
-      if (resolveAll === false) {
-        this.remainingAds = this.parserUtils.splitVAST(ads);
-        // Remove the first element from the remaining ads array, since we're going to resolve that element
-        ads = this.remainingAds.shift();
-      }
+    // Split the VAST in case we don't want to resolve everything at the first time
+    if (resolveAll === false) {
+      this.remainingAds = this.parserUtils.splitVAST(ads);
+      // Remove the first element from the remaining ads array, since we're going to resolve that element
+      ads = this.remainingAds.shift();
+    }
 
-      this.resolveAds(ads, { resolveAll, wrapperDepth, originalUrl })
-        .then(res => resolve(res))
-        .catch(err => reject(err));
-    });
+    return this.resolveAds(ads, { resolveAll, wrapperDepth, originalUrl });
   }
 
   /**
