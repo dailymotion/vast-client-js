@@ -325,25 +325,20 @@ export class VASTParser extends EventEmitter {
    * @return {Promise}
    */
   resolveAds(ads = [], { wrapperDepth, originalUrl }) {
-    return new Promise((resolve, reject) => {
-      const resolveWrappersPromises = [];
+    const resolveWrappersPromises = [];
 
-      ads.forEach(ad => {
-        const resolveWrappersPromise = this.resolveWrappers(
-          ad,
-          wrapperDepth,
-          originalUrl
-        );
-
-        resolveWrappersPromises.push(resolveWrappersPromise);
-      });
-
-      resolve(
-        Promise.all(resolveWrappersPromises).then(unwrappedAds => {
-          return this.util.flatten(unwrappedAds);
-        })
+    ads.forEach(ad => {
+      const resolveWrappersPromise = this.resolveWrappers(
+        ad,
+        wrapperDepth,
+        originalUrl
       );
-    }).then(resolvedAds => {
+
+      resolveWrappersPromises.push(resolveWrappersPromise);
+    });
+
+    return Promise.all(resolveWrappersPromises).then(unwrappedAds => {
+      const resolvedAds = this.util.flatten(unwrappedAds);
       if (!resolvedAds && this.remainingAds.length > 0) {
         const ads = this.remainingAds.shift();
 
