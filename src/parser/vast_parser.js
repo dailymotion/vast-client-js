@@ -154,26 +154,23 @@ export class VASTParser extends EventEmitter {
    * @return {Promise}
    */
   getRemainingAds(all) {
-    return new Promise((resolve, reject) => {
-      if (this.remainingAds.length === 0) {
-        return reject(
-          new Error('No more ads are available for the given VAST')
-        );
-      }
+    if (this.remainingAds.length === 0) {
+      return Promise.reject(
+        new Error('No more ads are available for the given VAST')
+      );
+    }
 
-      const ads = all
-        ? this.util.flatten(this.remainingAds)
-        : this.remainingAds.shift();
-      this.errorURLTemplates = [];
-      this.parentURLs = [];
+    const ads = all
+      ? this.util.flatten(this.remainingAds)
+      : this.remainingAds.shift();
+    this.errorURLTemplates = [];
+    this.parentURLs = [];
 
-      this.resolveAds(ads, { wrapperDepth: 0, originalUrl: this.rootURL })
-        .then(resolvedAds => {
-          const response = this.buildVASTResponse(resolvedAds);
-
-          resolve(response);
-        })
-        .catch(err => reject(err));
+    return this.resolveAds(ads, {
+      wrapperDepth: 0,
+      originalUrl: this.rootURL
+    }).then(resolvedAds => {
+      return this.buildVASTResponse(resolvedAds);
     });
   }
 
@@ -190,21 +187,13 @@ export class VASTParser extends EventEmitter {
     this.initParsingStatus(options);
     this.rootURL = url;
 
-    return new Promise((resolve, reject) => {
-      this.fetchVAST(url)
-        .then(xml => {
-          options.originalUrl = url;
-          options.isRootVAST = true;
+    return this.fetchVAST(url).then(xml => {
+      options.originalUrl = url;
+      options.isRootVAST = true;
 
-          this.parse(xml, options)
-            .then(ads => {
-              const response = this.buildVASTResponse(ads);
-
-              resolve(response);
-            })
-            .catch(err => reject(err));
-        })
-        .catch(err => reject(err));
+      return this.parse(xml, options).then(ads => {
+        return this.buildVASTResponse(ads);
+      });
     });
   }
 
