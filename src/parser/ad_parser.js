@@ -1,9 +1,9 @@
 import { Ad } from '../ad';
 import { AdExtension } from '../ad_extension';
 import { AdExtensionChild } from '../ad_extension_child';
-import { CreativeCompanionParser } from './creative_companion_parser';
-import { CreativeLinearParser } from './creative_linear_parser';
-import { CreativeNonLinearParser } from './creative_non_linear_parser';
+import { creativeCompanionParser } from './creative_companion_parser';
+import { creativeLinearParser } from './creative_linear_parser';
+import { creativeNonLinearParser } from './creative_non_linear_parser';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -12,15 +12,6 @@ import { parserUtils } from './parser_utils';
  * @class AdParser
  */
 export class AdParser {
-  /**
-   * Creates an instance of AdParser.
-   */
-  constructor() {
-    this.creativeCompanionParser = new CreativeCompanionParser();
-    this.creativeNonLinearParser = new CreativeNonLinearParser();
-    this.creativeLinearParser = new CreativeLinearParser();
-  }
-
   /**
    * Parses an Ad element (can either be a Wrapper or an InLine).
    * @param  {Object} adElement - The VAST Ad element to parse.
@@ -88,7 +79,7 @@ export class AdParser {
 
                 switch (creativeTypeElement.nodeName) {
                   case 'Linear':
-                    let creativeLinear = this.creativeLinearParser.parse(
+                    let creativeLinear = creativeLinearParser.parse(
                       creativeTypeElement,
                       creativeAttributes
                     );
@@ -97,7 +88,7 @@ export class AdParser {
                     }
                     break;
                   case 'NonLinearAds':
-                    let creativeNonLinear = this.creativeNonLinearParser.parse(
+                    let creativeNonLinear = creativeNonLinearParser.parse(
                       creativeTypeElement,
                       creativeAttributes
                     );
@@ -106,7 +97,7 @@ export class AdParser {
                     }
                     break;
                   case 'CompanionAds':
-                    let creativeCompanion = this.creativeCompanionParser.parse(
+                    let creativeCompanion = creativeCompanionParser.parse(
                       creativeTypeElement,
                       creativeAttributes
                     );
