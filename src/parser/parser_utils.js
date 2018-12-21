@@ -180,4 +180,73 @@ export class ParserUtils {
 
     return splittedVAST;
   }
+
+  /**
+   * Merges the data between an unwrapped ad and his wrapper.
+   * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
+   * @param  {Ad} wrapper - The wrapper Ad.
+   * @return {void}
+   */
+  mergeWrapperAdData(unwrappedAd, wrapper) {
+    unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(
+      unwrappedAd.errorURLTemplates
+    );
+    unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(
+      unwrappedAd.impressionURLTemplates
+    );
+    unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
+
+    unwrappedAd.creatives.forEach(creative => {
+      if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
+        for (let eventName in wrapper.trackingEvents[creative.type]) {
+          const urls = wrapper.trackingEvents[creative.type][eventName];
+          if (!creative.trackingEvents[eventName]) {
+            creative.trackingEvents[eventName] = [];
+          }
+          creative.trackingEvents[eventName] = creative.trackingEvents[
+            eventName
+          ].concat(urls);
+        }
+      }
+    });
+
+    if (
+      wrapper.videoClickTrackingURLTemplates &&
+      wrapper.videoClickTrackingURLTemplates.length
+    ) {
+      unwrappedAd.creatives.forEach(creative => {
+        if (creative.type === 'linear') {
+          creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(
+            wrapper.videoClickTrackingURLTemplates
+          );
+        }
+      });
+    }
+
+    if (
+      wrapper.videoCustomClickURLTemplates &&
+      wrapper.videoCustomClickURLTemplates.length
+    ) {
+      unwrappedAd.creatives.forEach(creative => {
+        if (creative.type === 'linear') {
+          creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(
+            wrapper.videoCustomClickURLTemplates
+          );
+        }
+      });
+    }
+
+    // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+    if (wrapper.videoClickThroughURLTemplate) {
+      unwrappedAd.creatives.forEach(creative => {
+        if (
+          creative.type === 'linear' &&
+          creative.videoClickThroughURLTemplate == null
+        ) {
+          creative.videoClickThroughURLTemplate =
+            wrapper.videoClickThroughURLTemplate;
+        }
+      });
+    }
+  }
 }
