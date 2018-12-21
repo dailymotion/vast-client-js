@@ -4,7 +4,7 @@ import { AdExtensionChild } from '../ad_extension_child';
 import { CreativeCompanionParser } from './creative_companion_parser';
 import { CreativeLinearParser } from './creative_linear_parser';
 import { CreativeNonLinearParser } from './creative_non_linear_parser';
-import { ParserUtils } from './parser_utils';
+import { parserUtils } from './parser_utils';
 
 /**
  * This class provides methods to parse a VAST Ad Element.
@@ -19,7 +19,6 @@ export class AdParser {
     this.creativeCompanionParser = new CreativeCompanionParser();
     this.creativeNonLinearParser = new CreativeNonLinearParser();
     this.creativeLinearParser = new CreativeLinearParser();
-    this.parserUtils = new ParserUtils();
   }
 
   /**
@@ -37,8 +36,8 @@ export class AdParser {
         continue;
       }
 
-      this.parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
-      this.parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
+      parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
+      parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
 
       if (adTypeElement.nodeName === 'Wrapper') {
         return this.parseWrapper(adTypeElement);
@@ -64,15 +63,15 @@ export class AdParser {
 
       switch (node.nodeName) {
         case 'Error':
-          ad.errorURLTemplates.push(this.parserUtils.parseNodeText(node));
+          ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
           break;
 
         case 'Impression':
-          ad.impressionURLTemplates.push(this.parserUtils.parseNodeText(node));
+          ad.impressionURLTemplates.push(parserUtils.parseNodeText(node));
           break;
 
         case 'Creatives':
-          this.parserUtils
+          parserUtils
             .childrenByName(node, 'Creative')
             .forEach(creativeElement => {
               const creativeAttributes = {
@@ -123,39 +122,39 @@ export class AdParser {
         case 'Extensions':
           this.parseExtensions(
             ad.extensions,
-            this.parserUtils.childrenByName(node, 'Extension')
+            parserUtils.childrenByName(node, 'Extension')
           );
           break;
 
         case 'AdSystem':
           ad.system = {
-            value: this.parserUtils.parseNodeText(node),
+            value: parserUtils.parseNodeText(node),
             version: node.getAttribute('version') || null
           };
           break;
 
         case 'AdTitle':
-          ad.title = this.parserUtils.parseNodeText(node);
+          ad.title = parserUtils.parseNodeText(node);
           break;
 
         case 'Description':
-          ad.description = this.parserUtils.parseNodeText(node);
+          ad.description = parserUtils.parseNodeText(node);
           break;
 
         case 'Advertiser':
-          ad.advertiser = this.parserUtils.parseNodeText(node);
+          ad.advertiser = parserUtils.parseNodeText(node);
           break;
 
         case 'Pricing':
           ad.pricing = {
-            value: this.parserUtils.parseNodeText(node),
+            value: parserUtils.parseNodeText(node),
             model: node.getAttribute('model') || null,
             currency: node.getAttribute('currency') || null
           };
           break;
 
         case 'Survey':
-          ad.survey = this.parserUtils.parseNodeText(node);
+          ad.survey = parserUtils.parseNodeText(node);
           break;
       }
     }
@@ -170,22 +169,22 @@ export class AdParser {
    */
   parseWrapper(wrapperElement) {
     const ad = this.parseInLine(wrapperElement);
-    let wrapperURLElement = this.parserUtils.childByName(
+    let wrapperURLElement = parserUtils.childByName(
       wrapperElement,
       'VASTAdTagURI'
     );
 
     if (wrapperURLElement) {
-      ad.nextWrapperURL = this.parserUtils.parseNodeText(wrapperURLElement);
+      ad.nextWrapperURL = parserUtils.parseNodeText(wrapperURLElement);
     } else {
-      wrapperURLElement = this.parserUtils.childByName(
+      wrapperURLElement = parserUtils.childByName(
         wrapperElement,
         'VASTAdTagURL'
       );
 
       if (wrapperURLElement) {
-        ad.nextWrapperURL = this.parserUtils.parseNodeText(
-          this.parserUtils.childByName(wrapperURLElement, 'URL')
+        ad.nextWrapperURL = parserUtils.parseNodeText(
+          parserUtils.childByName(wrapperURLElement, 'URL')
         );
       }
     }
@@ -268,7 +267,7 @@ export class AdParser {
 
       for (let childNodeKey in childNodes) {
         const childNode = childNodes[childNodeKey];
-        const txt = this.parserUtils.parseNodeText(childNode);
+        const txt = parserUtils.parseNodeText(childNode);
 
         // ignore comments / empty value
         if (childNode.nodeName !== '#comment' && txt !== '') {

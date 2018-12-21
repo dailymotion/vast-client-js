@@ -1,7 +1,4 @@
-import should from 'should';
-import { ParserUtils } from '../src/parser/parser_utils.js';
-
-const parserUtils = new ParserUtils();
+import { parserUtils } from '../src/parser/parser_utils.js';
 
 describe('ParserUtils', function() {
   describe('#splitVAST', function() {

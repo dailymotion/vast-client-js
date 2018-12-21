@@ -1,7 +1,7 @@
 import { CreativeLinear } from '../creative/creative_linear';
 import { Icon } from '../icon';
 import { MediaFile } from '../media_file';
-import { ParserUtils } from './parser_utils';
+import { parserUtils } from './parser_utils';
 
 /**
  * This class provides methods to parse a VAST Linear Element.
@@ -9,13 +9,6 @@ import { ParserUtils } from './parser_utils';
  * @class CreativeLinearParser
  */
 export class CreativeLinearParser {
-  /**
-   * Creates an instance of CreativeLinearParser.
-   */
-  constructor() {
-    this.parserUtils = new ParserUtils();
-  }
-
   /**
    * Parses a Linear element.
    * @param  {Object} creativeElement - The VAST Linear element to parse.
@@ -26,9 +19,9 @@ export class CreativeLinearParser {
     let offset;
     const creative = new CreativeLinear(creativeAttributes);
 
-    creative.duration = this.parserUtils.parseDuration(
-      this.parserUtils.parseNodeText(
-        this.parserUtils.childByName(creativeElement, 'Duration')
+    creative.duration = parserUtils.parseDuration(
+      parserUtils.parseNodeText(
+        parserUtils.childByName(creativeElement, 'Duration')
       )
     );
     const skipOffset = creativeElement.getAttribute('skipoffset');
@@ -42,51 +35,51 @@ export class CreativeLinearParser {
       const percent = parseInt(skipOffset, 10);
       creative.skipDelay = creative.duration * (percent / 100);
     } else {
-      creative.skipDelay = this.parserUtils.parseDuration(skipOffset);
+      creative.skipDelay = parserUtils.parseDuration(skipOffset);
     }
 
-    const videoClicksElement = this.parserUtils.childByName(
+    const videoClicksElement = parserUtils.childByName(
       creativeElement,
       'VideoClicks'
     );
     if (videoClicksElement) {
-      creative.videoClickThroughURLTemplate = this.parserUtils.parseNodeText(
-        this.parserUtils.childByName(videoClicksElement, 'ClickThrough')
+      creative.videoClickThroughURLTemplate = parserUtils.parseNodeText(
+        parserUtils.childByName(videoClicksElement, 'ClickThrough')
       );
 
-      this.parserUtils
+      parserUtils
         .childrenByName(videoClicksElement, 'ClickTracking')
         .forEach(clickTrackingElement => {
           creative.videoClickTrackingURLTemplates.push(
-            this.parserUtils.parseNodeText(clickTrackingElement)
+            parserUtils.parseNodeText(clickTrackingElement)
           );
         });
 
-      this.parserUtils
+      parserUtils
         .childrenByName(videoClicksElement, 'CustomClick')
         .forEach(customClickElement => {
           creative.videoCustomClickURLTemplates.push(
-            this.parserUtils.parseNodeText(customClickElement)
+            parserUtils.parseNodeText(customClickElement)
           );
         });
     }
 
-    const adParamsElement = this.parserUtils.childByName(
+    const adParamsElement = parserUtils.childByName(
       creativeElement,
       'AdParameters'
     );
     if (adParamsElement) {
-      creative.adParameters = this.parserUtils.parseNodeText(adParamsElement);
+      creative.adParameters = parserUtils.parseNodeText(adParamsElement);
     }
 
-    this.parserUtils
+    parserUtils
       .childrenByName(creativeElement, 'TrackingEvents')
       .forEach(trackingEventsElement => {
-        this.parserUtils
+        parserUtils
           .childrenByName(trackingEventsElement, 'Tracking')
           .forEach(trackingElement => {
             let eventName = trackingElement.getAttribute('event');
-            const trackingURLTemplate = this.parserUtils.parseNodeText(
+            const trackingURLTemplate = parserUtils.parseNodeText(
               trackingElement
             );
             if (eventName && trackingURLTemplate) {
@@ -99,7 +92,7 @@ export class CreativeLinearParser {
                   eventName = `progress-${offset}`;
                 } else {
                   eventName = `progress-${Math.round(
-                    this.parserUtils.parseDuration(offset)
+                    parserUtils.parseDuration(offset)
                   )}`;
                 }
               }
@@ -112,17 +105,15 @@ export class CreativeLinearParser {
           });
       });
 
-    this.parserUtils
+    parserUtils
       .childrenByName(creativeElement, 'MediaFiles')
       .forEach(mediaFilesElement => {
-        this.parserUtils
+        parserUtils
           .childrenByName(mediaFilesElement, 'MediaFile')
           .forEach(mediaFileElement => {
             const mediaFile = new MediaFile();
             mediaFile.id = mediaFileElement.getAttribute('id');
-            mediaFile.fileURL = this.parserUtils.parseNodeText(
-              mediaFileElement
-            );
+            mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
             mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
             mediaFile.codec = mediaFileElement.getAttribute('codec');
             mediaFile.mimeType = mediaFileElement.getAttribute('type');
@@ -174,81 +165,71 @@ export class CreativeLinearParser {
           });
       });
 
-    const iconsElement = this.parserUtils.childByName(creativeElement, 'Icons');
+    const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
     if (iconsElement) {
-      this.parserUtils
-        .childrenByName(iconsElement, 'Icon')
-        .forEach(iconElement => {
-          const icon = new Icon();
-          icon.program = iconElement.getAttribute('program');
-          icon.height = parseInt(iconElement.getAttribute('height') || 0);
-          icon.width = parseInt(iconElement.getAttribute('width') || 0);
-          icon.xPosition = this.parseXPosition(
-            iconElement.getAttribute('xPosition')
-          );
-          icon.yPosition = this.parseYPosition(
-            iconElement.getAttribute('yPosition')
-          );
-          icon.apiFramework = iconElement.getAttribute('apiFramework');
-          icon.offset = this.parserUtils.parseDuration(
-            iconElement.getAttribute('offset')
-          );
-          icon.duration = this.parserUtils.parseDuration(
-            iconElement.getAttribute('duration')
-          );
+      parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
+        const icon = new Icon();
+        icon.program = iconElement.getAttribute('program');
+        icon.height = parseInt(iconElement.getAttribute('height') || 0);
+        icon.width = parseInt(iconElement.getAttribute('width') || 0);
+        icon.xPosition = this.parseXPosition(
+          iconElement.getAttribute('xPosition')
+        );
+        icon.yPosition = this.parseYPosition(
+          iconElement.getAttribute('yPosition')
+        );
+        icon.apiFramework = iconElement.getAttribute('apiFramework');
+        icon.offset = parserUtils.parseDuration(
+          iconElement.getAttribute('offset')
+        );
+        icon.duration = parserUtils.parseDuration(
+          iconElement.getAttribute('duration')
+        );
 
-          this.parserUtils
-            .childrenByName(iconElement, 'HTMLResource')
-            .forEach(htmlElement => {
-              icon.type =
-                htmlElement.getAttribute('creativeType') || 'text/html';
-              icon.htmlResource = this.parserUtils.parseNodeText(htmlElement);
-            });
+        parserUtils
+          .childrenByName(iconElement, 'HTMLResource')
+          .forEach(htmlElement => {
+            icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
+            icon.htmlResource = parserUtils.parseNodeText(htmlElement);
+          });
 
-          this.parserUtils
-            .childrenByName(iconElement, 'IFrameResource')
-            .forEach(iframeElement => {
-              icon.type = iframeElement.getAttribute('creativeType') || 0;
-              icon.iframeResource = this.parserUtils.parseNodeText(
-                iframeElement
+        parserUtils
+          .childrenByName(iconElement, 'IFrameResource')
+          .forEach(iframeElement => {
+            icon.type = iframeElement.getAttribute('creativeType') || 0;
+            icon.iframeResource = parserUtils.parseNodeText(iframeElement);
+          });
+
+        parserUtils
+          .childrenByName(iconElement, 'StaticResource')
+          .forEach(staticElement => {
+            icon.type = staticElement.getAttribute('creativeType') || 0;
+            icon.staticResource = parserUtils.parseNodeText(staticElement);
+          });
+
+        const iconClicksElement = parserUtils.childByName(
+          iconElement,
+          'IconClicks'
+        );
+        if (iconClicksElement) {
+          icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(
+            parserUtils.childByName(iconClicksElement, 'IconClickThrough')
+          );
+          parserUtils
+            .childrenByName(iconClicksElement, 'IconClickTracking')
+            .forEach(iconClickTrackingElement => {
+              icon.iconClickTrackingURLTemplates.push(
+                parserUtils.parseNodeText(iconClickTrackingElement)
               );
             });
+        }
 
-          this.parserUtils
-            .childrenByName(iconElement, 'StaticResource')
-            .forEach(staticElement => {
-              icon.type = staticElement.getAttribute('creativeType') || 0;
-              icon.staticResource = this.parserUtils.parseNodeText(
-                staticElement
-              );
-            });
+        icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(
+          parserUtils.childByName(iconElement, 'IconViewTracking')
+        );
 
-          const iconClicksElement = this.parserUtils.childByName(
-            iconElement,
-            'IconClicks'
-          );
-          if (iconClicksElement) {
-            icon.iconClickThroughURLTemplate = this.parserUtils.parseNodeText(
-              this.parserUtils.childByName(
-                iconClicksElement,
-                'IconClickThrough'
-              )
-            );
-            this.parserUtils
-              .childrenByName(iconClicksElement, 'IconClickTracking')
-              .forEach(iconClickTrackingElement => {
-                icon.iconClickTrackingURLTemplates.push(
-                  this.parserUtils.parseNodeText(iconClickTrackingElement)
-                );
-              });
-          }
-
-          icon.iconViewTrackingURLTemplate = this.parserUtils.parseNodeText(
-            this.parserUtils.childByName(iconElement, 'IconViewTracking')
-          );
-
-          creative.icons.push(icon);
-        });
+        creative.icons.push(icon);
+      });
     }
 
     return creative;

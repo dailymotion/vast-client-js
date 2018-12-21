@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTResponse } from '../src/vast_response';
 import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { parserUtils } from '../src/parser/parser_utils.js';
 
 const vastParser = new VASTParser();
 
@@ -156,9 +157,7 @@ describe('VASTParser', function() {
       ].map(item =>
         (item =>
           it(`should not return NaN for \`${item}\``, () =>
-            isNaN(vastParser.parserUtils.parseDuration(item)).should.eql(
-              false
-            )))(item)
+            isNaN(parserUtils.parseDuration(item)).should.eql(false)))(item)
       ));
 
     describe('#duration', () =>
@@ -178,9 +177,7 @@ describe('VASTParser', function() {
       ].map(item =>
         (item =>
           it(`should not return NaN for \`${item}\``, () =>
-            isNaN(vastParser.parserUtils.parseDuration(item)).should.eql(
-              false
-            )))(item)
+            isNaN(parserUtils.parseDuration(item)).should.eql(false)))(item)
       ));
 
     describe('#For the 1st ad', function() {
@@ -869,10 +866,7 @@ describe('VASTParser', function() {
       this.response = null;
 
       before(done => {
-        this.wrapperSpy = sinon.spy(
-          vastParser.parserUtils,
-          'resolveVastAdTagURI'
-        );
+        this.wrapperSpy = sinon.spy(parserUtils, 'resolveVastAdTagURI');
         vastParser
           .getAndParseVAST(urlfor('vpaid.xml'), options)
           .then(response => {
@@ -948,7 +942,7 @@ describe('VASTParser', function() {
 
                   if (wrapperNode.nodeName === 'VASTAdTagURI') {
                     wrapperNode.textContent = urlfor(
-                      vastParser.parserUtils.parseNodeText(wrapperNode)
+                      parserUtils.parseNodeText(wrapperNode)
                     );
                     break;
                   }
