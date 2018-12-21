@@ -2,7 +2,7 @@ import { AdParser } from './ad_parser';
 import { EventEmitter } from 'events';
 import { parserUtils } from './parser_utils';
 import { URLHandler } from '../url_handler';
-import { Util } from '../util/util';
+import { util } from '../util/util';
 import { VASTResponse } from '../vast_response';
 
 const DEFAULT_MAX_WRAPPER_DEPTH = 10;
@@ -34,7 +34,6 @@ export class VASTParser extends EventEmitter {
     this.fetchingOptions = {};
 
     this.adParser = new AdParser();
-    this.util = new Util();
   }
 
   /**
@@ -85,7 +84,7 @@ export class VASTParser extends EventEmitter {
       'VAST-error',
       Object.assign(DEFAULT_EVENT_DATA, errorCode, ...data)
     );
-    this.util.track(urlTemplates, errorCode);
+    util.track(urlTemplates, errorCode);
   }
 
   /**
@@ -160,7 +159,7 @@ export class VASTParser extends EventEmitter {
     }
 
     const ads = all
-      ? this.util.flatten(this.remainingAds)
+      ? util.flatten(this.remainingAds)
       : this.remainingAds.shift();
     this.errorURLTemplates = [];
     this.parentURLs = [];
@@ -333,7 +332,7 @@ export class VASTParser extends EventEmitter {
     });
 
     return Promise.all(resolveWrappersPromises).then(unwrappedAds => {
-      const resolvedAds = this.util.flatten(unwrappedAds);
+      const resolvedAds = util.flatten(unwrappedAds);
       if (!resolvedAds && this.remainingAds.length > 0) {
         const ads = this.remainingAds.shift();
 

@@ -1,11 +1,10 @@
 import should from 'should';
 import sinon from 'sinon';
-import { Util } from '../src/util/util';
+import { util } from '../src/util/util';
 
 const now = new Date();
 const playhead = '00:12:30.212';
 const assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-[{bar';
-const util = new Util();
 
 const resolve = (URLTemplate, variables) =>
   util.resolveURLTemplates([URLTemplate], variables)[0];

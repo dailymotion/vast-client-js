@@ -2,7 +2,7 @@ import { CompanionAd } from './companion_ad';
 import { CreativeLinear } from './creative/creative_linear';
 import { EventEmitter } from 'events';
 import { NonLinearAd } from './non_linear_ad';
-import { Util } from './util/util';
+import { util } from './util/util';
 
 /**
  * This class provides methods to track an ad execution.
@@ -26,7 +26,6 @@ export class VASTTracker extends EventEmitter {
     this.ad = ad;
     this.creative = creative;
     this.variation = variation;
-    this.util = new Util();
     this.muted = false;
     this.impressed = false;
     this.skippable = false;
@@ -132,7 +131,7 @@ export class VASTTracker extends EventEmitter {
       const events = [];
 
       if (progress > 0) {
-        const percent = Math.round(progress / this.assetDuration * 100);
+        const percent = Math.round((progress / this.assetDuration) * 100);
 
         events.push('start');
         events.push(`progress-${percent}%`);
@@ -321,7 +320,7 @@ export class VASTTracker extends EventEmitter {
       const variables = this.linear
         ? { CONTENTPLAYHEAD: this.progressFormatted() }
         : {};
-      const clickThroughURL = this.util.resolveURLTemplates(
+      const clickThroughURL = util.resolveURLTemplates(
         [this.clickThroughURLTemplate],
         variables
       )[0];
@@ -387,7 +386,7 @@ export class VASTTracker extends EventEmitter {
       variables['CONTENTPLAYHEAD'] = this.progressFormatted();
     }
 
-    this.util.track(URLTemplates, variables);
+    util.track(URLTemplates, variables);
   }
 
   /**

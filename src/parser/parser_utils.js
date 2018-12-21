@@ -1,6 +1,4 @@
-import { Util } from '../util/util';
-
-const util = new Util();
+import { util } from '../util/util';
 
 /**
  * This module provides support methods to the parsing classes.
