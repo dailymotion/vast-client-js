@@ -1,7 +1,7 @@
 import { AdParser } from './ad_parser';
 import { EventEmitter } from 'events';
 import { parserUtils } from './parser_utils';
-import { URLHandler } from '../url_handler';
+import { urlHandler } from '../url_handler';
 import { util } from '../util/util';
 import { VASTResponse } from '../vast_response';
 
@@ -143,7 +143,7 @@ export class VASTParser extends EventEmitter {
       withCredentials: options.withCredentials
     };
 
-    this.urlHandler = options.urlhandler || new URLHandler();
+    this.urlHandler = options.urlhandler || urlHandler;
   }
 
   /**
