@@ -3,15 +3,14 @@ import sinon from 'sinon';
 import { VASTClient } from '../src/vast_client';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
-import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { util } from '../src/util/util';
 
 const now = new Date();
 const vastParser = new VASTParser();
 const vastClient = new VASTClient();
-const urlhandler = new NodeURLHandler();
 const options = {
-  urlhandler
+  urlhandler: nodeURLHandler
 };
 
 const urlfor = relpath =>

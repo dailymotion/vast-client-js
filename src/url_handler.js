@@ -1,14 +1,8 @@
-import { FlashURLHandler } from './urlhandlers/flash_url_handler';
-import { NodeURLHandler } from './urlhandlers/mock_node_url_handler';
+import { flashURLHandler } from './urlhandlers/flash_url_handler';
+import { nodeURLHandler } from './urlhandlers/mock_node_url_handler';
 import { XHRURLHandler } from './urlhandlers/xhr_url_handler';
 
 export class URLHandler {
-  constructor() {
-    this.flash = new FlashURLHandler();
-    this.node = new NodeURLHandler();
-    this.xhr = new XHRURLHandler();
-  }
-
   get(url, options, cb) {
     // Allow skip of the options param
     if (!cb) {
@@ -22,11 +16,11 @@ export class URLHandler {
       // explicitly supply your own URLHandler object
       return options.urlhandler.get(url, options, cb);
     } else if (typeof window === 'undefined' || window === null) {
-      return this.node.get(url, options, cb);
-    } else if (this.xhr.supported()) {
-      return this.xhr.get(url, options, cb);
-    } else if (this.flash.supported()) {
-      return this.flash.get(url, options, cb);
+      return nodeURLHandler.get(url, options, cb);
+    } else if (XHRURLHandler.supported()) {
+      return XHRURLHandler.get(url, options, cb);
+    } else if (flashURLHandler.supported()) {
+      return flashURLHandler.get(url, options, cb);
     } else {
       return cb(
         new Error(

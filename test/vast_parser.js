@@ -3,7 +3,7 @@ import should from 'should';
 import sinon from 'sinon';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTResponse } from '../src/vast_response';
-import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { parserUtils } from '../src/parser/parser_utils.js';
 import { util } from '../src/util/util';
 
@@ -20,9 +20,8 @@ describe('VASTParser', function() {
     let _response = null;
     this.templateFilterCalls = [];
     let eventsTriggered = null;
-    const urlhandler = new NodeURLHandler();
     const options = {
-      urlhandler
+      urlhandler: nodeURLHandler
     };
 
     before(done => {
@@ -915,9 +914,8 @@ describe('VASTParser', function() {
   });
 
   describe('#parseVAST', function() {
-    const urlhandler = new NodeURLHandler();
     const options = {
-      urlhandler
+      urlhandler: nodeURLHandler
     };
     this.response = null;
     this.templateFilterCalls = [];
@@ -989,9 +987,8 @@ describe('VASTParser', function() {
   describe('#Tracking', function() {
     let trackCalls = null;
     let dataTriggered = null;
-    const urlhandler = new NodeURLHandler();
     const options = {
-      urlhandler
+      urlhandler: nodeURLHandler
     };
 
     beforeEach(() => {
@@ -1187,7 +1184,7 @@ describe('VASTParser', function() {
         vastParser
           .getAndParseVAST(urlfor('wrapper-a.xml'), {
             wrapperLimit: 1,
-            urlhandler
+            urlhandler: nodeURLHandler
           })
           .then(response => {
             // Response doesn't have any ads
@@ -1214,9 +1211,8 @@ describe('VASTParser', function() {
   });
 
   describe('#legacy', function() {
-    const urlhandler = new NodeURLHandler();
     const options = {
-      urlhandler
+      urlhandler: nodeURLHandler
     };
 
     beforeEach(() => {
@@ -1257,7 +1253,7 @@ describe('VASTParser', function() {
       const vastParser = new VASTParser();
 
       before(done => {
-        const options = { urlhandler: new NodeURLHandler() };
+        const options = { urlhandler: nodeURLHandler };
         vastParser.on('VAST-resolved', variables => {
           lastErr = variables.error;
         });
