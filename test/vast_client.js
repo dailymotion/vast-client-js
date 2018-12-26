@@ -2,20 +2,19 @@ import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
 import { VASTClient } from '../src/vast_client';
-import { NodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 
 describe('VASTClient', () => {
   const urlfor = relpath =>
     `file://${path
       .resolve(path.dirname(module.filename), 'vastfiles', relpath)
       .replace(/\\/g, '/')}`;
-  const urlhandler = new NodeURLHandler();
   const wrapperUrl = urlfor('wrapper-a.xml');
 
   describe('when cappingFreeLunch is set to 1', () => {
     const vastClient = new VASTClient(1);
     const options = {
-      urlhandler
+      urlhandler: nodeURLHandler
     };
 
     describe('the 1st call', () => {
@@ -36,13 +35,10 @@ describe('VASTClient', () => {
 
     describe('the 2nd call', () => {
       it('should be successfull', done => {
-        vastClient
-          .get(wrapperUrl, options)
-          .then(response => {
-            should.notEqual(response, null);
-            done();
-          })
-          .catch(err => console.log(err));
+        vastClient.get(wrapperUrl, options).then(response => {
+          should.notEqual(response, null);
+          done();
+        });
       });
 
       it('totalCalls should be equal to 2', () => {
@@ -54,7 +50,7 @@ describe('VASTClient', () => {
   describe('when cappingMinimumTimeInterval is set to 30 seconds', () => {
     const vastClient = new VASTClient(0, 30000);
     const options = {
-      urlhandler
+      urlhandler: nodeURLHandler
     };
 
     describe('the 1st call', () => {
@@ -73,7 +69,6 @@ describe('VASTClient', () => {
 
     describe('the 2nd call (executed before 30 seconds)', () => {
       it('should be ignored', done => {
-        console.log(options);
         vastClient.get(wrapperUrl, options).catch(err => {
           should.equal(
             err.message,
@@ -117,7 +112,7 @@ describe('VASTClient', () => {
     const vastClient = new VASTClient();
     const vastParser = vastClient.getParser();
     const options = {
-      urlhandler,
+      urlhandler: nodeURLHandler,
       withCredentials: true
     };
 
@@ -132,7 +127,7 @@ describe('VASTClient', () => {
 
     it('should merge options', () => {
       const mergedOptions = {
-        urlhandler,
+        urlhandler: nodeURLHandler,
         resolveAll: false,
         withCredentials: true,
         timeout: 0
@@ -153,7 +148,7 @@ describe('VASTClient', () => {
 
     describe('when set to false', () => {
       const options = {
-        urlhandler,
+        urlhandler: nodeURLHandler,
         resolveAll: false
       };
 
@@ -227,7 +222,7 @@ describe('VASTClient', () => {
 
     describe('when set to true', () => {
       const options = {
-        urlhandler,
+        urlhandler: nodeURLHandler,
         resolveAll: true
       };
 
