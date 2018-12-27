@@ -13,7 +13,7 @@ import { parserUtils } from './parser_utils';
  * @param  {any} creativeAttributes - The attributes of the Linear (optional).
  * @return {CreativeLinear}
  */
-function parse(creativeElement, creativeAttributes) {
+export function parseCreativeLinear(creativeElement, creativeAttributes) {
   let offset;
   const creative = new CreativeLinear(creativeAttributes);
 
@@ -251,7 +251,3 @@ function parseYPosition(yPosition) {
 
   return parseInt(yPosition || 0);
 }
-
-export const creativeLinearParser = {
-  parse
-};

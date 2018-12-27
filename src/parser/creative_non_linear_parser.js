@@ -12,7 +12,7 @@ import { parserUtils } from './parser_utils';
  * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
  * @return {CreativeNonLinear}
  */
-function parse(creativeElement, creativeAttributes) {
+export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
   const creative = new CreativeNonLinear(creativeAttributes);
 
   parserUtils
@@ -104,7 +104,3 @@ function parse(creativeElement, creativeAttributes) {
 
   return creative;
 }
-
-export const creativeNonLinearParser = {
-  parse
-};

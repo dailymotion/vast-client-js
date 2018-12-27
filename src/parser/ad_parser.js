@@ -1,9 +1,9 @@
 import { Ad } from '../ad';
 import { AdExtension } from '../ad_extension';
 import { AdExtensionChild } from '../ad_extension_child';
-import { creativeCompanionParser } from './creative_companion_parser';
-import { creativeLinearParser } from './creative_linear_parser';
-import { creativeNonLinearParser } from './creative_non_linear_parser';
+import { parseCreativeCompanion } from './creative_companion_parser';
+import { parseCreativeLinear } from './creative_linear_parser';
+import { parseCreativeNonLinear } from './creative_non_linear_parser';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -79,7 +79,7 @@ export class AdParser {
 
                 switch (creativeTypeElement.nodeName) {
                   case 'Linear':
-                    let creativeLinear = creativeLinearParser.parse(
+                    let creativeLinear = parseCreativeLinear(
                       creativeTypeElement,
                       creativeAttributes
                     );
@@ -88,7 +88,7 @@ export class AdParser {
                     }
                     break;
                   case 'NonLinearAds':
-                    let creativeNonLinear = creativeNonLinearParser.parse(
+                    let creativeNonLinear = parseCreativeNonLinear(
                       creativeTypeElement,
                       creativeAttributes
                     );
@@ -97,7 +97,7 @@ export class AdParser {
                     }
                     break;
                   case 'CompanionAds':
-                    let creativeCompanion = creativeCompanionParser.parse(
+                    let creativeCompanion = parseCreativeCompanion(
                       creativeTypeElement,
                       creativeAttributes
                     );
