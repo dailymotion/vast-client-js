@@ -1,4 +1,4 @@
-import { AdParser } from './ad_parser';
+import { parseAd } from './ad_parser';
 import { EventEmitter } from 'events';
 import { parserUtils } from './parser_utils';
 import { urlHandler } from '../url_handler';
@@ -32,8 +32,6 @@ export class VASTParser extends EventEmitter {
     this.maxWrapperDepth = null;
     this.URLTemplateFilters = [];
     this.fetchingOptions = {};
-
-    this.adParser = new AdParser();
   }
 
   /**
@@ -273,7 +271,7 @@ export class VASTParser extends EventEmitter {
       }
 
       if (node.nodeName === 'Ad') {
-        const ad = this.adParser.parse(node);
+        const ad = parseAd(node);
 
         if (ad) {
           ads.push(ad);
