@@ -12,7 +12,7 @@ import { parserUtils } from './parser_utils';
  * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
  * @return {CreativeCompanion}
  */
-function parse(creativeElement, creativeAttributes) {
+export function parseCreativeCompanion(creativeElement, creativeAttributes) {
   const creative = new CreativeCompanion(creativeAttributes);
 
   parserUtils
@@ -91,7 +91,3 @@ function parse(creativeElement, creativeAttributes) {
 
   return creative;
 }
-
-export const creativeCompanionParser = {
-  parse
-};
