@@ -11,10 +11,7 @@ function get(url, options, cb) {
     options = {};
   }
 
-  if (options.urlhandler && options.urlhandler.supported()) {
-    // explicitly supply your own URLHandler object
-    return options.urlhandler.get(url, options, cb);
-  } else if (typeof window === 'undefined' || window === null) {
+  if (typeof window === 'undefined' || window === null) {
     return nodeURLHandler.get(url, options, cb);
   } else if (XHRURLHandler.supported()) {
     return XHRURLHandler.get(url, options, cb);
