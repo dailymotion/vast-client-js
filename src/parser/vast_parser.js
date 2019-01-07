@@ -306,7 +306,7 @@ export class VASTParser extends EventEmitter {
       ads = this.remainingAds.shift();
     }
 
-    return this.resolveAds(ads, { resolveAll, wrapperDepth, originalUrl });
+    return this.resolveAds(ads, { wrapperDepth, originalUrl });
   }
 
   /**

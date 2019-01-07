@@ -141,7 +141,7 @@ Using `get` method with default `options` will return a [`VASTResponse`](https:/
 }
 ```
 
-The `resolveAll` parameter allows to request only the first Ad or AdPod. If we pass it as `true` the response would look like:
+The `resolveAll` parameter allows to request only the first Ad or AdPod. If we pass it as `false` the response would look like:
 
 ```Javascript
 {
