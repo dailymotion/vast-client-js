@@ -5,6 +5,7 @@ import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { util } from '../src/util/util';
+import { CreativeLinear } from '../src/creative/creative_linear';
 
 const now = new Date();
 const vastParser = new VASTParser();
@@ -487,7 +488,7 @@ describe('VASTTracker', function() {
           ]);
         });
 
-        it('should have sent clickthrough event withy clickThrough url', () => {
+        it('should have sent clickthrough event with clickThrough url', () => {
           _eventsSent[1].event.should.eql('clickthrough');
           _eventsSent[1].args.should.eql([
             'http://example.com/companion1-clickthrough'
@@ -529,12 +530,88 @@ describe('VASTTracker', function() {
           ]);
         });
 
-        it('should have sent clickthrough event withy clickThrough url', () => {
+        it('should have sent clickthrough event with clickThrough url', () => {
           _eventsSent[1].event.should.eql('clickthrough');
           _eventsSent[1].args.should.eql([
             'http://example.com/nonlinear-clickthrough'
           ]);
         });
+      });
+    });
+  });
+
+  describe('#clickthroughs', () => {
+    const fallbackClickThroughURL = 'http://example.com/fallback-clickthrough',
+      clickThroughURL = 'http://example.com/clickthrough';
+
+    describe('#VAST clickThrough with no fallback provided', () => {
+      const eventsSent = [];
+      before(() => {
+        // Init tracker
+        const creative = new CreativeLinear();
+        creative.videoClickThroughURLTemplate = clickThroughURL;
+        const tracker = new VASTTracker(vastClient, {}, creative);
+        // Mock emit
+        tracker.emit = (event, ...args) => {
+          eventsSent.push({ event, args });
+        };
+        tracker.click();
+      });
+      it('should have sent clickthrough event with VAST clickThrough url', () => {
+        eventsSent[0].event.should.eql('clickthrough');
+        eventsSent[0].args.should.eql([clickThroughURL]);
+      });
+    });
+
+    describe('#VAST clickThrough with fallback provided', () => {
+      const eventsSent = [];
+      before(() => {
+        // Init tracker
+        const creative = new CreativeLinear();
+        creative.videoClickThroughURLTemplate = clickThroughURL;
+        const tracker = new VASTTracker(vastClient, {}, creative);
+        // Mock emit
+        tracker.emit = (event, ...args) => {
+          eventsSent.push({ event, args });
+        };
+        tracker.click(fallbackClickThroughURL);
+      });
+      it('should have sent clickthrough event with VAST clickThrough url', () => {
+        eventsSent[0].event.should.eql('clickthrough');
+        eventsSent[0].args.should.eql([clickThroughURL]);
+      });
+    });
+
+    describe('#empty VAST clickThrough with no fallback provided', () => {
+      const eventsSent = [];
+      before(() => {
+        // Init tracker
+        const tracker = new VASTTracker(vastClient, {}, {});
+        // Mock emit
+        tracker.emit = (event, ...args) => {
+          eventsSent.push({ event, args });
+        };
+        tracker.click();
+      });
+      it("shouldn't have sent any event", () => {
+        eventsSent.should.have.length(0);
+      });
+    });
+
+    describe('#empty VAST clickThrough with fallback provided', () => {
+      const eventsSent = [];
+      before(() => {
+        // Init tracker
+        const tracker = new VASTTracker(vastClient, {}, {});
+        // Mock emit
+        tracker.emit = (event, ...args) => {
+          eventsSent.push({ event, args });
+        };
+        tracker.click(fallbackClickThroughURL);
+      });
+      it('should have sent fallback clickthrough', () => {
+        eventsSent[0].event.should.eql('clickthrough');
+        eventsSent[0].args.should.eql([fallbackClickThroughURL]);
       });
     });
   });
