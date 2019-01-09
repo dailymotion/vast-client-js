@@ -306,9 +306,10 @@ export class VASTTracker extends EventEmitter {
    * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
    * clickthrough URL when done.
    *
+   * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
    * @emits VASTTracker#clickthrough
    */
-  click() {
+  click(fallbackClickThroughURL = null) {
     if (
       this.clickTrackingURLTemplates &&
       this.clickTrackingURLTemplates.length
@@ -316,12 +317,16 @@ export class VASTTracker extends EventEmitter {
       this.trackURLs(this.clickTrackingURLTemplates);
     }
 
-    if (this.clickThroughURLTemplate) {
+    // Use the provided fallbackClickThroughURL as a fallback
+    const clickThroughURLTemplate =
+      this.clickThroughURLTemplate || fallbackClickThroughURL;
+
+    if (clickThroughURLTemplate) {
       const variables = this.linear
         ? { CONTENTPLAYHEAD: this.progressFormatted() }
         : {};
       const clickThroughURL = util.resolveURLTemplates(
-        [this.clickThroughURLTemplate],
+        [clickThroughURLTemplate],
         variables
       )[0];
 
