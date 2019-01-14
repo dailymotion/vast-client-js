@@ -5,6 +5,13 @@ import { NonLinearAd } from './non_linear_ad';
 import { util } from './util/util';
 
 /**
+ * The default skip delay used in case a custom one is not provided
+ * @constant
+ * @type {Number}
+ */
+const DEFAULT_SKIP_DELAY = -1;
+
+/**
  * This class provides methods to track an ad execution.
  *
  * @export
@@ -29,8 +36,9 @@ export class VASTTracker extends EventEmitter {
     this.muted = false;
     this.impressed = false;
     this.skippable = false;
-    this.skipDelayDefault = -1;
     this.trackingEvents = {};
+    // We need to save the already triggered quartiles, in order to not trigger them again
+    this._alreadyTriggeredQuartiles = {};
     // Tracker listeners should be notified with some events
     // no matter if there is a tracking URL or not
     this.emitAlwaysEvents = [
@@ -47,34 +55,20 @@ export class VASTTracker extends EventEmitter {
       'closeLinear',
       'close'
     ];
-    // Have to save already triggered quartile, to not trigger again
-    this._alreadyTriggeredQuartiles = {};
+
     // Duplicate the creative's trackingEvents property so we can alter it
     for (let eventName in this.creative.trackingEvents) {
       const events = this.creative.trackingEvents[eventName];
       this.trackingEvents[eventName] = events.slice(0);
     }
-    if (this.creative instanceof CreativeLinear) {
-      this.setDuration(this.creative.duration);
 
-      this.skipDelay = this.creative.skipDelay;
-      this.linear = true;
-      this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
-      this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
-      // Nonlinear and Companion
+    // Nonlinear and companion creatives provide some tracking information at a variation level
+    // While linear creatives provided that at a creative level. That's why we need to
+    // differentiate how we retrieve some tracking information.
+    if (this.creative instanceof CreativeLinear) {
+      this._initLinearTracking();
     } else {
-      this.skipDelay = -1;
-      this.linear = false;
-      // Used variation has been specified
-      if (this.variation) {
-        if (this.variation instanceof NonLinearAd) {
-          this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
-          this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
-        } else if (this.variation instanceof CompanionAd) {
-          this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
-          this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
-        }
-      }
+      this._initVariationTracking();
     }
 
     // If the tracker is associated with a client we add a listener to the start event
@@ -83,6 +77,61 @@ export class VASTTracker extends EventEmitter {
       this.on('start', () => {
         client.lastSuccessfulAd = Date.now();
       });
+    }
+  }
+
+  /**
+   * Init the custom tracking options for linear creatives.
+   *
+   * @return {void}
+   */
+  _initLinearTracking() {
+    this.linear = true;
+    this.skipDelay = this.creative.skipDelay;
+
+    this.setDuration(this.creative.duration);
+
+    this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
+    this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
+  }
+
+  /**
+   * Init the custom tracking options for nonlinear and companion creatives.
+   * These options are provided in the variation Object.
+   *
+   * @return {void}
+   */
+  _initVariationTracking() {
+    this.linear = false;
+    this.skipDelay = DEFAULT_SKIP_DELAY;
+
+    // If no variation has been provided there's nothing else to set
+    if (!this.variation) {
+      return;
+    }
+
+    // Duplicate the variation's trackingEvents property so we can alter it
+    for (let eventName in this.variation.trackingEvents) {
+      const events = this.variation.trackingEvents[eventName];
+
+      // If for the given eventName we already had some trackingEvents provided by the creative
+      // we want to keep both the creative trackingEvents and the variation ones
+      if (this.trackingEvents[eventName]) {
+        this.trackingEvents[eventName] = this.trackingEvents[eventName].concat(
+          events.slice(0)
+        );
+      } else {
+        this.trackingEvents[eventName] = events.slice(0);
+      }
+    }
+
+    if (this.variation instanceof NonLinearAd) {
+      this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
+      this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
+      this.setDuration(this.variation.minSuggestedDuration);
+    } else if (this.variation instanceof CompanionAd) {
+      this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
+      this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
     }
   }
 
@@ -116,7 +165,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#thirdQuartile
    */
   setProgress(progress) {
-    const skipDelay = this.skipDelay || this.skipDelayDefault;
+    const skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
     if (skipDelay !== -1 && !this.skippable) {
       if (skipDelay > progress) {
@@ -127,7 +176,7 @@ export class VASTTracker extends EventEmitter {
       }
     }
 
-    if (this.linear && this.assetDuration > 0) {
+    if (this.assetDuration > 0) {
       const events = [];
 
       if (progress > 0) {

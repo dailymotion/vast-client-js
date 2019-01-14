@@ -510,6 +510,10 @@ describe('VASTTracker', function() {
         };
       });
 
+      it('should correctly set the tracker duration', () => {
+        this.Tracker.assetDuration.should.eql(100);
+      });
+
       describe('#click', () => {
         before(done => {
           _eventsSent = [];
