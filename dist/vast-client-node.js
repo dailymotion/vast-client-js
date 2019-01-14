@@ -128,411 +128,403 @@ var CreativeCompanion = function (_Creative) {
   return CreativeCompanion;
 }(Creative);
 
-var Util = function () {
-  function Util() {
-    classCallCheck(this, Util);
+function track(URLTemplates, variables) {
+  var URLs = resolveURLTemplates(URLTemplates, variables);
+
+  URLs.forEach(function (URL) {
+    if (typeof window !== 'undefined' && window !== null) {
+      var i = new Image();
+      i.src = URL;
+    }
+  });
+}
+
+function resolveURLTemplates(URLTemplates) {
+  var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  var URLs = [];
+
+  // Encode String variables, when given
+  if (variables['ASSETURI']) {
+    variables['ASSETURI'] = encodeURIComponentRFC3986(variables['ASSETURI']);
+  }
+  if (variables['CONTENTPLAYHEAD']) {
+    variables['CONTENTPLAYHEAD'] = encodeURIComponentRFC3986(variables['CONTENTPLAYHEAD']);
   }
 
-  createClass(Util, [{
-    key: 'track',
-    value: function track(URLTemplates, variables) {
-      var URLs = this.resolveURLTemplates(URLTemplates, variables);
+  // Set default value for invalid ERRORCODE
+  if (variables['ERRORCODE'] && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
+    variables['ERRORCODE'] = 900;
+  }
 
-      URLs.forEach(function (URL) {
-        if (typeof window !== 'undefined' && window !== null) {
-          var i = new Image();
-          i.src = URL;
-        }
-      });
-    }
-  }, {
-    key: 'resolveURLTemplates',
-    value: function resolveURLTemplates(URLTemplates) {
-      var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  // Calc random/time based macros
+  variables['CACHEBUSTING'] = leftpad(Math.round(Math.random() * 1.0e8).toString());
+  variables['TIMESTAMP'] = encodeURIComponentRFC3986(new Date().toISOString());
 
-      var URLs = [];
+  // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
+  variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
-      // Encode String variables, when given
-      if (variables['ASSETURI']) {
-        variables['ASSETURI'] = this.encodeURIComponentRFC3986(variables['ASSETURI']);
-      }
-      if (variables['CONTENTPLAYHEAD']) {
-        variables['CONTENTPLAYHEAD'] = this.encodeURIComponentRFC3986(variables['CONTENTPLAYHEAD']);
-      }
+  for (var URLTemplateKey in URLTemplates) {
+    var resolveURL = URLTemplates[URLTemplateKey];
 
-      // Set default value for invalid ERRORCODE
-      if (variables['ERRORCODE'] && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
-        variables['ERRORCODE'] = 900;
-      }
-
-      // Calc random/time based macros
-      variables['CACHEBUSTING'] = this.leftpad(Math.round(Math.random() * 1.0e8).toString());
-      variables['TIMESTAMP'] = this.encodeURIComponentRFC3986(new Date().toISOString());
-
-      // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
-      variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
-
-      for (var URLTemplateKey in URLTemplates) {
-        var resolveURL = URLTemplates[URLTemplateKey];
-
-        if (typeof resolveURL !== 'string') {
-          continue;
-        }
-
-        for (var key in variables) {
-          var value = variables[key];
-          var macro1 = '[' + key + ']';
-          var macro2 = '%%' + key + '%%';
-          resolveURL = resolveURL.replace(macro1, value);
-          resolveURL = resolveURL.replace(macro2, value);
-        }
-        URLs.push(resolveURL);
-      }
-
-      return URLs;
+    if (typeof resolveURL !== 'string') {
+      continue;
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+    for (var key in variables) {
+      var value = variables[key];
+      var macro1 = '[' + key + ']';
+      var macro2 = '%%' + key + '%%';
+      resolveURL = resolveURL.replace(macro1, value);
+      resolveURL = resolveURL.replace(macro2, value);
+    }
+    URLs.push(resolveURL);
+  }
 
-  }, {
-    key: 'encodeURIComponentRFC3986',
-    value: function encodeURIComponentRFC3986(str) {
-      return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-        return '%' + c.charCodeAt(0).toString(16);
-      });
-    }
-  }, {
-    key: 'leftpad',
-    value: function leftpad(str) {
-      if (str.length < 8) {
-        return this.range(0, 8 - str.length, false).map(function (i) {
-          return '0';
-        }).join('') + str;
-      } else {
-        return str;
-      }
-    }
-  }, {
-    key: 'range',
-    value: function range(left, right, inclusive) {
-      var range = [];
-      var ascending = left < right;
-      var end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  return URLs;
+}
 
-      for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-        range.push(i);
-      }
-      return range;
-    }
-  }, {
-    key: 'isNumeric',
-    value: function isNumeric(n) {
-      return !isNaN(parseFloat(n)) && isFinite(n);
-    }
-  }, {
-    key: 'flatten',
-    value: function flatten(arr) {
-      var _this = this;
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+function encodeURIComponentRFC3986(str) {
+  return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+    return '%' + c.charCodeAt(0).toString(16);
+  });
+}
 
-      return arr.reduce(function (flat, toFlatten) {
-        return flat.concat(Array.isArray(toFlatten) ? _this.flatten(toFlatten) : toFlatten);
-      }, []);
-    }
-  }]);
-  return Util;
-}();
+function leftpad(str) {
+  if (str.length < 8) {
+    return range(0, 8 - str.length, false).map(function (i) {
+      return '0';
+    }).join('') + str;
+  } else {
+    return str;
+  }
+}
+
+function range(left, right, inclusive) {
+  var range = [];
+  var ascending = left < right;
+  var end = !inclusive ? right : ascending ? right + 1 : right - 1;
+
+  for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+    range.push(i);
+  }
+  return range;
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function flatten(arr) {
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+  }, []);
+}
+
+var util = {
+  track: track,
+  resolveURLTemplates: resolveURLTemplates,
+  encodeURIComponentRFC3986: encodeURIComponentRFC3986,
+  leftpad: leftpad,
+  range: range,
+  isNumeric: isNumeric,
+  flatten: flatten
+};
 
 /**
- * This class provides support methods to the parsing classes.
- * @export
- * @class ParserUtils
+ * This module provides support methods to the parsing classes.
  */
-var ParserUtils = function () {
-  /**
-   * Creates an instance of ParserUtils.
-   */
-  function ParserUtils() {
-    classCallCheck(this, ParserUtils);
 
-    this.util = new Util();
+/**
+ * Returns the first element of the given node which nodeName matches the given name.
+ * @param  {Object} node - The node to use to find a match.
+ * @param  {String} name - The name to look for.
+ * @return {Object}
+ */
+function childByName(node, name) {
+  var childNodes = node.childNodes;
+
+  for (var childKey in childNodes) {
+    var child = childNodes[childKey];
+
+    if (child.nodeName === name) {
+      return child;
+    }
+  }
+}
+
+/**
+ * Returns all the elements of the given node which nodeName match the given name.
+ * @param  {any} node - The node to use to find the matches.
+ * @param  {any} name - The name to look for.
+ * @return {Array}
+ */
+function childrenByName(node, name) {
+  var children = [];
+  var childNodes = node.childNodes;
+
+  for (var childKey in childNodes) {
+    var child = childNodes[childKey];
+
+    if (child.nodeName === name) {
+      children.push(child);
+    }
+  }
+  return children;
+}
+
+/**
+ * Converts relative vastAdTagUri.
+ * @param  {String} vastAdTagUrl - The url to resolve.
+ * @param  {String} originalUrl - The original url.
+ * @return {String}
+ */
+function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
+  if (!originalUrl) {
+    return vastAdTagUrl;
   }
 
-  /**
-   * Returns the first element of the given node which nodeName matches the given name.
-   * @param  {Object} node - The node to use to find a match.
-   * @param  {String} name - The name to look for.
-   * @return {Object}
-   */
+  if (vastAdTagUrl.indexOf('//') === 0) {
+    var _location = location,
+        protocol = _location.protocol;
 
+    return '' + protocol + vastAdTagUrl;
+  }
 
-  createClass(ParserUtils, [{
-    key: 'childByName',
-    value: function childByName(node, name) {
-      var childNodes = node.childNodes;
+  if (vastAdTagUrl.indexOf('://') === -1) {
+    // Resolve relative URLs (mainly for unit testing)
+    var baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
+    return baseURL + '/' + vastAdTagUrl;
+  }
 
-      for (var childKey in childNodes) {
-        var child = childNodes[childKey];
+  return vastAdTagUrl;
+}
 
-        if (child.nodeName === name) {
-          return child;
+/**
+ * Converts a boolean string into a Boolean.
+ * @param  {String} booleanString - The boolean string to convert.
+ * @return {Boolean}
+ */
+function parseBoolean(booleanString) {
+  return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
+}
+
+/**
+ * Parses a node text (for legacy support).
+ * @param  {Object} node - The node to parse the text from.
+ * @return {String}
+ */
+function parseNodeText(node) {
+  return node && (node.textContent || node.text || '').trim();
+}
+
+/**
+ * Copies an attribute from a node to another.
+ * @param  {String} attributeName - The name of the attribute to clone.
+ * @param  {Object} nodeSource - The source node to copy the attribute from.
+ * @param  {Object} nodeDestination - The destination node to copy the attribute at.
+ */
+function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
+  var attributeValue = nodeSource.getAttribute(attributeName);
+  if (attributeValue) {
+    nodeDestination.setAttribute(attributeName, attributeValue);
+  }
+}
+
+/**
+ * Parses a String duration into a Number.
+ * @param  {String} durationString - The dureation represented as a string.
+ * @return {Number}
+ */
+function parseDuration(durationString) {
+  if (durationString == null) {
+    return -1;
+  }
+  // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
+  if (util.isNumeric(durationString)) {
+    return parseInt(durationString);
+  }
+
+  var durationComponents = durationString.split(':');
+  if (durationComponents.length !== 3) {
+    return -1;
+  }
+
+  var secondsAndMS = durationComponents[2].split('.');
+  var seconds = parseInt(secondsAndMS[0]);
+  if (secondsAndMS.length === 2) {
+    seconds += parseFloat('0.' + secondsAndMS[1]);
+  }
+
+  var minutes = parseInt(durationComponents[1] * 60);
+  var hours = parseInt(durationComponents[0] * 60 * 60);
+
+  if (isNaN(hours) || isNaN(minutes) || isNaN(seconds) || minutes > 60 * 60 || seconds > 60) {
+    return -1;
+  }
+  return hours + minutes + seconds;
+}
+
+/**
+ * Splits an Array of ads into an Array of Arrays of ads.
+ * Each subarray contains either one ad or multiple ads (an AdPod)
+ * @param  {Array} ads - An Array of ads to split
+ * @return {Array}
+ */
+function splitVAST(ads) {
+  var splittedVAST = [];
+  var lastAdPod = null;
+
+  ads.forEach(function (ad, i) {
+    if (ad.sequence) {
+      ad.sequence = parseInt(ad.sequence, 10);
+    }
+    // The current Ad may be the next Ad of an AdPod
+    if (ad.sequence > 1) {
+      var lastAd = ads[i - 1];
+      // check if the current Ad is exactly the next one in the AdPod
+      if (lastAd && lastAd.sequence === ad.sequence - 1) {
+        lastAdPod && lastAdPod.push(ad);
+        return;
+      }
+      // If the ad had a sequence attribute but it was not part of a correctly formed
+      // AdPod, let's remove the sequence attribute
+      delete ad.sequence;
+    }
+
+    lastAdPod = [ad];
+    splittedVAST.push(lastAdPod);
+  });
+
+  return splittedVAST;
+}
+
+/**
+ * Merges the data between an unwrapped ad and his wrapper.
+ * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
+ * @param  {Ad} wrapper - The wrapper Ad.
+ * @return {void}
+ */
+function mergeWrapperAdData(unwrappedAd, wrapper) {
+  unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
+  unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
+  unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
+
+  unwrappedAd.creatives.forEach(function (creative) {
+    if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
+      for (var eventName in wrapper.trackingEvents[creative.type]) {
+        var urls = wrapper.trackingEvents[creative.type][eventName];
+        if (!creative.trackingEvents[eventName]) {
+          creative.trackingEvents[eventName] = [];
         }
+        creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
       }
     }
+  });
 
-    /**
-     * Returns all the elements of the given node which nodeName match the given name.
-     * @param  {any} node - The node to use to find the matches.
-     * @param  {any} name - The name to look for.
-     * @return {Array}
-     */
-
-  }, {
-    key: 'childrenByName',
-    value: function childrenByName(node, name) {
-      var children = [];
-      var childNodes = node.childNodes;
-
-      for (var childKey in childNodes) {
-        var child = childNodes[childKey];
-
-        if (child.nodeName === name) {
-          children.push(child);
-        }
+  if (wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length) {
+    unwrappedAd.creatives.forEach(function (creative) {
+      if (creative.type === 'linear') {
+        creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(wrapper.videoClickTrackingURLTemplates);
       }
-      return children;
-    }
+    });
+  }
 
-    /**
-     * Converts relative vastAdTagUri.
-     * @param  {String} vastAdTagUrl - The url to resolve.
-     * @param  {String} originalUrl - The original url.
-     * @return {String}
-     */
-
-  }, {
-    key: 'resolveVastAdTagURI',
-    value: function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
-      if (!originalUrl) {
-        return vastAdTagUrl;
+  if (wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length) {
+    unwrappedAd.creatives.forEach(function (creative) {
+      if (creative.type === 'linear') {
+        creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(wrapper.videoCustomClickURLTemplates);
       }
+    });
+  }
 
-      if (vastAdTagUrl.indexOf('//') === 0) {
-        var _location = location,
-            protocol = _location.protocol;
-
-        return '' + protocol + vastAdTagUrl;
+  // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+  if (wrapper.videoClickThroughURLTemplate) {
+    unwrappedAd.creatives.forEach(function (creative) {
+      if (creative.type === 'linear' && creative.videoClickThroughURLTemplate == null) {
+        creative.videoClickThroughURLTemplate = wrapper.videoClickThroughURLTemplate;
       }
+    });
+  }
+}
 
-      if (vastAdTagUrl.indexOf('://') === -1) {
-        // Resolve relative URLs (mainly for unit testing)
-        var baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
-        return baseURL + '/' + vastAdTagUrl;
-      }
+var parserUtils = {
+  childByName: childByName,
+  childrenByName: childrenByName,
+  resolveVastAdTagURI: resolveVastAdTagURI,
+  parseBoolean: parseBoolean,
+  parseNodeText: parseNodeText,
+  copyNodeAttribute: copyNodeAttribute,
+  parseDuration: parseDuration,
+  splitVAST: splitVAST,
+  mergeWrapperAdData: mergeWrapperAdData
+};
 
-      return vastAdTagUrl;
-    }
+/**
+ * This module provides methods to parse a VAST CompanionAd Element.
+ */
 
-    /**
-     * Converts a boolean string into a Boolean.
-     * @param  {String} booleanString - The boolean string to convert.
-     * @return {Boolean}
-     */
+/**
+ * Parses a CompanionAd.
+ * @param  {Object} creativeElement - The VAST CompanionAd element to parse.
+ * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
+ * @return {CreativeCompanion}
+ */
+function parseCreativeCompanion(creativeElement, creativeAttributes) {
+  var creative = new CreativeCompanion(creativeAttributes);
 
-  }, {
-    key: 'parseBoolean',
-    value: function parseBoolean(booleanString) {
-      return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
-    }
+  parserUtils.childrenByName(creativeElement, 'Companion').forEach(function (companionResource) {
+    var companionAd = new CompanionAd();
+    companionAd.id = companionResource.getAttribute('id') || null;
+    companionAd.width = companionResource.getAttribute('width');
+    companionAd.height = companionResource.getAttribute('height');
+    companionAd.companionClickTrackingURLTemplates = [];
 
-    /**
-     * Parses a node text (for legacy support).
-     * @param  {Object} node - The node to parse the text from.
-     * @return {String}
-     */
+    parserUtils.childrenByName(companionResource, 'HTMLResource').forEach(function (htmlElement) {
+      companionAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
+      companionAd.htmlResource = parserUtils.parseNodeText(htmlElement);
+    });
 
-  }, {
-    key: 'parseNodeText',
-    value: function parseNodeText(node) {
-      return node && (node.textContent || node.text || '').trim();
-    }
+    parserUtils.childrenByName(companionResource, 'IFrameResource').forEach(function (iframeElement) {
+      companionAd.type = iframeElement.getAttribute('creativeType') || 0;
+      companionAd.iframeResource = parserUtils.parseNodeText(iframeElement);
+    });
 
-    /**
-     * Copies an attribute from a node to another.
-     * @param  {String} attributeName - The name of the attribute to clone.
-     * @param  {Object} nodeSource - The source node to copy the attribute from.
-     * @param  {Object} nodeDestination - The destination node to copy the attribute at.
-     */
+    parserUtils.childrenByName(companionResource, 'StaticResource').forEach(function (staticElement) {
+      companionAd.type = staticElement.getAttribute('creativeType') || 0;
 
-  }, {
-    key: 'copyNodeAttribute',
-    value: function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
-      var attributeValue = nodeSource.getAttribute(attributeName);
-      if (attributeValue) {
-        nodeDestination.setAttribute(attributeName, attributeValue);
-      }
-    }
+      parserUtils.childrenByName(companionResource, 'AltText').forEach(function (child) {
+        companionAd.altText = parserUtils.parseNodeText(child);
+      });
 
-    /**
-     * Parses a String duration into a Number.
-     * @param  {String} durationString - The dureation represented as a string.
-     * @return {Number}
-     */
+      companionAd.staticResource = parserUtils.parseNodeText(staticElement);
+    });
 
-  }, {
-    key: 'parseDuration',
-    value: function parseDuration(durationString) {
-      if (durationString == null) {
-        return -1;
-      }
-      // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
-      if (this.util.isNumeric(durationString)) {
-        return parseInt(durationString);
-      }
-
-      var durationComponents = durationString.split(':');
-      if (durationComponents.length !== 3) {
-        return -1;
-      }
-
-      var secondsAndMS = durationComponents[2].split('.');
-      var seconds = parseInt(secondsAndMS[0]);
-      if (secondsAndMS.length === 2) {
-        seconds += parseFloat('0.' + secondsAndMS[1]);
-      }
-
-      var minutes = parseInt(durationComponents[1] * 60);
-      var hours = parseInt(durationComponents[0] * 60 * 60);
-
-      if (isNaN(hours) || isNaN(minutes) || isNaN(seconds) || minutes > 60 * 60 || seconds > 60) {
-        return -1;
-      }
-      return hours + minutes + seconds;
-    }
-
-    /**
-     * Splits an Array of ads into an Array of Arrays of ads.
-     * Each subarray contains either one ad or multiple ads (an AdPod)
-     * @param  {Array} ads - An Array of ads to split
-     * @return {Array}
-     */
-
-  }, {
-    key: 'splitVAST',
-    value: function splitVAST(ads) {
-      var splittedVAST = [];
-      var lastAdPod = null;
-
-      ads.forEach(function (ad, i) {
-        if (ad.sequence) {
-          ad.sequence = parseInt(ad.sequence, 10);
-        }
-        // The current Ad may be the next Ad of an AdPod
-        if (ad.sequence > 1) {
-          var lastAd = ads[i - 1];
-          // check if the current Ad is exactly the next one in the AdPod
-          if (lastAd && lastAd.sequence === ad.sequence - 1) {
-            lastAdPod && lastAdPod.push(ad);
-            return;
+    parserUtils.childrenByName(companionResource, 'TrackingEvents').forEach(function (trackingEventsElement) {
+      parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
+        var eventName = trackingElement.getAttribute('event');
+        var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+        if (eventName && trackingURLTemplate) {
+          if (companionAd.trackingEvents[eventName] == null) {
+            companionAd.trackingEvents[eventName] = [];
           }
-          // If the ad had a sequence attribute but it was not part of a correctly formed
-          // AdPod, let's remove the sequence attribute
-          delete ad.sequence;
+          companionAd.trackingEvents[eventName].push(trackingURLTemplate);
         }
-
-        lastAdPod = [ad];
-        splittedVAST.push(lastAdPod);
       });
+    });
 
-      return splittedVAST;
-    }
-  }]);
-  return ParserUtils;
-}();
+    parserUtils.childrenByName(companionResource, 'CompanionClickTracking').forEach(function (clickTrackingElement) {
+      companionAd.companionClickTrackingURLTemplates.push(parserUtils.parseNodeText(clickTrackingElement));
+    });
 
-/**
- * This class provides methods to parse a VAST CompanionAd Element.
- * @export
- * @class CreativeCompanionParser
- */
-var CreativeCompanionParser = function () {
-  /**
-   * Creates an instance of CreativeCompanionParser.
-   */
-  function CreativeCompanionParser() {
-    classCallCheck(this, CreativeCompanionParser);
+    companionAd.companionClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'CompanionClickThrough'));
+    companionAd.companionClickTrackingURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'CompanionClickTracking'));
+    creative.variations.push(companionAd);
+  });
 
-    this.parserUtils = new ParserUtils();
-  }
-
-  /**
-   * Parses a CompanionAd.
-   * @param  {Object} creativeElement - The VAST CompanionAd element to parse.
-   * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
-   * @return {CreativeCompanion}
-   */
-
-
-  createClass(CreativeCompanionParser, [{
-    key: 'parse',
-    value: function parse(creativeElement, creativeAttributes) {
-      var _this = this;
-
-      var creative = new CreativeCompanion(creativeAttributes);
-
-      this.parserUtils.childrenByName(creativeElement, 'Companion').forEach(function (companionResource) {
-        var companionAd = new CompanionAd();
-        companionAd.id = companionResource.getAttribute('id') || null;
-        companionAd.width = companionResource.getAttribute('width');
-        companionAd.height = companionResource.getAttribute('height');
-        companionAd.companionClickTrackingURLTemplates = [];
-
-        _this.parserUtils.childrenByName(companionResource, 'HTMLResource').forEach(function (htmlElement) {
-          companionAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
-          companionAd.htmlResource = _this.parserUtils.parseNodeText(htmlElement);
-        });
-
-        _this.parserUtils.childrenByName(companionResource, 'IFrameResource').forEach(function (iframeElement) {
-          companionAd.type = iframeElement.getAttribute('creativeType') || 0;
-          companionAd.iframeResource = _this.parserUtils.parseNodeText(iframeElement);
-        });
-
-        _this.parserUtils.childrenByName(companionResource, 'StaticResource').forEach(function (staticElement) {
-          companionAd.type = staticElement.getAttribute('creativeType') || 0;
-
-          _this.parserUtils.childrenByName(companionResource, 'AltText').forEach(function (child) {
-            companionAd.altText = _this.parserUtils.parseNodeText(child);
-          });
-
-          companionAd.staticResource = _this.parserUtils.parseNodeText(staticElement);
-        });
-
-        _this.parserUtils.childrenByName(companionResource, 'TrackingEvents').forEach(function (trackingEventsElement) {
-          _this.parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
-            var eventName = trackingElement.getAttribute('event');
-            var trackingURLTemplate = _this.parserUtils.parseNodeText(trackingElement);
-            if (eventName && trackingURLTemplate) {
-              if (companionAd.trackingEvents[eventName] == null) {
-                companionAd.trackingEvents[eventName] = [];
-              }
-              companionAd.trackingEvents[eventName].push(trackingURLTemplate);
-            }
-          });
-        });
-
-        _this.parserUtils.childrenByName(companionResource, 'CompanionClickTracking').forEach(function (clickTrackingElement) {
-          companionAd.companionClickTrackingURLTemplates.push(_this.parserUtils.parseNodeText(clickTrackingElement));
-        });
-
-        companionAd.companionClickThroughURLTemplate = _this.parserUtils.parseNodeText(_this.parserUtils.childByName(companionResource, 'CompanionClickThrough'));
-        companionAd.companionClickTrackingURLTemplate = _this.parserUtils.parseNodeText(_this.parserUtils.childByName(companionResource, 'CompanionClickTracking'));
-        creative.variations.push(companionAd);
-      });
-
-      return creative;
-    }
-  }]);
-  return CreativeCompanionParser;
-}();
+  return creative;
+}
 
 var CreativeLinear = function (_Creative) {
   inherits(CreativeLinear, _Creative);
@@ -597,209 +589,183 @@ var MediaFile = function MediaFile() {
 };
 
 /**
- * This class provides methods to parse a VAST Linear Element.
- * @export
- * @class CreativeLinearParser
+ * This module provides methods to parse a VAST Linear Element.
  */
-var CreativeLinearParser = function () {
-  /**
-   * Creates an instance of CreativeLinearParser.
-   */
-  function CreativeLinearParser() {
-    classCallCheck(this, CreativeLinearParser);
 
-    this.parserUtils = new ParserUtils();
+/**
+ * Parses a Linear element.
+ * @param  {Object} creativeElement - The VAST Linear element to parse.
+ * @param  {any} creativeAttributes - The attributes of the Linear (optional).
+ * @return {CreativeLinear}
+ */
+function parseCreativeLinear(creativeElement, creativeAttributes) {
+  var offset = void 0;
+  var creative = new CreativeLinear(creativeAttributes);
+
+  creative.duration = parserUtils.parseDuration(parserUtils.parseNodeText(parserUtils.childByName(creativeElement, 'Duration')));
+  var skipOffset = creativeElement.getAttribute('skipoffset');
+
+  if (skipOffset == null) {
+    creative.skipDelay = null;
+  } else if (skipOffset.charAt(skipOffset.length - 1) === '%' && creative.duration !== -1) {
+    var percent = parseInt(skipOffset, 10);
+    creative.skipDelay = creative.duration * (percent / 100);
+  } else {
+    creative.skipDelay = parserUtils.parseDuration(skipOffset);
   }
 
-  /**
-   * Parses a Linear element.
-   * @param  {Object} creativeElement - The VAST Linear element to parse.
-   * @param  {any} creativeAttributes - The attributes of the Linear (optional).
-   * @return {CreativeLinear}
-   */
+  var videoClicksElement = parserUtils.childByName(creativeElement, 'VideoClicks');
+  if (videoClicksElement) {
+    creative.videoClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(videoClicksElement, 'ClickThrough'));
 
+    parserUtils.childrenByName(videoClicksElement, 'ClickTracking').forEach(function (clickTrackingElement) {
+      creative.videoClickTrackingURLTemplates.push(parserUtils.parseNodeText(clickTrackingElement));
+    });
 
-  createClass(CreativeLinearParser, [{
-    key: 'parse',
-    value: function parse(creativeElement, creativeAttributes) {
-      var _this = this;
+    parserUtils.childrenByName(videoClicksElement, 'CustomClick').forEach(function (customClickElement) {
+      creative.videoCustomClickURLTemplates.push(parserUtils.parseNodeText(customClickElement));
+    });
+  }
 
-      var offset = void 0;
-      var creative = new CreativeLinear(creativeAttributes);
+  var adParamsElement = parserUtils.childByName(creativeElement, 'AdParameters');
+  if (adParamsElement) {
+    creative.adParameters = parserUtils.parseNodeText(adParamsElement);
+  }
 
-      creative.duration = this.parserUtils.parseDuration(this.parserUtils.parseNodeText(this.parserUtils.childByName(creativeElement, 'Duration')));
-      var skipOffset = creativeElement.getAttribute('skipoffset');
-
-      if (skipOffset == null) {
-        creative.skipDelay = null;
-      } else if (skipOffset.charAt(skipOffset.length - 1) === '%' && creative.duration !== -1) {
-        var percent = parseInt(skipOffset, 10);
-        creative.skipDelay = creative.duration * (percent / 100);
-      } else {
-        creative.skipDelay = this.parserUtils.parseDuration(skipOffset);
-      }
-
-      var videoClicksElement = this.parserUtils.childByName(creativeElement, 'VideoClicks');
-      if (videoClicksElement) {
-        creative.videoClickThroughURLTemplate = this.parserUtils.parseNodeText(this.parserUtils.childByName(videoClicksElement, 'ClickThrough'));
-
-        this.parserUtils.childrenByName(videoClicksElement, 'ClickTracking').forEach(function (clickTrackingElement) {
-          creative.videoClickTrackingURLTemplates.push(_this.parserUtils.parseNodeText(clickTrackingElement));
-        });
-
-        this.parserUtils.childrenByName(videoClicksElement, 'CustomClick').forEach(function (customClickElement) {
-          creative.videoCustomClickURLTemplates.push(_this.parserUtils.parseNodeText(customClickElement));
-        });
-      }
-
-      var adParamsElement = this.parserUtils.childByName(creativeElement, 'AdParameters');
-      if (adParamsElement) {
-        creative.adParameters = this.parserUtils.parseNodeText(adParamsElement);
-      }
-
-      this.parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
-        _this.parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
-          var eventName = trackingElement.getAttribute('event');
-          var trackingURLTemplate = _this.parserUtils.parseNodeText(trackingElement);
-          if (eventName && trackingURLTemplate) {
-            if (eventName === 'progress') {
-              offset = trackingElement.getAttribute('offset');
-              if (!offset) {
-                return;
-              }
-              if (offset.charAt(offset.length - 1) === '%') {
-                eventName = 'progress-' + offset;
-              } else {
-                eventName = 'progress-' + Math.round(_this.parserUtils.parseDuration(offset));
-              }
-            }
-
-            if (creative.trackingEvents[eventName] == null) {
-              creative.trackingEvents[eventName] = [];
-            }
-            creative.trackingEvents[eventName].push(trackingURLTemplate);
+  parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
+    parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
+      var eventName = trackingElement.getAttribute('event');
+      var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+      if (eventName && trackingURLTemplate) {
+        if (eventName === 'progress') {
+          offset = trackingElement.getAttribute('offset');
+          if (!offset) {
+            return;
           }
-        });
+          if (offset.charAt(offset.length - 1) === '%') {
+            eventName = 'progress-' + offset;
+          } else {
+            eventName = 'progress-' + Math.round(parserUtils.parseDuration(offset));
+          }
+        }
+
+        if (creative.trackingEvents[eventName] == null) {
+          creative.trackingEvents[eventName] = [];
+        }
+        creative.trackingEvents[eventName].push(trackingURLTemplate);
+      }
+    });
+  });
+
+  parserUtils.childrenByName(creativeElement, 'MediaFiles').forEach(function (mediaFilesElement) {
+    parserUtils.childrenByName(mediaFilesElement, 'MediaFile').forEach(function (mediaFileElement) {
+      var mediaFile = new MediaFile();
+      mediaFile.id = mediaFileElement.getAttribute('id');
+      mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
+      mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
+      mediaFile.codec = mediaFileElement.getAttribute('codec');
+      mediaFile.mimeType = mediaFileElement.getAttribute('type');
+      mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
+      mediaFile.bitrate = parseInt(mediaFileElement.getAttribute('bitrate') || 0);
+      mediaFile.minBitrate = parseInt(mediaFileElement.getAttribute('minBitrate') || 0);
+      mediaFile.maxBitrate = parseInt(mediaFileElement.getAttribute('maxBitrate') || 0);
+      mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
+      mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
+
+      var scalable = mediaFileElement.getAttribute('scalable');
+      if (scalable && typeof scalable === 'string') {
+        scalable = scalable.toLowerCase();
+        if (scalable === 'true') {
+          mediaFile.scalable = true;
+        } else if (scalable === 'false') {
+          mediaFile.scalable = false;
+        }
+      }
+
+      var maintainAspectRatio = mediaFileElement.getAttribute('maintainAspectRatio');
+      if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
+        maintainAspectRatio = maintainAspectRatio.toLowerCase();
+        if (maintainAspectRatio === 'true') {
+          mediaFile.maintainAspectRatio = true;
+        } else if (maintainAspectRatio === 'false') {
+          mediaFile.maintainAspectRatio = false;
+        }
+      }
+
+      creative.mediaFiles.push(mediaFile);
+    });
+  });
+
+  var iconsElement = parserUtils.childByName(creativeElement, 'Icons');
+  if (iconsElement) {
+    parserUtils.childrenByName(iconsElement, 'Icon').forEach(function (iconElement) {
+      var icon = new Icon();
+      icon.program = iconElement.getAttribute('program');
+      icon.height = parseInt(iconElement.getAttribute('height') || 0);
+      icon.width = parseInt(iconElement.getAttribute('width') || 0);
+      icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
+      icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
+      icon.apiFramework = iconElement.getAttribute('apiFramework');
+      icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
+      icon.duration = parserUtils.parseDuration(iconElement.getAttribute('duration'));
+
+      parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(function (htmlElement) {
+        icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
+        icon.htmlResource = parserUtils.parseNodeText(htmlElement);
       });
 
-      this.parserUtils.childrenByName(creativeElement, 'MediaFiles').forEach(function (mediaFilesElement) {
-        _this.parserUtils.childrenByName(mediaFilesElement, 'MediaFile').forEach(function (mediaFileElement) {
-          var mediaFile = new MediaFile();
-          mediaFile.id = mediaFileElement.getAttribute('id');
-          mediaFile.fileURL = _this.parserUtils.parseNodeText(mediaFileElement);
-          mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
-          mediaFile.codec = mediaFileElement.getAttribute('codec');
-          mediaFile.mimeType = mediaFileElement.getAttribute('type');
-          mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
-          mediaFile.bitrate = parseInt(mediaFileElement.getAttribute('bitrate') || 0);
-          mediaFile.minBitrate = parseInt(mediaFileElement.getAttribute('minBitrate') || 0);
-          mediaFile.maxBitrate = parseInt(mediaFileElement.getAttribute('maxBitrate') || 0);
-          mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
-          mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
-
-          var scalable = mediaFileElement.getAttribute('scalable');
-          if (scalable && typeof scalable === 'string') {
-            scalable = scalable.toLowerCase();
-            if (scalable === 'true') {
-              mediaFile.scalable = true;
-            } else if (scalable === 'false') {
-              mediaFile.scalable = false;
-            }
-          }
-
-          var maintainAspectRatio = mediaFileElement.getAttribute('maintainAspectRatio');
-          if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
-            maintainAspectRatio = maintainAspectRatio.toLowerCase();
-            if (maintainAspectRatio === 'true') {
-              mediaFile.maintainAspectRatio = true;
-            } else if (maintainAspectRatio === 'false') {
-              mediaFile.maintainAspectRatio = false;
-            }
-          }
-
-          creative.mediaFiles.push(mediaFile);
-        });
+      parserUtils.childrenByName(iconElement, 'IFrameResource').forEach(function (iframeElement) {
+        icon.type = iframeElement.getAttribute('creativeType') || 0;
+        icon.iframeResource = parserUtils.parseNodeText(iframeElement);
       });
 
-      var iconsElement = this.parserUtils.childByName(creativeElement, 'Icons');
-      if (iconsElement) {
-        this.parserUtils.childrenByName(iconsElement, 'Icon').forEach(function (iconElement) {
-          var icon = new Icon();
-          icon.program = iconElement.getAttribute('program');
-          icon.height = parseInt(iconElement.getAttribute('height') || 0);
-          icon.width = parseInt(iconElement.getAttribute('width') || 0);
-          icon.xPosition = _this.parseXPosition(iconElement.getAttribute('xPosition'));
-          icon.yPosition = _this.parseYPosition(iconElement.getAttribute('yPosition'));
-          icon.apiFramework = iconElement.getAttribute('apiFramework');
-          icon.offset = _this.parserUtils.parseDuration(iconElement.getAttribute('offset'));
-          icon.duration = _this.parserUtils.parseDuration(iconElement.getAttribute('duration'));
+      parserUtils.childrenByName(iconElement, 'StaticResource').forEach(function (staticElement) {
+        icon.type = staticElement.getAttribute('creativeType') || 0;
+        icon.staticResource = parserUtils.parseNodeText(staticElement);
+      });
 
-          _this.parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(function (htmlElement) {
-            icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
-            icon.htmlResource = _this.parserUtils.parseNodeText(htmlElement);
-          });
-
-          _this.parserUtils.childrenByName(iconElement, 'IFrameResource').forEach(function (iframeElement) {
-            icon.type = iframeElement.getAttribute('creativeType') || 0;
-            icon.iframeResource = _this.parserUtils.parseNodeText(iframeElement);
-          });
-
-          _this.parserUtils.childrenByName(iconElement, 'StaticResource').forEach(function (staticElement) {
-            icon.type = staticElement.getAttribute('creativeType') || 0;
-            icon.staticResource = _this.parserUtils.parseNodeText(staticElement);
-          });
-
-          var iconClicksElement = _this.parserUtils.childByName(iconElement, 'IconClicks');
-          if (iconClicksElement) {
-            icon.iconClickThroughURLTemplate = _this.parserUtils.parseNodeText(_this.parserUtils.childByName(iconClicksElement, 'IconClickThrough'));
-            _this.parserUtils.childrenByName(iconClicksElement, 'IconClickTracking').forEach(function (iconClickTrackingElement) {
-              icon.iconClickTrackingURLTemplates.push(_this.parserUtils.parseNodeText(iconClickTrackingElement));
-            });
-          }
-
-          icon.iconViewTrackingURLTemplate = _this.parserUtils.parseNodeText(_this.parserUtils.childByName(iconElement, 'IconViewTracking'));
-
-          creative.icons.push(icon);
+      var iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
+      if (iconClicksElement) {
+        icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconClicksElement, 'IconClickThrough'));
+        parserUtils.childrenByName(iconClicksElement, 'IconClickTracking').forEach(function (iconClickTrackingElement) {
+          icon.iconClickTrackingURLTemplates.push(parserUtils.parseNodeText(iconClickTrackingElement));
         });
       }
 
-      return creative;
-    }
+      icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconElement, 'IconViewTracking'));
 
-    /**
-     * Parses an horizontal position into a String ('left' or 'right') or into a Number.
-     * @param  {String} xPosition - The x position to parse.
-     * @return {String|Number}
-     */
+      creative.icons.push(icon);
+    });
+  }
 
-  }, {
-    key: 'parseXPosition',
-    value: function parseXPosition(xPosition) {
-      if (['left', 'right'].indexOf(xPosition) !== -1) {
-        return xPosition;
-      }
+  return creative;
+}
 
-      return parseInt(xPosition || 0);
-    }
+/**
+ * Parses an horizontal position into a String ('left' or 'right') or into a Number.
+ * @param  {String} xPosition - The x position to parse.
+ * @return {String|Number}
+ */
+function parseXPosition(xPosition) {
+  if (['left', 'right'].indexOf(xPosition) !== -1) {
+    return xPosition;
+  }
 
-    /**
-     * Parses an vertical position into a String ('top' or 'bottom') or into a Number.
-     * @param  {String} yPosition - The x position to parse.
-     * @return {String|Number}
-     */
+  return parseInt(xPosition || 0);
+}
 
-  }, {
-    key: 'parseYPosition',
-    value: function parseYPosition(yPosition) {
-      if (['top', 'bottom'].indexOf(yPosition) !== -1) {
-        return yPosition;
-      }
+/**
+ * Parses an vertical position into a String ('top' or 'bottom') or into a Number.
+ * @param  {String} yPosition - The x position to parse.
+ * @return {String|Number}
+ */
+function parseYPosition(yPosition) {
+  if (['top', 'bottom'].indexOf(yPosition) !== -1) {
+    return yPosition;
+  }
 
-      return parseInt(yPosition || 0);
-    }
-  }]);
-  return CreativeLinearParser;
-}();
+  return parseInt(yPosition || 0);
+}
 
 var CreativeNonLinear = function (_Creative) {
   inherits(CreativeNonLinear, _Creative);
@@ -840,443 +806,379 @@ var NonLinearAd = function NonLinearAd() {
 };
 
 /**
- * This class provides methods to parse a VAST NonLinear Element.
- * @export
- * @class CreativeNonLinearParser
+ * This module provides methods to parse a VAST NonLinear Element.
  */
-var CreativeNonLinearParser = function () {
-  /**
-   * Creates an instance of CreativeNonLinearParser.
-   */
-  function CreativeNonLinearParser() {
-    classCallCheck(this, CreativeNonLinearParser);
-
-    this.parserUtils = new ParserUtils();
-  }
-
-  /**
-   * Parses a NonLinear element.
-   * @param  {any} creativeElement - The VAST NonLinear element to parse.
-   * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
-   * @return {CreativeNonLinear}
-   */
-
-
-  createClass(CreativeNonLinearParser, [{
-    key: 'parse',
-    value: function parse(creativeElement, creativeAttributes) {
-      var _this = this;
-
-      var creative = new CreativeNonLinear(creativeAttributes);
-
-      this.parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
-        var eventName = void 0,
-            trackingURLTemplate = void 0;
-        _this.parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
-          eventName = trackingElement.getAttribute('event');
-          trackingURLTemplate = _this.parserUtils.parseNodeText(trackingElement);
-
-          if (eventName && trackingURLTemplate) {
-            if (creative.trackingEvents[eventName] == null) {
-              creative.trackingEvents[eventName] = [];
-            }
-            creative.trackingEvents[eventName].push(trackingURLTemplate);
-          }
-        });
-      });
-
-      this.parserUtils.childrenByName(creativeElement, 'NonLinear').forEach(function (nonlinearResource) {
-        var nonlinearAd = new NonLinearAd();
-        nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
-        nonlinearAd.width = nonlinearResource.getAttribute('width');
-        nonlinearAd.height = nonlinearResource.getAttribute('height');
-        nonlinearAd.expandedWidth = nonlinearResource.getAttribute('expandedWidth');
-        nonlinearAd.expandedHeight = nonlinearResource.getAttribute('expandedHeight');
-        nonlinearAd.scalable = _this.parserUtils.parseBoolean(nonlinearResource.getAttribute('scalable'));
-        nonlinearAd.maintainAspectRatio = _this.parserUtils.parseBoolean(nonlinearResource.getAttribute('maintainAspectRatio'));
-        nonlinearAd.minSuggestedDuration = _this.parserUtils.parseDuration(nonlinearResource.getAttribute('minSuggestedDuration'));
-        nonlinearAd.apiFramework = nonlinearResource.getAttribute('apiFramework');
-
-        _this.parserUtils.childrenByName(nonlinearResource, 'HTMLResource').forEach(function (htmlElement) {
-          nonlinearAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
-          nonlinearAd.htmlResource = _this.parserUtils.parseNodeText(htmlElement);
-        });
-
-        _this.parserUtils.childrenByName(nonlinearResource, 'IFrameResource').forEach(function (iframeElement) {
-          nonlinearAd.type = iframeElement.getAttribute('creativeType') || 0;
-          nonlinearAd.iframeResource = _this.parserUtils.parseNodeText(iframeElement);
-        });
-
-        _this.parserUtils.childrenByName(nonlinearResource, 'StaticResource').forEach(function (staticElement) {
-          nonlinearAd.type = staticElement.getAttribute('creativeType') || 0;
-          nonlinearAd.staticResource = _this.parserUtils.parseNodeText(staticElement);
-        });
-
-        var adParamsElement = _this.parserUtils.childByName(nonlinearResource, 'AdParameters');
-        if (adParamsElement) {
-          nonlinearAd.adParameters = _this.parserUtils.parseNodeText(adParamsElement);
-        }
-
-        nonlinearAd.nonlinearClickThroughURLTemplate = _this.parserUtils.parseNodeText(_this.parserUtils.childByName(nonlinearResource, 'NonLinearClickThrough'));
-        _this.parserUtils.childrenByName(nonlinearResource, 'NonLinearClickTracking').forEach(function (clickTrackingElement) {
-          nonlinearAd.nonlinearClickTrackingURLTemplates.push(_this.parserUtils.parseNodeText(clickTrackingElement));
-        });
-
-        creative.variations.push(nonlinearAd);
-      });
-
-      return creative;
-    }
-  }]);
-  return CreativeNonLinearParser;
-}();
 
 /**
- * This class provides methods to parse a VAST Ad Element.
- * @export
- * @class AdParser
+ * Parses a NonLinear element.
+ * @param  {any} creativeElement - The VAST NonLinear element to parse.
+ * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
+ * @return {CreativeNonLinear}
  */
-var AdParser = function () {
-  /**
-   * Creates an instance of AdParser.
-   */
-  function AdParser() {
-    classCallCheck(this, AdParser);
+function parseCreativeNonLinear(creativeElement, creativeAttributes) {
+  var creative = new CreativeNonLinear(creativeAttributes);
 
-    this.creativeCompanionParser = new CreativeCompanionParser();
-    this.creativeNonLinearParser = new CreativeNonLinearParser();
-    this.creativeLinearParser = new CreativeLinearParser();
-    this.parserUtils = new ParserUtils();
-  }
+  parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
+    var eventName = void 0,
+        trackingURLTemplate = void 0;
+    parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
+      eventName = trackingElement.getAttribute('event');
+      trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
 
-  /**
-   * Parses an Ad element (can either be a Wrapper or an InLine).
-   * @param  {Object} adElement - The VAST Ad element to parse.
-   * @return {Ad}
-   */
-
-
-  createClass(AdParser, [{
-    key: 'parse',
-    value: function parse(adElement) {
-      var childNodes = adElement.childNodes;
-
-      for (var adTypeElementKey in childNodes) {
-        var adTypeElement = childNodes[adTypeElementKey];
-
-        if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
-          continue;
+      if (eventName && trackingURLTemplate) {
+        if (creative.trackingEvents[eventName] == null) {
+          creative.trackingEvents[eventName] = [];
         }
-
-        this.parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
-        this.parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-
-        if (adTypeElement.nodeName === 'Wrapper') {
-          return this.parseWrapper(adTypeElement);
-        } else if (adTypeElement.nodeName === 'InLine') {
-          return this.parseInLine(adTypeElement);
-        }
+        creative.trackingEvents[eventName].push(trackingURLTemplate);
       }
+    });
+  });
+
+  parserUtils.childrenByName(creativeElement, 'NonLinear').forEach(function (nonlinearResource) {
+    var nonlinearAd = new NonLinearAd();
+    nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
+    nonlinearAd.width = nonlinearResource.getAttribute('width');
+    nonlinearAd.height = nonlinearResource.getAttribute('height');
+    nonlinearAd.expandedWidth = nonlinearResource.getAttribute('expandedWidth');
+    nonlinearAd.expandedHeight = nonlinearResource.getAttribute('expandedHeight');
+    nonlinearAd.scalable = parserUtils.parseBoolean(nonlinearResource.getAttribute('scalable'));
+    nonlinearAd.maintainAspectRatio = parserUtils.parseBoolean(nonlinearResource.getAttribute('maintainAspectRatio'));
+    nonlinearAd.minSuggestedDuration = parserUtils.parseDuration(nonlinearResource.getAttribute('minSuggestedDuration'));
+    nonlinearAd.apiFramework = nonlinearResource.getAttribute('apiFramework');
+
+    parserUtils.childrenByName(nonlinearResource, 'HTMLResource').forEach(function (htmlElement) {
+      nonlinearAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
+      nonlinearAd.htmlResource = parserUtils.parseNodeText(htmlElement);
+    });
+
+    parserUtils.childrenByName(nonlinearResource, 'IFrameResource').forEach(function (iframeElement) {
+      nonlinearAd.type = iframeElement.getAttribute('creativeType') || 0;
+      nonlinearAd.iframeResource = parserUtils.parseNodeText(iframeElement);
+    });
+
+    parserUtils.childrenByName(nonlinearResource, 'StaticResource').forEach(function (staticElement) {
+      nonlinearAd.type = staticElement.getAttribute('creativeType') || 0;
+      nonlinearAd.staticResource = parserUtils.parseNodeText(staticElement);
+    });
+
+    var adParamsElement = parserUtils.childByName(nonlinearResource, 'AdParameters');
+    if (adParamsElement) {
+      nonlinearAd.adParameters = parserUtils.parseNodeText(adParamsElement);
     }
 
-    /**
-     * Parses an Inline element.
-     * @param  {Object} inLineElement - The VAST Inline element to parse.
-     * @return {Ad}
-     */
+    nonlinearAd.nonlinearClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(nonlinearResource, 'NonLinearClickThrough'));
+    parserUtils.childrenByName(nonlinearResource, 'NonLinearClickTracking').forEach(function (clickTrackingElement) {
+      nonlinearAd.nonlinearClickTrackingURLTemplates.push(parserUtils.parseNodeText(clickTrackingElement));
+    });
 
-  }, {
-    key: 'parseInLine',
-    value: function parseInLine(inLineElement) {
-      var _this = this;
+    creative.variations.push(nonlinearAd);
+  });
 
-      var childNodes = inLineElement.childNodes;
-      var ad = new Ad();
-      ad.id = inLineElement.getAttribute('id') || null;
-      ad.sequence = inLineElement.getAttribute('sequence') || null;
+  return creative;
+}
 
-      for (var nodeKey in childNodes) {
-        var node = childNodes[nodeKey];
+/**
+ * This module provides methods to parse a VAST Ad Element.
+ */
 
-        switch (node.nodeName) {
-          case 'Error':
-            ad.errorURLTemplates.push(this.parserUtils.parseNodeText(node));
-            break;
+/**
+ * Parses an Ad element (can either be a Wrapper or an InLine).
+ * @param  {Object} adElement - The VAST Ad element to parse.
+ * @return {Ad}
+ */
+function parseAd(adElement) {
+  var childNodes = adElement.childNodes;
 
-          case 'Impression':
-            ad.impressionURLTemplates.push(this.parserUtils.parseNodeText(node));
-            break;
+  for (var adTypeElementKey in childNodes) {
+    var adTypeElement = childNodes[adTypeElementKey];
 
-          case 'Creatives':
-            this.parserUtils.childrenByName(node, 'Creative').forEach(function (creativeElement) {
-              var creativeAttributes = {
-                id: creativeElement.getAttribute('id') || null,
-                adId: _this.parseCreativeAdIdAttribute(creativeElement),
-                sequence: creativeElement.getAttribute('sequence') || null,
-                apiFramework: creativeElement.getAttribute('apiFramework') || null
-              };
+    if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
+      continue;
+    }
 
-              for (var creativeTypeElementKey in creativeElement.childNodes) {
-                var creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
+    parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
+    parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
 
-                switch (creativeTypeElement.nodeName) {
-                  case 'Linear':
-                    var creativeLinear = _this.creativeLinearParser.parse(creativeTypeElement, creativeAttributes);
-                    if (creativeLinear) {
-                      ad.creatives.push(creativeLinear);
-                    }
-                    break;
-                  case 'NonLinearAds':
-                    var creativeNonLinear = _this.creativeNonLinearParser.parse(creativeTypeElement, creativeAttributes);
-                    if (creativeNonLinear) {
-                      ad.creatives.push(creativeNonLinear);
-                    }
-                    break;
-                  case 'CompanionAds':
-                    var creativeCompanion = _this.creativeCompanionParser.parse(creativeTypeElement, creativeAttributes);
-                    if (creativeCompanion) {
-                      ad.creatives.push(creativeCompanion);
-                    }
-                    break;
+    if (adTypeElement.nodeName === 'Wrapper') {
+      return parseWrapper(adTypeElement);
+    } else if (adTypeElement.nodeName === 'InLine') {
+      return parseInLine(adTypeElement);
+    }
+  }
+}
+
+/**
+ * Parses an Inline element.
+ * @param  {Object} inLineElement - The VAST Inline element to parse.
+ * @return {Ad}
+ */
+function parseInLine(inLineElement) {
+  var childNodes = inLineElement.childNodes;
+  var ad = new Ad();
+  ad.id = inLineElement.getAttribute('id') || null;
+  ad.sequence = inLineElement.getAttribute('sequence') || null;
+
+  for (var nodeKey in childNodes) {
+    var node = childNodes[nodeKey];
+
+    switch (node.nodeName) {
+      case 'Error':
+        ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
+        break;
+
+      case 'Impression':
+        ad.impressionURLTemplates.push(parserUtils.parseNodeText(node));
+        break;
+
+      case 'Creatives':
+        parserUtils.childrenByName(node, 'Creative').forEach(function (creativeElement) {
+          var creativeAttributes = {
+            id: creativeElement.getAttribute('id') || null,
+            adId: parseCreativeAdIdAttribute(creativeElement),
+            sequence: creativeElement.getAttribute('sequence') || null,
+            apiFramework: creativeElement.getAttribute('apiFramework') || null
+          };
+
+          for (var creativeTypeElementKey in creativeElement.childNodes) {
+            var creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
+
+            switch (creativeTypeElement.nodeName) {
+              case 'Linear':
+                var creativeLinear = parseCreativeLinear(creativeTypeElement, creativeAttributes);
+                if (creativeLinear) {
+                  ad.creatives.push(creativeLinear);
                 }
-              }
-            });
-            break;
+                break;
+              case 'NonLinearAds':
+                var creativeNonLinear = parseCreativeNonLinear(creativeTypeElement, creativeAttributes);
+                if (creativeNonLinear) {
+                  ad.creatives.push(creativeNonLinear);
+                }
+                break;
+              case 'CompanionAds':
+                var creativeCompanion = parseCreativeCompanion(creativeTypeElement, creativeAttributes);
+                if (creativeCompanion) {
+                  ad.creatives.push(creativeCompanion);
+                }
+                break;
+            }
+          }
+        });
+        break;
 
-          case 'Extensions':
-            this.parseExtensions(ad.extensions, this.parserUtils.childrenByName(node, 'Extension'));
-            break;
+      case 'Extensions':
+        parseExtensions(ad.extensions, parserUtils.childrenByName(node, 'Extension'));
+        break;
 
-          case 'AdSystem':
-            ad.system = {
-              value: this.parserUtils.parseNodeText(node),
-              version: node.getAttribute('version') || null
-            };
-            break;
+      case 'AdSystem':
+        ad.system = {
+          value: parserUtils.parseNodeText(node),
+          version: node.getAttribute('version') || null
+        };
+        break;
 
-          case 'AdTitle':
-            ad.title = this.parserUtils.parseNodeText(node);
-            break;
+      case 'AdTitle':
+        ad.title = parserUtils.parseNodeText(node);
+        break;
 
-          case 'Description':
-            ad.description = this.parserUtils.parseNodeText(node);
-            break;
+      case 'Description':
+        ad.description = parserUtils.parseNodeText(node);
+        break;
 
-          case 'Advertiser':
-            ad.advertiser = this.parserUtils.parseNodeText(node);
-            break;
+      case 'Advertiser':
+        ad.advertiser = parserUtils.parseNodeText(node);
+        break;
 
-          case 'Pricing':
-            ad.pricing = {
-              value: this.parserUtils.parseNodeText(node),
-              model: node.getAttribute('model') || null,
-              currency: node.getAttribute('currency') || null
-            };
-            break;
+      case 'Pricing':
+        ad.pricing = {
+          value: parserUtils.parseNodeText(node),
+          model: node.getAttribute('model') || null,
+          currency: node.getAttribute('currency') || null
+        };
+        break;
 
-          case 'Survey':
-            ad.survey = this.parserUtils.parseNodeText(node);
-            break;
-        }
-      }
-
-      return ad;
+      case 'Survey':
+        ad.survey = parserUtils.parseNodeText(node);
+        break;
     }
-
-    /**
-     * Parses a Wrapper element without resolving the wrapped urls.
-     * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
-     * @return {Ad}
-     */
-
-  }, {
-    key: 'parseWrapper',
-    value: function parseWrapper(wrapperElement) {
-      var ad = this.parseInLine(wrapperElement);
-      var wrapperURLElement = this.parserUtils.childByName(wrapperElement, 'VASTAdTagURI');
-
-      if (wrapperURLElement) {
-        ad.nextWrapperURL = this.parserUtils.parseNodeText(wrapperURLElement);
-      } else {
-        wrapperURLElement = this.parserUtils.childByName(wrapperElement, 'VASTAdTagURL');
-
-        if (wrapperURLElement) {
-          ad.nextWrapperURL = this.parserUtils.parseNodeText(this.parserUtils.childByName(wrapperURLElement, 'URL'));
-        }
-      }
-
-      ad.creatives.forEach(function (wrapperCreativeElement) {
-        if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
-          // TrackingEvents Linear / NonLinear
-          if (wrapperCreativeElement.trackingEvents) {
-            if (!ad.trackingEvents) {
-              ad.trackingEvents = {};
-            }
-            if (!ad.trackingEvents[wrapperCreativeElement.type]) {
-              ad.trackingEvents[wrapperCreativeElement.type] = {};
-            }
-
-            var _loop = function _loop(eventName) {
-              var urls = wrapperCreativeElement.trackingEvents[eventName];
-              if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
-                ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
-              }
-              urls.forEach(function (url) {
-                ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url);
-              });
-            };
-
-            for (var eventName in wrapperCreativeElement.trackingEvents) {
-              _loop(eventName);
-            }
-          }
-          // ClickTracking
-          if (wrapperCreativeElement.videoClickTrackingURLTemplates) {
-            if (!ad.videoClickTrackingURLTemplates) {
-              ad.videoClickTrackingURLTemplates = [];
-            } // tmp property to save wrapper tracking URLs until they are merged
-            wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(function (item) {
-              ad.videoClickTrackingURLTemplates.push(item);
-            });
-          }
-          // ClickThrough
-          if (wrapperCreativeElement.videoClickThroughURLTemplate) {
-            ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate;
-          }
-          // CustomClick
-          if (wrapperCreativeElement.videoCustomClickURLTemplates) {
-            if (!ad.videoCustomClickURLTemplates) {
-              ad.videoCustomClickURLTemplates = [];
-            } // tmp property to save wrapper tracking URLs until they are merged
-            wrapperCreativeElement.videoCustomClickURLTemplates.forEach(function (item) {
-              ad.videoCustomClickURLTemplates.push(item);
-            });
-          }
-        }
-      });
-
-      if (ad.nextWrapperURL) {
-        return ad;
-      }
-    }
-
-    /**
-     * Parses an array of Extension elements.
-     * @param  {Array} collection - The array used to store the parsed extensions.
-     * @param  {Array} extensions - The array of extensions to parse.
-     */
-
-  }, {
-    key: 'parseExtensions',
-    value: function parseExtensions(collection, extensions) {
-      var _this2 = this;
-
-      extensions.forEach(function (extNode) {
-        var ext = new AdExtension();
-        var extNodeAttrs = extNode.attributes;
-        var childNodes = extNode.childNodes;
-
-        if (extNode.attributes) {
-          for (var extNodeAttrKey in extNodeAttrs) {
-            var extNodeAttr = extNodeAttrs[extNodeAttrKey];
-
-            if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
-              ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
-            }
-          }
-        }
-
-        for (var childNodeKey in childNodes) {
-          var childNode = childNodes[childNodeKey];
-          var txt = _this2.parserUtils.parseNodeText(childNode);
-
-          // ignore comments / empty value
-          if (childNode.nodeName !== '#comment' && txt !== '') {
-            var extChild = new AdExtensionChild();
-            extChild.name = childNode.nodeName;
-            extChild.value = txt;
-
-            if (childNode.attributes) {
-              var childNodeAttributes = childNode.attributes;
-
-              for (var extChildNodeAttrKey in childNodeAttributes) {
-                var extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
-
-                extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
-              }
-            }
-
-            ext.children.push(extChild);
-          }
-        }
-
-        collection.push(ext);
-      });
-    }
-
-    /**
-     * Parses the creative adId Attribute.
-     * @param  {any} creativeElement - The creative element to retrieve the adId from.
-     * @return {String|null}
-     */
-
-  }, {
-    key: 'parseCreativeAdIdAttribute',
-    value: function parseCreativeAdIdAttribute(creativeElement) {
-      return creativeElement.getAttribute('AdID') || // VAST 2 spec
-      creativeElement.getAttribute('adID') || // VAST 3 spec
-      creativeElement.getAttribute('adId') || // VAST 4 spec
-      null;
-    }
-  }]);
-  return AdParser;
-}();
-
-var FlashURLHandler = function () {
-  function FlashURLHandler() {
-    classCallCheck(this, FlashURLHandler);
   }
 
-  createClass(FlashURLHandler, [{
-    key: 'xdr',
-    value: function xdr() {
-      var xdr = void 0;
-      if (window.XDomainRequest) {
-        xdr = new XDomainRequest();
+  return ad;
+}
+
+/**
+ * Parses a Wrapper element without resolving the wrapped urls.
+ * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+ * @return {Ad}
+ */
+function parseWrapper(wrapperElement) {
+  var ad = parseInLine(wrapperElement);
+  var wrapperURLElement = parserUtils.childByName(wrapperElement, 'VASTAdTagURI');
+
+  if (wrapperURLElement) {
+    ad.nextWrapperURL = parserUtils.parseNodeText(wrapperURLElement);
+  } else {
+    wrapperURLElement = parserUtils.childByName(wrapperElement, 'VASTAdTagURL');
+
+    if (wrapperURLElement) {
+      ad.nextWrapperURL = parserUtils.parseNodeText(parserUtils.childByName(wrapperURLElement, 'URL'));
+    }
+  }
+
+  ad.creatives.forEach(function (wrapperCreativeElement) {
+    if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
+      // TrackingEvents Linear / NonLinear
+      if (wrapperCreativeElement.trackingEvents) {
+        if (!ad.trackingEvents) {
+          ad.trackingEvents = {};
+        }
+        if (!ad.trackingEvents[wrapperCreativeElement.type]) {
+          ad.trackingEvents[wrapperCreativeElement.type] = {};
+        }
+
+        var _loop = function _loop(eventName) {
+          var urls = wrapperCreativeElement.trackingEvents[eventName];
+          if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
+            ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
+          }
+          urls.forEach(function (url) {
+            ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url);
+          });
+        };
+
+        for (var eventName in wrapperCreativeElement.trackingEvents) {
+          _loop(eventName);
+        }
       }
-      return xdr;
-    }
-  }, {
-    key: 'supported',
-    value: function supported() {
-      return !!this.xdr();
-    }
-  }, {
-    key: 'get',
-    value: function get$$1(url, options, cb) {
-      var xmlDocument = typeof window.ActiveXObject === 'function' ? new window.ActiveXObject('Microsoft.XMLDOM') : undefined;
-
-      if (xmlDocument) {
-        xmlDocument.async = false;
-      } else {
-        return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
+      // ClickTracking
+      if (wrapperCreativeElement.videoClickTrackingURLTemplates) {
+        if (!ad.videoClickTrackingURLTemplates) {
+          ad.videoClickTrackingURLTemplates = [];
+        } // tmp property to save wrapper tracking URLs until they are merged
+        wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(function (item) {
+          ad.videoClickTrackingURLTemplates.push(item);
+        });
       }
-
-      var xdr = this.xdr();
-      xdr.open('GET', url);
-      xdr.timeout = options.timeout || 0;
-      xdr.withCredentials = options.withCredentials || false;
-      xdr.send();
-      xdr.onprogress = function () {};
-
-      xdr.onload = function () {
-        xmlDocument.loadXML(xdr.responseText);
-        cb(null, xmlDocument);
-      };
+      // ClickThrough
+      if (wrapperCreativeElement.videoClickThroughURLTemplate) {
+        ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate;
+      }
+      // CustomClick
+      if (wrapperCreativeElement.videoCustomClickURLTemplates) {
+        if (!ad.videoCustomClickURLTemplates) {
+          ad.videoCustomClickURLTemplates = [];
+        } // tmp property to save wrapper tracking URLs until they are merged
+        wrapperCreativeElement.videoCustomClickURLTemplates.forEach(function (item) {
+          ad.videoCustomClickURLTemplates.push(item);
+        });
+      }
     }
-  }]);
-  return FlashURLHandler;
-}();
+  });
+
+  if (ad.nextWrapperURL) {
+    return ad;
+  }
+}
+
+/**
+ * Parses an array of Extension elements.
+ * @param  {Array} collection - The array used to store the parsed extensions.
+ * @param  {Array} extensions - The array of extensions to parse.
+ */
+function parseExtensions(collection, extensions) {
+  extensions.forEach(function (extNode) {
+    var ext = new AdExtension();
+    var extNodeAttrs = extNode.attributes;
+    var childNodes = extNode.childNodes;
+
+    if (extNode.attributes) {
+      for (var extNodeAttrKey in extNodeAttrs) {
+        var extNodeAttr = extNodeAttrs[extNodeAttrKey];
+
+        if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
+          ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+        }
+      }
+    }
+
+    for (var childNodeKey in childNodes) {
+      var childNode = childNodes[childNodeKey];
+      var txt = parserUtils.parseNodeText(childNode);
+
+      // ignore comments / empty value
+      if (childNode.nodeName !== '#comment' && txt !== '') {
+        var extChild = new AdExtensionChild();
+        extChild.name = childNode.nodeName;
+        extChild.value = txt;
+
+        if (childNode.attributes) {
+          var childNodeAttributes = childNode.attributes;
+
+          for (var extChildNodeAttrKey in childNodeAttributes) {
+            var extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
+
+            extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
+          }
+        }
+
+        ext.children.push(extChild);
+      }
+    }
+
+    collection.push(ext);
+  });
+}
+
+/**
+ * Parses the creative adId Attribute.
+ * @param  {any} creativeElement - The creative element to retrieve the adId from.
+ * @return {String|null}
+ */
+function parseCreativeAdIdAttribute(creativeElement) {
+  return creativeElement.getAttribute('AdID') || // VAST 2 spec
+  creativeElement.getAttribute('adID') || // VAST 3 spec
+  creativeElement.getAttribute('adId') || // VAST 4 spec
+  null;
+}
+
+function xdr() {
+  var xdr = void 0;
+  if (window.XDomainRequest) {
+    xdr = new XDomainRequest();
+  }
+  return xdr;
+}
+
+function supported() {
+  return !!xdr();
+}
+
+function get$1(url, options, cb) {
+  var xmlDocument = typeof window.ActiveXObject === 'function' ? new window.ActiveXObject('Microsoft.XMLDOM') : undefined;
+
+  if (xmlDocument) {
+    xmlDocument.async = false;
+  } else {
+    return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
+  }
+
+  var xdr = xdr();
+  xdr.open('GET', url);
+  xdr.timeout = options.timeout || 0;
+  xdr.withCredentials = options.withCredentials || false;
+  xdr.send();
+  xdr.onprogress = function () {};
+
+  xdr.onload = function () {
+    xmlDocument.loadXML(xdr.responseText);
+    cb(null, xmlDocument);
+  };
+}
+
+var flashURLHandler = {
+  get: get$1,
+  supported: supported
+};
 
 var uri = require('url');
 var fs = require('fs');
@@ -1284,153 +1186,127 @@ var http = require('http');
 var https = require('https');
 var DOMParser = require('xmldom').DOMParser;
 
-var NodeURLHandler = function () {
-  function NodeURLHandler() {
-    classCallCheck(this, NodeURLHandler);
-  }
+function get$2(url, options, cb) {
+  url = uri.parse(url);
+  var httpModule = url.protocol === 'https:' ? https : http;
+  if (url.protocol === 'file:') {
+    fs.readFile(url.pathname, 'utf8', function (err, data) {
+      if (err) {
+        return cb(err);
+      }
+      var xml = new DOMParser().parseFromString(data);
+      cb(null, xml);
+    });
+  } else {
+    var timing = void 0;
+    var data = '';
 
-  createClass(NodeURLHandler, [{
-    key: 'get',
-    value: function get$$1(url, options, cb) {
-      url = uri.parse(url);
-      var httpModule = url.protocol === 'https:' ? https : http;
-      if (url.protocol === 'file:') {
-        fs.readFile(url.pathname, 'utf8', function (err, data) {
-          if (err) {
-            return cb(err);
-          }
-          var xml = new DOMParser().parseFromString(data);
-          cb(null, xml);
-        });
-      } else {
+    var timeout_wrapper = function timeout_wrapper(req) {
+      return function () {
+        return req.abort();
+      };
+    };
+
+    var req = httpModule.get(url.href, function (res) {
+      res.on('data', function (chunk) {
         var timing = void 0;
-        var data = '';
+        data += chunk;
+        clearTimeout(timing);
+        timing = setTimeout(fn, options.timeout || 120000);
+      });
+      res.on('end', function () {
+        clearTimeout(timing);
+        var xml = new DOMParser().parseFromString(data);
+        cb(null, xml);
+      });
+    });
 
-        var timeout_wrapper = function timeout_wrapper(req) {
-          return function () {
-            return req.abort();
-          };
-        };
+    req.on('error', function (err) {
+      clearTimeout(timing);
+      cb(err);
+    });
 
-        var req = httpModule.get(url.href, function (res) {
-          res.on('data', function (chunk) {
-            var timing = void 0;
-            data += chunk;
-            clearTimeout(timing);
-            timing = setTimeout(_fn, options.timeout || 120000);
-          });
-          res.on('end', function () {
-            clearTimeout(timing);
-            var xml = new DOMParser().parseFromString(data);
-            cb(null, xml);
-          });
-        });
+    var fn = timeout_wrapper(req);
+    timing = setTimeout(fn, options.timeout || 120000);
+  }
+}
 
-        req.on('error', function (err) {
-          clearTimeout(timing);
-          cb(err);
-        });
+var nodeURLHandler = {
+  get: get$2
+};
 
-        var _fn = timeout_wrapper(req);
-        timing = setTimeout(_fn, options.timeout || 120000);
-      }
+function xhr() {
+  try {
+    var _xhr = new window.XMLHttpRequest();
+    if ('withCredentials' in _xhr) {
+      // check CORS support
+      return _xhr;
     }
-  }]);
-  return NodeURLHandler;
-}();
+    return null;
+  } catch (err) {
+    console.log('Error in XHRURLHandler support check:', err);
+    return null;
+  }
+}
 
-var XHRURLHandler = function () {
-  function XHRURLHandler() {
-    classCallCheck(this, XHRURLHandler);
+function supported$1() {
+  return !!xhr();
+}
+
+function get$3(url, options, cb) {
+  if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
+    return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
   }
 
-  createClass(XHRURLHandler, [{
-    key: 'xhr',
-    value: function xhr() {
-      try {
-        var xhr = new window.XMLHttpRequest();
-        if ('withCredentials' in xhr) {
-          // check CORS support
-          return xhr;
+  try {
+    var _xhr2 = _xhr2();
+    _xhr2.open('GET', url);
+    _xhr2.timeout = options.timeout || 0;
+    _xhr2.withCredentials = options.withCredentials || false;
+    _xhr2.overrideMimeType && _xhr2.overrideMimeType('text/xml');
+    _xhr2.onreadystatechange = function () {
+      if (_xhr2.readyState === 4) {
+        if (_xhr2.status === 200) {
+          cb(null, _xhr2.responseXML);
+        } else {
+          cb(new Error('XHRURLHandler: ' + _xhr2.statusText));
         }
-        return null;
-      } catch (err) {
-        console.log('Error in XHRURLHandler support check:', err);
-        return null;
       }
-    }
-  }, {
-    key: 'supported',
-    value: function supported() {
-      return !!this.xhr();
-    }
-  }, {
-    key: 'get',
-    value: function get$$1(url, options, cb) {
-      if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
-        return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
-      }
+    };
+    _xhr2.send();
+  } catch (error) {
+    cb(new Error('XHRURLHandler: Unexpected error'));
+  }
+}
 
-      try {
-        var xhr = this.xhr();
-        xhr.open('GET', url);
-        xhr.timeout = options.timeout || 0;
-        xhr.withCredentials = options.withCredentials || false;
-        xhr.overrideMimeType && xhr.overrideMimeType('text/xml');
-        xhr.onreadystatechange = function () {
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              cb(null, xhr.responseXML);
-            } else {
-              cb(new Error('XHRURLHandler: ' + xhr.statusText));
-            }
-          }
-        };
-        xhr.send();
-      } catch (error) {
-        cb(new Error('XHRURLHandler: Unexpected error'));
-      }
+var XHRURLHandler = {
+  get: get$3,
+  supported: supported$1
+};
+
+function get$4(url, options, cb) {
+  // Allow skip of the options param
+  if (!cb) {
+    if (typeof options === 'function') {
+      cb = options;
     }
-  }]);
-  return XHRURLHandler;
-}();
-
-var URLHandler = function () {
-  function URLHandler() {
-    classCallCheck(this, URLHandler);
-
-    this.flash = new FlashURLHandler();
-    this.node = new NodeURLHandler();
-    this.xhr = new XHRURLHandler();
+    options = {};
   }
 
-  createClass(URLHandler, [{
-    key: 'get',
-    value: function get$$1(url, options, cb) {
-      // Allow skip of the options param
-      if (!cb) {
-        if (typeof options === 'function') {
-          cb = options;
-        }
-        options = {};
-      }
+  if (typeof window === 'undefined' || window === null) {
+    return nodeURLHandler.get(url, options, cb);
+  } else if (XHRURLHandler.supported()) {
+    return XHRURLHandler.get(url, options, cb);
+  } else if (flashURLHandler.supported()) {
+    return flashURLHandler.get(url, options, cb);
+  } else {
+    return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'));
+  }
+}
 
-      if (options.urlhandler && options.urlhandler.supported()) {
-        // explicitly supply your own URLHandler object
-        return options.urlhandler.get(url, options, cb);
-      } else if (typeof window === 'undefined' || window === null) {
-        return this.node.get(url, options, cb);
-      } else if (this.xhr.supported()) {
-        return this.xhr.get(url, options, cb);
-      } else if (this.flash.supported()) {
-        return this.flash.get(url, options, cb);
-      } else {
-        return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'));
-      }
-    }
-  }]);
-  return URLHandler;
-}();
+var urlHandler = {
+  get: get$4
+};
 
 var VASTResponse = function VASTResponse() {
   classCallCheck(this, VASTResponse);
@@ -1470,10 +1346,6 @@ var VASTParser = function (_EventEmitter) {
     _this.maxWrapperDepth = null;
     _this.URLTemplateFilters = [];
     _this.fetchingOptions = {};
-
-    _this.parserUtils = new ParserUtils();
-    _this.adParser = new AdParser();
-    _this.util = new Util();
     return _this;
   }
 
@@ -1542,7 +1414,7 @@ var VASTParser = function (_EventEmitter) {
       }
 
       this.emit('VAST-error', Object.assign.apply(Object, [DEFAULT_EVENT_DATA, errorCode].concat(data)));
-      this.util.track(urlTemplates, errorCode);
+      util.track(urlTemplates, errorCode);
     }
 
     /**
@@ -1614,7 +1486,7 @@ var VASTParser = function (_EventEmitter) {
         withCredentials: options.withCredentials
       };
 
-      this.urlHandler = options.urlhandler || new URLHandler();
+      this.urlHandler = options.urlhandler || urlHandler;
     }
 
     /**
@@ -1628,22 +1500,19 @@ var VASTParser = function (_EventEmitter) {
     value: function getRemainingAds(all) {
       var _this3 = this;
 
-      return new Promise(function (resolve, reject) {
-        if (_this3.remainingAds.length === 0) {
-          return reject(new Error('No more ads are available for the given VAST'));
-        }
+      if (this.remainingAds.length === 0) {
+        return Promise.reject(new Error('No more ads are available for the given VAST'));
+      }
 
-        var ads = all ? _this3.util.flatten(_this3.remainingAds) : _this3.remainingAds.shift();
-        _this3.errorURLTemplates = [];
-        _this3.parentURLs = [];
+      var ads = all ? util.flatten(this.remainingAds) : this.remainingAds.shift();
+      this.errorURLTemplates = [];
+      this.parentURLs = [];
 
-        _this3.resolveAds(ads, { wrapperDepth: 0, originalUrl: _this3.rootURL }).then(function (resolvedAds) {
-          var response = _this3.buildVASTResponse(resolvedAds);
-
-          resolve(response);
-        }).catch(function (err) {
-          return reject(err);
-        });
+      return this.resolveAds(ads, {
+        wrapperDepth: 0,
+        originalUrl: this.rootURL
+      }).then(function (resolvedAds) {
+        return _this3.buildVASTResponse(resolvedAds);
       });
     }
 
@@ -1667,20 +1536,12 @@ var VASTParser = function (_EventEmitter) {
       this.initParsingStatus(options);
       this.rootURL = url;
 
-      return new Promise(function (resolve, reject) {
-        _this4.fetchVAST(url).then(function (xml) {
-          options.originalUrl = url;
-          options.isRootVAST = true;
+      return this.fetchVAST(url).then(function (xml) {
+        options.originalUrl = url;
+        options.isRootVAST = true;
 
-          _this4.parse(xml, options).then(function (ads) {
-            var response = _this4.buildVASTResponse(ads);
-
-            resolve(response);
-          }).catch(function (err) {
-            return reject(err);
-          });
-        }).catch(function (err) {
-          return reject(err);
+        return _this4.parse(xml, options).then(function (ads) {
+          return _this4.buildVASTResponse(ads);
         });
       });
     }
@@ -1704,16 +1565,10 @@ var VASTParser = function (_EventEmitter) {
 
       this.initParsingStatus(options);
 
-      return new Promise(function (resolve, reject) {
-        options.isRootVAST = true;
+      options.isRootVAST = true;
 
-        _this5.parse(vastXml, options).then(function (ads) {
-          var response = _this5.buildVASTResponse(ads);
-
-          resolve(response);
-        }).catch(function (err) {
-          return reject(err);
-        });
+      return this.parse(vastXml, options).then(function (ads) {
+        return _this5.buildVASTResponse(ads);
       });
     }
 
@@ -1747,8 +1602,6 @@ var VASTParser = function (_EventEmitter) {
   }, {
     key: 'parse',
     value: function parse(vastXml, _ref) {
-      var _this6 = this;
-
       var _ref$resolveAll = _ref.resolveAll,
           resolveAll = _ref$resolveAll === undefined ? true : _ref$resolveAll,
           _ref$wrapperSequence = _ref.wrapperSequence,
@@ -1760,62 +1613,56 @@ var VASTParser = function (_EventEmitter) {
           _ref$isRootVAST = _ref.isRootVAST,
           isRootVAST = _ref$isRootVAST === undefined ? false : _ref$isRootVAST;
 
-      return new Promise(function (resolve, reject) {
-        // check if is a valid VAST document
-        if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
-          return reject(new Error('Invalid VAST XMLDocument'));
+      // check if is a valid VAST document
+      if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
+        return Promise.reject(new Error('Invalid VAST XMLDocument'));
+      }
+
+      var ads = [];
+      var childNodes = vastXml.documentElement.childNodes;
+
+      // Fill the VASTResponse object with ads and errorURLTemplates
+      for (var nodeKey in childNodes) {
+        var node = childNodes[nodeKey];
+
+        if (node.nodeName === 'Error') {
+          var errorURLTemplate = parserUtils.parseNodeText(node);
+
+          // Distinguish root VAST url templates from ad specific ones
+          isRootVAST ? this.rootErrorURLTemplates.push(errorURLTemplate) : this.errorURLTemplates.push(errorURLTemplate);
         }
 
-        var ads = [];
-        var childNodes = vastXml.documentElement.childNodes;
+        if (node.nodeName === 'Ad') {
+          var ad = parseAd(node);
 
-        // Fill the VASTResponse object with ads and errorURLTemplates
-        for (var nodeKey in childNodes) {
-          var node = childNodes[nodeKey];
-
-          if (node.nodeName === 'Error') {
-            var errorURLTemplate = _this6.parserUtils.parseNodeText(node);
-
-            // Distinguish root VAST url templates from ad specific ones
-            isRootVAST ? _this6.rootErrorURLTemplates.push(errorURLTemplate) : _this6.errorURLTemplates.push(errorURLTemplate);
-          }
-
-          if (node.nodeName === 'Ad') {
-            var ad = _this6.adParser.parse(node);
-
-            if (ad) {
-              ads.push(ad);
-            } else {
-              // VAST version of response not supported.
-              _this6.trackVastError(_this6.getErrorURLTemplates(), {
-                ERRORCODE: 101
-              });
-            }
+          if (ad) {
+            ads.push(ad);
+          } else {
+            // VAST version of response not supported.
+            this.trackVastError(this.getErrorURLTemplates(), {
+              ERRORCODE: 101
+            });
           }
         }
+      }
 
-        var adsCount = ads.length;
-        var lastAddedAd = ads[adsCount - 1];
-        // if in child nodes we have only one ads
-        // and wrapperSequence is defined
-        // and this ads doesn't already have sequence
-        if (adsCount === 1 && wrapperSequence !== undefined && wrapperSequence !== null && lastAddedAd && !lastAddedAd.sequence) {
-          lastAddedAd.sequence = wrapperSequence;
-        }
+      var adsCount = ads.length;
+      var lastAddedAd = ads[adsCount - 1];
+      // if in child nodes we have only one ads
+      // and wrapperSequence is defined
+      // and this ads doesn't already have sequence
+      if (adsCount === 1 && wrapperSequence !== undefined && wrapperSequence !== null && lastAddedAd && !lastAddedAd.sequence) {
+        lastAddedAd.sequence = wrapperSequence;
+      }
 
-        // Split the VAST in case we don't want to resolve everything at the first time
-        if (resolveAll === false) {
-          _this6.remainingAds = _this6.parserUtils.splitVAST(ads);
-          // Remove the first element from the remaining ads array, since we're going to resolve that element
-          ads = _this6.remainingAds.shift();
-        }
+      // Split the VAST in case we don't want to resolve everything at the first time
+      if (resolveAll === false) {
+        this.remainingAds = parserUtils.splitVAST(ads);
+        // Remove the first element from the remaining ads array, since we're going to resolve that element
+        ads = this.remainingAds.shift();
+      }
 
-        _this6.resolveAds(ads, { resolveAll: resolveAll, wrapperDepth: wrapperDepth, originalUrl: originalUrl }).then(function (res) {
-          return resolve(res);
-        }).catch(function (err) {
-          return reject(err);
-        });
-      });
+      return this.resolveAds(ads, { wrapperDepth: wrapperDepth, originalUrl: originalUrl });
     }
 
     /**
@@ -1829,30 +1676,27 @@ var VASTParser = function (_EventEmitter) {
   }, {
     key: 'resolveAds',
     value: function resolveAds() {
-      var _this7 = this;
+      var _this6 = this;
 
       var ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       var _ref2 = arguments[1];
       var wrapperDepth = _ref2.wrapperDepth,
           originalUrl = _ref2.originalUrl;
 
-      return new Promise(function (resolve, reject) {
-        var resolveWrappersPromises = [];
+      var resolveWrappersPromises = [];
 
-        ads.forEach(function (ad) {
-          var resolveWrappersPromise = _this7.resolveWrappers(ad, wrapperDepth, originalUrl);
+      ads.forEach(function (ad) {
+        var resolveWrappersPromise = _this6.resolveWrappers(ad, wrapperDepth, originalUrl);
 
-          resolveWrappersPromises.push(resolveWrappersPromise);
-        });
+        resolveWrappersPromises.push(resolveWrappersPromise);
+      });
 
-        resolve(Promise.all(resolveWrappersPromises).then(function (unwrappedAds) {
-          return _this7.util.flatten(unwrappedAds);
-        }));
-      }).then(function (resolvedAds) {
-        if (!resolvedAds && _this7.remainingAds.length > 0) {
-          var _ads = _this7.remainingAds.shift();
+      return Promise.all(resolveWrappersPromises).then(function (unwrappedAds) {
+        var resolvedAds = util.flatten(unwrappedAds);
+        if (!resolvedAds && _this6.remainingAds.length > 0) {
+          var _ads = _this6.remainingAds.shift();
 
-          return _this7.resolveAds(_ads, {
+          return _this6.resolveAds(_ads, {
             wrapperDepth: wrapperDepth,
             originalUrl: originalUrl
           });
@@ -1873,7 +1717,7 @@ var VASTParser = function (_EventEmitter) {
   }, {
     key: 'resolveWrappers',
     value: function resolveWrappers(ad, wrapperDepth, originalUrl) {
-      var _this8 = this;
+      var _this7 = this;
 
       return new Promise(function (resolve, reject) {
         // Going one level deeper in the wrapper chain
@@ -1884,7 +1728,7 @@ var VASTParser = function (_EventEmitter) {
           return resolve(ad);
         }
 
-        if (wrapperDepth >= _this8.maxWrapperDepth || _this8.parentURLs.indexOf(ad.nextWrapperURL) !== -1) {
+        if (wrapperDepth >= _this7.maxWrapperDepth || _this7.parentURLs.indexOf(ad.nextWrapperURL) !== -1) {
           // Wrapper limit reached, as defined by the video player.
           // Too many Wrapper responses have been received with no InLine response.
           ad.errorCode = 302;
@@ -1893,14 +1737,14 @@ var VASTParser = function (_EventEmitter) {
         }
 
         // Get full URL
-        ad.nextWrapperURL = _this8.parserUtils.resolveVastAdTagURI(ad.nextWrapperURL, originalUrl);
+        ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(ad.nextWrapperURL, originalUrl);
 
         // sequence doesn't carry over in wrapper element
         var wrapperSequence = ad.sequence;
         originalUrl = ad.nextWrapperURL;
 
-        _this8.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl).then(function (xml) {
-          return _this8.parse(xml, {
+        _this7.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl).then(function (xml) {
+          return _this7.parse(xml, {
             originalUrl: originalUrl,
             wrapperSequence: wrapperSequence,
             wrapperDepth: wrapperDepth
@@ -1914,7 +1758,7 @@ var VASTParser = function (_EventEmitter) {
 
             unwrappedAds.forEach(function (unwrappedAd) {
               if (unwrappedAd) {
-                _this8.mergeWrapperAdData(unwrappedAd, ad);
+                parserUtils.mergeWrapperAdData(unwrappedAd, ad);
               }
             });
 
@@ -1957,58 +1801,6 @@ var VASTParser = function (_EventEmitter) {
             vastResponse.ads.splice(index, 1);
           }
         }
-      }
-    }
-
-    /**
-     * Merges the data between an unwrapped ad and his wrapper.
-     * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
-     * @param  {Ad} wrapper - The wrapper Ad.
-     * @return {void}
-     */
-
-  }, {
-    key: 'mergeWrapperAdData',
-    value: function mergeWrapperAdData(unwrappedAd, wrapper) {
-      unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
-      unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
-      unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
-
-      unwrappedAd.creatives.forEach(function (creative) {
-        if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
-          for (var eventName in wrapper.trackingEvents[creative.type]) {
-            var urls = wrapper.trackingEvents[creative.type][eventName];
-            if (!creative.trackingEvents[eventName]) {
-              creative.trackingEvents[eventName] = [];
-            }
-            creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
-          }
-        }
-      });
-
-      if (wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length) {
-        unwrappedAd.creatives.forEach(function (creative) {
-          if (creative.type === 'linear') {
-            creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(wrapper.videoClickTrackingURLTemplates);
-          }
-        });
-      }
-
-      if (wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length) {
-        unwrappedAd.creatives.forEach(function (creative) {
-          if (creative.type === 'linear') {
-            creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(wrapper.videoCustomClickURLTemplates);
-          }
-        });
-      }
-
-      // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-      if (wrapper.videoClickThroughURLTemplate) {
-        unwrappedAd.creatives.forEach(function (creative) {
-          if (creative.type === 'linear' && creative.videoClickThroughURLTemplate == null) {
-            creative.videoClickThroughURLTemplate = wrapper.videoClickThroughURLTemplate;
-          }
-        });
       }
     }
   }]);
@@ -2186,7 +1978,6 @@ var VASTClient = function () {
       timeout: 0
     };
     this.vastParser = new VASTParser();
-    this.util = new Util();
     this.storage = customStorage || new Storage();
 
     // Init values if not already set
@@ -2315,6 +2106,13 @@ var VASTClient = function () {
 }();
 
 /**
+ * The default skip delay used in case a custom one is not provided
+ * @constant
+ * @type {Number}
+ */
+var DEFAULT_SKIP_DELAY = -1;
+
+/**
  * This class provides methods to track an ad execution.
  *
  * @export
@@ -2342,43 +2140,29 @@ var VASTTracker = function (_EventEmitter) {
     _this.ad = ad;
     _this.creative = creative;
     _this.variation = variation;
-    _this.util = new Util();
     _this.muted = false;
     _this.impressed = false;
     _this.skippable = false;
-    _this.skipDelayDefault = -1;
     _this.trackingEvents = {};
+    // We need to save the already triggered quartiles, in order to not trigger them again
+    _this._alreadyTriggeredQuartiles = {};
     // Tracker listeners should be notified with some events
     // no matter if there is a tracking URL or not
     _this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'];
-    // Have to save already triggered quartile, to not trigger again
-    _this._alreadyTriggeredQuartiles = {};
+
     // Duplicate the creative's trackingEvents property so we can alter it
     for (var eventName in _this.creative.trackingEvents) {
       var events$$1 = _this.creative.trackingEvents[eventName];
       _this.trackingEvents[eventName] = events$$1.slice(0);
     }
-    if (_this.creative instanceof CreativeLinear) {
-      _this.setDuration(_this.creative.duration);
 
-      _this.skipDelay = _this.creative.skipDelay;
-      _this.linear = true;
-      _this.clickThroughURLTemplate = _this.creative.videoClickThroughURLTemplate;
-      _this.clickTrackingURLTemplates = _this.creative.videoClickTrackingURLTemplates;
-      // Nonlinear and Companion
+    // Nonlinear and companion creatives provide some tracking information at a variation level
+    // While linear creatives provided that at a creative level. That's why we need to
+    // differentiate how we retrieve some tracking information.
+    if (_this.creative instanceof CreativeLinear) {
+      _this._initLinearTracking();
     } else {
-      _this.skipDelay = -1;
-      _this.linear = false;
-      // Used variation has been specified
-      if (_this.variation) {
-        if (_this.variation instanceof NonLinearAd) {
-          _this.clickThroughURLTemplate = _this.variation.nonlinearClickThroughURLTemplate;
-          _this.clickTrackingURLTemplates = _this.variation.nonlinearClickTrackingURLTemplates;
-        } else if (_this.variation instanceof CompanionAd) {
-          _this.clickThroughURLTemplate = _this.variation.companionClickThroughURLTemplate;
-          _this.clickTrackingURLTemplates = _this.variation.companionClickTrackingURLTemplates;
-        }
-      }
+      _this._initVariationTracking();
     }
 
     // If the tracker is associated with a client we add a listener to the start event
@@ -2392,13 +2176,72 @@ var VASTTracker = function (_EventEmitter) {
   }
 
   /**
-   * Sets the duration of the ad and updates the quartiles based on that.
+   * Init the custom tracking options for linear creatives.
    *
-   * @param  {Number} duration - The duration of the ad.
+   * @return {void}
    */
 
 
   createClass(VASTTracker, [{
+    key: '_initLinearTracking',
+    value: function _initLinearTracking() {
+      this.linear = true;
+      this.skipDelay = this.creative.skipDelay;
+
+      this.setDuration(this.creative.duration);
+
+      this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
+      this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
+    }
+
+    /**
+     * Init the custom tracking options for nonlinear and companion creatives.
+     * These options are provided in the variation Object.
+     *
+     * @return {void}
+     */
+
+  }, {
+    key: '_initVariationTracking',
+    value: function _initVariationTracking() {
+      this.linear = false;
+      this.skipDelay = DEFAULT_SKIP_DELAY;
+
+      // If no variation has been provided there's nothing else to set
+      if (!this.variation) {
+        return;
+      }
+
+      // Duplicate the variation's trackingEvents property so we can alter it
+      for (var eventName in this.variation.trackingEvents) {
+        var events$$1 = this.variation.trackingEvents[eventName];
+
+        // If for the given eventName we already had some trackingEvents provided by the creative
+        // we want to keep both the creative trackingEvents and the variation ones
+        if (this.trackingEvents[eventName]) {
+          this.trackingEvents[eventName] = this.trackingEvents[eventName].concat(events$$1.slice(0));
+        } else {
+          this.trackingEvents[eventName] = events$$1.slice(0);
+        }
+      }
+
+      if (this.variation instanceof NonLinearAd) {
+        this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
+        this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
+        this.setDuration(this.variation.minSuggestedDuration);
+      } else if (this.variation instanceof CompanionAd) {
+        this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
+        this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
+      }
+    }
+
+    /**
+     * Sets the duration of the ad and updates the quartiles based on that.
+     *
+     * @param  {Number} duration - The duration of the ad.
+     */
+
+  }, {
     key: 'setDuration',
     value: function setDuration(duration) {
       this.assetDuration = duration;
@@ -2430,7 +2273,7 @@ var VASTTracker = function (_EventEmitter) {
     value: function setProgress(progress) {
       var _this2 = this;
 
-      var skipDelay = this.skipDelay || this.skipDelayDefault;
+      var skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
       if (skipDelay !== -1 && !this.skippable) {
         if (skipDelay > progress) {
@@ -2441,7 +2284,7 @@ var VASTTracker = function (_EventEmitter) {
         }
       }
 
-      if (this.linear && this.assetDuration > 0) {
+      if (this.assetDuration > 0) {
         var events$$1 = [];
 
         if (progress > 0) {
@@ -2651,19 +2494,25 @@ var VASTTracker = function (_EventEmitter) {
      * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
      * clickthrough URL when done.
      *
+     * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
      * @emits VASTTracker#clickthrough
      */
 
   }, {
     key: 'click',
     value: function click() {
+      var fallbackClickThroughURL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
       if (this.clickTrackingURLTemplates && this.clickTrackingURLTemplates.length) {
         this.trackURLs(this.clickTrackingURLTemplates);
       }
 
-      if (this.clickThroughURLTemplate) {
+      // Use the provided fallbackClickThroughURL as a fallback
+      var clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL;
+
+      if (clickThroughURLTemplate) {
         var variables = this.linear ? { CONTENTPLAYHEAD: this.progressFormatted() } : {};
-        var clickThroughURL = this.util.resolveURLTemplates([this.clickThroughURLTemplate], variables)[0];
+        var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], variables)[0];
 
         this.emit('clickthrough', clickThroughURL);
       }
@@ -2724,7 +2573,7 @@ var VASTTracker = function (_EventEmitter) {
         variables['CONTENTPLAYHEAD'] = this.progressFormatted();
       }
 
-      this.util.track(URLTemplates, variables);
+      util.track(URLTemplates, variables);
     }
 
     /**
