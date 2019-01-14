@@ -176,7 +176,7 @@ export class VASTTracker extends EventEmitter {
       }
     }
 
-    if (this.linear && this.assetDuration > 0) {
+    if (this.assetDuration > 0) {
       const events = [];
 
       if (progress > 0) {
