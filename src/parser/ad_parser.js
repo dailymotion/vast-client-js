@@ -237,47 +237,62 @@ function parseWrapper(wrapperElement) {
  */
 function parseExtensions(collection, extensions) {
   extensions.forEach(extNode => {
-    const ext = new AdExtension();
-    const extNodeAttrs = extNode.attributes;
-    const childNodes = extNode.childNodes;
+    const ext = parseExtension(extNode);
 
-    if (extNode.attributes) {
-      for (const extNodeAttrKey in extNodeAttrs) {
-        const extNodeAttr = extNodeAttrs[extNodeAttrKey];
-
-        if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
-          ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
-        }
-      }
+    if (ext) {
+      collection.push(ext);
     }
-
-    for (const childNodeKey in childNodes) {
-      const childNode = childNodes[childNodeKey];
-      const txt = parserUtils.parseNodeText(childNode);
-
-      // ignore comments / empty value
-      if (childNode.nodeName !== '#comment' && txt !== '') {
-        const extChild = new AdExtensionChild();
-        extChild.name = childNode.nodeName;
-        extChild.value = txt;
-
-        if (childNode.attributes) {
-          const childNodeAttributes = childNode.attributes;
-
-          for (const extChildNodeAttrKey in childNodeAttributes) {
-            const extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
-
-            extChild.attributes[extChildNodeAttr.nodeName] =
-              extChildNodeAttr.nodeValue;
-          }
-        }
-
-        ext.children.push(extChild);
-      }
-    }
-
-    collection.push(ext);
   });
+}
+
+/**
+ * Parses an extension child node
+ * @param {Object} extNode - The extension node to parse
+ * @param {Boolean} isChild - A flag to tell how to parse the node
+ * @return {Object}
+ */
+function parseExtension(extNode, isChild = false) {
+  // Ignore comments
+  if (extNode.nodeName === '#comment') return null;
+
+  let ext;
+  const extNodeAttrs = extNode.attributes;
+  const childNodes = extNode.childNodes;
+
+  // Only children have a name and value
+  if (isChild) {
+    ext = new AdExtensionChild();
+    const txt = parserUtils.parseNodeText(extNode);
+
+    if (txt !== '') {
+      ext.value = txt;
+      ext.name = extNode.nodeName;
+    }
+  } else {
+    ext = new AdExtension();
+  }
+
+  // Parse attributes whatever the object is
+  if (extNode.attributes) {
+    for (let extNodeAttrKey in extNodeAttrs) {
+      const extNodeAttr = extNodeAttrs[extNodeAttrKey];
+
+      if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
+        ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+      }
+    }
+  }
+
+  // Parse all children
+  for (let childNodeKey in childNodes) {
+    const parsedChild = parseExtension(childNodes[childNodeKey], true);
+    if (parsedChild) {
+      ext.children.push(parsedChild);
+    }
+  }
+
+  // Only return not empty objects to not pollute extentions
+  if (!ext.isEmpty()) return ext;
 }
 
 /**
