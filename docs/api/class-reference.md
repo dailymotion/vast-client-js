@@ -127,9 +127,12 @@ This class represents a generic Creative. It's used as a parent class for more s
 
 - `attributes: Object`
 - `children: Array<AdExtensionChild>` [go to class](#ad-extension-child)
+- `isEmpty(): Boolean` Returns true when none of these attributes have a value
 
 ## AdExtensionChild<a name="ad-extension-child"></a>
 
 - `name: String|null`
 - `value: any`
 - `attributes: Object`
+- `children: Array<AdExtensionChild>`
+- `isEmpty(): Boolean` Returns true when none of these attributes have a value
