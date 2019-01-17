@@ -10,3 +10,5 @@ Issue Link [Optional]
 - [ ] Breaking change
 - [ ] Enhancement
 - [ ] Fix
+- [ ] Documentation
+- [ ] Tooling
