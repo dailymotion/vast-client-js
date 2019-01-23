@@ -1611,11 +1611,11 @@ var VAST = (function (exports) {
   }
 
   function xdr() {
-    var xdr = void 0;
+    var request = void 0;
     if (window.XDomainRequest) {
-      xdr = new XDomainRequest();
+      request = new XDomainRequest();
     }
-    return xdr;
+    return request;
   }
 
   function supported() {
@@ -1630,16 +1630,14 @@ var VAST = (function (exports) {
     } else {
       return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
     }
+    request.open('GET', url);
+    request.timeout = options.timeout || 0;
+    request.withCredentials = options.withCredentials || false;
+    request.send();
+    request.onprogress = function () {};
 
-    var xdr = xdr();
-    xdr.open('GET', url);
-    xdr.timeout = options.timeout || 0;
-    xdr.withCredentials = options.withCredentials || false;
-    xdr.send();
-    xdr.onprogress = function () {};
-
-    xdr.onload = function () {
-      xmlDocument.loadXML(xdr.responseText);
+    request.onload = function () {
+      xmlDocument.loadXML(request.responseText);
       cb(null, xmlDocument);
     };
   }
@@ -1662,10 +1660,10 @@ var VAST = (function (exports) {
 
   function xhr() {
     try {
-      var _xhr = new window.XMLHttpRequest();
-      if ('withCredentials' in _xhr) {
+      var request = new window.XMLHttpRequest();
+      if ('withCredentials' in request) {
         // check CORS support
-        return _xhr;
+        return request;
       }
       return null;
     } catch (err) {
@@ -1684,21 +1682,22 @@ var VAST = (function (exports) {
     }
 
     try {
-      var _xhr2 = _xhr2();
-      _xhr2.open('GET', url);
-      _xhr2.timeout = options.timeout || 0;
-      _xhr2.withCredentials = options.withCredentials || false;
-      _xhr2.overrideMimeType && _xhr2.overrideMimeType('text/xml');
-      _xhr2.onreadystatechange = function () {
-        if (_xhr2.readyState === 4) {
-          if (_xhr2.status === 200) {
-            cb(null, _xhr2.responseXML);
+      var request = xhr();
+
+      request.open('GET', url);
+      request.timeout = options.timeout || 0;
+      request.withCredentials = options.withCredentials || false;
+      request.overrideMimeType && request.overrideMimeType('text/xml');
+      request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+            cb(null, request.responseXML);
           } else {
-            cb(new Error('XHRURLHandler: ' + _xhr2.statusText));
+            cb(new Error('XHRURLHandler: ' + request.statusText));
           }
         }
       };
-      _xhr2.send();
+      request.send();
     } catch (error) {
       cb(new Error('XHRURLHandler: Unexpected error'));
     }
