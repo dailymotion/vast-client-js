@@ -1,9 +1,9 @@
 function xhr() {
   try {
-    const xhr = new window.XMLHttpRequest();
-    if ('withCredentials' in xhr) {
+    const request = new window.XMLHttpRequest();
+    if ('withCredentials' in request) {
       // check CORS support
-      return xhr;
+      return request;
     }
     return null;
   } catch (err) {
@@ -22,21 +22,22 @@ function get(url, options, cb) {
   }
 
   try {
-    const xhr = xhr();
-    xhr.open('GET', url);
-    xhr.timeout = options.timeout || 0;
-    xhr.withCredentials = options.withCredentials || false;
-    xhr.overrideMimeType && xhr.overrideMimeType('text/xml');
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          cb(null, xhr.responseXML);
+    const request = xhr();
+
+    request.open('GET', url);
+    request.timeout = options.timeout || 0;
+    request.withCredentials = options.withCredentials || false;
+    request.overrideMimeType && request.overrideMimeType('text/xml');
+    request.onreadystatechange = function() {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          cb(null, request.responseXML);
         } else {
-          cb(new Error(`XHRURLHandler: ${xhr.statusText}`));
+          cb(new Error(`XHRURLHandler: ${request.statusText}`));
         }
       }
     };
-    xhr.send();
+    request.send();
   } catch (error) {
     cb(new Error('XHRURLHandler: Unexpected error'));
   }
