@@ -1,9 +1,9 @@
 function xdr() {
-  let xdr;
+  let request;
   if (window.XDomainRequest) {
-    xdr = new XDomainRequest();
+    request = new XDomainRequest();
   }
-  return xdr;
+  return request;
 }
 
 function supported() {
@@ -25,14 +25,14 @@ function get(url, options, cb) {
   }
 
   const xdr = xdr();
-  xdr.open('GET', url);
-  xdr.timeout = options.timeout || 0;
-  xdr.withCredentials = options.withCredentials || false;
-  xdr.send();
-  xdr.onprogress = function() {};
+  request.open('GET', url);
+  request.timeout = options.timeout || 0;
+  request.withCredentials = options.withCredentials || false;
+  request.send();
+  request.onprogress = function() {};
 
-  xdr.onload = function() {
-    xmlDocument.loadXML(xdr.responseText);
+  request.onload = function() {
+    xmlDocument.loadXML(request.responseText);
     cb(null, xmlDocument);
   };
 }
