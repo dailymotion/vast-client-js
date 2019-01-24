@@ -30,7 +30,7 @@
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "build": "rollup -c",
-    "precommit": "pretty-quick --staged"
+    "precommit": "eslint . --max-warnings 0 && pretty-quick --staged"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
