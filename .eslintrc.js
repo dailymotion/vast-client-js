@@ -10,9 +10,22 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    indent: ['error', 4],
-    'linebreak-style': ['error', 'unix'],
-    quotes: ['error', 'single'],
-    semi: ['error', 'always']
+    'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
+    'linebreak-style': ['warn', 'unix'],
+    'no-console': ['error'],
+    'no-debugger': ['error'],
+    'no-else-return': ['error'],
+    'no-restricted-globals': ['error', 'fdescribe', 'fit'],
+    'no-undef': ['error'],
+    'no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', ignoreRestSiblings: true, args: 'after-used' }
+    ],
+    'no-var': ['error'], // --fix disabled in lint-files.js
+    'object-shorthand': ['warn'],
+    'prefer-const': ['error'], // --fix disabled in lint-files.js
+    'prefer-rest-params': ['error'],
+    'prefer-spread': ['warn'],
+    'prefer-template': ['warn']
   }
 };
