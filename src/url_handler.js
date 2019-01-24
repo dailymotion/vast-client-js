@@ -17,13 +17,12 @@ function get(url, options, cb) {
     return XHRURLHandler.get(url, options, cb);
   } else if (flashURLHandler.supported()) {
     return flashURLHandler.get(url, options, cb);
-  } else {
-    return cb(
-      new Error(
-        'Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'
-      )
-    );
   }
+  return cb(
+    new Error(
+      'Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'
+    )
+  );
 }
 
 export const urlHandler = {

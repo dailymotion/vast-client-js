@@ -7,7 +7,6 @@ function xhr() {
     }
     return null;
   } catch (err) {
-    console.log('Error in XHRURLHandler support check:', err);
     return null;
   }
 }

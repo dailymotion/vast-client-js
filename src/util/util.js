@@ -36,14 +36,14 @@ function resolveURLTemplates(URLTemplates, variables = {}) {
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
   variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
-  for (let URLTemplateKey in URLTemplates) {
+  for (const URLTemplateKey in URLTemplates) {
     let resolveURL = URLTemplates[URLTemplateKey];
 
     if (typeof resolveURL !== 'string') {
       continue;
     }
 
-    for (let key in variables) {
+    for (const key in variables) {
       const value = variables[key];
       const macro1 = `[${key}]`;
       const macro2 = `%%${key}%%`;
@@ -68,18 +68,17 @@ function leftpad(str) {
   if (str.length < 8) {
     return (
       range(0, 8 - str.length, false)
-        .map(i => '0')
+        .map(() => '0')
         .join('') + str
     );
-  } else {
-    return str;
   }
+  return str;
 }
 
 function range(left, right, inclusive) {
-  let range = [];
-  let ascending = left < right;
-  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  const range = [];
+  const ascending = left < right;
+  const end = !inclusive ? right : ascending ? right + 1 : right - 1;
 
   for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
     range.push(i);

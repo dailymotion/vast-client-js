@@ -18,7 +18,7 @@ import { parserUtils } from './parser_utils';
 export function parseAd(adElement) {
   const childNodes = adElement.childNodes;
 
-  for (let adTypeElementKey in childNodes) {
+  for (const adTypeElementKey in childNodes) {
     const adTypeElement = childNodes[adTypeElementKey];
 
     if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
@@ -47,7 +47,7 @@ function parseInLine(inLineElement) {
   ad.id = inLineElement.getAttribute('id') || null;
   ad.sequence = inLineElement.getAttribute('sequence') || null;
 
-  for (let nodeKey in childNodes) {
+  for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
 
     switch (node.nodeName) {
@@ -70,36 +70,37 @@ function parseInLine(inLineElement) {
               apiFramework: creativeElement.getAttribute('apiFramework') || null
             };
 
-            for (let creativeTypeElementKey in creativeElement.childNodes) {
+            for (const creativeTypeElementKey in creativeElement.childNodes) {
               const creativeTypeElement =
                 creativeElement.childNodes[creativeTypeElementKey];
+              let parsedCreative;
 
               switch (creativeTypeElement.nodeName) {
                 case 'Linear':
-                  let creativeLinear = parseCreativeLinear(
+                  parsedCreative = parseCreativeLinear(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (creativeLinear) {
-                    ad.creatives.push(creativeLinear);
+                  if (parsedCreative) {
+                    ad.creatives.push(parsedCreative);
                   }
                   break;
                 case 'NonLinearAds':
-                  let creativeNonLinear = parseCreativeNonLinear(
+                  parsedCreative = parseCreativeNonLinear(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (creativeNonLinear) {
-                    ad.creatives.push(creativeNonLinear);
+                  if (parsedCreative) {
+                    ad.creatives.push(parsedCreative);
                   }
                   break;
                 case 'CompanionAds':
-                  let creativeCompanion = parseCreativeCompanion(
+                  parsedCreative = parseCreativeCompanion(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (creativeCompanion) {
-                    ad.creatives.push(creativeCompanion);
+                  if (parsedCreative) {
+                    ad.creatives.push(parsedCreative);
                   }
                   break;
               }
@@ -184,7 +185,7 @@ function parseWrapper(wrapperElement) {
         if (!ad.trackingEvents[wrapperCreativeElement.type]) {
           ad.trackingEvents[wrapperCreativeElement.type] = {};
         }
-        for (let eventName in wrapperCreativeElement.trackingEvents) {
+        for (const eventName in wrapperCreativeElement.trackingEvents) {
           const urls = wrapperCreativeElement.trackingEvents[eventName];
           if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
             ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
@@ -237,7 +238,7 @@ function parseExtensions(collection, extensions) {
     const childNodes = extNode.childNodes;
 
     if (extNode.attributes) {
-      for (let extNodeAttrKey in extNodeAttrs) {
+      for (const extNodeAttrKey in extNodeAttrs) {
         const extNodeAttr = extNodeAttrs[extNodeAttrKey];
 
         if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
@@ -246,7 +247,7 @@ function parseExtensions(collection, extensions) {
       }
     }
 
-    for (let childNodeKey in childNodes) {
+    for (const childNodeKey in childNodes) {
       const childNode = childNodes[childNodeKey];
       const txt = parserUtils.parseNodeText(childNode);
 
@@ -259,7 +260,7 @@ function parseExtensions(collection, extensions) {
         if (childNode.attributes) {
           const childNodeAttributes = childNode.attributes;
 
-          for (let extChildNodeAttrKey in childNodeAttributes) {
+          for (const extChildNodeAttrKey in childNodeAttributes) {
             const extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
 
             extChild.attributes[extChildNodeAttr.nodeName] =

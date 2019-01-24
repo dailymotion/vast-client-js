@@ -23,7 +23,6 @@ function get(url, options, cb) {
 
     const req = httpModule.get(url.href, function(res) {
       res.on('data', function(chunk) {
-        let timing;
         data += chunk;
         clearTimeout(timing);
         timing = setTimeout(fn, options.timeout || 120000);
