@@ -57,7 +57,7 @@ export class VASTTracker extends EventEmitter {
     ];
 
     // Duplicate the creative's trackingEvents property so we can alter it
-    for (let eventName in this.creative.trackingEvents) {
+    for (const eventName in this.creative.trackingEvents) {
       const events = this.creative.trackingEvents[eventName];
       this.trackingEvents[eventName] = events.slice(0);
     }
@@ -111,7 +111,7 @@ export class VASTTracker extends EventEmitter {
     }
 
     // Duplicate the variation's trackingEvents property so we can alter it
-    for (let eventName in this.variation.trackingEvents) {
+    for (const eventName in this.variation.trackingEvents) {
       const events = this.variation.trackingEvents[eventName];
 
       // If for the given eventName we already had some trackingEvents provided by the creative
@@ -186,7 +186,7 @@ export class VASTTracker extends EventEmitter {
         events.push(`progress-${percent}%`);
         events.push(`progress-${Math.round(progress)}`);
 
-        for (let quartile in this.quartiles) {
+        for (const quartile in this.quartiles) {
           if (
             this.isQuartileReached(quartile, this.quartiles[quartile], progress)
           ) {

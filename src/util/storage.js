@@ -16,7 +16,7 @@ const DEFAULT_STORAGE = {
     this.length = Object.keys(this.data).length;
   },
   removeItem(key) {
-    delete data[key];
+    delete this.data[key];
     this.length = Object.keys(this.data).length;
   },
   clear() {

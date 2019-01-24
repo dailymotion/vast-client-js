@@ -13,7 +13,7 @@ import { util } from '../util/util';
 function childByName(node, name) {
   const childNodes = node.childNodes;
 
-  for (let childKey in childNodes) {
+  for (const childKey in childNodes) {
     const child = childNodes[childKey];
 
     if (child.nodeName === name) {
@@ -32,7 +32,7 @@ function childrenByName(node, name) {
   const children = [];
   const childNodes = node.childNodes;
 
-  for (let childKey in childNodes) {
+  for (const childKey in childNodes) {
     const child = childNodes[childKey];
 
     if (child.nodeName === name) {
@@ -189,7 +189,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
 
   unwrappedAd.creatives.forEach(creative => {
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
-      for (let eventName in wrapper.trackingEvents[creative.type]) {
+      for (const eventName in wrapper.trackingEvents[creative.type]) {
         const urls = wrapper.trackingEvents[creative.type][eventName];
         if (!creative.trackingEvents[eventName]) {
           creative.trackingEvents[eventName] = [];

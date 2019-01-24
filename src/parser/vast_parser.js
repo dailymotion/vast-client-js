@@ -258,7 +258,7 @@ export class VASTParser extends EventEmitter {
     const childNodes = vastXml.documentElement.childNodes;
 
     // Fill the VASTResponse object with ads and errorURLTemplates
-    for (let nodeKey in childNodes) {
+    for (const nodeKey in childNodes) {
       const node = childNodes[nodeKey];
 
       if (node.nodeName === 'Error') {
@@ -352,7 +352,7 @@ export class VASTParser extends EventEmitter {
    * @return {Promise}
    */
   resolveWrappers(ad, wrapperDepth, originalUrl) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
       // We already have a resolved VAST ad, no need to resolve wrapper
@@ -433,7 +433,7 @@ export class VASTParser extends EventEmitter {
         // - Error encountred while parsing
         // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
         // but no creative was found
-        let ad = vastResponse.ads[index];
+        const ad = vastResponse.ads[index];
         if (ad.errorCode || ad.creatives.length === 0) {
           this.trackVastError(
             ad.errorURLTemplates.concat(vastResponse.errorURLTemplates),

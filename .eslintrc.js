@@ -21,9 +21,9 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', ignoreRestSiblings: true, args: 'after-used' }
     ],
-    'no-var': ['error'], // --fix disabled in lint-files.js
+    'no-var': ['error'],
     'object-shorthand': ['warn'],
-    'prefer-const': ['error'], // --fix disabled in lint-files.js
+    'prefer-const': ['error'],
     'prefer-rest-params': ['error'],
     'prefer-spread': ['warn'],
     'prefer-template': ['warn']

@@ -1,6 +1,7 @@
 function xdr() {
   let request;
   if (window.XDomainRequest) {
+    // eslint-disable-next-line no-undef
     request = new XDomainRequest();
   }
   return request;
@@ -11,7 +12,7 @@ function supported() {
 }
 
 function get(url, options, cb) {
-  let xmlDocument =
+  const xmlDocument =
     typeof window.ActiveXObject === 'function'
       ? new window.ActiveXObject('Microsoft.XMLDOM')
       : undefined;
@@ -24,7 +25,7 @@ function get(url, options, cb) {
     );
   }
 
-  const xdr = xdr();
+  const request = xdr();
   request.open('GET', url);
   request.timeout = options.timeout || 0;
   request.withCredentials = options.withCredentials || false;
