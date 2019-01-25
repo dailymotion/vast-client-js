@@ -1,5 +1,6 @@
 language: node_js
 node_js:
-  - 8.9.4
+  - 10.15.0
 script:
-  - "eslint . --max-warnings 0"
+  - npm run lint
+  - npm test
