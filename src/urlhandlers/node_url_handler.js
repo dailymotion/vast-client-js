@@ -19,7 +19,7 @@ function get(url, options, cb) {
     let timing;
     let data = '';
 
-    const timeout_wrapper = req => () => req.abort();
+    const timeoutWrapper = req => () => req.abort();
 
     const req = httpModule.get(url.href, function(res) {
       res.on('data', function(chunk) {
@@ -39,7 +39,7 @@ function get(url, options, cb) {
       cb(err);
     });
 
-    const fn = timeout_wrapper(req);
+    const fn = timeoutWrapper(req);
     timing = setTimeout(fn, options.timeout || 120000);
   }
 }
