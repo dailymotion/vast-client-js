@@ -70,22 +70,23 @@ export class Storage {
    * Check if storage is disabled (like in certain cases with private browsing).
    * In Safari (Mac + iOS) when private browsing is ON, localStorage is read only
    * http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
-   * @param {Object} storage - The storage to check.
+   * @param {Object} testStorage - The storage to check.
    * @return {Boolean}
    */
-  isStorageDisabled(storage) {
+  isStorageDisabled(testStorage) {
     const testValue = '__VASTStorage__';
 
     try {
-      storage.setItem(testValue, testValue);
-      if (storage.getItem(testValue) !== testValue) {
-        storage.removeItem(testValue);
+      testStorage.setItem(testValue, testValue);
+      if (testStorage.getItem(testValue) !== testValue) {
+        testStorage.removeItem(testValue);
         return true;
       }
     } catch (e) {
       return true;
     }
-    storage.removeItem(testValue);
+
+    testStorage.removeItem(testValue);
     return false;
   }
 

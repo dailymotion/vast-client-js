@@ -104,7 +104,7 @@ function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
  * @return {Number}
  */
 function parseDuration(durationString) {
-  if (durationString == null) {
+  if (durationString === null || typeof durationString === 'undefined') {
     return -1;
   }
   // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
@@ -191,7 +191,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (const eventName in wrapper.trackingEvents[creative.type]) {
         const urls = wrapper.trackingEvents[creative.type][eventName];
-        if (!creative.trackingEvents[eventName]) {
+        if (!Array.isArray(creative.trackingEvents[eventName])) {
           creative.trackingEvents[eventName] = [];
         }
         creative.trackingEvents[eventName] = creative.trackingEvents[
@@ -232,7 +232,8 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     unwrappedAd.creatives.forEach(creative => {
       if (
         creative.type === 'linear' &&
-        creative.videoClickThroughURLTemplate == null
+        (creative.videoClickThroughURLTemplate === null ||
+          typeof creative.videoClickThroughURLTemplate === 'undefined')
       ) {
         creative.videoClickThroughURLTemplate =
           wrapper.videoClickThroughURLTemplate;
