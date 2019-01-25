@@ -24,7 +24,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
   );
   const skipOffset = creativeElement.getAttribute('skipoffset');
 
-  if (skipOffset == null) {
+  if (typeof skipOffset === 'undefined' || skipOffset === null) {
     creative.skipDelay = null;
   } else if (
     skipOffset.charAt(skipOffset.length - 1) === '%' &&
@@ -95,7 +95,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
               }
             }
 
-            if (creative.trackingEvents[eventName] == null) {
+            if (!Array.isArray(creative.trackingEvents[eventName])) {
               creative.trackingEvents[eventName] = [];
             }
             creative.trackingEvents[eventName].push(trackingURLTemplate);

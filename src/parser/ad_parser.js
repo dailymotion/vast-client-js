@@ -187,7 +187,11 @@ function parseWrapper(wrapperElement) {
         }
         for (const eventName in wrapperCreativeElement.trackingEvents) {
           const urls = wrapperCreativeElement.trackingEvents[eventName];
-          if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
+          if (
+            !Array.isArray(
+              ad.trackingEvents[wrapperCreativeElement.type][eventName]
+            )
+          ) {
             ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
           }
           urls.forEach(url => {
@@ -197,7 +201,7 @@ function parseWrapper(wrapperElement) {
       }
       // ClickTracking
       if (wrapperCreativeElement.videoClickTrackingURLTemplates) {
-        if (!ad.videoClickTrackingURLTemplates) {
+        if (!Array.isArray(ad.videoClickTrackingURLTemplates)) {
           ad.videoClickTrackingURLTemplates = [];
         } // tmp property to save wrapper tracking URLs until they are merged
         wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(item => {
@@ -211,7 +215,7 @@ function parseWrapper(wrapperElement) {
       }
       // CustomClick
       if (wrapperCreativeElement.videoCustomClickURLTemplates) {
-        if (!ad.videoCustomClickURLTemplates) {
+        if (!Array.isArray(ad.videoCustomClickURLTemplates)) {
           ad.videoCustomClickURLTemplates = [];
         } // tmp property to save wrapper tracking URLs until they are merged
         wrapperCreativeElement.videoCustomClickURLTemplates.forEach(item => {

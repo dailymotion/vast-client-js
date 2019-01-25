@@ -76,14 +76,14 @@ function leftpad(str) {
 }
 
 function range(left, right, inclusive) {
-  const range = [];
+  const result = [];
   const ascending = left < right;
   const end = !inclusive ? right : ascending ? right + 1 : right - 1;
 
   for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    range.push(i);
+    result.push(i);
   }
-  return range;
+  return result;
 }
 
 function isNumeric(n) {

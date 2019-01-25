@@ -64,7 +64,7 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
                 trackingElement
               );
               if (eventName && trackingURLTemplate) {
-                if (companionAd.trackingEvents[eventName] == null) {
+                if (!Array.isArray(companionAd.trackingEvents[eventName])) {
                   companionAd.trackingEvents[eventName] = [];
                 }
                 companionAd.trackingEvents[eventName].push(trackingURLTemplate);

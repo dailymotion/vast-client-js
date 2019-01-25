@@ -26,7 +26,7 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
           trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
 
           if (eventName && trackingURLTemplate) {
-            if (creative.trackingEvents[eventName] == null) {
+            if (!Array.isArray(creative.trackingEvents[eventName])) {
               creative.trackingEvents[eventName] = [];
             }
             creative.trackingEvents[eventName].push(trackingURLTemplate);
