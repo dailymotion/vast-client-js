@@ -28,9 +28,10 @@
     "dist/vast-client.min.js": "dist/vast-client.min.js"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js",
     "build": "rollup -c",
-    "precommit": "eslint . --max-warnings 0 && pretty-quick --staged"
+    "lint": "eslint .",
+    "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
+    "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
