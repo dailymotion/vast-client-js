@@ -11,6 +11,7 @@ module.exports = {
   },
   plugins: ['import'],
   rules: {
+    camelcase: ['warn'],
     eqeqeq: ['error'],
     'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
     'import/named': ['error'],
