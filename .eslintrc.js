@@ -11,6 +11,7 @@ module.exports = {
   },
   plugins: ['import'],
   rules: {
+    'array-callback-return': ['error'],
     camelcase: ['warn'],
     eqeqeq: ['error'],
     'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
