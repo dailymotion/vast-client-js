@@ -20,7 +20,7 @@ const babelPlugin = babel({
 });
 
 function onwarn(warning) {
-  if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+  if (warning.code === 'CIRCULAR_DEPENDENCY') {
     console.error(`(!) ${warning.message}`);
   }
 }
