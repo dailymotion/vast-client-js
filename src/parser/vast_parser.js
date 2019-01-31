@@ -1,5 +1,5 @@
 import { parseAd } from './ad_parser';
-import { EventEmitter } from 'events';
+import { EventEmitter } from '../util/event_emitter';
 import { parserUtils } from './parser_utils';
 import { urlHandler } from '../url_handler';
 import { util } from '../util/util';

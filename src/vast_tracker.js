@@ -1,6 +1,6 @@
 import { CompanionAd } from './companion_ad';
 import { CreativeLinear } from './creative/creative_linear';
-import { EventEmitter } from 'events';
+import { EventEmitter } from './util/event_emitter';
 import { NonLinearAd } from './non_linear_ad';
 import { util } from './util/util';
 
