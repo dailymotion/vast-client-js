@@ -73,15 +73,6 @@ const nodeConfig = {
   onwarn
 };
 
-const moduleConfig = {
-  input: 'src/index.js',
-  output: {
-    format: 'es',
-    file: 'dist/vast-client-module.min.js'
-  },
-  plugins: [builtins(), uglify()]
-};
-
 export default [
   // Browser-friendly UMD build [package.json "browser"]
   browserConfig,
@@ -89,8 +80,5 @@ export default [
 
   // CommonJS build for Node usage [package.json "main"]
   nodeConfig,
-  minify(nodeConfig),
-
-  // Minified version with es6 module exports [package.json "module"]
-  moduleConfig
+  minify(nodeConfig)
 ];
