@@ -1,7 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 import externalHelpers from 'babel-plugin-external-helpers';
-import builtins from 'rollup-plugin-node-builtins';
 import alias from 'rollup-plugin-alias';
 import resolve from 'rollup-plugin-node-resolve';
 
@@ -49,10 +48,7 @@ const browserConfig = {
     format: 'iife',
     file: 'dist/vast-client.js'
   },
-  plugins: [
-    builtins(), // Needed for node EventEmitter class
-    babelPlugin
-  ]
+  plugins: [babelPlugin]
 };
 
 const nodeConfig = {
