@@ -44,30 +44,32 @@ vastTracker.on('exitFullscreen', () => {
 });
 ```
 
-Here is the list of events emitted by the class:
- * **`complete`** - Only for linear ads with a duration. Emitted after `complete()` has been called.
- * **`clickthrough`** - Emitted when calling `click()` if there is at least one <clickThroughURLTemplate> element. A URL will be passed as a data
- * **`close`** - Only for non-linear ads, emitted when `close()` is called
- * **`closeLinear`** - Only for linear ads, emitted when `close()` is called
- * **`creativeView`** - Emitted after `load()` method has been called.
- * **`exitFullscreen`** - Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false
- * **`firstQuartile`** - Only for linear ads with a duration. Emitted when the adunit has reached 25% of its duration
- * **`fullscreen`** - Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from false to true
- * **`loaded`** - Only for linear ad. Emitted when calling `load()`.
- * **`midpoint`** - Only for linear ads with a duration. Emitted when the adunit has reached 50% of its duration
- * **`mute`** - Emitted when calling `setMuted(muted)` and changing the mute state from false to true
- * **`pause`** - Emitted when calling `setPaused(paused)` and changing the pause state from false to true
- * **`playerExpand`** - Emitted when calling `setExpand(true)` is called. This event replaces the fullscreen event in VAST 4.1
- * **`playerCollapse`** - Emitted when calling `setExpand(false)` is called. This event replaces the exitFullscreen event in VAST 4.1
- * **`progress-[0-100]%`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion
- * **`progress-[currentTime]`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time
- * **`resume`** - Emitted when calling `setPaused(paused)` and changing the pause state from true to false
- * **`rewind`** - Emitted when `setProgress(duration)` is called with a smaller duration than the previous one
- * **`skip`** - Emitted after calling `skip()`
- * **`skip-countdown`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, the updated countdown will be passed as a data
- * **`start`** - Only for linear ads with a duration. Emitted on the 1st non-null `setProgress(duration)` call
- * **`thirdQuartile`** - Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration
- * **`unmute`** - Emitted when calling `setMuted(muted)` and changing the mute state from true to false
+### Events list
+
+|**Event**|**Description**|**Payload**|
+|---|---|---|
+|`complete`|Only for linear ads with a duration. Emitted after `complete()` has been called.|`{ trackingURLTemplates: Array<String> }`|
+|`clickthrough`|Emitted when calling `click()` if there is at least one `<clickThroughURLTemplate>` element. A URL will be passed as a data|`String`|
+|`close`|Only for non-linear ads, emitted when `close()` is called|`{ trackingURLTemplates: Array<String> }`|
+|`creativeView`|Emitted when `trackImpression()` is called.|`{ trackingURLTemplates: Array<String> }`|
+|`exitFullscreen`|Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false|`{ trackingURLTemplates: Array<String> }`|
+|`firstQuartile`|Only for linear ads with a duration. Emitted when the adunit has reached 25% of its duration|`{ trackingURLTemplates: Array<String> }`|
+|`fullscreen`|Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from false to true|`{ trackingURLTemplates: Array<String> }`|
+|`loaded`|Only for linear ad. Emitted when calling `load()`|`{ trackingURLTemplates: Array<String> }`|
+|`midpoint`|Only for linear ads with a duration. Emitted when the adunit has reached 50% of its duration|`{ trackingURLTemplates: Array<String> }`|
+|`mute`|Emitted when calling `setMuted(muted)` and changing the mute state from false to true|   |
+|`pause`|Emitted when calling `setPaused(paused)` and changing the pause state from false to true|`{ trackingURLTemplates: Array<String> }`|
+|`playerExpand`|Emitted when calling `setExpand(true)` is called. This event replaces the fullscreen event in VAST 4.1|`{ trackingURLTemplates: Array<String> }`|
+|`playerCollapse`|Emitted when calling `setExpand(false)` is called. This event replaces the exitFullscreen event in VAST 4.1|`{ trackingURLTemplates: Array<String> }`|
+|`progress-[0-100]%`|Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion|`{ trackingURLTemplates: Array<String> }`|
+|`progress-[currentTime]`|Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time|`{ trackingURLTemplates: Array<String> }`|
+|`resume`|Emitted when calling `setPaused(paused)` and changing the pause state from true to false|`{ trackingURLTemplates: Array<String> }`|
+|`rewind`|Emitted when `setProgress(duration)` is called with a smaller duration than the previous one|`{ trackingURLTemplates: Array<String> }`|
+|`skip`|Emitted when calling `skip()`|`{ trackingURLTemplates: Array<String> }`|
+|`skip-countdown`|Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, the updated countdown will be passed as a data|`Number`|
+|`start`|Only for linear ads with a duration. Emitted on the 1st non-null `setProgress(duration)` call|`{ trackingURLTemplates: Array<String> }`|
+|`thirdQuartile`|Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration|`{ trackingURLTemplates: Array<String> }`|
+|`unmute`|Emitted when calling `setMuted(muted)` and changing the mute state from true to false|`{ trackingURLTemplates: Array<String> }`|
 
 ## Public Methods 💚 <a name="methods"></a>
 
