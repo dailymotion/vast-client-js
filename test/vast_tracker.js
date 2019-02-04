@@ -665,4 +665,28 @@ describe('VASTTracker', function() {
       });
     });
   });
+
+  describe('#Tracked pixels events', () => {
+    const eventsSent = [];
+    const creativeTrackingUrls = ['http://creativeView'];
+
+    before(() => {
+      // Init tracker
+      const creative = new CreativeLinear();
+      creative.trackingEvents.creativeView = creativeTrackingUrls;
+
+      const tracker = new VASTTracker(null, {}, creative);
+      // Mock emit
+      tracker.emit = (event, ...args) => {
+        eventsSent.push({ event, args });
+      };
+      tracker.trackImpression();
+    });
+
+    it('should contain trackingUrls info in the event payload', () => {
+      eventsSent[0].args[0].trackingURLTemplates.should.eql(
+        creativeTrackingUrls
+      );
+    });
+  });
 });
