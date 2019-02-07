@@ -190,23 +190,22 @@ var VAST = (function (exports) {
 
   function leftpad(str) {
     if (str.length < 8) {
-      return range(0, 8 - str.length, false).map(function (i) {
+      return range(0, 8 - str.length, false).map(function () {
         return '0';
       }).join('') + str;
-    } else {
-      return str;
     }
+    return str;
   }
 
   function range(left, right, inclusive) {
-    var range = [];
+    var result = [];
     var ascending = left < right;
     var end = !inclusive ? right : ascending ? right + 1 : right - 1;
 
     for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-      range.push(i);
+      result.push(i);
     }
-    return range;
+    return result;
   }
 
   function isNumeric(n) {
@@ -335,7 +334,7 @@ var VAST = (function (exports) {
    * @return {Number}
    */
   function parseDuration(durationString) {
-    if (durationString == null) {
+    if (durationString === null || typeof durationString === 'undefined') {
       return -1;
     }
     // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
@@ -412,7 +411,7 @@ var VAST = (function (exports) {
       if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
         for (var eventName in wrapper.trackingEvents[creative.type]) {
           var urls = wrapper.trackingEvents[creative.type][eventName];
-          if (!creative.trackingEvents[eventName]) {
+          if (!Array.isArray(creative.trackingEvents[eventName])) {
             creative.trackingEvents[eventName] = [];
           }
           creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
@@ -439,7 +438,7 @@ var VAST = (function (exports) {
     // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
     if (wrapper.videoClickThroughURLTemplate) {
       unwrappedAd.creatives.forEach(function (creative) {
-        if (creative.type === 'linear' && creative.videoClickThroughURLTemplate == null) {
+        if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
           creative.videoClickThroughURLTemplate = wrapper.videoClickThroughURLTemplate;
         }
       });
@@ -503,7 +502,7 @@ var VAST = (function (exports) {
           var eventName = trackingElement.getAttribute('event');
           var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
           if (eventName && trackingURLTemplate) {
-            if (companionAd.trackingEvents[eventName] == null) {
+            if (!Array.isArray(companionAd.trackingEvents[eventName])) {
               companionAd.trackingEvents[eventName] = [];
             }
             companionAd.trackingEvents[eventName].push(trackingURLTemplate);
@@ -602,7 +601,7 @@ var VAST = (function (exports) {
     creative.duration = parserUtils.parseDuration(parserUtils.parseNodeText(parserUtils.childByName(creativeElement, 'Duration')));
     var skipOffset = creativeElement.getAttribute('skipoffset');
 
-    if (skipOffset == null) {
+    if (typeof skipOffset === 'undefined' || skipOffset === null) {
       creative.skipDelay = null;
     } else if (skipOffset.charAt(skipOffset.length - 1) === '%' && creative.duration !== -1) {
       var percent = parseInt(skipOffset, 10);
@@ -646,7 +645,7 @@ var VAST = (function (exports) {
             }
           }
 
-          if (creative.trackingEvents[eventName] == null) {
+          if (!Array.isArray(creative.trackingEvents[eventName])) {
             creative.trackingEvents[eventName] = [];
           }
           creative.trackingEvents[eventName].push(trackingURLTemplate);
@@ -823,7 +822,7 @@ var VAST = (function (exports) {
         trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
 
         if (eventName && trackingURLTemplate) {
-          if (creative.trackingEvents[eventName] == null) {
+          if (!Array.isArray(creative.trackingEvents[eventName])) {
             creative.trackingEvents[eventName] = [];
           }
           creative.trackingEvents[eventName].push(trackingURLTemplate);
@@ -938,24 +937,25 @@ var VAST = (function (exports) {
 
             for (var creativeTypeElementKey in creativeElement.childNodes) {
               var creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
+              var parsedCreative = void 0;
 
               switch (creativeTypeElement.nodeName) {
                 case 'Linear':
-                  var creativeLinear = parseCreativeLinear(creativeTypeElement, creativeAttributes);
-                  if (creativeLinear) {
-                    ad.creatives.push(creativeLinear);
+                  parsedCreative = parseCreativeLinear(creativeTypeElement, creativeAttributes);
+                  if (parsedCreative) {
+                    ad.creatives.push(parsedCreative);
                   }
                   break;
                 case 'NonLinearAds':
-                  var creativeNonLinear = parseCreativeNonLinear(creativeTypeElement, creativeAttributes);
-                  if (creativeNonLinear) {
-                    ad.creatives.push(creativeNonLinear);
+                  parsedCreative = parseCreativeNonLinear(creativeTypeElement, creativeAttributes);
+                  if (parsedCreative) {
+                    ad.creatives.push(parsedCreative);
                   }
                   break;
                 case 'CompanionAds':
-                  var creativeCompanion = parseCreativeCompanion(creativeTypeElement, creativeAttributes);
-                  if (creativeCompanion) {
-                    ad.creatives.push(creativeCompanion);
+                  parsedCreative = parseCreativeCompanion(creativeTypeElement, creativeAttributes);
+                  if (parsedCreative) {
+                    ad.creatives.push(parsedCreative);
                   }
                   break;
               }
@@ -1035,7 +1035,7 @@ var VAST = (function (exports) {
 
           var _loop = function _loop(eventName) {
             var urls = wrapperCreativeElement.trackingEvents[eventName];
-            if (!ad.trackingEvents[wrapperCreativeElement.type][eventName]) {
+            if (!Array.isArray(ad.trackingEvents[wrapperCreativeElement.type][eventName])) {
               ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
             }
             urls.forEach(function (url) {
@@ -1049,7 +1049,7 @@ var VAST = (function (exports) {
         }
         // ClickTracking
         if (wrapperCreativeElement.videoClickTrackingURLTemplates) {
-          if (!ad.videoClickTrackingURLTemplates) {
+          if (!Array.isArray(ad.videoClickTrackingURLTemplates)) {
             ad.videoClickTrackingURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
           wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(function (item) {
@@ -1062,7 +1062,7 @@ var VAST = (function (exports) {
         }
         // CustomClick
         if (wrapperCreativeElement.videoCustomClickURLTemplates) {
-          if (!ad.videoCustomClickURLTemplates) {
+          if (!Array.isArray(ad.videoCustomClickURLTemplates)) {
             ad.videoCustomClickURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
           wrapperCreativeElement.videoCustomClickURLTemplates.forEach(function (item) {
@@ -1613,6 +1613,7 @@ var VAST = (function (exports) {
   function xdr() {
     var request = void 0;
     if (window.XDomainRequest) {
+      // eslint-disable-next-line no-undef
       request = new XDomainRequest();
     }
     return request;
@@ -1630,6 +1631,8 @@ var VAST = (function (exports) {
     } else {
       return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
     }
+
+    var request = xdr();
     request.open('GET', url);
     request.timeout = options.timeout || 0;
     request.withCredentials = options.withCredentials || false;
@@ -1667,7 +1670,6 @@ var VAST = (function (exports) {
       }
       return null;
     } catch (err) {
-      console.log('Error in XHRURLHandler support check:', err);
       return null;
     }
   }
@@ -1723,9 +1725,8 @@ var VAST = (function (exports) {
       return XHRURLHandler.get(url, options, cb);
     } else if (flashURLHandler.supported()) {
       return flashURLHandler.get(url, options, cb);
-    } else {
-      return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'));
     }
+    return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'));
   }
 
   var urlHandler = {
@@ -2117,14 +2118,16 @@ var VAST = (function (exports) {
 
         return Promise.all(resolveWrappersPromises).then(function (unwrappedAds) {
           var resolvedAds = util.flatten(unwrappedAds);
-          if (!resolvedAds && _this6.remainingAds.length > 0) {
-            var _ads = _this6.remainingAds.shift();
 
-            return _this6.resolveAds(_ads, {
+          if (!resolvedAds && _this6.remainingAds.length > 0) {
+            var remainingAdsToResolve = _this6.remainingAds.shift();
+
+            return _this6.resolveAds(remainingAdsToResolve, {
               wrapperDepth: wrapperDepth,
               originalUrl: originalUrl
             });
           }
+
           return resolvedAds;
         });
       }
@@ -2143,7 +2146,7 @@ var VAST = (function (exports) {
       value: function resolveWrappers(ad, wrapperDepth, originalUrl) {
         var _this7 = this;
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
           // Going one level deeper in the wrapper chain
           wrapperDepth++;
           // We already have a resolved VAST ad, no need to resolve wrapper
@@ -2249,7 +2252,7 @@ var VAST = (function (exports) {
       this.length = Object.keys(this.data).length;
     },
     removeItem: function removeItem(key) {
-      delete data[key];
+      delete this.data[key];
       this.length = Object.keys(this.data).length;
     },
     clear: function clear() {
@@ -2306,25 +2309,26 @@ var VAST = (function (exports) {
        * Check if storage is disabled (like in certain cases with private browsing).
        * In Safari (Mac + iOS) when private browsing is ON, localStorage is read only
        * http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
-       * @param {Object} storage - The storage to check.
+       * @param {Object} testStorage - The storage to check.
        * @return {Boolean}
        */
 
     }, {
       key: 'isStorageDisabled',
-      value: function isStorageDisabled(storage) {
+      value: function isStorageDisabled(testStorage) {
         var testValue = '__VASTStorage__';
 
         try {
-          storage.setItem(testValue, testValue);
-          if (storage.getItem(testValue) !== testValue) {
-            storage.removeItem(testValue);
+          testStorage.setItem(testValue, testValue);
+          if (testStorage.getItem(testValue) !== testValue) {
+            testStorage.removeItem(testValue);
             return true;
           }
         } catch (e) {
           return true;
         }
-        storage.removeItem(testValue);
+
+        testStorage.removeItem(testValue);
         return false;
       }
 
