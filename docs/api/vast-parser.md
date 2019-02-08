@@ -184,6 +184,7 @@ Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`]
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
+    * `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
 
 #### Events emitted
  * **`VAST-resolved`**
@@ -225,6 +226,7 @@ Returns a `Promise` which either resolves with the fully parsed `VASTResponse` o
     * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
+    * `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
 
 #### Events emitted
  * **`VAST-resolved`**
