@@ -45,7 +45,7 @@ const vastParser = new VASTParser();
 ```
 
 ## Events<a name="events"></a>
-`VASTParser` extends [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter), therefore is possible to add event listeners.
+`VASTParser` extends a custom [`EventEmitter`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/event-emitter.md), therefore is possible to add event listeners.
 Here is the list of event emitted by the class:
 ### VAST-error
 
