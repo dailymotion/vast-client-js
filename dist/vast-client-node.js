@@ -1485,7 +1485,7 @@ var VASTParser = function (_EventEmitter) {
         withCredentials: options.withCredentials
       };
 
-      this.urlHandler = options.urlhandler || urlHandler;
+      this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     }
 
     /**

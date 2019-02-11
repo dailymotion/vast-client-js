@@ -1911,7 +1911,7 @@ var VAST = (function (exports) {
           withCredentials: options.withCredentials
         };
 
-        this.urlHandler = options.urlhandler || urlHandler;
+        this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
       }
 
       /**
