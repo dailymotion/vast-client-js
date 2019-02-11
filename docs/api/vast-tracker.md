@@ -37,7 +37,7 @@ const vastTracker = new VASTTracker(null, ad, creative);
 ```
 
 ## Events<a name="events"></a>
-`VASTTracker` extends [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter), therefore is possible to add event listeners like this:
+`VASTTracker` extends a custom [`EventEmitter`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/event-emitter.md), therefore is possible to add event listeners like this:
 ```Javascript
 vastTracker.on('exitFullscreen', () => {
   // Deal with the event
