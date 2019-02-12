@@ -262,16 +262,16 @@ describe('VASTParser', function() {
 
       it('validate third extension', () => {
         ad1.extensions[2].attributes['type'].should.eql('Count');
-        ad1.extensions[2].children.should.have.length(1);
-        ad1.extensions[2].children[0].name.should.eql('#cdata-section');
-        ad1.extensions[2].children[0].value.should.eql('4');
+        ad1.extensions[2].children.should.have.length(0);
+        ad1.extensions[2].name.should.eql('Extension');
+        ad1.extensions[2].value.should.eql('4');
       });
 
       it('validate fourth extension', () => {
         ad1.extensions[3].attributes.should.eql({});
-        ad1.extensions[3].children.should.have.length(1);
-        ad1.extensions[3].children[0].name.should.eql('#text');
-        ad1.extensions[3].children[0].value.should.eql('{ foo: bar }');
+        ad1.extensions[3].children.should.have.length(0);
+        ad1.extensions[3].name.should.eql('Extension');
+        ad1.extensions[3].value.should.eql('{ foo: bar }');
       });
 
       it('should not have trackingEvents property', () => {
@@ -1232,7 +1232,6 @@ describe('VASTParser', function() {
     });
 
     it('validate first extension', () => {
-      ad.extensions[0].should.not.have.any.keys('name', 'value');
       ad.extensions[0].attributes['type'].should.eql('Pricing');
       ad.extensions[0].children.should.have.length(2);
       const prices = ad.extensions[0].children[0];
@@ -1254,7 +1253,6 @@ describe('VASTParser', function() {
     });
 
     it('validate second extension', () => {
-      ad.extensions[1].should.not.have.any.keys('name', 'value');
       ad.extensions[1].attributes['type'].should.eql('OverlyNestedExtention');
       ad.extensions[1].children.should.have.length(1);
       const greatFather = ad.extensions[1].children[0];
