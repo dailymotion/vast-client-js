@@ -1,6 +1,5 @@
 import { Ad } from '../ad';
 import { AdExtension } from '../ad_extension';
-import { AdExtensionChild } from '../ad_extension_child';
 import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
@@ -248,47 +247,55 @@ function parseExtensions(collection, extensions) {
 /**
  * Parses an extension child node
  * @param {Object} extNode - The extension node to parse
- * @param {Boolean} isChild - A flag to tell how to parse the node
  * @return {Object}
  */
-function parseExtension(extNode, isChild = false) {
+function parseExtension(extNode) {
   // Ignore comments
   if (extNode.nodeName === '#comment') return null;
 
-  let ext;
+  const ext = new AdExtension();
   const extNodeAttrs = extNode.attributes;
   const childNodes = extNode.childNodes;
+  const txt = parserUtils.parseNodeText(extNode);
 
-  // Only children have a name and value
-  if (isChild) {
-    ext = new AdExtensionChild();
-    const txt = parserUtils.parseNodeText(extNode);
-
-    if (txt !== '') {
-      ext.value = txt;
-      ext.name = extNode.nodeName;
-    }
-  } else {
-    ext = new AdExtension();
+  if (txt !== '') {
+    ext.value = txt;
+    ext.name = extNode.nodeName;
   }
 
-  // Parse attributes whatever the object is
+  // Parse attributes
   if (extNode.attributes) {
     for (let extNodeAttrKey in extNodeAttrs) {
-      const extNodeAttr = extNodeAttrs[extNodeAttrKey];
+      if (extNodeAttrs.hasOwnProperty(extNodeAttrKey)) {
+        const extNodeAttr = extNodeAttrs[extNodeAttrKey];
 
-      if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
-        ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+        if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
+          ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+        }
       }
     }
   }
 
   // Parse all children
   for (let childNodeKey in childNodes) {
-    const parsedChild = parseExtension(childNodes[childNodeKey], true);
-    if (parsedChild) {
-      ext.children.push(parsedChild);
+    if (childNodes.hasOwnProperty(childNodeKey)) {
+      const parsedChild = parseExtension(childNodes[childNodeKey]);
+      if (parsedChild) {
+        ext.children.push(parsedChild);
+      }
     }
+  }
+
+  // Remove the children if it's a cdata or simply text to avoid useless children
+  if (
+    ext.children.length === 1 &&
+    ['#cdata-section', '#text'].indexOf(ext.children[0].name) >= 0
+  ) {
+    ext.children = [];
+  }
+  // Remove the value for parents to avoid having all the children values on it
+  else if (ext.children.length > 0) {
+    ext.value = null;
   }
 
   // Only return not empty objects to not pollute extentions
