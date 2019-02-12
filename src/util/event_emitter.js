@@ -13,34 +13,22 @@ export class EventEmitter {
    * @returns {EventEmitter}
    */
   on(event, handler) {
+    if (typeof handler !== 'function') {
+      throw new TypeError(
+        `The handler argument must be of type Function. Received type ${typeof handler}`
+      );
+    }
+    if (!event) {
+      throw new TypeError(
+        `The event argument must be of type String. Received type ${typeof event}`
+      );
+    }
     this._handlers.push({
       event,
       handler
     });
 
     return this;
-  }
-
-  _onceWrapper(...args) {
-    if (!this.fired) {
-      this.target.off(this.event, this.wrapFn);
-      this.fired = true;
-      Function.prototype.apply.call(this.handler, this.target, [...args]);
-    }
-  }
-
-  _onceWrap(event, handler) {
-    const state = {
-      fired: false,
-      wrapFn: undefined,
-      target: this,
-      event,
-      handler
-    };
-    const wrapped = this._onceWrapper.bind(state);
-    wrapped.handler = handler;
-    state.wrapFn = wrapped;
-    return wrapped;
   }
 
   /**
@@ -51,7 +39,7 @@ export class EventEmitter {
    * @returns {EventEmitter}
    */
   once(event, handler) {
-    return this.on(event, this._onceWrap(event, handler));
+    return this.on(event, onceWrap(this, event, handler));
   }
 
   /**
@@ -78,15 +66,13 @@ export class EventEmitter {
   emit(event, ...args) {
     let called = false;
     this._handlers.forEach(item => {
-      if (typeof item.handler === 'function') {
-        if (item.event === '*') {
-          called = true;
-          item.handler(event, ...args);
-        }
-        if (item.event === event) {
-          called = true;
-          item.handler(...args);
-        }
+      if (item.event === '*') {
+        called = true;
+        item.handler(event, ...args);
+      }
+      if (item.event === event) {
+        called = true;
+        item.handler(...args);
       }
     });
     return called;
@@ -137,4 +123,24 @@ export class EventEmitter {
   eventNames() {
     return this._handlers.map(item => item.event);
   }
+}
+
+/**
+ * exported for unit tests only
+ */
+export function onceWrap(target, event, handler) {
+  const state = {
+    fired: false,
+    wrapFn: undefined
+  };
+
+  function onceWrapper(...args) {
+    if (!state.fired) {
+      target.off(event, state.wrapFn);
+      state.fired = true;
+      handler.bind(target)(...args);
+    }
+  }
+  state.wrapFn = onceWrapper;
+  return onceWrapper;
 }
