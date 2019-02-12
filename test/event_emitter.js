@@ -1,4 +1,4 @@
-import { EventEmitter } from '../src/util/event_emitter';
+import { EventEmitter, onceWrap } from '../src/util/event_emitter';
 
 describe('EventEmitter', function() {
   beforeEach(function() {
@@ -42,9 +42,7 @@ describe('EventEmitter', function() {
       const handlerObj = this.emitter._handlers[0];
 
       handlerObj.event.should.eql('test-event');
-      handlerObj.handler.should.eql(
-        this.emitter._onceWrap('test-event', this.handler)
-      );
+      handlerObj.handler.should.eql(onceWrap('test-event', this.handler));
     });
 
     describe('after event is emitted', function() {
