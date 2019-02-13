@@ -3,3 +3,5 @@ dist/
 rollup.config.js
 node_modules/
 test/
+spec/
+jest.config.js
