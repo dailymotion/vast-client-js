@@ -1,20 +1,11 @@
 import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
-import externalHelpers from 'babel-plugin-external-helpers';
+import { uglify } from 'rollup-plugin-uglify';
 import alias from 'rollup-plugin-alias';
 import resolve from 'rollup-plugin-node-resolve';
 
 const babelPlugin = babel({
   babelrc: false,
-  presets: [
-    [
-      'es2015',
-      {
-        modules: false
-      }
-    ]
-  ],
-  plugins: [externalHelpers],
+  presets: [['@babel/preset-env', { modules: false }]],
   exclude: ['node_modules/**']
 });
 
