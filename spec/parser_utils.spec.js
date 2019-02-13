@@ -33,7 +33,7 @@ describe('ParserUtils', function() {
 
       const output = parserUtils.splitVAST(input);
 
-      output.should.deepEqual(expectedOutput);
+      expect(output).toEqual(expectedOutput);
     });
 
     it('should parse vast pods with single sequence', () => {
@@ -51,7 +51,7 @@ describe('ParserUtils', function() {
 
       const output = parserUtils.splitVAST(input);
 
-      output.should.deepEqual(expectedOutput);
+      expect(output).toEqual(expectedOutput);
     });
 
     it('should parse vast pods with no pods', () => {
@@ -61,7 +61,7 @@ describe('ParserUtils', function() {
 
       const output = parserUtils.splitVAST(input);
 
-      output.should.deepEqual(expectedOutput);
+      expect(output).toEqual(expectedOutput);
     });
 
     it('should parse vast pods with weird sequences', () => {
@@ -75,7 +75,7 @@ describe('ParserUtils', function() {
 
       const output = parserUtils.splitVAST(input);
 
-      output.should.deepEqual(expectedOutput);
+      expect(output).toEqual(expectedOutput);
     });
 
     it('should parse vast pods with sequences that not start with index = 1', () => {
@@ -112,7 +112,7 @@ describe('ParserUtils', function() {
 
       const output = parserUtils.splitVAST(input);
 
-      output.should.deepEqual(expectedOutput);
+      expect(output).toEqual(expectedOutput);
     });
 
     it('should parse vast pods with sequences that not start with index = 1, and not following incrementally', () => {
@@ -155,7 +155,28 @@ describe('ParserUtils', function() {
 
       const output = parserUtils.splitVAST(input);
 
-      output.should.deepEqual(expectedOutput);
+      expect(output).toEqual(expectedOutput);
     });
+  });
+
+  describe('#parseDuration', function() {
+    [
+      null,
+      undefined,
+      -1,
+      0,
+      1,
+      '1',
+      '00:00',
+      '00:00:00:00',
+      'test',
+      '00:test:01',
+      '00:00:01.001',
+      '00:00:01.test'
+    ].map(item =>
+      it(`should not return NaN for \`${item}\``, function() {
+        expect(parserUtils.parseDuration(item)).not.toBeNaN();
+      })
+    );
   });
 });
