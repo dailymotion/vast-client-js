@@ -140,46 +140,6 @@ describe('VASTParser', function() {
       this.response.should.be.an.instanceOf(VASTResponse);
     });
 
-    describe('#duration', () =>
-      [
-        null,
-        undefined,
-        -1,
-        0,
-        1,
-        '1',
-        '00:00',
-        '00:00:00:00',
-        'test',
-        '00:test:01',
-        '00:00:01.001',
-        '00:00:01.test'
-      ].map(item =>
-        (item =>
-          it(`should not return NaN for \`${item}\``, () =>
-            isNaN(parserUtils.parseDuration(item)).should.eql(false)))(item)
-      ));
-
-    describe('#duration', () =>
-      [
-        null,
-        undefined,
-        -1,
-        0,
-        1,
-        '1',
-        '00:00',
-        '00:00:00:00',
-        'test',
-        '00:test:01',
-        '00:00:01.001',
-        '00:00:01.test'
-      ].map(item =>
-        (item =>
-          it(`should not return NaN for \`${item}\``, () =>
-            isNaN(parserUtils.parseDuration(item)).should.eql(false)))(item)
-      ));
-
     describe('#For the 1st ad', function() {
       let ad1 = null;
 
