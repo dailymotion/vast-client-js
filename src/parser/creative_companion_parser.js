@@ -14,79 +14,89 @@ import { parserUtils } from './parser_utils';
  */
 export function parseCreativeCompanion(creativeElement, creativeAttributes) {
   const creative = new CreativeCompanion(creativeAttributes);
+  creative.required = creativeElement.getAttribute('required') || null;
 
-  parserUtils
+  creative.variations = parserUtils
     .childrenByName(creativeElement, 'Companion')
-    .forEach(companionResource => {
-      const companionAd = new CompanionAd();
-      companionAd.id = companionResource.getAttribute('id') || null;
-      companionAd.width = companionResource.getAttribute('width');
-      companionAd.height = companionResource.getAttribute('height');
-      companionAd.companionClickTrackingURLTemplates = [];
+    .map(companionResource => {
+      const attributes = {};
+      const companionAttrs = companionResource.attributes;
+      for (let i = 0; i < companionAttrs.length; i++) {
+        attributes[companionAttrs[i].nodeName] = companionAttrs[i].nodeValue;
+      }
+      const companionAd = new CompanionAd(attributes);
 
-      parserUtils
-        .childrenByName(companionResource, 'HTMLResource')
-        .forEach(htmlElement => {
-          companionAd.type =
-            htmlElement.getAttribute('creativeType') || 'text/html';
-          companionAd.htmlResource = parserUtils.parseNodeText(htmlElement);
-        });
+      companionAd.htmlResource =
+        parserUtils.parseNodeText(
+          parserUtils.childByName(companionResource, 'HTMLResource')
+        ) || null;
 
-      parserUtils
-        .childrenByName(companionResource, 'IFrameResource')
-        .forEach(iframeElement => {
-          companionAd.type = iframeElement.getAttribute('creativeType') || 0;
-          companionAd.iframeResource = parserUtils.parseNodeText(iframeElement);
-        });
+      companionAd.iframeResource =
+        parserUtils.parseNodeText(
+          parserUtils.childByName(companionResource, 'IFrameResource')
+        ) || null;
 
-      parserUtils
-        .childrenByName(companionResource, 'StaticResource')
-        .forEach(staticElement => {
-          companionAd.type = staticElement.getAttribute('creativeType') || 0;
+      const staticElement = parserUtils.childByName(
+        companionResource,
+        'StaticResource'
+      );
+      if (staticElement) {
+        companionAd.staticResource = parserUtils.parseNodeText(staticElement);
+        companionAd.creativeType =
+          staticElement.getAttribute('creativeType') || null;
 
-          parserUtils
-            .childrenByName(companionResource, 'AltText')
-            .forEach(child => {
-              companionAd.altText = parserUtils.parseNodeText(child);
-            });
+        const altTextElement = parserUtils.childByName(
+          companionResource,
+          'AltText'
+        );
+        companionAd.altText = parserUtils.parseNodeText(altTextElement) || null;
+      }
 
-          companionAd.staticResource = parserUtils.parseNodeText(staticElement);
-        });
-
-      parserUtils
-        .childrenByName(companionResource, 'TrackingEvents')
-        .forEach(trackingEventsElement => {
-          parserUtils
-            .childrenByName(trackingEventsElement, 'Tracking')
-            .forEach(trackingElement => {
-              const eventName = trackingElement.getAttribute('event');
-              const trackingURLTemplate = parserUtils.parseNodeText(
-                trackingElement
-              );
-              if (eventName && trackingURLTemplate) {
-                if (!Array.isArray(companionAd.trackingEvents[eventName])) {
-                  companionAd.trackingEvents[eventName] = [];
-                }
-                companionAd.trackingEvents[eventName].push(trackingURLTemplate);
+      const trackingEventsElement = parserUtils.childByName(
+        companionResource,
+        'TrackingEvents'
+      );
+      if (trackingEventsElement) {
+        parserUtils
+          .childrenByName(trackingEventsElement, 'Tracking')
+          .forEach(trackingElement => {
+            const eventName = trackingElement.getAttribute('event');
+            const trackingURLTemplate = parserUtils.parseNodeText(
+              trackingElement
+            );
+            if (eventName && trackingURLTemplate) {
+              if (!Array.isArray(companionAd.trackingEvents[eventName])) {
+                companionAd.trackingEvents[eventName] = [];
               }
-            });
-        });
+              companionAd.trackingEvents[eventName].push(trackingURLTemplate);
+            }
+          });
+      }
 
-      parserUtils
+      companionAd.companionClickTrackingURLTemplates = parserUtils
         .childrenByName(companionResource, 'CompanionClickTracking')
-        .forEach(clickTrackingElement => {
-          companionAd.companionClickTrackingURLTemplates.push(
-            parserUtils.parseNodeText(clickTrackingElement)
-          );
-        });
+        .map(clickTrackingElement =>
+          parserUtils.parseNodeText(clickTrackingElement)
+        );
 
-      companionAd.companionClickThroughURLTemplate = parserUtils.parseNodeText(
-        parserUtils.childByName(companionResource, 'CompanionClickThrough')
+      companionAd.companionClickThroughURLTemplate =
+        parserUtils.parseNodeText(
+          parserUtils.childByName(companionResource, 'CompanionClickThrough')
+        ) || null;
+
+      const adParametersElement = parserUtils.childByName(
+        companionResource,
+        'AdParameters'
       );
-      companionAd.companionClickTrackingURLTemplate = parserUtils.parseNodeText(
-        parserUtils.childByName(companionResource, 'CompanionClickTracking')
-      );
-      creative.variations.push(companionAd);
+      if (adParametersElement) {
+        companionAd.adParameters = parserUtils.parseNodeText(
+          adParametersElement
+        );
+        companionAd.xmlEncoded =
+          adParametersElement.getAttribute('xmlEncoded') || null;
+      }
+
+      return companionAd;
     });
 
   return creative;
