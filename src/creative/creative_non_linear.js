@@ -6,5 +6,6 @@ export class CreativeNonLinear extends Creative {
 
     this.type = 'nonlinear';
     this.variations = [];
+    this.trackingEvents = {};
   }
 }
