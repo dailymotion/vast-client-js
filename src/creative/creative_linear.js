@@ -13,5 +13,6 @@ export class CreativeLinear extends Creative {
     this.videoCustomClickURLTemplates = [];
     this.adParameters = null;
     this.icons = [];
+    this.trackingEvents = {};
   }
 }
