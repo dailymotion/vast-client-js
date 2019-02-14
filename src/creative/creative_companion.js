@@ -5,6 +5,7 @@ export class CreativeCompanion extends Creative {
     super(creativeAttributes);
 
     this.type = 'companion';
+    this.required = null;
     this.variations = [];
   }
 }
