@@ -33,7 +33,6 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `adId: String|null`
 - `sequence: Number|null`
 - `apiFramework: String|null`
-- `trackingEvents: Object`
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
 
@@ -46,15 +45,18 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `videoCustomClickURLTemplates: Array<String>`
 - `adParameters: String|null`
 - `icons: Array<Icon>` [go to class](#icon)
+- `trackingEvents: Object`
 
 ## CreativeNonLinear *extends* Creative<a name="creative-non-linear"></a>
 
 - `type: String`
 - `variations: Array<NonLinearAd>` [go to class](#non-linear-ad)
+- `trackingEvents: Object`
 
 ## CreativeCompanion *extends* Creative<a name="creative-companion"></a>
 
 - `type: String`
+- `required: String|null`
 - `variations: Array<CompanionAd>` [go to class](#companion-ad)
 
 ## MediaFile<a name="mediafile"></a>
@@ -97,14 +99,22 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `id: String|null`
 - `width: Number`
 - `height: Number`
-- `type: String|null`
+- `assetWidth: Number|null`
+- `assetHeight: Number|null`
+- `expandedWidth: Number|null`
+- `expandedHeight: Number|null`
+- `apiFramework: String|null`
+- `adSlotID: String|null`
+- `creativeType: String|null`
 - `staticResource: String|null`
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `altText: String|null`
-- `nonlinearClickThroughURLTemplate: String|null`
-- `nonlinearClickTrackingURLTemplates: Array<String>`
+- `companionClickThroughURLTemplate: String|null`
+- `companionClickTrackingURLTemplates: Array<String>`
 - `trackingEvents: Object`
+- `adParameters: String|null`
+- `xmlEncoded: Boolean|null`
 
 ## Icon<a name="icon"></a>
 
