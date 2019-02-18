@@ -108,8 +108,7 @@ function parseInLine(inLineElement) {
         break;
 
       case 'Extensions':
-        parseExtensions(
-          ad.extensions,
+        ad.extensions = parseExtensions(
           parserUtils.childrenByName(node, 'Extension')
         );
         break;
@@ -231,23 +230,25 @@ function parseWrapper(wrapperElement) {
 
 /**
  * Parses an array of Extension elements.
- * @param  {Array} collection - The array used to store the parsed extensions.
- * @param  {Array} extensions - The array of extensions to parse.
+ * @param  {Node[]} extensions - The array of extensions to parse.
+ * @return {AdExtension[]} - The nodes parsed to extensions
  */
-function parseExtensions(collection, extensions) {
+function parseExtensions(extensions) {
+  const exts = [];
   extensions.forEach(extNode => {
     const ext = parseExtension(extNode);
 
     if (ext) {
-      collection.push(ext);
+      exts.push(ext);
     }
   });
+  return exts;
 }
 
 /**
  * Parses an extension child node
- * @param {Object} extNode - The extension node to parse
- * @return {Object}
+ * @param {Node} extNode - The extension node to parse
+ * @return {AdExtension|null} - The node parsed to extension
  */
 function parseExtension(extNode) {
   // Ignore comments
@@ -256,12 +257,8 @@ function parseExtension(extNode) {
   const ext = new AdExtension();
   const extNodeAttrs = extNode.attributes;
   const childNodes = extNode.childNodes;
-  const txt = parserUtils.parseNodeText(extNode);
 
-  if (txt !== '') {
-    ext.value = txt;
-    ext.name = extNode.nodeName;
-  }
+  ext.name = extNode.nodeName;
 
   // Parse attributes
   if (extNode.attributes) {
@@ -286,20 +283,27 @@ function parseExtension(extNode) {
     }
   }
 
-  // Remove the children if it's a cdata or simply text to avoid useless children
+  /*
+    Only parse value of Nodes with only eather no children or only a cdata or text
+    to avoid useless parsing that would result to a concatenation of all children
+  */
   if (
-    ext.children.length === 1 &&
-    ['#cdata-section', '#text'].indexOf(ext.children[0].name) >= 0
+    ext.children.length === 0 ||
+    (ext.children.length === 1 &&
+      ['#cdata-section', '#text'].indexOf(ext.children[0].name) >= 0)
   ) {
+    const txt = parserUtils.parseNodeText(extNode);
+
+    if (txt !== '') {
+      ext.value = txt;
+    }
+
+    // Remove the children if it's a cdata or simply text to avoid useless children
     ext.children = [];
-  }
-  // Remove the value for parents to avoid having all the children values on it
-  else if (ext.children.length > 0) {
-    ext.value = null;
   }
 
   // Only return not empty objects to not pollute extentions
-  if (!ext.isEmpty()) return ext;
+  return ext.isEmpty() ? null : ext;
 }
 
 /**
