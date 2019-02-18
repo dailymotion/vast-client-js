@@ -8,7 +8,6 @@ export class AdExtension {
 
   isEmpty() {
     return (
-      this.name === null &&
       this.value === null &&
       Object.keys(this.attributes).length === 0 &&
       this.children.length === 0
