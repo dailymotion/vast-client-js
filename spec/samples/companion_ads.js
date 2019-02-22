@@ -1,6 +1,7 @@
 export const companionAds = `<CompanionAds required="any">
   <Companion id="1" width="300" height="250" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotID="1">
-    <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
+    <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource1]]></StaticResource>
+    <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource2]]></StaticResource>
     <AltText><![CDATA[Sample Alt Text Content]]></AltText>
     <TrackingEvents>
       <Tracking event="creativeView"><![CDATA[http://example.com/companion1-creativeview]]></Tracking>
@@ -12,6 +13,7 @@ export const companionAds = `<CompanionAds required="any">
   </Companion>
   <Companion id="2" width="300" height="60" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotID="2">
     <IFrameResource><![CDATA[http://www.example.com/companion2-example.php]]></IFrameResource>
+    <AltText><![CDATA[Sample Alt Text Content]]></AltText>
     <TrackingEvents>
       <Tracking event="creativeView"><![CDATA[http://example.com/companion2-creativeview]]></Tracking>
     </TrackingEvents>
@@ -24,6 +26,7 @@ export const companionAds = `<CompanionAds required="any">
         <a href="http://www.example.com" target="_blank">Some call to action HTML!</a>
       ]]>
     </HTMLResource>
+    <AltText><![CDATA[Sample Alt Text Content]]></AltText>
     <TrackingEvents>
       <Tracking event="creativeView"><![CDATA[http://example.com/companion3-creativeview]]></Tracking>
     </TrackingEvents>
