@@ -1,7 +1,7 @@
 import { parserUtils } from '../src/parser/parser_utils.js';
 
 describe('ParserUtils', function() {
-  describe('#splitVAST', function() {
+  describe('splitVAST', function() {
     it('should parse normally defined vast pods', () => {
       const input = [
         { id: 2, sequence: 1 },
@@ -159,7 +159,7 @@ describe('ParserUtils', function() {
     });
   });
 
-  describe('#parseDuration', function() {
+  describe('parseDuration', function() {
     [
       null,
       undefined,
@@ -178,5 +178,22 @@ describe('ParserUtils', function() {
         expect(parserUtils.parseDuration(item)).not.toBeNaN();
       })
     );
+  });
+
+  describe('parseAttributes', function() {
+    document.body.innerHTML = `<foo id='1234' width='400' height='250'></foo>`;
+    const element = document.getElementById('1234');
+
+    it('parses attributes correctly', function() {
+      expect(parserUtils.parseAttributes(element)).toEqual({
+        id: '1234',
+        width: '400',
+        height: '250'
+      });
+    });
+
+    afterAll(function() {
+      document.body.innerHTML = '';
+    });
   });
 });

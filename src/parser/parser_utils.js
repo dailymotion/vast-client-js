@@ -6,9 +6,9 @@ import { util } from '../util/util';
 
 /**
  * Returns the first element of the given node which nodeName matches the given name.
- * @param  {Object} node - The node to use to find a match.
+ * @param  {Node} node - The node to use to find a match.
  * @param  {String} name - The name to look for.
- * @return {Object}
+ * @return {Object|undefined}
  */
 function childByName(node, name) {
   const childNodes = node.childNodes;
@@ -24,8 +24,8 @@ function childByName(node, name) {
 
 /**
  * Returns all the elements of the given node which nodeName match the given name.
- * @param  {any} node - The node to use to find the matches.
- * @param  {any} name - The name to look for.
+ * @param  {Node} node - The node to use to find the matches.
+ * @param  {String} name - The name to look for.
  * @return {Array}
  */
 function childrenByName(node, name) {
@@ -96,6 +96,21 @@ function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
   if (attributeValue) {
     nodeDestination.setAttribute(attributeName, attributeValue);
   }
+}
+
+/**
+ * Converts element attributes into an object, where object key is attribute name
+ * and object value is attribute value
+ * @param {Element} element
+ * @returns {Object}
+ */
+function parseAttributes(element) {
+  const nodeAttributes = element.attributes;
+  const attributes = {};
+  for (let i = 0; i < nodeAttributes.length; i++) {
+    attributes[nodeAttributes[i].nodeName] = nodeAttributes[i].nodeValue;
+  }
+  return attributes;
 }
 
 /**
@@ -249,6 +264,7 @@ export const parserUtils = {
   parseBoolean,
   parseNodeText,
   copyNodeAttribute,
+  parseAttributes,
   parseDuration,
   splitVAST,
   mergeWrapperAdData
