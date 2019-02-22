@@ -9,10 +9,9 @@ export class CompanionAd {
     this.expandedHeight = creativeAttributes.expandedHeight || null;
     this.apiFramework = creativeAttributes.apiFramework || null;
     this.adSlotID = creativeAttributes.adSlotID || null;
-    this.creativeType = null;
-    this.staticResource = null;
-    this.htmlResource = null;
-    this.iframeResource = null;
+    this.staticResources = [];
+    this.htmlResources = [];
+    this.iframeResources = [];
     this.adParameters = null;
     this.xmlEncoded = null;
     this.altText = null;

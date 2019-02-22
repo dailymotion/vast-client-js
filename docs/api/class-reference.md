@@ -105,10 +105,9 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
 - `adSlotID: String|null`
-- `creativeType: String|null`
-- `staticResource: String|null`
-- `htmlResource: String|null`
-- `iframeResource: String|null`
+- `staticResources: Array<{ url: String, creativeType: String|null }>`
+- `htmlResources: Array<String>`
+- `iframeResources: Array<String>`
 - `altText: String|null`
 - `companionClickThroughURLTemplate: String|null`
 - `companionClickTrackingURLTemplates: Array<String>`
