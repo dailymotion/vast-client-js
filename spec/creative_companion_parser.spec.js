@@ -57,22 +57,23 @@ describe('parseCreativeCompanion', function() {
       });
     });
 
-    describe('static resource', () => {
-      it('gets the resource', () => {
-        expect(companion.staticResource).toBe(
-          'http://example.com/companion1-static-resource'
-        );
-        expect(companion.iframeResource).toBeNull();
-        expect(companion.htmlResource).toBeNull();
-      });
+    it('gets the static resources and their creative types', () => {
+      expect(companion.staticResources).toEqual([
+        {
+          url: 'http://example.com/companion1-static-resource1',
+          creativeType: 'image/jpeg'
+        },
+        {
+          url: 'http://example.com/companion1-static-resource2',
+          creativeType: 'image/jpeg'
+        }
+      ]);
+      expect(companion.iframeResources).toEqual([]);
+      expect(companion.htmlResources).toEqual([]);
+    });
 
-      it('gets creativeType', () => {
-        expect(companion.creativeType).toBe('image/jpeg');
-      });
-
-      it('gets altText', () => {
-        expect(companion.altText).toBe('Sample Alt Text Content');
-      });
+    it('gets altText', () => {
+      expect(companion.altText).toBe('Sample Alt Text Content');
     });
 
     it('gets tracking events', () => {
@@ -125,22 +126,16 @@ describe('parseCreativeCompanion', function() {
       });
     });
 
-    describe('iframe resource', () => {
-      it('gets the resource', () => {
-        expect(companion.staticResource).toBeNull();
-        expect(companion.iframeResource).toBe(
-          'http://www.example.com/companion2-example.php'
-        );
-        expect(companion.htmlResource).toBeNull();
-      });
+    it('gets the iframe resources', () => {
+      expect(companion.staticResources).toEqual([]);
+      expect(companion.iframeResources).toEqual([
+        'http://www.example.com/companion2-example.php'
+      ]);
+      expect(companion.htmlResources).toEqual([]);
+    });
 
-      it('has no creativeType', () => {
-        expect(companion.creativeType).toBeNull();
-      });
-
-      it('has no altText', () => {
-        expect(companion.altText).toBeNull();
-      });
+    it('gets altText', () => {
+      expect(companion.altText).toBe('Sample Alt Text Content');
     });
 
     it('gets tracking events', () => {
@@ -190,22 +185,16 @@ describe('parseCreativeCompanion', function() {
       });
     });
 
-    describe('html resource', () => {
-      it('gets the resource', () => {
-        expect(companion.staticResource).toBeNull();
-        expect(companion.iframeResource).toBeNull();
-        expect(companion.htmlResource).toBe(
-          '<a href="http://www.example.com" target="_blank">Some call to action HTML!</a>'
-        );
-      });
+    it('gets the html resources', () => {
+      expect(companion.staticResources).toEqual([]);
+      expect(companion.iframeResources).toEqual([]);
+      expect(companion.htmlResources).toEqual([
+        '<a href="http://www.example.com" target="_blank">Some call to action HTML!</a>'
+      ]);
+    });
 
-      it('has no creativeType', () => {
-        expect(companion.creativeType).toBeNull();
-      });
-
-      it('has no altText', () => {
-        expect(companion.altText).toBeNull();
-      });
+    it('gets altText', () => {
+      expect(companion.altText).toBe('Sample Alt Text Content');
     });
 
     it('gets tracking events', () => {

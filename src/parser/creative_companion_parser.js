@@ -19,38 +19,40 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
   creative.variations = parserUtils
     .childrenByName(creativeElement, 'Companion')
     .map(companionResource => {
-      const attributes = {};
-      const companionAttrs = companionResource.attributes;
-      for (let i = 0; i < companionAttrs.length; i++) {
-        attributes[companionAttrs[i].nodeName] = companionAttrs[i].nodeValue;
-      }
-      const companionAd = new CompanionAd(attributes);
-
-      companionAd.htmlResource =
-        parserUtils.parseNodeText(
-          parserUtils.childByName(companionResource, 'HTMLResource')
-        ) || null;
-
-      companionAd.iframeResource =
-        parserUtils.parseNodeText(
-          parserUtils.childByName(companionResource, 'IFrameResource')
-        ) || null;
-
-      const staticElement = parserUtils.childByName(
-        companionResource,
-        'StaticResource'
+      const companionAd = new CompanionAd(
+        parserUtils.parseAttributes(companionResource)
       );
-      if (staticElement) {
-        companionAd.staticResource = parserUtils.parseNodeText(staticElement);
-        companionAd.creativeType =
-          staticElement.getAttribute('creativeType') || null;
 
-        const altTextElement = parserUtils.childByName(
-          companionResource,
-          'AltText'
-        );
-        companionAd.altText = parserUtils.parseNodeText(altTextElement) || null;
-      }
+      companionAd.htmlResources = parserUtils
+        .childrenByName(companionResource, 'HTMLResource')
+        .reduce((urls, resource) => {
+          const url = parserUtils.parseNodeText(resource);
+          return url ? urls.concat(url) : urls;
+        }, []);
+
+      companionAd.iframeResources = parserUtils
+        .childrenByName(companionResource, 'IFrameResource')
+        .reduce((urls, resource) => {
+          const url = parserUtils.parseNodeText(resource);
+          return url ? urls.concat(url) : urls;
+        }, []);
+
+      companionAd.staticResources = parserUtils
+        .childrenByName(companionResource, 'StaticResource')
+        .reduce((urls, resource) => {
+          const url = parserUtils.parseNodeText(resource);
+          return url
+            ? urls.concat({
+                url,
+                creativeType: resource.getAttribute('creativeType') || null
+              })
+            : urls;
+        }, []);
+
+      companionAd.altText =
+        parserUtils.parseNodeText(
+          parserUtils.childByName(companionResource, 'AltText')
+        ) || null;
 
       const trackingEventsElement = parserUtils.childByName(
         companionResource,
