@@ -108,7 +108,7 @@ function parseInLine(inLineElement) {
         break;
 
       case 'Extensions':
-        ad.extensions = parseExtensions(
+        ad.extensions = _parseExtensions(
           parserUtils.childrenByName(node, 'Extension')
         );
         break;
@@ -229,14 +229,14 @@ function parseWrapper(wrapperElement) {
 }
 
 /**
- * Parses an array of Extension elements.
+ * Parses an array of Extension elements. Exported for unit test purpose
  * @param  {Node[]} extensions - The array of extensions to parse.
  * @return {AdExtension[]} - The nodes parsed to extensions
  */
-function parseExtensions(extensions) {
+export function _parseExtensions(extensions) {
   const exts = [];
   extensions.forEach(extNode => {
-    const ext = parseExtension(extNode);
+    const ext = _parseExtension(extNode);
 
     if (ext) {
       exts.push(ext);
@@ -250,7 +250,7 @@ function parseExtensions(extensions) {
  * @param {Node} extNode - The extension node to parse
  * @return {AdExtension|null} - The node parsed to extension
  */
-function parseExtension(extNode) {
+function _parseExtension(extNode) {
   // Ignore comments
   if (extNode.nodeName === '#comment') return null;
 
@@ -262,7 +262,7 @@ function parseExtension(extNode) {
 
   // Parse attributes
   if (extNode.attributes) {
-    for (let extNodeAttrKey in extNodeAttrs) {
+    for (const extNodeAttrKey in extNodeAttrs) {
       if (extNodeAttrs.hasOwnProperty(extNodeAttrKey)) {
         const extNodeAttr = extNodeAttrs[extNodeAttrKey];
 
@@ -274,9 +274,9 @@ function parseExtension(extNode) {
   }
 
   // Parse all children
-  for (let childNodeKey in childNodes) {
+  for (const childNodeKey in childNodes) {
     if (childNodes.hasOwnProperty(childNodeKey)) {
-      const parsedChild = parseExtension(childNodes[childNodeKey]);
+      const parsedChild = _parseExtension(childNodes[childNodeKey]);
       if (parsedChild) {
         ext.children.push(parsedChild);
       }

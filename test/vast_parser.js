@@ -241,39 +241,6 @@ describe('VASTParser', function() {
         ad1.extensions.should.have.length(4);
       });
 
-      it('validate first extension', () => {
-        ad1.extensions[0].attributes['type'].should.eql('WrapperExtension');
-        ad1.extensions[0].children.should.have.length(1);
-        ad1.extensions[0].children[0].name.should.eql('extension_tag');
-        ad1.extensions[0].children[0].value.should.eql('extension_value');
-      });
-
-      it('validate second extension', () => {
-        ad1.extensions[1].attributes['type'].should.eql('Pricing');
-        ad1.extensions[1].children.should.have.length(1);
-        ad1.extensions[1].children[0].name.should.eql('Price');
-        ad1.extensions[1].children[0].value.should.eql('0');
-        ad1.extensions[1].children[0].attributes['model'].should.eql('CPM');
-        ad1.extensions[1].children[0].attributes['currency'].should.eql('USD');
-        ad1.extensions[1].children[0].attributes['source'].should.eql(
-          'someone'
-        );
-      });
-
-      it('validate third extension', () => {
-        ad1.extensions[2].attributes['type'].should.eql('Count');
-        ad1.extensions[2].children.should.have.length(0);
-        ad1.extensions[2].name.should.eql('Extension');
-        ad1.extensions[2].value.should.eql('4');
-      });
-
-      it('validate fourth extension', () => {
-        ad1.extensions[3].attributes.should.eql({});
-        ad1.extensions[3].children.should.have.length(0);
-        ad1.extensions[3].name.should.eql('Extension');
-        ad1.extensions[3].value.should.eql('{ foo: bar }');
-      });
-
       it('should not have trackingEvents property', () => {
         should.equal(ad1.trackingEvents, undefined);
       });
@@ -769,13 +736,6 @@ describe('VASTParser', function() {
         ad2.extensions.should.have.length(1);
       });
 
-      it('validate the extension', () => {
-        ad2.extensions[0].attributes['type'].should.eql('WrapperExtension');
-        ad2.extensions[0].children.should.have.length(1);
-        ad2.extensions[0].children[0].name.should.eql('extension_tag');
-        ad2.extensions[0].children[0].value.should.eql('extension_value');
-      });
-
       //Linear
       describe('1st creative (Linear)', function() {
         let linear = null;
@@ -1211,68 +1171,6 @@ describe('VASTParser', function() {
             done();
           });
       });
-    });
-  });
-
-  describe('#Nester xml extensions', () => {
-    let ad;
-    before(done => {
-      vastParser
-        .getAndParseVAST(urlfor('nested-xml-extensions.xml'), {
-          urlhandler: nodeURLHandler
-        })
-        .then(response => {
-          ad = response.ads[0];
-          done();
-        });
-    });
-
-    it('should have 2 extensions', () => {
-      ad.extensions.should.have.length(2);
-    });
-
-    it('validate first extension', () => {
-      ad.extensions[0].attributes['type'].should.eql('Pricing');
-      ad.extensions[0].children.should.have.length(2);
-      const prices = ad.extensions[0].children[0];
-      prices.name.should.eql('Prices');
-      prices.children.should.have.length(4);
-      prices.children[0].name.should.eql('Price');
-      prices.children[0].attributes['model'].should.eql('CPM');
-      prices.children[1].attributes['source'].should.eql('someone_else');
-      prices.children[2].attributes['model'].should.eql('CPL');
-      prices.children[3].attributes['currency'].should.eql('USD');
-      prices.children[0].value.should.eql('0');
-      prices.children[1].value.should.eql('42');
-      prices.children[2].value.should.eql('69');
-      prices.children[3].value.should.eql('234.5');
-      ad.extensions[0].children[1].name.should.eql('PricingPolicy');
-      ad.extensions[0].children[1].value.should.eql(
-        'http://example.com/pricing-policy.html'
-      );
-    });
-
-    it('validate second extension', () => {
-      ad.extensions[1].attributes['type'].should.eql('OverlyNestedExtention');
-      ad.extensions[1].children.should.have.length(1);
-      const greatFather = ad.extensions[1].children[0];
-      greatFather.name.should.eql('GreatFather');
-      greatFather.attributes['age'].should.eql('70');
-      greatFather.children.should.have.length(1);
-      const father = greatFather.children[0];
-      father.name.should.eql('Father');
-      father.attributes['age'].should.eql('40');
-      father.attributes['alive'].should.eql('false');
-      father.children.should.have.length(3);
-      father.children[0].name.should.equal('Daughter');
-      father.children[0].attributes['age'].should.equal('20');
-      father.children[0].value.should.equal('Maria');
-      father.children[1].name.should.equal('Daughter');
-      father.children[1].attributes['age'].should.equal('20');
-      father.children[1].value.should.equal('Lola');
-      father.children[2].name.should.equal('Son');
-      father.children[2].attributes['age'].should.equal('25');
-      father.children[2].value.should.equal('Paul');
     });
   });
 
