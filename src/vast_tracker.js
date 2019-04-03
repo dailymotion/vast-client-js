@@ -347,7 +347,6 @@ export class VASTTracker extends EventEmitter {
    */
   skip() {
     this.track('skip');
-    this.trackingEvents = [];
   }
 
   /**
