@@ -2914,7 +2914,6 @@ var VAST = (function (exports) {
       key: 'skip',
       value: function skip() {
         this.track('skip');
-        this.trackingEvents = [];
       }
 
       /**

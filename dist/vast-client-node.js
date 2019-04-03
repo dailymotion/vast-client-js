@@ -2488,7 +2488,6 @@ var VASTTracker = function (_EventEmitter) {
     key: 'skip',
     value: function skip() {
       this.track('skip');
-      this.trackingEvents = [];
     }
 
     /**
