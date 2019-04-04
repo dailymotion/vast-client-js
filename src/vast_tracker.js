@@ -314,9 +314,14 @@ export class VASTTracker extends EventEmitter {
    * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
    *
    * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
+   * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
-  errorWithCode(errorCode) {
-    this.trackURLs(this.ad.errorURLTemplates, { ERRORCODE: errorCode });
+  errorWithCode(errorCode, isCustomCode = false) {
+    this.trackURLs(
+      this.ad.errorURLTemplates,
+      { ERRORCODE: errorCode },
+      { isCustomCode }
+    );
   }
 
   /**
@@ -426,7 +431,7 @@ export class VASTTracker extends EventEmitter {
    * @param {Array} URLTemplates - An array of tracking url templates.
    * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
    */
-  trackURLs(URLTemplates, variables = {}) {
+  trackURLs(URLTemplates, variables = {}, options = {}) {
     if (this.linear) {
       if (
         this.creative &&
@@ -439,7 +444,7 @@ export class VASTTracker extends EventEmitter {
       variables['CONTENTPLAYHEAD'] = this.progressFormatted();
     }
 
-    util.track(URLTemplates, variables);
+    util.track(URLTemplates, variables, options);
   }
 
   /**
