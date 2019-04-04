@@ -9,6 +9,13 @@ function track(URLTemplates, variables, options) {
   });
 }
 
+/**
+ * Replace the provided URLTemplates with the given values
+ *
+ * @param {Array} URLTemplates - An array of tracking url templates.
+ * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+ * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
+ */
 function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   const URLs = [];
 
