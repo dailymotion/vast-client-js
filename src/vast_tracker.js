@@ -430,6 +430,7 @@ export class VASTTracker extends EventEmitter {
    *
    * @param {Array} URLTemplates - An array of tracking url templates.
    * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+   * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
   trackURLs(URLTemplates, variables = {}, options = {}) {
     if (this.linear) {
