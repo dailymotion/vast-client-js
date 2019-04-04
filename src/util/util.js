@@ -1,5 +1,5 @@
-function track(URLTemplates, variables) {
-  const URLs = resolveURLTemplates(URLTemplates, variables);
+function track(URLTemplates, variables, options) {
+  const URLs = resolveURLTemplates(URLTemplates, variables, options);
 
   URLs.forEach(URL => {
     if (typeof window !== 'undefined' && window !== null) {
@@ -9,7 +9,7 @@ function track(URLTemplates, variables) {
   });
 }
 
-function resolveURLTemplates(URLTemplates, variables = {}) {
+function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   const URLs = [];
 
   // Encode String variables, when given
@@ -23,7 +23,11 @@ function resolveURLTemplates(URLTemplates, variables = {}) {
   }
 
   // Set default value for invalid ERRORCODE
-  if (variables['ERRORCODE'] && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
+  if (
+    variables['ERRORCODE'] &&
+    !options.isCustomCode &&
+    !/^[0-9]{3}$/.test(variables['ERRORCODE'])
+  ) {
     variables['ERRORCODE'] = 900;
   }
 
