@@ -307,20 +307,41 @@ describe('VASTTracker', function() {
       });
 
       describe('#errorWithCode', () => {
-        before(done => {
-          _eventsSent = [];
-          util.track = function(URLTemplates, variables) {
-            _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
+        before(() => {
+          util.track = function(URLTemplates, variables, options) {
+            _eventsSent.push(
+              this.resolveURLTemplates(URLTemplates, variables, options)
+            );
           };
-          this.Tracker.errorWithCode(405);
-          done();
+        });
+        beforeEach(() => {
+          _eventsSent = [];
         });
 
-        it('should have called error urls', () => {
+        it('should have called error urls with right code', () => {
+          this.Tracker.errorWithCode(405);
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',
             'http://example.com/error_405'
+          ]);
+        });
+
+        it('should have called error urls with 900 if unknown code', () => {
+          this.Tracker.errorWithCode(10001);
+          _eventsSent[0].should.eql([
+            'http://example.com/wrapperA-error',
+            'http://example.com/wrapperB-error',
+            'http://example.com/error_900'
+          ]);
+        });
+
+        it('should have called error urls with custom code when enabled', () => {
+          this.Tracker.errorWithCode(10001, true);
+          _eventsSent[0].should.eql([
+            'http://example.com/wrapperA-error',
+            'http://example.com/wrapperB-error',
+            'http://example.com/error_10001'
           ]);
         });
       });
