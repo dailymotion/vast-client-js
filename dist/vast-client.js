@@ -125,8 +125,8 @@ var VAST = (function (exports) {
     return CreativeCompanion;
   }(Creative);
 
-  function track(URLTemplates, variables) {
-    var URLs = resolveURLTemplates(URLTemplates, variables);
+  function track(URLTemplates, variables, options) {
+    var URLs = resolveURLTemplates(URLTemplates, variables, options);
 
     URLs.forEach(function (URL) {
       if (typeof window !== 'undefined' && window !== null) {
@@ -136,8 +136,16 @@ var VAST = (function (exports) {
     });
   }
 
+  /**
+   * Replace the provided URLTemplates with the given values
+   *
+   * @param {Array} URLTemplates - An array of tracking url templates.
+   * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+   * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
+   */
   function resolveURLTemplates(URLTemplates) {
     var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     var URLs = [];
 
@@ -150,7 +158,7 @@ var VAST = (function (exports) {
     }
 
     // Set default value for invalid ERRORCODE
-    if (variables['ERRORCODE'] && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
+    if (variables['ERRORCODE'] && !options.isCustomCode && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
       variables['ERRORCODE'] = 900;
     }
 
@@ -2869,12 +2877,15 @@ var VAST = (function (exports) {
        * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
        *
        * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
+       * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
        */
 
     }, {
       key: 'errorWithCode',
       value: function errorWithCode(errorCode) {
-        this.trackURLs(this.ad.errorURLTemplates, { ERRORCODE: errorCode });
+        var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        this.trackURLs(this.ad.errorURLTemplates, { ERRORCODE: errorCode }, { isCustomCode: isCustomCode });
       }
 
       /**
@@ -2986,12 +2997,14 @@ var VAST = (function (exports) {
        *
        * @param {Array} URLTemplates - An array of tracking url templates.
        * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+       * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
        */
 
     }, {
       key: 'trackURLs',
       value: function trackURLs(URLTemplates) {
         var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
         if (this.linear) {
           if (this.creative && this.creative.mediaFiles && this.creative.mediaFiles[0] && this.creative.mediaFiles[0].fileURL) {
@@ -3000,7 +3013,7 @@ var VAST = (function (exports) {
           variables['CONTENTPLAYHEAD'] = this.progressFormatted();
         }
 
-        util.track(URLTemplates, variables);
+        util.track(URLTemplates, variables, options);
       }
 
       /**
