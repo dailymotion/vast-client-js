@@ -228,33 +228,23 @@ export class VASTParser extends EventEmitter {
 
   /**
    * Parses the given xml Object into an array of ads
-   * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
+   * Returns the array or throws an `Error` if an invalid VAST XML is provided
    * @param  {Object} vastXml - An object representing an xml document.
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits  VASTParser#VAST-resolving
-   * @emits  VASTParser#VAST-resolved
-   * @return {Promise}
+   * @return {Array}
+   * @throws {Error} `vastXml` must be a valid VAST XMLDocument
    */
-  parse(
-    vastXml,
-    {
-      resolveAll = true,
-      wrapperSequence = null,
-      originalUrl = null,
-      wrapperDepth = 0,
-      isRootVAST = false
-    }
-  ) {
+  parseVastXml(vastXml, { isRootVAST = false }) {
     // check if is a valid VAST document
     if (
       !vastXml ||
       !vastXml.documentElement ||
       vastXml.documentElement.nodeName !== 'VAST'
     ) {
-      return Promise.reject(new Error('Invalid VAST XMLDocument'));
+      throw new Error('Invalid VAST XMLDocument');
     }
 
-    let ads = [];
+    const ads = [];
     const childNodes = vastXml.documentElement.childNodes;
 
     // Fill the VASTResponse object with ads and errorURLTemplates
@@ -282,6 +272,35 @@ export class VASTParser extends EventEmitter {
           });
         }
       }
+    }
+
+    return ads;
+  }
+
+  /**
+   * Parses the given xml Object into an array of unwrapped ads.
+   * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
+   * @param  {Object} vastXml - An object representing an xml document.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
+   * @return {Promise}
+   */
+  parse(
+    vastXml,
+    {
+      resolveAll = true,
+      wrapperSequence = null,
+      originalUrl = null,
+      wrapperDepth = 0,
+      isRootVAST = false
+    }
+  ) {
+    let ads = [];
+    try {
+      ads = this.parseVastXml(vastXml, { isRootVAST });
+    } catch (e) {
+      return Promise.reject(e);
     }
 
     const adsCount = ads.length;

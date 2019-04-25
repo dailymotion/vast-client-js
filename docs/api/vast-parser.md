@@ -263,11 +263,18 @@ vastParser.parseVAST(vastXml, options)
 These methods documentation is provided in order to make the parser internal logic clearer. It should not be considered as part of the class public API
 
 ### parse(vastXml, options)
-Parses the given xml Object into an array of ads. Returns a `Promise` which resolves with the array or rejects with an error according to the result of the parsing.
+Parses the given xml Object into an array of unwrapped ads. Returns a `Promise` which resolves with the array or rejects with an error according to the result of the parsing.
 
 #### Parameters
  * **`vastXml: Object`** - An object representing an xml document.
  * **`options: Object`** - An optional Object of parameters to be used in the parsing process.
+
+### parseVastXml(vastXml, options)
+Parses the given xml Object into an array of ads. Returns the array or throws an `Error` if an invalid VAST XML is provided.
+
+#### Parameters
+* **`vastXml: Object`** - An object representing an xml document.
+* **`options: Object`** - An optional Object of parameters to be used in the parsing process.
 
 ### resolveWrappers(ad, wrapperDepth, originalUrl)
 Resolves the wrappers for the given ad in a recursive way. Returns a `Promise` which resolves with the unwrapped ad or rejects with an error.
