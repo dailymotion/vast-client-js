@@ -1,0 +1,9 @@
+* text=auto
+
+*.jpg       binary
+
+*.js        eol=lf
+*.json      eol=lf
+*.md        eol=lf
+*.xml       eol=lf
+*.yml       eol=lf
