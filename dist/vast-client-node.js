@@ -1598,31 +1598,22 @@ var VASTParser = function (_EventEmitter) {
 
     /**
      * Parses the given xml Object into an array of ads
-     * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
+     * Returns the array or throws an `Error` if an invalid VAST XML is provided
      * @param  {Object} vastXml - An object representing an xml document.
      * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-     * @emits  VASTParser#VAST-resolving
-     * @emits  VASTParser#VAST-resolved
-     * @return {Promise}
+     * @return {Array}
+     * @throws {Error} `vastXml` must be a valid VAST XMLDocument
      */
 
   }, {
-    key: 'parse',
-    value: function parse(vastXml, _ref) {
-      var _ref$resolveAll = _ref.resolveAll,
-          resolveAll = _ref$resolveAll === undefined ? true : _ref$resolveAll,
-          _ref$wrapperSequence = _ref.wrapperSequence,
-          wrapperSequence = _ref$wrapperSequence === undefined ? null : _ref$wrapperSequence,
-          _ref$originalUrl = _ref.originalUrl,
-          originalUrl = _ref$originalUrl === undefined ? null : _ref$originalUrl,
-          _ref$wrapperDepth = _ref.wrapperDepth,
-          wrapperDepth = _ref$wrapperDepth === undefined ? 0 : _ref$wrapperDepth,
-          _ref$isRootVAST = _ref.isRootVAST,
+    key: 'parseVastXml',
+    value: function parseVastXml(vastXml, _ref) {
+      var _ref$isRootVAST = _ref.isRootVAST,
           isRootVAST = _ref$isRootVAST === undefined ? false : _ref$isRootVAST;
 
       // check if is a valid VAST document
       if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
-        return Promise.reject(new Error('Invalid VAST XMLDocument'));
+        throw new Error('Invalid VAST XMLDocument');
       }
 
       var ads = [];
@@ -1651,6 +1642,40 @@ var VASTParser = function (_EventEmitter) {
             });
           }
         }
+      }
+
+      return ads;
+    }
+
+    /**
+     * Parses the given xml Object into an array of unwrapped ads.
+     * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
+     * @param  {Object} vastXml - An object representing an xml document.
+     * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+     * @emits  VASTParser#VAST-resolving
+     * @emits  VASTParser#VAST-resolved
+     * @return {Promise}
+     */
+
+  }, {
+    key: 'parse',
+    value: function parse(vastXml, _ref2) {
+      var _ref2$resolveAll = _ref2.resolveAll,
+          resolveAll = _ref2$resolveAll === undefined ? true : _ref2$resolveAll,
+          _ref2$wrapperSequence = _ref2.wrapperSequence,
+          wrapperSequence = _ref2$wrapperSequence === undefined ? null : _ref2$wrapperSequence,
+          _ref2$originalUrl = _ref2.originalUrl,
+          originalUrl = _ref2$originalUrl === undefined ? null : _ref2$originalUrl,
+          _ref2$wrapperDepth = _ref2.wrapperDepth,
+          wrapperDepth = _ref2$wrapperDepth === undefined ? 0 : _ref2$wrapperDepth,
+          _ref2$isRootVAST = _ref2.isRootVAST,
+          isRootVAST = _ref2$isRootVAST === undefined ? false : _ref2$isRootVAST;
+
+      var ads = [];
+      try {
+        ads = this.parseVastXml(vastXml, { isRootVAST: isRootVAST });
+      } catch (e) {
+        return Promise.reject(e);
       }
 
       var adsCount = ads.length;
@@ -1686,9 +1711,9 @@ var VASTParser = function (_EventEmitter) {
       var _this6 = this;
 
       var ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var _ref2 = arguments[1];
-      var wrapperDepth = _ref2.wrapperDepth,
-          originalUrl = _ref2.originalUrl;
+      var _ref3 = arguments[1];
+      var wrapperDepth = _ref3.wrapperDepth,
+          originalUrl = _ref3.originalUrl;
 
       var resolveWrappersPromises = [];
 
