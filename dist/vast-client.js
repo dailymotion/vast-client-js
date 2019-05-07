@@ -1,5 +1,8 @@
-var VAST = (function (exports) {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.VAST = {}));
+}(this, function (exports) { 'use strict';
 
   function _typeof(obj) {
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -2927,6 +2930,6 @@ var VAST = (function (exports) {
   exports.VASTParser = VASTParser;
   exports.VASTTracker = VASTTracker;
 
-  return exports;
+  Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
+}));
