@@ -36,8 +36,18 @@ const browserConfig = {
   input: 'src/index.js',
   output: {
     name: 'VAST',
-    format: 'iife',
+    format: 'umd',
     file: 'dist/vast-client.js'
+  },
+  plugins: [babelPlugin]
+};
+
+const browserScriptConfig = {
+  input: 'src/index.js',
+  output: {
+    name: 'VAST',
+    format: 'iife',
+    file: 'dist/vast-client-browser.js'
   },
   plugins: [babelPlugin]
 };
@@ -67,5 +77,7 @@ export default [
 
   // CommonJS build for Node usage [package.json "main"]
   nodeConfig,
-  minify(nodeConfig)
+  minify(nodeConfig),
+
+  minify(browserScriptConfig)
 ];
