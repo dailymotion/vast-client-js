@@ -78,19 +78,31 @@ The API documentation is organized by components:
 
 Read the [**2.0 migration guide**](docs/api/2.0-migration.md) to update your project or follow the [**1.x API documentation**](docs/api/1.x) if you're still using the old version.
 
-## Support and compatibility
-The library is 100% written in JavaScript and the source code uses modern features like `modules`, `classes`, ecc... . Make sure your environment supports these features, or transpile the library when bundling your project.
-
 ### Pre-bundled versions
 We provide several pre-bundled versions of the client (see [`dist` directory](dist/))
 
-#### Browser
-A pre-bundled version of VAST Client JS is available: [`vast-client-browse.min.js`](dist/vast-client-browse.min.js) [minified].
+#### Bundlers
+A version for js bundlers (like webpack or rollup) is available by default when adding the lib using a package manager (like npm or yarn): [`vast-client.js`](dist/vast-client.js) or [`vast-client.min.js`](dist/vast-client.min.js) [minified].
+
+```javascript
+const import {
+  VASTClient,
+  VASTParser,
+  VASTTracker
+} from 'vast-client'
+
+const vastClient = new VASTClient();
+const vastParser = new VASTParser();
+const vastTracker = new VASTTracker();
+```
+
+#### Browser script
+A pre-bundled version of VAST Client JS is available: [`vast-client-browser.min.js`](dist/vast-client-browser.min.js) [minified].
 
 You can add the script directly to your page and access the library's components through the `VAST` object.
 
 ```html
-<script src="vast-client-browse.min.js"></script>
+<script src="vast-client-browser.min.js"></script>
 ```
 
 ```javascript
