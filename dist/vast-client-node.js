@@ -1809,7 +1809,7 @@ var VASTParser = function (_EventEmitter) {
 
             resolve(unwrappedAds);
           });
-        }).catch(function (err) {
+        })["catch"](function (err) {
           // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
           // (URI was either unavailable or reached a timeout as defined by the video player.)
           ad.errorCode = 301;
@@ -2118,7 +2118,7 @@ var VASTClient = function () {
 
         _this.vastParser.getAndParseVAST(url, options).then(function (response) {
           return resolve(response);
-        }).catch(function (err) {
+        })["catch"](function (err) {
           return reject(err);
         });
       });
