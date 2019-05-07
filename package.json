@@ -23,10 +23,7 @@
     "node": ">=8.9.4"
   },
   "main": "dist/vast-client-node.min.js",
-  "module": "src/index.js",
-  "browser": {
-    "dist/vast-client.min.js": "dist/vast-client.min.js"
-  },
+  "browser": "dist/vast-client.min.js",
   "scripts": {
     "build": "rollup -c",
     "lint": "eslint .",

@@ -85,12 +85,12 @@ The library is 100% written in JavaScript and the source code uses modern featur
 We provide several pre-bundled versions of the client (see [`dist` directory](dist/))
 
 #### Browser
-A pre-bundled version of VAST Client JS is available: [`vast-client.js`](dist/vast-client.js) or [`vast-client.min.js`](dist/vast-client.min.js) [minified].
+A pre-bundled version of VAST Client JS is available: [`vast-client-browse.min.js`](dist/vast-client-browse.min.js) [minified].
 
 You can add the script directly to your page and access the library's components through the `VAST` object.
 
 ```html
-<script src="vast-client.min.js"></script>
+<script src="vast-client-browse.min.js"></script>
 ```
 
 ```javascript
