@@ -32,10 +32,10 @@
     "jest": "jest"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.3.1",
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
     "@babel/register": "^7.0.0",
-    "eslint": "^5.13.0",
+    "eslint": "^5.16.0",
     "eslint-plugin-import": "^2.15.0",
     "husky": "^0.14.3",
     "jest": "^24.1.0",
