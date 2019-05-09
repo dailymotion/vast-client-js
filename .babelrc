@@ -1,4 +1,15 @@
 {
-  "presets": ["@babel/preset-env"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "ie": "9",
+          "safari": "8"
+        },
+        "useBuiltIns": false
+      }
+    ]
+  ],
   "exclude": ["node_modules/**"]
 }
