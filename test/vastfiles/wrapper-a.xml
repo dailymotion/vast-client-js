@@ -7,7 +7,7 @@
       <Error>http://example.com/wrapperA-error</Error>
       <Impression>http://example.com/wrapperA-impression</Impression>
       <Creatives>
-        <Creative>
+        <Creative id="a:ca1">
           <CompanionAds>
             <Companion id="urn:a2:287461:103" width="0" height="0">
               <CompanionClickThrough><![CDATA[http://example.com/wrapperA-companion1-click-thru]]></CompanionClickThrough>
@@ -24,7 +24,7 @@
             </Companion>
           </CompanionAds>
         </Creative>
-        <Creative>
+        <Creative id="a:na1">
           <NonLinearAds>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperA-nonlinear-start]]></Tracking>
@@ -40,7 +40,7 @@
             </NonLinear>
           </NonLinearAds>
         </Creative>
-        <Creative>
+        <Creative id="a:la1">
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start1]]></Tracking>
@@ -55,7 +55,7 @@
             </VideoClicks>
           </Linear>
         </Creative>
-        <Creative>
+        <Creative id="a:la2">
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start2]]></Tracking>
