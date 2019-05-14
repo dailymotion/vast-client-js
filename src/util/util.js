@@ -109,6 +109,21 @@ function flatten(arr) {
   }, []);
 }
 
+/**
+ * Joins two arrays without duplicates
+ * @param {Array} arr1
+ * @param {Array} arr2
+ */
+function joinArrayUnique(arr1 = [], arr2 = []) {
+  const arr = (arr1 || []).concat(arr2 || []);
+  return arr.reduce((res, val) => {
+    if (res.indexOf(val) === -1) {
+      res.push(val);
+    }
+    return res;
+  }, []);
+}
+
 export const util = {
   track,
   resolveURLTemplates,
@@ -116,5 +131,6 @@ export const util = {
   leftpad,
   range,
   isNumeric,
-  flatten
+  flatten,
+  joinArrayUnique
 };
