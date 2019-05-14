@@ -81,7 +81,7 @@
             </Companion>
           </CompanionAds>
         </Creative>
-        <Creative>
+        <Creative id="id130986">
           <NonLinearAds>
             <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI" >
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>

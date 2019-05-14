@@ -8,15 +8,6 @@
       <Impression>http://example.com/wrapper-impression</Impression>
       <Creatives>
         <Creative>
-          <CompanionAds>
-            <Companion id="urn:a2:287461:103" width="0" height="0">
-              <CompanionClickThrough><![CDATA[http://example.com/companion-click-thru]]></CompanionClickThrough>
-              <CompanionClickTracking><![CDATA[http://example.com/companion-click-tracking]]></CompanionClickTracking>
-              <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
-            </Companion>
-          </CompanionAds>
-        </Creative>
-        <Creative>
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>

@@ -1,5 +1,5 @@
 import { parseCreativeCompanion } from '../src/parser/creative_companion_parser';
-import { getNodesFromXml } from './utils';
+import { getNodesFromXml } from './utils/utils';
 import { companionAds } from './samples/companion_ads';
 
 describe('parseCreativeCompanion', function() {
