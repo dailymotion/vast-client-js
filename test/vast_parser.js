@@ -233,8 +233,8 @@ describe('VASTParser', function() {
         ]);
       });
 
-      it('should have 3 creatives', () => {
-        ad1.creatives.should.have.length(3);
+      it('should have 5 creatives', () => {
+        ad1.creatives.should.have.length(5);
       });
 
       it('should have 4 extensions', () => {
@@ -262,7 +262,9 @@ describe('VASTParser', function() {
         let linear = null;
 
         before(() => {
-          linear = _response.ads[0].creatives[0];
+          linear = _response.ads[0].creatives.filter(
+            creative => creative.id === 'id130984'
+          )[0];
         });
 
         after(() => {
@@ -425,7 +427,9 @@ describe('VASTParser', function() {
         let nonlinears = null;
 
         before(() => {
-          nonlinears = _response.ads[0].creatives[2];
+          nonlinears = _response.ads[0].creatives.filter(
+            creative => creative.id === 'id130986'
+          )[0];
         });
 
         after(() => {
@@ -436,8 +440,8 @@ describe('VASTParser', function() {
           nonlinears.type.should.equal('nonlinear');
         });
 
-        it('should not have an id', () => {
-          should.equal(nonlinears.id, null);
+        it('should have an id', () => {
+          should.equal(nonlinears.id, 'id130986');
         });
 
         it('should not have an adId', () => {
@@ -577,8 +581,8 @@ describe('VASTParser', function() {
         ]);
       });
 
-      it('should have 1 creative', () => {
-        ad2.creatives.should.have.length(1);
+      it('should have 3 creative', () => {
+        ad2.creatives.should.have.length(3);
       });
 
       it('should have 1 extension (from the wrapper)', () => {
@@ -590,7 +594,9 @@ describe('VASTParser', function() {
         let linear = null;
 
         before(() => {
-          linear = ad2.creatives[0];
+          linear = ad2.creatives.filter(
+            creative => creative.id === 'id873421'
+          )[0];
         });
 
         after(() => {
