@@ -1,6 +1,6 @@
 import { _parseExtensions } from '../src/parser/ad_parser';
 import { parserUtils } from '../src/parser/parser_utils';
-import { getNodesFromXml } from './utils';
+import { getNodesFromXml } from './utils/utils';
 import { extensions } from './samples/extensions';
 
 describe('AdParser', function() {

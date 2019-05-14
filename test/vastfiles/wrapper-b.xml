@@ -8,7 +8,7 @@
       <Impression>http://example.com/wrapperB-impression1</Impression>
       <Impression>http://example.com/wrapperB-impression2</Impression>
       <Creatives>
-        <Creative>
+        <Creative id="b:ca1">
           <CompanionAds>
             <Companion id="urn:a2:287461:103" width="0" height="0">
               <CompanionClickThrough><![CDATA[http://example.com/wrapperB-companion1-click-thru]]></CompanionClickThrough>
@@ -25,7 +25,7 @@
             </Companion>
           </CompanionAds>
         </Creative>
-        <Creative>
+        <Creative id="b:na1">
           <NonLinearAds>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperB-nonlinear-start]]></Tracking>
@@ -41,7 +41,7 @@
             </NonLinear>
           </NonLinearAds>
         </Creative>
-        <Creative>
+        <Creative id="b:la1">
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperB-linear-start]]></Tracking>

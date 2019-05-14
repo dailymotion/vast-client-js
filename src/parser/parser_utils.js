@@ -202,7 +202,34 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
+  const wrapperCompanions = (wrapper.creatives || []).filter(
+    creative => creative && creative.type === 'companion'
+  );
+  const wrapperCompanionClickTracking = wrapperCompanions.reduce(
+    (result, creative) => {
+      (creative.variations || []).forEach(variation => {
+        (variation.companionClickTrackingURLTemplates || []).forEach(url => {
+          if (result.indexOf(url) === -1) {
+            result.push(url);
+          }
+        });
+      });
+      return result;
+    },
+    []
+  );
+  unwrappedAd.creatives = wrapperCompanions.concat(unwrappedAd.creatives);
+
+  const wrapperHasVideoClickTracking =
+    wrapper.videoClickTrackingURLTemplates &&
+    wrapper.videoClickTrackingURLTemplates.length;
+
+  const wrapperHasVideoCustomClick =
+    wrapper.videoCustomClickURLTemplates &&
+    wrapper.videoCustomClickURLTemplates.length;
+
   unwrappedAd.creatives.forEach(creative => {
+    // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (const eventName in wrapper.trackingEvents[creative.type]) {
         const urls = wrapper.trackingEvents[creative.type][eventName];
@@ -214,47 +241,43 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         ].concat(urls);
       }
     }
-  });
 
-  if (
-    wrapper.videoClickTrackingURLTemplates &&
-    wrapper.videoClickTrackingURLTemplates.length
-  ) {
-    unwrappedAd.creatives.forEach(creative => {
-      if (creative.type === 'linear') {
+    if (creative.type === 'linear') {
+      // merge video click tracking url
+      if (wrapperHasVideoClickTracking) {
         creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(
           wrapper.videoClickTrackingURLTemplates
         );
       }
-    });
-  }
 
-  if (
-    wrapper.videoCustomClickURLTemplates &&
-    wrapper.videoCustomClickURLTemplates.length
-  ) {
-    unwrappedAd.creatives.forEach(creative => {
-      if (creative.type === 'linear') {
+      // merge video custom click url
+      if (wrapperHasVideoCustomClick) {
         creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(
           wrapper.videoCustomClickURLTemplates
         );
       }
-    });
-  }
 
-  // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-  if (wrapper.videoClickThroughURLTemplate) {
-    unwrappedAd.creatives.forEach(creative => {
+      // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
       if (
-        creative.type === 'linear' &&
+        wrapper.videoClickThroughURLTemplate &&
         (creative.videoClickThroughURLTemplate === null ||
           typeof creative.videoClickThroughURLTemplate === 'undefined')
       ) {
         creative.videoClickThroughURLTemplate =
           wrapper.videoClickThroughURLTemplate;
       }
-    });
-  }
+    }
+
+    // pass wrapper companion trackers to all companions
+    if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
+      (creative.variations || []).forEach(variation => {
+        variation.companionClickTrackingURLTemplates = util.joinArrayUnique(
+          variation.companionClickTrackingURLTemplates,
+          wrapperCompanionClickTracking
+        );
+      });
+    }
+  });
 }
 
 export const parserUtils = {
