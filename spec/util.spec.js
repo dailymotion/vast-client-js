@@ -1,20 +1,20 @@
 import { util } from '../src/util/util';
 
-const now = new Date().toISOString();
-const playhead = '00:12:30.212';
-const assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-[{bar';
-
-const encodeRFC3986 = str => util.encodeURIComponentRFC3986(str);
-
-const encodedAssetURI = encodeRFC3986(assetURI);
-const encodedPlayhead = encodeRFC3986(playhead);
-const encodedTimestamp = encodeRFC3986(now);
-
-const resolve = (URLTemplate, variables) =>
-  util.resolveURLTemplates([URLTemplate], variables)[0];
-
 describe('util', function() {
   describe('resolveURLTemplates', function() {
+    const now = new Date().toISOString();
+    const playhead = '00:12:30.212';
+    const assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-[{bar';
+
+    const encodeRFC3986 = str => util.encodeURIComponentRFC3986(str);
+
+    const encodedAssetURI = encodeRFC3986(assetURI);
+    const encodedPlayhead = encodeRFC3986(playhead);
+    const encodedTimestamp = encodeRFC3986(now);
+
+    const resolve = (URLTemplate, variables) =>
+      util.resolveURLTemplates([URLTemplate], variables)[0];
+
     const realDateToISOString = Date.prototype.toISOString;
 
     beforeEach(() => {
