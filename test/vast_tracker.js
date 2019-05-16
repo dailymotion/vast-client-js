@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import { VASTClient } from '../src/vast_client';
 import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
-import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { nodeURLHandler } from '../src/net/node_url_handler';
 import { util } from '../src/util/util';
 import { CreativeLinear } from '../src/creative/creative_linear';
 

@@ -2,7 +2,7 @@ import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
 import { VASTClient } from '../src/vast_client';
-import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
+import { nodeURLHandler } from '../src/net/node_url_handler';
 
 describe('VASTClient', () => {
   const urlfor = relpath =>

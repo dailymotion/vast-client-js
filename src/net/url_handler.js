@@ -1,6 +1,6 @@
-import { flashURLHandler } from './urlhandlers/flash_url_handler';
-import { nodeURLHandler } from './urlhandlers/mock_node_url_handler';
-import { XHRURLHandler } from './urlhandlers/xhr_url_handler';
+import { flashURLHandler } from './flash_url_handler';
+import { nodeURLHandler } from './mock_node_url_handler';
+import { XHRURLHandler } from './xhr_url_handler';
 
 function get(url, options, cb) {
   // Allow skip of the options param

@@ -60,7 +60,7 @@ const nodeConfig = {
   },
   plugins: [
     alias({
-      './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
+      './net/mock_node_url_handler': './net/node_url_handler'
     }),
     resolve({
       preferBuiltins: true
