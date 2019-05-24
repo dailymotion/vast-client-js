@@ -113,6 +113,7 @@ function flatten(arr) {
  * Joins two arrays without duplicates
  * @param {Array} arr1
  * @param {Array} arr2
+ * @return {Array}
  */
 function joinArrayUnique(arr1 = [], arr2 = []) {
   const firstArr = Array.isArray(arr1) ? arr1 : [];
