@@ -228,6 +228,28 @@ function flatten(arr) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
   }, []);
 }
+/**
+ * Joins two arrays without duplicates
+ * @param {Array} arr1
+ * @param {Array} arr2
+ * @return {Array}
+ */
+
+
+function joinArrayUnique() {
+  var arr1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var arr2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var firstArr = Array.isArray(arr1) ? arr1 : [];
+  var secondArr = Array.isArray(arr2) ? arr2 : [];
+  var arr = firstArr.concat(secondArr);
+  return arr.reduce(function (res, val) {
+    if (res.indexOf(val) === -1) {
+      res.push(val);
+    }
+
+    return res;
+  }, []);
+}
 
 var util = {
   track: track,
@@ -236,7 +258,8 @@ var util = {
   leftpad: leftpad,
   range: range,
   isNumeric: isNumeric,
-  flatten: flatten
+  flatten: flatten,
+  joinArrayUnique: joinArrayUnique
 };
 
 /**
@@ -417,8 +440,24 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
   unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
-
+  var wrapperCompanions = (wrapper.creatives || []).filter(function (creative) {
+    return creative && creative.type === 'companion';
+  });
+  var wrapperCompanionClickTracking = wrapperCompanions.reduce(function (result, creative) {
+    (creative.variations || []).forEach(function (variation) {
+      (variation.companionClickTrackingURLTemplates || []).forEach(function (url) {
+        if (result.indexOf(url) === -1) {
+          result.push(url);
+        }
+      });
+    });
+    return result;
+  }, []);
+  unwrappedAd.creatives = wrapperCompanions.concat(unwrappedAd.creatives);
+  var wrapperHasVideoClickTracking = wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length;
+  var wrapperHasVideoCustomClick = wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length;
   unwrappedAd.creatives.forEach(function (creative) {
+    // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (var eventName in wrapper.trackingEvents[creative.type]) {
         var urls = wrapper.trackingEvents[creative.type][eventName];
@@ -428,32 +467,31 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
       }
     }
-  });
 
-  if (wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length) {
-    unwrappedAd.creatives.forEach(function (creative) {
-      if (creative.type === 'linear') {
+    if (creative.type === 'linear') {
+      // merge video click tracking url
+      if (wrapperHasVideoClickTracking) {
         creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(wrapper.videoClickTrackingURLTemplates);
-      }
-    });
-  }
+      } // merge video custom click url
 
-  if (wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length) {
-    unwrappedAd.creatives.forEach(function (creative) {
-      if (creative.type === 'linear') {
+
+      if (wrapperHasVideoCustomClick) {
         creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(wrapper.videoCustomClickURLTemplates);
-      }
-    });
-  }
+      } // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
 
-  // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-  if (wrapper.videoClickThroughURLTemplate) {
-    unwrappedAd.creatives.forEach(function (creative) {
-      if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
+
+      if (wrapper.videoClickThroughURLTemplate && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
         creative.videoClickThroughURLTemplate = wrapper.videoClickThroughURLTemplate;
       }
-    });
-  }
+    } // pass wrapper companion trackers to all companions
+
+
+    if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
+      (creative.variations || []).forEach(function (variation) {
+        variation.companionClickTrackingURLTemplates = util.joinArrayUnique(variation.companionClickTrackingURLTemplates, wrapperCompanionClickTracking);
+      });
+    }
+  });
 }
 
 var parserUtils = {
