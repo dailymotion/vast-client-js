@@ -6,6 +6,7 @@ This class represents a parsed VAST response.
 
 - `ads: Array<Ad>` [go to class](#ad)
 - `errorURLTemplates: Array<String>`
+- `version: String`
 
 ## Ad<a name="ad"></a>
 
