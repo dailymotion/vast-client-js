@@ -142,6 +142,7 @@ export class VASTParser extends EventEmitter {
     };
 
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
+    this.vastVersion = null;
   }
 
   /**
@@ -221,6 +222,7 @@ export class VASTParser extends EventEmitter {
     const response = new VASTResponse();
     response.ads = ads;
     response.errorURLTemplates = this.getErrorURLTemplates();
+    response.version = this.vastVersion;
     this.completeWrapperResolving(response);
 
     return response;
@@ -246,6 +248,10 @@ export class VASTParser extends EventEmitter {
 
     const ads = [];
     const childNodes = vastXml.documentElement.childNodes;
+
+    // Keep the last available VAST version (in case of Wrappers)
+    const vastVersion = vastXml.documentElement.getAttribute('version');
+    if (vastVersion) this.vastVersion = vastVersion;
 
     // Fill the VASTResponse object with ads and errorURLTemplates
     for (const nodeKey in childNodes) {
