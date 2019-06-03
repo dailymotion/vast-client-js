@@ -138,7 +138,8 @@ Using `get` method with default `options` will return a [`VASTResponse`](https:/
     ad3,
     ad4
   ],
-  errorURLTemplates
+  errorURLTemplates,
+  version
 }
 ```
 
@@ -149,7 +150,8 @@ The `resolveAll` parameter allows to request only the first Ad or AdPod. If we p
   ads: [
     ad1
   ],
-  errorURLTemplates
+  errorURLTemplates,
+  version
 }
 ```
 
