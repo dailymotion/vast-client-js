@@ -249,9 +249,13 @@ export class VASTParser extends EventEmitter {
     const ads = [];
     const childNodes = vastXml.documentElement.childNodes;
 
-    // Keep the last available VAST version (in case of Wrappers)
-    const vastVersion = vastXml.documentElement.getAttribute('version');
-    if (vastVersion) this.vastVersion = vastVersion;
+    /* Only parse the version of the Root VAST for now because we don't know yet how to
+       handle some cases like multiple wrappers in the same vast
+    */
+    if (isRootVAST) {
+      const vastVersion = vastXml.documentElement.getAttribute('version');
+      if (vastVersion) this.vastVersion = vastVersion;
+    }
 
     // Fill the VASTResponse object with ads and errorURLTemplates
     for (const nodeKey in childNodes) {
