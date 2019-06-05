@@ -140,8 +140,8 @@ describe('VASTParser', function() {
       this.response.should.be.an.instanceOf(VASTResponse);
     });
 
-    it('should have retrived last wrapper VAST version', () => {
-      this.response.version.should.eql('2.1');
+    it('should have retrived root VAST version', () => {
+      this.response.version.should.eql('2.0');
     });
 
     describe('#duration', () =>
