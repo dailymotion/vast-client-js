@@ -2088,14 +2088,15 @@
 
         var ads = [];
         var childNodes = vastXml.documentElement.childNodes;
-
         /* Only parse the version of the Root VAST for now because we don't know yet how to
            handle some cases like multiple wrappers in the same vast
         */
+
         if (isRootVAST) {
           var vastVersion = vastXml.documentElement.getAttribute('version');
           if (vastVersion) this.vastVersion = vastVersion;
-        }
+        } // Fill the VASTResponse object with ads and errorURLTemplates
+
 
         // Fill the VASTResponse object with ads and errorURLTemplates
         for (var nodeKey in childNodes) {
