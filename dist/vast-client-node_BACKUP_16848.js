@@ -283,28 +283,6 @@ function flatten(arr) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
   }, []);
 }
-/**
- * Joins two arrays without duplicates
- * @param {Array} arr1
- * @param {Array} arr2
- * @return {Array}
- */
-
-
-function joinArrayUnique() {
-  var arr1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var arr2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  var firstArr = Array.isArray(arr1) ? arr1 : [];
-  var secondArr = Array.isArray(arr2) ? arr2 : [];
-  var arr = firstArr.concat(secondArr);
-  return arr.reduce(function (res, val) {
-    if (res.indexOf(val) === -1) {
-      res.push(val);
-    }
-
-    return res;
-  }, []);
-}
 
 var util = {
   track: track,
@@ -313,8 +291,7 @@ var util = {
   leftpad: leftpad,
   range: range,
   isNumeric: isNumeric,
-  flatten: flatten,
-  joinArrayUnique: joinArrayUnique
+  flatten: flatten
 };
 
 /**
@@ -527,24 +504,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
   unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
-  var wrapperCompanions = (wrapper.creatives || []).filter(function (creative) {
-    return creative && creative.type === 'companion';
-  });
-  var wrapperCompanionClickTracking = wrapperCompanions.reduce(function (result, creative) {
-    (creative.variations || []).forEach(function (variation) {
-      (variation.companionClickTrackingURLTemplates || []).forEach(function (url) {
-        if (result.indexOf(url) === -1) {
-          result.push(url);
-        }
-      });
-    });
-    return result;
-  }, []);
-  unwrappedAd.creatives = wrapperCompanions.concat(unwrappedAd.creatives);
-  var wrapperHasVideoClickTracking = wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length;
-  var wrapperHasVideoCustomClick = wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length;
   unwrappedAd.creatives.forEach(function (creative) {
-    // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (var eventName in wrapper.trackingEvents[creative.type]) {
         var urls = wrapper.trackingEvents[creative.type][eventName];
@@ -556,31 +516,32 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
       }
     }
+  });
 
-    if (creative.type === 'linear') {
-      // merge video click tracking url
-      if (wrapperHasVideoClickTracking) {
+  if (wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length) {
+    unwrappedAd.creatives.forEach(function (creative) {
+      if (creative.type === 'linear') {
         creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(wrapper.videoClickTrackingURLTemplates);
-      } // merge video custom click url
+      }
+    });
+  }
 
-
-      if (wrapperHasVideoCustomClick) {
+  if (wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length) {
+    unwrappedAd.creatives.forEach(function (creative) {
+      if (creative.type === 'linear') {
         creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(wrapper.videoCustomClickURLTemplates);
-      } // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
+      }
+    });
+  } // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
 
 
-      if (wrapper.videoClickThroughURLTemplate && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
+  if (wrapper.videoClickThroughURLTemplate) {
+    unwrappedAd.creatives.forEach(function (creative) {
+      if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
         creative.videoClickThroughURLTemplate = wrapper.videoClickThroughURLTemplate;
       }
-    } // pass wrapper companion trackers to all companions
-
-
-    if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
-      (creative.variations || []).forEach(function (variation) {
-        variation.companionClickTrackingURLTemplates = util.joinArrayUnique(variation.companionClickTrackingURLTemplates, wrapperCompanionClickTracking);
-      });
-    }
-  });
+    });
+  }
 }
 
 var parserUtils = {
@@ -1984,17 +1945,20 @@ function (_EventEmitter) {
       }
 
       var ads = [];
-      var childNodes = vastXml.documentElement.childNodes;
+      var childNodes = vastXml.documentElement.childNodes; // Fill the VASTResponse object with ads and errorURLTemplates
+
+<<<<<<< HEAD
       /* Only parse the version of the Root VAST for now because we don't know yet how to
          handle some cases like multiple wrappers in the same vast
       */
-
       if (isRootVAST) {
         var vastVersion = vastXml.documentElement.getAttribute('version');
         if (vastVersion) this.vastVersion = vastVersion;
-      } // Fill the VASTResponse object with ads and errorURLTemplates
+      }
 
-
+      // Fill the VASTResponse object with ads and errorURLTemplates
+=======
+>>>>>>> Bundle release 3.0.0-alpha.0
       for (var nodeKey in childNodes) {
         var node = childNodes[nodeKey];
 
@@ -2172,7 +2136,7 @@ function (_EventEmitter) {
             });
             resolve(unwrappedAds);
           });
-        })["catch"](function (err) {
+        }).catch(function (err) {
           // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
           // (URI was either unavailable or reached a timeout as defined by the video player.)
           ad.errorCode = 301;
@@ -2485,7 +2449,7 @@ function () {
 
         _this.vastParser.getAndParseVAST(url, options).then(function (response) {
           return resolve(response);
-        })["catch"](function (err) {
+        }).catch(function (err) {
           return reject(err);
         });
       });

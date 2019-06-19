@@ -1651,6 +1651,7 @@
 
     this.ads = [];
     this.errorURLTemplates = [];
+    this.version = null;
   };
 
   var DEFAULT_MAX_WRAPPER_DEPTH = 10;
@@ -1826,6 +1827,7 @@
           withCredentials: options.withCredentials
         };
         this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
+        this.vastVersion = null;
       }
       /**
        * Resolves the next group of ads. If all is true resolves all the remaining ads.
@@ -1912,6 +1914,7 @@
         var response = new VASTResponse();
         response.ads = ads;
         response.errorURLTemplates = this.getErrorURLTemplates();
+        response.version = this.vastVersion;
         this.completeWrapperResolving(response);
         return response;
       }
@@ -1936,7 +1939,16 @@
         }
 
         var ads = [];
-        var childNodes = vastXml.documentElement.childNodes; // Fill the VASTResponse object with ads and errorURLTemplates
+        var childNodes = vastXml.documentElement.childNodes;
+        /* Only parse the version of the Root VAST for now because we don't know yet how to
+           handle some cases like multiple wrappers in the same vast
+        */
+
+        if (isRootVAST) {
+          var vastVersion = vastXml.documentElement.getAttribute('version');
+          if (vastVersion) this.vastVersion = vastVersion;
+        } // Fill the VASTResponse object with ads and errorURLTemplates
+
 
         for (var nodeKey in childNodes) {
           var node = childNodes[nodeKey];
