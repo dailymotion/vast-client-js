@@ -278,6 +278,7 @@ export class VASTTracker extends EventEmitter {
   setExpand(expanded) {
     if (this.expanded !== expanded) {
       this.track(expanded ? 'expand' : 'collapse');
+      this.track(expanded ? 'playerExpand' : 'playerCollapse');
     }
     this.expanded = expanded;
   }
@@ -352,6 +353,17 @@ export class VASTTracker extends EventEmitter {
    */
   skip() {
     this.track('skip');
+  }
+
+  /**
+   * Must be called then loaded and buffered the creative’s media and assets either fully
+   * or to the extent that it is ready to play the media
+   * Calls the load tracking URLs.
+   *
+   * @emits VASTTracker#complete
+   */
+  load() {
+    this.track('loaded');
   }
 
   /**
