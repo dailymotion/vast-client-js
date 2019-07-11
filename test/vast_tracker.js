@@ -236,8 +236,14 @@ describe('VASTTracker', function() {
         before(done => {
           _eventsSent = [];
           this.Tracker.trackingEvents['expand'] = 'http://example.com/expand';
+          this.Tracker.trackingEvents[
+            'playerExpand'
+          ] = this.Tracker.trackingEvents['expand'];
           this.Tracker.trackingEvents['collapse'] =
             'http://example.com/collapse';
+          this.Tracker.trackingEvents[
+            'playerCollapse'
+          ] = this.Tracker.trackingEvents['collapse'];
           this.Tracker.setExpand(true);
           done();
         });
@@ -247,7 +253,7 @@ describe('VASTTracker', function() {
         });
 
         it('should send expand event', () => {
-          _eventsSent.should.eql(['expand']);
+          _eventsSent.should.eql(['expand', 'playerExpand']);
         });
 
         it('should be in collapsed mode', () => {
@@ -257,7 +263,7 @@ describe('VASTTracker', function() {
         });
 
         it('should send collapse event', () => {
-          _eventsSent.should.eql(['collapse']);
+          _eventsSent.should.eql(['collapse', 'playerCollapse']);
         });
 
         it('should send no event', () => {
@@ -417,6 +423,15 @@ describe('VASTTracker', function() {
 
         it('should have sent skip event', () => {
           _eventsSent.should.eql(['skip']);
+        });
+      });
+
+      describe('#load', () => {
+        it('should have sent load event', () => {
+          _eventsSent = [];
+          this.Tracker.trackingEvents['loaded'] = ['http://example.com/loaded'];
+          this.Tracker.load();
+          _eventsSent.should.eql(['loaded', ['http://example.com/loaded']]);
         });
       });
 

@@ -28,7 +28,7 @@
     "build": "rollup -c",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
-    "test": "mocha --compilers js:@babel/register --reporter spec test/*.js && jest",
+    "test": "mocha && jest",
     "jest": "jest"
   },
   "devDependencies": {
