@@ -201,6 +201,20 @@ describe('VASTParser', function() {
         ad1.extensions.should.have.length(4);
       });
 
+      it('should have 2 AdVerification URLs VAST 4.1', () => {
+        ad1.adVerifications.should.have.length(2);
+      });
+
+      it('validate second adVerification', () => {
+        ad1.adVerifications[1].resource.should.eql('http://example.com/omid2');
+        ad1.adVerifications[1].vendor.should.eql('company2.com-omid');
+        ad1.adVerifications[1].browserOptional.should.eql(false);
+        ad1.adVerifications[1].apiFramework.should.eql('omid');
+        ad1.adVerifications[1].parameters.should.eql(
+            'test-verification-parameter'
+        );
+      });
+
       it('should not have trackingEvents property', () => {
         should.equal(ad1.trackingEvents, undefined);
       });
