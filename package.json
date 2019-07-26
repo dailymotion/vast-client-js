@@ -4,7 +4,7 @@
   "contributors": [
     "Elia Maino <eliamaino@gmail.com>"
   ],
-  "version": "3.0.0-alpha.4",
+  "version": "3.0.0-alpha.5",
   "description": "JavaScript VAST Client",
   "keywords": [
     "vast",
