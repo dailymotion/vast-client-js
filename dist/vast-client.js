@@ -2755,7 +2755,9 @@
        *
        * @param {Boolean} expanded - Indicates if the video is expanded or not.
        * @emits VASTTracker#expand
+       * @emits VASTTracker#playerExpand
        * @emits VASTTracker#collapse
+       * @emits VASTTracker#playerCollapse
        */
 
     }, {
@@ -2763,6 +2765,7 @@
       value: function setExpand(expanded) {
         if (this.expanded !== expanded) {
           this.track(expanded ? 'expand' : 'collapse');
+          this.track(expanded ? 'playerExpand' : 'playerCollapse');
         }
 
         this.expanded = expanded;
@@ -2851,6 +2854,19 @@
       key: "skip",
       value: function skip() {
         this.track('skip');
+      }
+      /**
+       * Must be called then loaded and buffered the creative’s media and assets either fully
+       * or to the extent that it is ready to play the media
+       * Calls the loaded tracking URLs.
+       *
+       * @emits VASTTracker#loaded
+       */
+
+    }, {
+      key: "load",
+      value: function load() {
+        this.track('loaded');
       }
       /**
        * Must be called when the user clicks on the creative.
