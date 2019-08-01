@@ -316,6 +316,7 @@ function _parseExtension(extNode) {
 /**
  * Parses the AdVerifications Element.
  * @param  {Array} verifications - The array of verifications to parse.
+ * @return {Array<AdVerification>}
  */
 
 export function _parseAdVerifications(verifications) {

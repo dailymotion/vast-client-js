@@ -142,8 +142,8 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `isEmpty(): Boolean` Returns true when none of these attributes have a value
 
 ## AdVerification<a name="ad-verification"></a>
-- `apiFramework: String` The name of the API framework used to execute the AdVerification code
+- `apiFramework: String|null` The name of the API framework used to execute the AdVerification code
 - `browserOptional: Boolean` If *true*, this resource is optimized and able to execute in an environment without DOM and other browser built-ins (e.g. iOS' JavaScriptCore).
-- `parameters: string` Metadata about the current impression
+- `parameters: String|null` Metadata about the current impression
 - `resource: String|null` URI to the JavaScript file used to collect verification data
-- `vendor: String` An identifier for the verification vendor
+- `vendor: String|null` An identifier for the verification vendor
