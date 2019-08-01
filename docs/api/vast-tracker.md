@@ -53,9 +53,12 @@ Here is the list of events emitted by the class:
  * **`exitFullscreen`** - Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false
  * **`firstQuartile`** - Only for linear ads with a duration. Emitted when the adunit has reached 25% of its duration
  * **`fullscreen`** - Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from false to true
+ * **`loaded`** - Only for linear ad. Emitted when calling `load()`.
  * **`midpoint`** - Only for linear ads with a duration. Emitted when the adunit has reached 50% of its duration
  * **`mute`** - Emitted when calling `setMuted(muted)` and changing the mute state from false to true
  * **`pause`** - Emitted when calling `setPaused(paused)` and changing the pause state from false to true
+ * **`playerExpand`** - Emitted when calling `setExpand(true)` is called. This event replaces the fullscreen event in VAST 4.1
+ * **`playerCollapse`** - Emitted when calling `setExpand(false)` is called. This event replaces the exitFullscreen event in VAST 4.1
  * **`progress-[0-100]%`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion
  * **`progress-[currentTime]`** - Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time
  * **`resume`** - Emitted when calling `setPaused(paused)` and changing the pause state from true to false
@@ -83,6 +86,24 @@ const MEDIAFILE_PLAYBACK_ERROR = '405';
 // Bind error listener to the player
 player.on('error', () => {
   vastTracker.errorWithCode(MEDIAFILE_PLAYBACK_ERROR);
+});
+```
+
+### load()
+Must be called when the player considers that it has loaded and buffered the creative’s media and assets either fully or to the extent that it is ready to play the media.
+
+#### Events emitted
+ * **`loaded`**
+
+#### Example
+```Javascript
+// Bind ended listener to the player
+player.on('loaded', () => {
+  vastTracker.load();
+});
+
+vastTracker.on('loaded', () => {
+  // loaded tracking URLs have been called
 });
 ```
 
@@ -173,14 +194,17 @@ Sets the duration of the ad and updates the quartiles based on that.
  * **`duration: Number`** - The duration of the ad
 
 ### setExpand(expanded)
-Updates the expand state and calls the expand/collapse tracking URLs.
+Updates the expand state and calls the expand/collapse as well as playerExpand/playerCollapse for VAST 4.1. tracking URLs.
 
 #### Parameters
  * **`expanded: Boolean`** - Indicates if the video is expanded or not
 
 #### Events emitted
  * **`expand`**
+ * **`playerExpand`**
  * **`collapse`**
+ * **`playerCollapse`**
+
 
 #### Example
 ```Javascript

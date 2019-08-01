@@ -4,7 +4,7 @@
   "contributors": [
     "Elia Maino <eliamaino@gmail.com>"
   ],
-  "version": "3.0.0-alpha.4",
+  "version": "3.0.0-alpha.5",
   "description": "JavaScript VAST Client",
   "keywords": [
     "vast",
@@ -28,7 +28,7 @@
     "build": "rollup -c",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
-    "test": "mocha --compilers js:@babel/register --reporter spec test/*.js && jest",
+    "test": "mocha && jest",
     "jest": "jest"
   },
   "devDependencies": {
