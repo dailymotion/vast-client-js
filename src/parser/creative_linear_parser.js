@@ -1,6 +1,7 @@
 import { CreativeLinear } from '../creative/creative_linear';
 import { Icon } from '../icon';
 import { MediaFile } from '../media_file';
+import { Mezzanine } from '../mezzanine';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -158,6 +159,28 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
           creative.mediaFiles.push(mediaFile);
         });
+
+      const mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
+      if (mezzanineElement) {
+        const mezzanine = new Mezzanine();
+        mezzanine.id = mezzanineElement.getAttribute('id');
+        mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
+        mezzanine.deliveryType = mezzanineElement.getAttribute('delivery');
+        mezzanine.codec = mezzanineElement.getAttribute('codec');
+        mezzanine.mimeType = mezzanineElement.getAttribute('type');
+        mezzanine.width = parseInt(
+            mezzanineElement.getAttribute('width') || 0
+        );
+        mezzanine.height = parseInt(
+            mezzanineElement.getAttribute('height') || 0
+        );
+        mezzanine.fileSize = parseInt(
+            mezzanineElement.getAttribute('fileSize') || 0
+        );
+        mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
+
+        creative.mezzanine = mezzanine;
+      }
     });
 
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');

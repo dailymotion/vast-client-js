@@ -8,6 +8,7 @@ export class CreativeLinear extends Creative {
     this.duration = 0;
     this.skipDelay = null;
     this.mediaFiles = [];
+    this.mezzanine = null;
     this.videoClickThroughURLTemplate = null;
     this.videoClickTrackingURLTemplates = [];
     this.videoCustomClickURLTemplates = [];
