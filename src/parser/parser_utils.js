@@ -1,5 +1,4 @@
 import { util } from '../util/util';
-import { AdVerification } from '../ad_verification';
 
 /**
  * This module provides support methods to the parsing classes.
@@ -192,33 +191,26 @@ function splitVAST(ads) {
  * Parses the attributes and assign them to object
  * @param  {Object} attributes attribute
  * @param  {Object} verificationObject with properties which can be assigned
- * @return {AdVerification|null}
  */
 function assignAttributes(attributes, verificationObject) {
-  if (!attributes) {
-    return null;
-  }
+  if (attributes) {
+    for (const attrKey in attributes) {
+      const attribute = attributes[attrKey];
 
-  const ver = Object.assign(new AdVerification, verificationObject);
+      if (
+          attribute.nodeName &&
+          attribute.nodeValue &&
+          verificationObject.hasOwnProperty(attribute.nodeName)
+      ) {
+        let value = attribute.nodeValue;
 
-  for (const attrKey in attributes) {
-    const attribute = attributes[attrKey];
-
-    if (
-        attribute.nodeName &&
-        attribute.nodeValue &&
-        ver.hasOwnProperty(attribute.nodeName)
-    ) {
-      let value = attribute.nodeValue;
-
-      if (typeof ver[attribute.nodeName] === 'boolean') {
-        value = parseBoolean(value);
+        if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+          value = parseBoolean(value);
+        }
+        verificationObject[attribute.nodeName] = value;
       }
-      ver[attribute.nodeName] = value;
     }
   }
-
-  return ver;
 }
 
 /**
