@@ -12,6 +12,21 @@
       <Impression><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
       <Impression><![CDATA[http://example.com/impression2_[random]]]></Impression>
       <Impression><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
+      <AdVerifications>
+        <Verification vendor="company.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="true">
+            <![CDATA[http://example.com/omid1]]>
+          </JavaScriptResource>
+        </Verification>
+        <Verification vendor="company2.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="false">
+            <![CDATA[http://example.com/omid2]]>
+          </JavaScriptResource>
+          <VerificationParameters>
+            <![CDATA[test-verification-parameter]]>
+          </VerificationParameters>
+        </Verification>
+      </AdVerifications>
       <Creatives>
         <Creative id="id130984" adId="adId345690" sequence="1" >
           <Linear>

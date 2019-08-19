@@ -188,6 +188,32 @@ function splitVAST(ads) {
 }
 
 /**
+ * Parses the attributes and assign them to object
+ * @param  {Object} attributes attribute
+ * @param  {Object} verificationObject with properties which can be assigned
+ */
+function assignAttributes(attributes, verificationObject) {
+  if (attributes) {
+    for (const attrKey in attributes) {
+      const attribute = attributes[attrKey];
+
+      if (
+          attribute.nodeName &&
+          attribute.nodeValue &&
+          verificationObject.hasOwnProperty(attribute.nodeName)
+      ) {
+        let value = attribute.nodeValue;
+
+        if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+          value = parseBoolean(value);
+        }
+        verificationObject[attribute.nodeName] = value;
+      }
+    }
+  }
+}
+
+/**
  * Merges the data between an unwrapped ad and his wrapper.
  * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
  * @param  {Ad} wrapper - The wrapper Ad.
@@ -290,5 +316,6 @@ export const parserUtils = {
   parseAttributes,
   parseDuration,
   splitVAST,
+  assignAttributes,
   mergeWrapperAdData
 };
