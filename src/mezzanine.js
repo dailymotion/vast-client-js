@@ -4,7 +4,7 @@ export class Mezzanine {
         this.fileURL = null;
         this.deliveryType = 'progressive';
         this.codec = null;
-        this.mimeType = null;
+        this.type = null;
         this.width = 0;
         this.height = 0;
         this.fileSize = 0;
