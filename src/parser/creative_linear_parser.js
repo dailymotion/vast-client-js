@@ -165,17 +165,17 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         const mezzanine = new Mezzanine();
         mezzanine.id = mezzanineElement.getAttribute('id');
         mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
-        mezzanine.deliveryType = mezzanineElement.getAttribute('delivery');
+        mezzanine.delivery = mezzanineElement.getAttribute('delivery');
         mezzanine.codec = mezzanineElement.getAttribute('codec');
-        mezzanine.mimeType = mezzanineElement.getAttribute('type');
+        mezzanine.type = mezzanineElement.getAttribute('type');
         mezzanine.width = parseInt(
-            mezzanineElement.getAttribute('width') || 0
+            mezzanineElement.getAttribute('width') || 0, 10
         );
         mezzanine.height = parseInt(
-            mezzanineElement.getAttribute('height') || 0
+            mezzanineElement.getAttribute('height') || 0, 10
         );
         mezzanine.fileSize = parseInt(
-            mezzanineElement.getAttribute('fileSize') || 0
+            mezzanineElement.getAttribute('fileSize') || 0, 10
         );
         mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
 
