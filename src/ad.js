@@ -12,5 +12,6 @@ export class Ad {
     this.impressionURLTemplates = [];
     this.creatives = [];
     this.extensions = [];
+    this.adVerifications = [];
   }
 }
