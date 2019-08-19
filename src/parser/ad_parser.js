@@ -1,5 +1,6 @@
 import { Ad } from '../ad';
 import { AdExtension } from '../ad_extension';
+import { AdVerification } from '../ad_verification';
 import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
@@ -110,6 +111,12 @@ function parseInLine(inLineElement) {
       case 'Extensions':
         ad.extensions = _parseExtensions(
           parserUtils.childrenByName(node, 'Extension')
+        );
+        break;
+
+      case 'AdVerifications':
+        ad.adVerifications = _parseAdVerifications(
+          parserUtils.childrenByName(node, 'Verification')
         );
         break;
 
@@ -305,6 +312,44 @@ function _parseExtension(extNode) {
   // Only return not empty objects to not pollute extentions
   return ext.isEmpty() ? null : ext;
 }
+
+/**
+ * Parses the AdVerifications Element.
+ * @param  {Array} verifications - The array of verifications to parse.
+ * @return {Array<AdVerification>}
+ */
+
+export function _parseAdVerifications(verifications) {
+  const ver = [];
+
+  verifications.forEach(verificationNode => {
+    const verification = new AdVerification();
+    const childNodes = verificationNode.childNodes;
+
+    parserUtils.assignAttributes(
+        verificationNode.attributes,
+        verification
+    );
+    for (const nodeKey in childNodes) {
+      const node = childNodes[nodeKey];
+
+      switch (node.nodeName) {
+        case 'JavaScriptResource':
+          verification.resource = parserUtils.parseNodeText(node);
+          parserUtils.assignAttributes(node.attributes, verification);
+          break;
+        case 'VerificationParameters':
+          verification.parameters = parserUtils.parseNodeText(node);
+          break;
+      }
+    }
+
+    ver.push(verification);
+  });
+
+  return ver;
+}
+
 
 /**
  * Parses the creative adId Attribute.
