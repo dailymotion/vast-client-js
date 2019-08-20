@@ -179,7 +179,9 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         );
         mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
 
-        creative.mezzanine = mezzanine;
+        if (mezzanine.validate()) {
+          creative.mezzanine = mezzanine;
+        }
       }
     });
 
