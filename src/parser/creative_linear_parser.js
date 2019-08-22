@@ -167,20 +167,15 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         mezzanineElement.getAttribute('width') &&
         mezzanineElement.getAttribute('height')) {
         const mezzanine = new Mezzanine();
+
         mezzanine.id = mezzanineElement.getAttribute('id');
         mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
         mezzanine.delivery = mezzanineElement.getAttribute('delivery');
         mezzanine.codec = mezzanineElement.getAttribute('codec');
         mezzanine.type = mezzanineElement.getAttribute('type');
-        mezzanine.width = parseInt(
-            mezzanineElement.getAttribute('width'), 10
-        );
-        mezzanine.height = parseInt(
-            mezzanineElement.getAttribute('height'), 10
-        );
-        mezzanine.fileSize = parseInt(
-            mezzanineElement.getAttribute('fileSize'), 10
-        );
+        mezzanine.width = parseInt(mezzanineElement.getAttribute('width'), 10);
+        mezzanine.height = parseInt(mezzanineElement.getAttribute('height'), 10);
+        mezzanine.fileSize = parseInt(mezzanineElement.getAttribute('fileSize'), 10);
         mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
 
         creative.mezzanine = mezzanine;
