@@ -161,7 +161,11 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         });
 
       const mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
-      if (mezzanineElement) {
+      if (mezzanineElement &&
+        mezzanineElement.getAttribute('delivery') &&
+        mezzanineElement.getAttribute('type') &&
+        mezzanineElement.getAttribute('width') &&
+        mezzanineElement.getAttribute('height')) {
         const mezzanine = new Mezzanine();
         mezzanine.id = mezzanineElement.getAttribute('id');
         mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
@@ -169,19 +173,17 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         mezzanine.codec = mezzanineElement.getAttribute('codec');
         mezzanine.type = mezzanineElement.getAttribute('type');
         mezzanine.width = parseInt(
-            mezzanineElement.getAttribute('width') || 0, 10
+            mezzanineElement.getAttribute('width'), 10
         );
         mezzanine.height = parseInt(
-            mezzanineElement.getAttribute('height') || 0, 10
+            mezzanineElement.getAttribute('height'), 10
         );
         mezzanine.fileSize = parseInt(
-            mezzanineElement.getAttribute('fileSize') || 0, 10
+            mezzanineElement.getAttribute('fileSize'), 10
         );
         mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
 
-        if (mezzanine.validate()) {
-          creative.mezzanine = mezzanine;
-        }
+        creative.mezzanine = mezzanine;
       }
     });
 
