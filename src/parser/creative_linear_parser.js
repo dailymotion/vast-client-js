@@ -280,17 +280,15 @@ function parseYPosition(yPosition) {
  */
 function getRequiredAttributes (element, attributes) {
   const values = {};
-  const error = attributes.some((name) => {
+  let error = false;
+
+  attributes.forEach((name) => {
     if (!element || !element.getAttribute(name)) {
-      return true;
+      error = true
     }
 
     values[name] = element.getAttribute(name);
-
-    return false;
   });
 
-  if (!error) {
-    return values;
-  }
+  return error? null : values;
 }
