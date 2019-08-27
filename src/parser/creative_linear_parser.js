@@ -281,11 +281,13 @@ function parseYPosition(yPosition) {
 function getRequiredAttributes (element, attributes) {
   const values = {};
   const error = attributes.some((name) => {
-    if (!element || element.getAttribute(name) == null || element.getAttribute(name) == 0) {
+    if (!element || !element.getAttribute(name)) {
       return true;
     }
 
     values[name] = element.getAttribute(name);
+
+    return false;
   });
 
   if (!error) {
