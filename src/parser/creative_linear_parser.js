@@ -160,8 +160,16 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
           creative.mediaFiles.push(mediaFile);
         });
 
-      const mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
-      const requiredAttributes = getRequiredAttributes(mezzanineElement, ['delivery', 'type', 'width', 'height']);
+      const mezzanineElement = parserUtils.childByName(
+        mediaFilesElement,
+        'Mezzanine'
+      );
+      const requiredAttributes = getRequiredAttributes(mezzanineElement, [
+        'delivery',
+        'type',
+        'width',
+        'height'
+      ]);
 
       if (requiredAttributes) {
         const mezzanine = new Mezzanine();
@@ -173,8 +181,12 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         mezzanine.type = requiredAttributes.type;
         mezzanine.width = parseInt(requiredAttributes.width, 10);
         mezzanine.height = parseInt(requiredAttributes.height, 10);
-        mezzanine.fileSize = parseInt(mezzanineElement.getAttribute('fileSize'), 10);
-        mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
+        mezzanine.fileSize = parseInt(
+          mezzanineElement.getAttribute('fileSize'),
+          10
+        );
+        mezzanine.mediaType =
+          mezzanineElement.getAttribute('mediaType') || '2D';
 
         creative.mezzanine = mezzanine;
       }
@@ -278,17 +290,17 @@ function parseYPosition(yPosition) {
  * @param  {Array} attributes - list of attributes
  * @return {Array|null} null if a least one element not present
  */
-function getRequiredAttributes (element, attributes) {
+function getRequiredAttributes(element, attributes) {
   const values = {};
   let error = false;
 
-  attributes.forEach((name) => {
+  attributes.forEach(name => {
     if (!element || !element.getAttribute(name)) {
-      error = true
+      error = true;
+    } else {
+      values[name] = element.getAttribute(name);
     }
-
-    values[name] = element.getAttribute(name);
   });
 
-  return error? null : values;
+  return error ? null : values;
 }
