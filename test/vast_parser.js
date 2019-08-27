@@ -293,6 +293,20 @@ describe('VASTParser', function() {
           );
         });
 
+        it('should have parsed mezzanine file attributes', () => {
+          linear.mezzanine.delivery.should.equal('progressive');
+          linear.mezzanine.type.should.equal('video/mp4');
+          linear.mezzanine.width.should.equal(1080);
+          linear.mezzanine.height.should.equal(720);
+          linear.mezzanine.codec.should.equal('h264');
+          linear.mezzanine.id.should.equal('mezzanine-id-165468451');
+          linear.mezzanine.fileSize.should.equal(700);
+          linear.mezzanine.mediaType.should.equal('2D');
+          linear.mezzanine.fileURL.should.equal(
+            'http://example.com/linear-mezzanine.mp4'
+          );
+        });
+
         it('should have 1 URL for clickthrough', () => {
           linear.videoClickThroughURLTemplate.should.eql(
             'http://example.com/linear-clickthrough'

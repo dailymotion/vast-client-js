@@ -41,6 +41,7 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `duration: Number`
 - `skipDelay: Number|null`
 - `mediaFiles: Array<MediaFile>` [go to class](#mediafile)
+- `mezzanine: Object<Mezzanine>` [go to class](#mezzanine)
 - `videoClickThroughURLTemplate: String|null`
 - `videoClickTrackingURLTemplates: Array<String>`
 - `videoCustomClickURLTemplates: Array<String>`
@@ -75,6 +76,18 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `apiFramework: String|null`
 - `scalable: Boolean|null`
 - `maintainAspectRatio: Boolean|null`
+
+## Mezzanine<a name="mezzanine"></a>
+
+- `delivery: String` Either "progressive" for progressive download protocols (such as HTTP) or "streaming" for streaming protocols
+- `type: String` MIME type for the file container. Popular MIME types include, but are not limited to "video/mp4" for MP4, "audio/mpeg" and "audio/aac" for audio ads
+- `width: Number`
+- `height: Number`
+- `codec: String|null` The codec used to encode the file which can take values as specified by RFC 4281: http://tools.ietf.org/html/rfc4281
+- `id: String|null`
+- `fileSize: Number|null`
+- `mediaType: String|null` Type of media file (3D / 360 / etc). Optional. Default value = 2D
+- `fileURL: String|null`
 
 ## NonLinearAd<a name="non-linear-ad"></a>
 

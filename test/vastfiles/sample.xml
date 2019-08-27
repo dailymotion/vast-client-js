@@ -50,6 +50,7 @@
             <MediaFiles>
               <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/linear-asset.mp4]]></MediaFile>
               <MediaFile apiFramework="VPAID" type="application/javascript" width="512" height="288" delivery="progressive"><![CDATA[parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D]]></MediaFile>
+              <Mezzanine id="mezzanine-id-165468451" type="video/mp4" width="1080" height="720" delivery="progressive" codec="h264" fileSize="700"><![CDATA[http://example.com/linear-mezzanine.mp4]]></Mezzanine>
             </MediaFiles>
             <Icons>
               <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID">
