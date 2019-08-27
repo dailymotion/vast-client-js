@@ -161,20 +161,18 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         });
 
       const mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
-      if (mezzanineElement &&
-        mezzanineElement.getAttribute('delivery') &&
-        mezzanineElement.getAttribute('type') &&
-        mezzanineElement.getAttribute('width') &&
-        mezzanineElement.getAttribute('height')) {
+      const requiredAttributes = getRequiredAttributes(mezzanineElement, ['delivery', 'type', 'width', 'height']);
+
+      if (requiredAttributes) {
         const mezzanine = new Mezzanine();
 
         mezzanine.id = mezzanineElement.getAttribute('id');
         mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
-        mezzanine.delivery = mezzanineElement.getAttribute('delivery');
+        mezzanine.delivery = requiredAttributes.delivery;
         mezzanine.codec = mezzanineElement.getAttribute('codec');
-        mezzanine.type = mezzanineElement.getAttribute('type');
-        mezzanine.width = parseInt(mezzanineElement.getAttribute('width'), 10);
-        mezzanine.height = parseInt(mezzanineElement.getAttribute('height'), 10);
+        mezzanine.type = requiredAttributes.type;
+        mezzanine.width = parseInt(requiredAttributes.width, 10);
+        mezzanine.height = parseInt(requiredAttributes.height, 10);
         mezzanine.fileSize = parseInt(mezzanineElement.getAttribute('fileSize'), 10);
         mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
 
@@ -272,4 +270,25 @@ function parseYPosition(yPosition) {
   }
 
   return parseInt(yPosition || 0);
+}
+
+/**
+ * Getting required attributes from element
+ * @param  {Object} element - DOM element
+ * @param  {Array} attributes - list of attributes
+ * @return {Array|null} null if a least one element not present
+ */
+function getRequiredAttributes (element, attributes) {
+  const values = {};
+  const error = attributes.some((name) => {
+    if (!element || element.getAttribute(name) == null || element.getAttribute(name) == 0) {
+      return true;
+    }
+
+    values[name] = element.getAttribute(name);
+  });
+
+  if (!error) {
+    return values;
+  }
 }
