@@ -102,6 +102,7 @@
     this.impressionURLTemplates = [];
     this.creatives = [];
     this.extensions = [];
+    this.adVerifications = [];
   };
 
   var AdExtension =
@@ -125,6 +126,16 @@
 
     return AdExtension;
   }();
+
+  var AdVerification = function AdVerification() {
+    _classCallCheck(this, AdVerification);
+
+    this.resource = null;
+    this.vendor = null;
+    this.browserOptional = false;
+    this.apiFramework = null;
+    this.parameters = null;
+  };
 
   var CompanionAd = function CompanionAd() {
     var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -518,6 +529,30 @@
     return splittedVAST;
   }
   /**
+   * Parses the attributes and assign them to object
+   * @param  {Object} attributes attribute
+   * @param  {Object} verificationObject with properties which can be assigned
+   */
+
+
+  function assignAttributes(attributes, verificationObject) {
+    if (attributes) {
+      for (var attrKey in attributes) {
+        var attribute = attributes[attrKey];
+
+        if (attribute.nodeName && attribute.nodeValue && verificationObject.hasOwnProperty(attribute.nodeName)) {
+          var value = attribute.nodeValue;
+
+          if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+            value = parseBoolean(value);
+          }
+
+          verificationObject[attribute.nodeName] = value;
+        }
+      }
+    }
+  }
+  /**
    * Merges the data between an unwrapped ad and his wrapper.
    * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
    * @param  {Ad} wrapper - The wrapper Ad.
@@ -595,6 +630,7 @@
     parseAttributes: parseAttributes,
     parseDuration: parseDuration,
     splitVAST: splitVAST,
+    assignAttributes: assignAttributes,
     mergeWrapperAdData: mergeWrapperAdData
   };
 
@@ -680,6 +716,7 @@
       _this.duration = 0;
       _this.skipDelay = null;
       _this.mediaFiles = [];
+      _this.mezzanine = null;
       _this.videoClickThroughURLTemplate = null;
       _this.videoClickTrackingURLTemplates = [];
       _this.videoCustomClickURLTemplates = [];
@@ -728,6 +765,20 @@
     this.apiFramework = null;
     this.scalable = null;
     this.maintainAspectRatio = null;
+  };
+
+  var Mezzanine = function Mezzanine() {
+    _classCallCheck(this, Mezzanine);
+
+    this.id = null;
+    this.fileURL = null;
+    this.delivery = null;
+    this.codec = null;
+    this.type = null;
+    this.width = 0;
+    this.height = 0;
+    this.fileSize = 0;
+    this.mediaType = '2D';
   };
 
   /**
@@ -842,6 +893,22 @@
 
         creative.mediaFiles.push(mediaFile);
       });
+      var mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
+      var requiredAttributes = getRequiredAttributes(mezzanineElement, ['delivery', 'type', 'width', 'height']);
+
+      if (requiredAttributes) {
+        var mezzanine = new Mezzanine();
+        mezzanine.id = mezzanineElement.getAttribute('id');
+        mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
+        mezzanine.delivery = requiredAttributes.delivery;
+        mezzanine.codec = mezzanineElement.getAttribute('codec');
+        mezzanine.type = requiredAttributes.type;
+        mezzanine.width = parseInt(requiredAttributes.width, 10);
+        mezzanine.height = parseInt(requiredAttributes.height, 10);
+        mezzanine.fileSize = parseInt(mezzanineElement.getAttribute('fileSize'), 10);
+        mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
+        creative.mezzanine = mezzanine;
+      }
     });
     var iconsElement = parserUtils.childByName(creativeElement, 'Icons');
 
@@ -910,6 +977,26 @@
     }
 
     return parseInt(yPosition || 0);
+  }
+  /**
+   * Getting required attributes from element
+   * @param  {Object} element - DOM element
+   * @param  {Array} attributes - list of attributes
+   * @return {Object|null} null if a least one element not present
+   */
+
+
+  function getRequiredAttributes(element, attributes) {
+    var values = {};
+    var error = false;
+    attributes.forEach(function (name) {
+      if (!element || !element.getAttribute(name)) {
+        error = true;
+      } else {
+        values[name] = element.getAttribute(name);
+      }
+    });
+    return error ? null : values;
   }
 
   var CreativeNonLinear =
@@ -1124,6 +1211,10 @@
           ad.extensions = _parseExtensions(parserUtils.childrenByName(node, 'Extension'));
           break;
 
+        case 'AdVerifications':
+          ad.adVerifications = _parseAdVerifications(parserUtils.childrenByName(node, 'Verification'));
+          break;
+
         case 'AdSystem':
           ad.system = {
             value: parserUtils.parseNodeText(node),
@@ -1319,11 +1410,43 @@
     return ext.isEmpty() ? null : ext;
   }
   /**
+   * Parses the AdVerifications Element.
+   * @param  {Array} verifications - The array of verifications to parse.
+   * @return {Array<AdVerification>}
+   */
+
+
+  function _parseAdVerifications(verifications) {
+    var ver = [];
+    verifications.forEach(function (verificationNode) {
+      var verification = new AdVerification();
+      var childNodes = verificationNode.childNodes;
+      parserUtils.assignAttributes(verificationNode.attributes, verification);
+
+      for (var nodeKey in childNodes) {
+        var node = childNodes[nodeKey];
+
+        switch (node.nodeName) {
+          case 'JavaScriptResource':
+            verification.resource = parserUtils.parseNodeText(node);
+            parserUtils.assignAttributes(node.attributes, verification);
+            break;
+
+          case 'VerificationParameters':
+            verification.parameters = parserUtils.parseNodeText(node);
+            break;
+        }
+      }
+
+      ver.push(verification);
+    });
+    return ver;
+  }
+  /**
    * Parses the creative adId Attribute.
    * @param  {any} creativeElement - The creative element to retrieve the adId from.
    * @return {String|null}
    */
-
 
   function parseCreativeAdIdAttribute(creativeElement) {
     return creativeElement.getAttribute('AdID') || // VAST 2 spec
@@ -2919,10 +3042,12 @@
         var isAlwaysEmitEvent = this.emitAlwaysEvents.indexOf(eventName) > -1;
 
         if (trackingURLTemplates) {
-          this.emit(eventName, '');
+          this.emit(eventName, {
+            trackingURLTemplates: trackingURLTemplates
+          });
           this.trackURLs(trackingURLTemplates);
         } else if (isAlwaysEmitEvent) {
-          this.emit(eventName, '');
+          this.emit(eventName, null);
         }
 
         if (once) {
