@@ -49,7 +49,7 @@ function childrenByName(node, name) {
  * @param  {Function} emit - Emit function used to trigger Warning event.
  */
 function verifyRequiredValues(node, emit) {
-  if (!node) {
+  if (!node || !node.nodeName) {
     return;
   }
 
