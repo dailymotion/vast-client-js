@@ -268,11 +268,8 @@ export class VASTParser extends EventEmitter {
         isRootVAST
           ? this.rootErrorURLTemplates.push(errorURLTemplate)
           : this.errorURLTemplates.push(errorURLTemplate);
-      }
-
-      if (node.nodeName === 'Ad') {
-        const ad = parseAd(node);
-
+      } else if (node.nodeName === 'Ad') {
+        const ad = parseAd(node, this.emit.bind(this));
         if (ad) {
           ads.push(ad);
         } else {

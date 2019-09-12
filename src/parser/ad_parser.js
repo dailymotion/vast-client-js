@@ -5,7 +5,6 @@ import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
 import { parserUtils } from './parser_utils';
-
 /**
  * This module provides methods to parse a VAST Ad Element.
  */
@@ -13,9 +12,10 @@ import { parserUtils } from './parser_utils';
 /**
  * Parses an Ad element (can either be a Wrapper or an InLine).
  * @param  {Object} adElement - The VAST Ad element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event
  * @return {Ad}
  */
-export function parseAd(adElement) {
+export function parseAd(adElement, emit) {
   const childNodes = adElement.childNodes;
 
   for (const adTypeElementKey in childNodes) {
@@ -27,29 +27,28 @@ export function parseAd(adElement) {
 
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-
-    if (adTypeElement.nodeName === 'Wrapper') {
-      return parseWrapper(adTypeElement);
-    } else if (adTypeElement.nodeName === 'InLine') {
-      return parseInLine(adTypeElement);
-    }
+    return parseAdTypeElement(adTypeElement, emit);
   }
+  parserUtils.emitMissingWarning(adElement, 'InLine or Wrapper', false, emit);
 }
 
 /**
- * Parses an Inline element.
- * @param  {Object} inLineElement - The VAST Inline element to parse.
+ * Parses an ad type (Inline or Wrapper)
+ * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
  * @return {Ad}
  */
-function parseInLine(inLineElement) {
-  const childNodes = inLineElement.childNodes;
+function parseAdTypeElement(adTypeElement, emit) {
+  const isAdTypeInLine = adTypeElement.nodeName === 'InLine';
+  const childNodes = adTypeElement.childNodes;
   const ad = new Ad();
-  ad.id = inLineElement.getAttribute('id') || null;
-  ad.sequence = inLineElement.getAttribute('sequence') || null;
+  ad.id = adTypeElement.getAttribute('id') || null;
+  ad.sequence = adTypeElement.getAttribute('sequence') || null;
+  parserUtils.verifyRequiredValues(adTypeElement, emit);
 
   for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
-
+    parserUtils.verifyRequiredValues(node, emit);
     switch (node.nodeName) {
       case 'Error':
         ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
@@ -75,11 +74,16 @@ function parseInLine(inLineElement) {
                 creativeElement.childNodes[creativeTypeElementKey];
               let parsedCreative;
 
+              if (isAdTypeInLine) {
+                parserUtils.verifyRequiredValues(creativeTypeElement, emit);
+              }
+
               switch (creativeTypeElement.nodeName) {
                 case 'Linear':
                   parsedCreative = parseCreativeLinear(
                     creativeTypeElement,
-                    creativeAttributes
+                    creativeAttributes,
+                    emit
                   );
                   if (parsedCreative) {
                     ad.creatives.push(parsedCreative);
@@ -88,7 +92,9 @@ function parseInLine(inLineElement) {
                 case 'NonLinearAds':
                   parsedCreative = parseCreativeNonLinear(
                     creativeTypeElement,
-                    creativeAttributes
+                    creativeAttributes,
+                    isAdTypeInLine,
+                    emit
                   );
                   if (parsedCreative) {
                     ad.creatives.push(parsedCreative);
@@ -97,7 +103,9 @@ function parseInLine(inLineElement) {
                 case 'CompanionAds':
                   parsedCreative = parseCreativeCompanion(
                     creativeTypeElement,
-                    creativeAttributes
+                    creativeAttributes,
+                    isAdTypeInLine,
+                    emit
                   );
                   if (parsedCreative) {
                     ad.creatives.push(parsedCreative);
@@ -106,6 +114,14 @@ function parseInLine(inLineElement) {
               }
             }
           });
+        if (!ad.creatives.length) {
+          parserUtils.emitMissingWarning(
+            node,
+            'Linear or NonLinearAds',
+            false,
+            emit
+          );
+        }
         break;
 
       case 'Extensions':
@@ -116,7 +132,8 @@ function parseInLine(inLineElement) {
 
       case 'AdVerifications':
         ad.adVerifications = _parseAdVerifications(
-          parserUtils.childrenByName(node, 'Verification')
+          parserUtils.childrenByName(node, 'Verification'),
+          emit
         );
         break;
 
@@ -153,6 +170,9 @@ function parseInLine(inLineElement) {
     }
   }
 
+  if (adTypeElement.nodeName === 'Wrapper') {
+    return parseWrapper(adTypeElement, ad);
+  }
   return ad;
 }
 
@@ -161,8 +181,7 @@ function parseInLine(inLineElement) {
  * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
  * @return {Ad}
  */
-function parseWrapper(wrapperElement) {
-  const ad = parseInLine(wrapperElement);
+function parseWrapper(wrapperElement, ad) {
   let wrapperURLElement = parserUtils.childByName(
     wrapperElement,
     'VASTAdTagURI'
@@ -316,30 +335,37 @@ function _parseExtension(extNode) {
 /**
  * Parses the AdVerifications Element.
  * @param  {Array} verifications - The array of verifications to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event
  * @return {Array<AdVerification>}
  */
 
-export function _parseAdVerifications(verifications) {
+export function _parseAdVerifications(verifications, emit) {
   const ver = [];
 
   verifications.forEach(verificationNode => {
     const verification = new AdVerification();
     const childNodes = verificationNode.childNodes;
 
-    parserUtils.assignAttributes(
-        verificationNode.attributes,
-        verification
-    );
+    parserUtils.verifyRequiredValues(verificationNode, emit);
+
+    parserUtils.assignAttributes(verificationNode.attributes, verification);
     for (const nodeKey in childNodes) {
       const node = childNodes[nodeKey];
 
       switch (node.nodeName) {
         case 'JavaScriptResource':
+          parserUtils.verifyRequiredValues(node, emit);
           verification.resource = parserUtils.parseNodeText(node);
           parserUtils.assignAttributes(node.attributes, verification);
           break;
         case 'VerificationParameters':
           verification.parameters = parserUtils.parseNodeText(node);
+          break;
+        case 'ExecutableResource':
+          parserUtils.verifyRequiredValues(node, emit);
+          break;
+        case 'BlockedAdCategories':
+          parserUtils.verifyRequiredValues(node, emit);
           break;
       }
     }
@@ -349,7 +375,6 @@ export function _parseAdVerifications(verifications) {
 
   return ver;
 }
-
 
 /**
  * Parses the creative adId Attribute.

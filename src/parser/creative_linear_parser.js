@@ -12,16 +12,19 @@ import { parserUtils } from './parser_utils';
  * Parses a Linear element.
  * @param  {Object} creativeElement - The VAST Linear element to parse.
  * @param  {any} creativeAttributes - The attributes of the Linear (optional).
+ * @param  {Function} emit - Emit function used to trigger Warning event.
  * @return {CreativeLinear}
  */
-export function parseCreativeLinear(creativeElement, creativeAttributes) {
+export function parseCreativeLinear(creativeElement, creativeAttributes, emit) {
   let offset;
   const creative = new CreativeLinear(creativeAttributes);
 
+  const durationElement = parserUtils.childByName(creativeElement, 'Duration');
+  if (durationElement && parserUtils.nodeIsEmpty(durationElement)) {
+    parserUtils.emitEmptyValueWarning(emit, durationElement);
+  }
   creative.duration = parserUtils.parseDuration(
-    parserUtils.parseNodeText(
-      parserUtils.childByName(creativeElement, 'Duration')
-    )
+    parserUtils.parseNodeText(durationElement)
   );
   const skipOffset = creativeElement.getAttribute('skipoffset');
 
@@ -107,63 +110,75 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
   parserUtils
     .childrenByName(creativeElement, 'MediaFiles')
     .forEach(mediaFilesElement => {
-      parserUtils
-        .childrenByName(mediaFilesElement, 'MediaFile')
-        .forEach(mediaFileElement => {
-          const mediaFile = new MediaFile();
-          mediaFile.id = mediaFileElement.getAttribute('id');
-          mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
-          mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
-          mediaFile.codec = mediaFileElement.getAttribute('codec');
-          mediaFile.mimeType = mediaFileElement.getAttribute('type');
-          mediaFile.apiFramework = mediaFileElement.getAttribute(
-            'apiFramework'
-          );
-          mediaFile.bitrate = parseInt(
-            mediaFileElement.getAttribute('bitrate') || 0
-          );
-          mediaFile.minBitrate = parseInt(
-            mediaFileElement.getAttribute('minBitrate') || 0
-          );
-          mediaFile.maxBitrate = parseInt(
-            mediaFileElement.getAttribute('maxBitrate') || 0
-          );
-          mediaFile.width = parseInt(
-            mediaFileElement.getAttribute('width') || 0
-          );
-          mediaFile.height = parseInt(
-            mediaFileElement.getAttribute('height') || 0
-          );
+      const mediaFileElements = parserUtils.childrenByName(
+        mediaFilesElement,
+        'MediaFile'
+      );
+      if (!mediaFileElements.length) {
+        parserUtils.emitMissingWarning(
+          mediaFilesElement,
+          'MediaFile',
+          false,
+          emit
+        );
+      }
 
-          let scalable = mediaFileElement.getAttribute('scalable');
-          if (scalable && typeof scalable === 'string') {
-            scalable = scalable.toLowerCase();
-            if (scalable === 'true') {
-              mediaFile.scalable = true;
-            } else if (scalable === 'false') {
-              mediaFile.scalable = false;
-            }
+      mediaFileElements.forEach(mediaFileElement => {
+        parserUtils.verifyRequiredValues(mediaFileElement, emit);
+
+        const mediaFile = new MediaFile();
+        mediaFile.id = mediaFileElement.getAttribute('id');
+        mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
+        mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
+        mediaFile.codec = mediaFileElement.getAttribute('codec');
+        mediaFile.mimeType = mediaFileElement.getAttribute('type');
+        mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
+        mediaFile.bitrate = parseInt(
+          mediaFileElement.getAttribute('bitrate') || 0
+        );
+        mediaFile.minBitrate = parseInt(
+          mediaFileElement.getAttribute('minBitrate') || 0
+        );
+        mediaFile.maxBitrate = parseInt(
+          mediaFileElement.getAttribute('maxBitrate') || 0
+        );
+        mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
+        mediaFile.height = parseInt(
+          mediaFileElement.getAttribute('height') || 0
+        );
+
+        let scalable = mediaFileElement.getAttribute('scalable');
+        if (scalable && typeof scalable === 'string') {
+          scalable = scalable.toLowerCase();
+          if (scalable === 'true') {
+            mediaFile.scalable = true;
+          } else if (scalable === 'false') {
+            mediaFile.scalable = false;
           }
+        }
 
-          let maintainAspectRatio = mediaFileElement.getAttribute(
-            'maintainAspectRatio'
-          );
-          if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
-            maintainAspectRatio = maintainAspectRatio.toLowerCase();
-            if (maintainAspectRatio === 'true') {
-              mediaFile.maintainAspectRatio = true;
-            } else if (maintainAspectRatio === 'false') {
-              mediaFile.maintainAspectRatio = false;
-            }
+        let maintainAspectRatio = mediaFileElement.getAttribute(
+          'maintainAspectRatio'
+        );
+        if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
+          maintainAspectRatio = maintainAspectRatio.toLowerCase();
+          if (maintainAspectRatio === 'true') {
+            mediaFile.maintainAspectRatio = true;
+          } else if (maintainAspectRatio === 'false') {
+            mediaFile.maintainAspectRatio = false;
           }
+        }
 
-          creative.mediaFiles.push(mediaFile);
-        });
+        creative.mediaFiles.push(mediaFile);
+      });
 
       const mezzanineElement = parserUtils.childByName(
         mediaFilesElement,
         'Mezzanine'
       );
+
+      parserUtils.verifyRequiredValues(mezzanineElement, emit);
+
       const requiredAttributes = getRequiredAttributes(mezzanineElement, [
         'delivery',
         'type',
@@ -193,8 +208,13 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
     });
 
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
+  parserUtils.verifyRequiredValues(iconsElement, emit);
   if (iconsElement) {
-    parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
+    const iconElements = parserUtils.childrenByName(iconsElement, 'Icon');
+
+    iconElements.forEach(iconElement => {
+      parserUtils.verifyRequiredValues(iconsElement, emit);
+
       const icon = new Icon();
       icon.program = iconElement.getAttribute('program');
       icon.height = parseInt(iconElement.getAttribute('height') || 0);
@@ -227,8 +247,25 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         .childrenByName(iconElement, 'StaticResource')
         .forEach(staticElement => {
           icon.type = staticElement.getAttribute('creativeType') || 0;
+          if (!icon.type) {
+            parserUtils.emitMissingWarning(
+              staticElement,
+              'creativeType',
+              true,
+              emit
+            );
+          }
           icon.staticResource = parserUtils.parseNodeText(staticElement);
         });
+
+      if (!icon.htmlResource && !icon.iframeResource && !icon.staticResource) {
+        parserUtils.emitMissingWarning(
+          iconElement,
+          'StaticResource or IFrameResource or HTMLResource',
+          false,
+          emit
+        );
+      }
 
       const iconClicksElement = parserUtils.childByName(
         iconElement,
