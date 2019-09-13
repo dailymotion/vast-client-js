@@ -1,28 +1,8 @@
 export const requiredValues = {
-  VAST: {
-    subElements: [], // Error or Ad
-    attributes: []
-  },
-  Error: {
-    subElements: [],
-    attributes: []
-  },
-  Ad: {
-    subElements: [], // Inline or Wrapper
-    attributes: []
-  },
-  VASTAdTagURI: {
-    // content as a String
-    // Warn emit on ad_parser.js l.213
-    subElements: [],
-    attributes: []
-  },
   Wrapper: {
-    subElements: ['VASTAdTagURI', 'Impression'],
-    attributes: []
+    subElements: ['VASTAdTagURI', 'Impression']
   },
   BlockedAdCategories: {
-    subElements: [],
     attributes: ['authority']
   },
   InLine: {
@@ -32,87 +12,53 @@ export const requiredValues = {
       'Impression',
       'AdServingId',
       'Creatives'
-    ],
-    attributes: []
-  },
-  AdSystem: {
-    subElements: [],
-    attributes: []
-  },
-  AdTitle: {
-    subElements: [],
-    attributes: []
-  },
-  Impression: {
-    subElements: [],
-    attributes: []
-  },
-  AdServingId: {
-    subElements: [],
-    attributes: []
+    ]
   },
   Category: {
-    subElements: [],
     attributes: ['authority']
   },
   Pricing: {
-    subElements: [],
     attributes: ['model', 'currency']
   },
   Verification: {
-    subElements: [],
     attributes: ['vendor']
   },
   JavaScriptResource: {
-    subElements: [],
     attributes: ['apiFramework', 'browserOptional']
   },
   ExecutableResource: {
-    subElements: [],
     attributes: ['apiFramework', 'type']
   },
   Creatives: {
-    subElements: ['Creative'],
-    attributes: []
-  },
-  Creative: {
-    subElements: [], // UniversalAdId not implemented yet so not required atm
-    attributes: []
+    subElements: ['Creative']
   },
   Linear: {
-    subElements: ['MediaFiles', 'Duration'],
-    attributes: []
-  },
-  Duration: {
-    subElements: [],
-    attributes: []
+    subElements: ['MediaFiles', 'Duration']
   },
   MediaFiles: {
-    subElements: ['MediaFile'], // creative_linear_parser.js l.134
-    attributes: []
+    subElements: ['MediaFile']
   },
   MediaFile: {
-    subElements: [],
     attributes: ['delivery', 'type', 'width', 'height']
   },
   Mezzanine: {
-    subElements: [],
     attributes: ['delivery', 'type', 'width', 'height']
   },
   NonLinear: {
-    subElements: [],
+    inLineRessources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
     attributes: ['width', 'height']
   },
   Companion: {
-    subElements: [],
+    inLineRessources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
     attributes: ['width', 'height']
   },
   StaticResource: {
-    subElements: [],
     attributes: ['creativeType']
   },
   Icons: {
-    subElements: ['Icon'],
-    attributes: []
+    subElements: ['Icon']
+  },
+  Icon: {
+    inLineRessources: ['StaticResource', 'IFrameResource', 'HTMLResource']
   }
 };

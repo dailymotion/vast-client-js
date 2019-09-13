@@ -10,19 +10,10 @@ import { parserUtils } from './parser_utils';
  * Parses a NonLinear element.
  * @param  {any} creativeElement - The VAST NonLinear element to parse.
  * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
- * @param  {Boolean} isAdTypeInLine - True if contained in a InLine element.
- * @param  {Function} emit - Emit function used to trigger Warning event.
  * @return {CreativeNonLinear}
  */
-export function parseCreativeNonLinear(
-  creativeElement,
-  creativeAttributes,
-  isAdTypeInLine,
-  emit
-) {
+export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
   const creative = new CreativeNonLinear(creativeAttributes);
-
-  parserUtils.verifyRequiredValues(creativeElement, emit);
   parserUtils
     .childrenByName(creativeElement, 'TrackingEvents')
     .forEach(trackingEventsElement => {
@@ -45,9 +36,6 @@ export function parseCreativeNonLinear(
   parserUtils
     .childrenByName(creativeElement, 'NonLinear')
     .forEach(nonlinearResource => {
-      if (isAdTypeInLine) {
-        parserUtils.verifyRequiredValues(nonlinearResource, emit);
-      }
       const nonlinearAd = new NonLinearAd();
       nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
       nonlinearAd.width = nonlinearResource.getAttribute('width');
@@ -90,20 +78,6 @@ export function parseCreativeNonLinear(
           nonlinearAd.type = staticElement.getAttribute('creativeType') || 0;
           nonlinearAd.staticResource = parserUtils.parseNodeText(staticElement);
         });
-
-      if (
-        isAdTypeInLine &&
-        !nonlinearAd.htmlResource &&
-        !nonlinearAd.iframeResource &&
-        !nonlinearAd.staticResource
-      ) {
-        parserUtils.emitMissingWarning(
-          nonlinearResource,
-          'StaticResource or IFrameResource or HTMLResource',
-          false,
-          emit
-        );
-      }
 
       const adParamsElement = parserUtils.childByName(
         nonlinearResource,

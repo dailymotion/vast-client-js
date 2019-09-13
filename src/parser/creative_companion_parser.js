@@ -10,16 +10,9 @@ import { parserUtils } from './parser_utils';
  * Parses a CompanionAd.
  * @param  {Object} creativeElement - The VAST CompanionAd element to parse.
  * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
- * @param  {Boolean} isAdTypeInLine - True if contained in a InLine element.
- * @param  {Function} emit - Emit function used to trigger Warning event.
  * @return {CreativeCompanion}
  */
-export function parseCreativeCompanion(
-  creativeElement,
-  creativeAttributes,
-  isAdTypeInLine,
-  emit
-) {
+export function parseCreativeCompanion(creativeElement, creativeAttributes) {
   const creative = new CreativeCompanion(creativeAttributes);
   creative.required = creativeElement.getAttribute('required') || null;
 
@@ -49,14 +42,7 @@ export function parseCreativeCompanion(
         .reduce((urls, resource) => {
           const url = parserUtils.parseNodeText(resource);
           const creativeType = resource.getAttribute('creativeType') || null;
-          if (creativeType === null && isAdTypeInLine) {
-            parserUtils.emitMissingWarning(
-              resource,
-              'creativeType',
-              true,
-              emit
-            );
-          }
+
           return url
             ? urls.concat({
                 url,
@@ -64,20 +50,6 @@ export function parseCreativeCompanion(
               })
             : urls;
         }, []);
-
-      if (
-        isAdTypeInLine &&
-        !companionAd.htmlResources &&
-        !companionAd.iframeResources &&
-        !companionAd.staticResources
-      ) {
-        parserUtils.emitMissingWarning(
-          companionResource,
-          'StaticResource or IFrameResource or HTMLResource',
-          false,
-          emit
-        );
-      }
 
       companionAd.altText =
         parserUtils.parseNodeText(

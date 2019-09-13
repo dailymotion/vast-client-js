@@ -1,5 +1,4 @@
 import { util } from '../util/util';
-import { requiredValues } from '../util/requiredValues';
 
 /**
  * This module provides support methods to the parsing classes.
@@ -41,120 +40,6 @@ function childrenByName(node, name) {
     }
   }
   return children;
-}
-
-/**
- * Verify and trigger warnings if a node required value is not set.
- * @param  {String} node - The node element.
- * @param  {Function} emit - Emit function used to trigger Warning event.
- */
-function verifyRequiredValues(node, emit) {
-  if (!node || !node.nodeName) {
-    return;
-  }
-
-  const isEmpty = nodeIsEmpty(node);
-  if (node.nodeName !== '#text' && isEmpty) {
-    emitEmptyValueWarning(emit, node);
-  }
-
-  if (!requiredValues[node.nodeName]) {
-    return;
-  }
-  verifyRequiredAttributes(node, emit);
-
-  if (!isEmpty) {
-    verifyRequiredSubElements(node, emit);
-  }
-}
-
-/**
- * Verify and trigger warnings if node required attributes are not set.
- * @param  {String} node - The node element.
- * @param  {Function} emit - Emit function used to trigger Warning event.
- */
-function verifyRequiredAttributes(node, emit) {
-  const requiredAttributes = requiredValues[node.nodeName].attributes;
-  for (const attributeName of requiredAttributes) {
-    const attribute = node.getAttribute(attributeName);
-    if (attribute === null) {
-      emitMissingWarning(node, attributeName, true, emit);
-    }
-  }
-}
-
-/**
- * Verify and trigger warnings if node required sub element are not set.
- * @param  {String} node - The node element
- * @param  {Function} emit - Emit function used to trigger Warning event.
- */
-function verifyRequiredSubElements(node, emit) {
-  const requiredSubElements = requiredValues[node.nodeName].subElements;
-
-  for (const subElementName of requiredSubElements) {
-    const subElement = parserUtils.childByName(node, subElementName);
-    if (!subElement) {
-      emitMissingWarning(node, subElementName, false, emit);
-    }
-  }
-}
-
-/**
- * Check if a node is empty.
- * @param  {Object} node - The node element.
- * @returns {Boolean}
- */
-function nodeIsEmpty(node) {
-  return node.childNodes.length <= 1 && !node.textContent.trim();
-}
-
-/**
- * Trigger Warning for node missing attribute or subelement
- * @param  {String} node - The node element
- * @param  {String} missingElement - The missing element
- * @param  {Boolean} isAttribute - True if the missing element is an attribute
- * @param  {Function} emit - Emit function used to trigger Warning event.
- * @emits  VastParser#VAST-warning
- */
-function emitMissingWarning(node, missingElement, isAttribute, emit) {
-  const missingType = isAttribute ? 'attribute' : 'sub element';
-
-  const warning = {
-    message: `Element '${
-      node.nodeName
-    }' missing required ${missingType} '${missingElement}' `,
-    parentElement: node.parentElement.nodeName,
-    version: '4.1 VAST validator'
-  };
-
-  emit('VAST-warning', warning);
-}
-
-/**
- * Trigger Warning for empty value on a node element
- * @param {Function} emit - Emit function used to trigger Warning event.
- * @param {String} element - The node element.
- * @param {String} [childNodeName] - The Child node name.
- * @emits VastParser#VAST-warning
- */
-function emitEmptyValueWarning(emit, element, childNodeName) {
-  let message;
-
-  if (childNodeName) {
-    message = `Element '${
-      element.nodeName
-    }' have an empty value for '${childNodeName}' `;
-  } else {
-    message = `Element '${element.nodeName}' is empty`;
-  }
-
-  const warning = {
-    message,
-    parentElement: element.parentElement.nodeName,
-    version: '4.1 VAST validator'
-  };
-
-  emit('VAST-warning', warning);
 }
 
 /**
@@ -432,9 +317,5 @@ export const parserUtils = {
   parseDuration,
   splitVAST,
   assignAttributes,
-  mergeWrapperAdData,
-  verifyRequiredValues,
-  emitEmptyValueWarning,
-  emitMissingWarning,
-  nodeIsEmpty
+  mergeWrapperAdData
 };

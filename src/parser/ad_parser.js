@@ -5,6 +5,7 @@ import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
 import { parserUtils } from './parser_utils';
+import { parserVerification } from './parser_verification';
 /**
  * This module provides methods to parse a VAST Ad Element.
  */
@@ -27,9 +28,8 @@ export function parseAd(adElement, emit) {
 
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-    return parseAdTypeElement(adTypeElement, emit);
+    return parseAdElement(adTypeElement, emit);
   }
-  parserUtils.emitMissingWarning(adElement, 'InLine or Wrapper', false, emit);
 }
 
 /**
@@ -38,17 +38,16 @@ export function parseAd(adElement, emit) {
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @return {Ad}
  */
-function parseAdTypeElement(adTypeElement, emit) {
-  const isAdTypeInLine = adTypeElement.nodeName === 'InLine';
+function parseAdElement(adTypeElement, emit) {
+  parserVerification.verifyRequiredValues(adTypeElement, emit);
+
   const childNodes = adTypeElement.childNodes;
   const ad = new Ad();
   ad.id = adTypeElement.getAttribute('id') || null;
   ad.sequence = adTypeElement.getAttribute('sequence') || null;
-  parserUtils.verifyRequiredValues(adTypeElement, emit);
 
   for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
-    parserUtils.verifyRequiredValues(node, emit);
     switch (node.nodeName) {
       case 'Error':
         ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
@@ -74,10 +73,6 @@ function parseAdTypeElement(adTypeElement, emit) {
                 creativeElement.childNodes[creativeTypeElementKey];
               let parsedCreative;
 
-              if (isAdTypeInLine) {
-                parserUtils.verifyRequiredValues(creativeTypeElement, emit);
-              }
-
               switch (creativeTypeElement.nodeName) {
                 case 'Linear':
                   parsedCreative = parseCreativeLinear(
@@ -92,9 +87,7 @@ function parseAdTypeElement(adTypeElement, emit) {
                 case 'NonLinearAds':
                   parsedCreative = parseCreativeNonLinear(
                     creativeTypeElement,
-                    creativeAttributes,
-                    isAdTypeInLine,
-                    emit
+                    creativeAttributes
                   );
                   if (parsedCreative) {
                     ad.creatives.push(parsedCreative);
@@ -103,9 +96,7 @@ function parseAdTypeElement(adTypeElement, emit) {
                 case 'CompanionAds':
                   parsedCreative = parseCreativeCompanion(
                     creativeTypeElement,
-                    creativeAttributes,
-                    isAdTypeInLine,
-                    emit
+                    creativeAttributes
                   );
                   if (parsedCreative) {
                     ad.creatives.push(parsedCreative);
@@ -114,14 +105,6 @@ function parseAdTypeElement(adTypeElement, emit) {
               }
             }
           });
-        if (!ad.creatives.length) {
-          parserUtils.emitMissingWarning(
-            node,
-            'Linear or NonLinearAds',
-            false,
-            emit
-          );
-        }
         break;
 
       case 'Extensions':
@@ -339,14 +322,12 @@ function _parseExtension(extNode) {
  * @return {Array<AdVerification>}
  */
 
-export function _parseAdVerifications(verifications, emit) {
+export function _parseAdVerifications(verifications) {
   const ver = [];
 
   verifications.forEach(verificationNode => {
     const verification = new AdVerification();
     const childNodes = verificationNode.childNodes;
-
-    parserUtils.verifyRequiredValues(verificationNode, emit);
 
     parserUtils.assignAttributes(verificationNode.attributes, verification);
     for (const nodeKey in childNodes) {
@@ -354,18 +335,11 @@ export function _parseAdVerifications(verifications, emit) {
 
       switch (node.nodeName) {
         case 'JavaScriptResource':
-          parserUtils.verifyRequiredValues(node, emit);
           verification.resource = parserUtils.parseNodeText(node);
           parserUtils.assignAttributes(node.attributes, verification);
           break;
         case 'VerificationParameters':
           verification.parameters = parserUtils.parseNodeText(node);
-          break;
-        case 'ExecutableResource':
-          parserUtils.verifyRequiredValues(node, emit);
-          break;
-        case 'BlockedAdCategories':
-          parserUtils.verifyRequiredValues(node, emit);
           break;
       }
     }
