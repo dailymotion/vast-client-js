@@ -2,11 +2,11 @@ import { requiredValues } from '../util/requiredValues';
 import { parserUtils } from './parser_utils';
 
 /**
- * Verify and trigger warnings if a node required value is not set.
+ * Verify node required values and also verify recursively all his child nodes.
+ * Trigger warnings if a node required value is missing.
  * @param  {Node} node - The node element.
  * @param  {Function} emit - Emit function used to trigger Warning event.
- * @param  {Boolean} [isAdInline] - True if node is contained inside a InLine node.
- *
+ * @param  {undefined|Boolean} [isAdInline] - Passed recursively to itself. True if the node is contained inside a inLine tag.
  */
 function verifyRequiredValues(node, emit, isAdInline) {
   if (!node || !node.nodeName) {
@@ -23,11 +23,12 @@ function verifyRequiredValues(node, emit, isAdInline) {
       verifyRequiredValues(node.children[nodeKey], emit, isAdInline);
     }
   } else if (parserUtils.parseNodeText(node).length === 0) {
-    emitMissingValueWarning({ node }, emit);
+    emitMissingValueWarning(
+      { name: node.nodeName, parentName: node.parentNode.nodeName },
+      emit
+    );
     return;
   }
-
-  return;
 }
 
 /**
@@ -36,19 +37,29 @@ function verifyRequiredValues(node, emit, isAdInline) {
  * @param  {Function} emit - Emit function used to trigger Warning event.
  */
 function verifyRequiredAttributes(node, emit) {
-  if (!requiredValues[node.nodeName]) {
+  if (
+    !requiredValues[node.nodeName] ||
+    !requiredValues[node.nodeName].attributes
+  ) {
     return;
   }
   const requiredAttributes = requiredValues[node.nodeName].attributes;
-  for (const attributeKey in requiredAttributes) {
-    const attributeName = requiredAttributes[attributeKey];
+  const missingAttributes = [];
+  requiredAttributes.forEach(attributeName => {
     const attribute = node.getAttribute(attributeName);
     if (!attribute) {
-      emitMissingValueWarning(
-        { node, name: attributeName, type: 'attribute' },
-        emit
-      );
+      missingAttributes.push(attributeName);
     }
+  });
+  if (missingAttributes.length > 0) {
+    emitMissingValueWarning(
+      {
+        name: node.nodeName,
+        parentName: node.parentNode.nodeName,
+        attributes: missingAttributes
+      },
+      emit
+    );
   }
 }
 
@@ -60,41 +71,49 @@ function verifyRequiredAttributes(node, emit) {
  */
 function verifyRequiredSubElements(node, emit, isAdInline) {
   const required = requiredValues[node.nodeName];
+
   if (!required) {
     return;
   }
-  const requiredSubElements = required.subElements;
 
-  for (const subElementKey in requiredSubElements) {
-    const subElementName = requiredSubElements[subElementKey];
-    const subElement = parserUtils.childByName(node, subElementName);
-    if (!subElement) {
+  if (required.subElements) {
+    const requiredSubElements = required.subElements;
+    const missingSubElements = [];
+
+    requiredSubElements.forEach(subElementName => {
+      const subElement = parserUtils.childByName(node, subElementName);
+      if (!subElement) {
+        missingSubElements.push(subElementName);
+      }
+    });
+
+    if (missingSubElements.length > 0) {
       emitMissingValueWarning(
-        { node, name: subElementName, type: 'sub element' },
+        {
+          name: node.nodeName,
+          parentName: node.parentNode.nodeName,
+          subElements: missingSubElements
+        },
         emit
       );
     }
   }
 
-  // When InLine format is used some node require at least one resource (i.e <NonLinear>, <Companion>, or <Icon>)
-  if (!isAdInline || !required.inLineRessources) {
+  // When InLine format is used some nodes (i.e <NonLinear>, <Companion>, or <Icon>)
+  // require at least one of the following resources: StaticResource, IFrameResource, HTMLResource
+  if (!isAdInline || !required.inLineResources) {
     return;
   }
 
-  let ressourceFound = false;
-  for (const ressourceKey in required.inLineRessources) {
-    const ressource = required.inLineRessources[ressourceKey];
-    if (parserUtils.childByName(node, ressource)) {
-      ressourceFound = true;
-      break;
-    }
-  }
-  if (!ressourceFound) {
+  const resourceFound = required.inLineResources.some(resource => {
+    return parserUtils.childByName(node, resource);
+  });
+  if (!resourceFound) {
     emitMissingValueWarning(
       {
-        node,
-        name: `${required.inLineRessources.join(' or ')}`,
-        type: 'sub element'
+        name: node.nodeName,
+        parentName: node.parentNode.nodeName,
+        oneOfResources: required.inLineResources
       },
       emit
     );
@@ -102,46 +121,57 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
 }
 
 /**
- * Check if a node is sub elements.
+ * Check if a node has sub elements.
  * @param  {Node} node - The node element.
  * @returns {Boolean}
  */
 function hasSubElements(node) {
-  if (
-    !node.children ||
-    node.children.length === 0 ||
-    (node.children.length === 1 &&
-      ['#text', '#cdata-section'].indexOf(node.children[0].nodeName) >= 0)
-  ) {
-    return false;
-  }
-  return true;
+  return !node.children || node.children.length !== 0;
 }
 
 /**
- * Trigger Warning for if a node is empty or has missing attributes/subelements
- * @param  {Object} missingElement - Object containing the node with empty value, or with missing attribute/subElement name and type
+ * Trigger Warning if a element is empty or has missing attributes/subelements/resources
+ * @param  {Object} missingElement - Object containing missing elements and values
+ * @param  {String} missingElement.name - The name of element containing missing values
+ * @param  {String} missingElement.parentName - The parent name of element containing missing values
+ * @param  {Array} missingElement.attributes - The array of missing attributes
+ * @param  {Array} missingElement.subElements - The array of missing sub elements
+ * @param  {Array} missingElement.oneOfResources - The array of resources in which at least one must be provided by the element
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VastParser#VAST-warning
  */
-function emitMissingValueWarning(missingElement, emit) {
-  let message = `Element '${missingElement.node.nodeName}'`;
-
-  if (missingElement.name) {
-    message += ` missing required ${missingElement.type} '${
-      missingElement.name
-    }' `;
-  } else {
-    message += ' is empty';
+function emitMissingValueWarning(
+  { name, parentName, attributes, subElements, oneOfResources },
+  emit
+) {
+  let message = `Element `;
+  if (attributes) {
+    message += `'${name}' missing required attribute(s) '${attributes.join(
+      ', '
+    )}' `;
   }
 
-  const warning = {
-    message,
-    parentElement: missingElement.node.parentElement.nodeName,
-    specVersion: 4.1
-  };
+  if (subElements) {
+    message += `'${name}' missing required sub element(s) '${subElements.join(
+      ', '
+    )}' `;
+  }
 
-  emit('VAST-warning', warning);
+  if (oneOfResources) {
+    message += `'${name}' must provide one of the following '${oneOfResources.join(
+      ', '
+    )}' `;
+  }
+
+  if (!attributes && !subElements && !oneOfResources) {
+    message += `'${name}' is empty`;
+  }
+
+  emit('VAST-warning', {
+    message,
+    parentElement: parentName,
+    specVersion: 4.1
+  });
 }
 
 export const parserVerification = {

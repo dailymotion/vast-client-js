@@ -28,8 +28,22 @@ export function parseAd(adElement, emit) {
 
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-    return parseAdElement(adTypeElement, emit);
+    if (adTypeElement.nodeName === 'Wrapper') {
+      return parseWrapper(adTypeElement, emit);
+    } else if (adTypeElement.nodeName === 'InLine') {
+      return parseInLine(adTypeElement, emit);
+    }
   }
+}
+
+/**
+ * Parses an Inline
+ * @param  {Object} ad Element - The VAST Inline element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @return {Ad}
+ */
+function parseInLine(adElement, emit) {
+  return parseAdElement(adElement, emit);
 }
 
 /**
@@ -77,8 +91,7 @@ function parseAdElement(adTypeElement, emit) {
                 case 'Linear':
                   parsedCreative = parseCreativeLinear(
                     creativeTypeElement,
-                    creativeAttributes,
-                    emit
+                    creativeAttributes
                   );
                   if (parsedCreative) {
                     ad.creatives.push(parsedCreative);
@@ -153,18 +166,17 @@ function parseAdElement(adTypeElement, emit) {
     }
   }
 
-  if (adTypeElement.nodeName === 'Wrapper') {
-    return parseWrapper(adTypeElement, ad);
-  }
   return ad;
 }
 
 /**
  * Parses a Wrapper element without resolving the wrapped urls.
  * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
  * @return {Ad}
  */
-function parseWrapper(wrapperElement, ad) {
+function parseWrapper(wrapperElement, emit) {
+  const ad = parseAdElement(wrapperElement, emit);
   let wrapperURLElement = parserUtils.childByName(
     wrapperElement,
     'VASTAdTagURI'

@@ -18,10 +18,10 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
   let offset;
   const creative = new CreativeLinear(creativeAttributes);
 
-  const durationElement = parserUtils.childByName(creativeElement, 'Duration');
-
   creative.duration = parserUtils.parseDuration(
-    parserUtils.parseNodeText(durationElement)
+    parserUtils.parseNodeText(
+      parserUtils.childByName(creativeElement, 'Duration')
+    )
   );
   const skipOffset = creativeElement.getAttribute('skipoffset');
 
@@ -164,7 +164,6 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         mediaFilesElement,
         'Mezzanine'
       );
-
       const requiredAttributes = getRequiredAttributes(mezzanineElement, [
         'delivery',
         'type',
@@ -195,9 +194,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
   if (iconsElement) {
-    const iconElements = parserUtils.childrenByName(iconsElement, 'Icon');
-
-    iconElements.forEach(iconElement => {
+    parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
       const icon = new Icon();
       icon.program = iconElement.getAttribute('program');
       icon.height = parseInt(iconElement.getAttribute('height') || 0);

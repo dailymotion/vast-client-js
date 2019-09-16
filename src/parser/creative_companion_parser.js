@@ -41,12 +41,10 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
         .childrenByName(companionResource, 'StaticResource')
         .reduce((urls, resource) => {
           const url = parserUtils.parseNodeText(resource);
-          const creativeType = resource.getAttribute('creativeType') || null;
-
           return url
             ? urls.concat({
                 url,
-                creativeType
+                creativeType: resource.getAttribute('creativeType') || null
               })
             : urls;
         }, []);
