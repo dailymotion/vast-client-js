@@ -14,6 +14,7 @@ import { parserVerification } from './parser_verification';
  * Parses an Ad element (can either be a Wrapper or an InLine).
  * @param  {Object} adElement - The VAST Ad element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
 export function parseAd(adElement, emit) {
@@ -40,6 +41,7 @@ export function parseAd(adElement, emit) {
  * Parses an Inline
  * @param  {Object} ad Element - The VAST Inline element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
 function parseInLine(adElement, emit) {
@@ -50,6 +52,7 @@ function parseInLine(adElement, emit) {
  * Parses an ad type (Inline or Wrapper)
  * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
 function parseAdElement(adTypeElement, emit) {
@@ -172,6 +175,7 @@ function parseAdElement(adTypeElement, emit) {
  * Parses a Wrapper element without resolving the wrapped urls.
  * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
 function parseWrapper(wrapperElement, emit) {

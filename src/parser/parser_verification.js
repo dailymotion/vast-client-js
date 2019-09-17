@@ -6,6 +6,7 @@ import { parserUtils } from './parser_utils';
  * Trigger warnings if a node required value is missing.
  * @param  {Node} node - The node element.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @param  {undefined|Boolean} [isAdInline] - Passed recursively to itself. True if the node is contained inside a inLine tag.
  */
 function verifyRequiredValues(node, emit, isAdInline) {
@@ -35,6 +36,7 @@ function verifyRequiredValues(node, emit, isAdInline) {
  * Verify and trigger warnings if node required attributes are not set.
  * @param  {Node} node - The node element.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  */
 function verifyRequiredAttributes(node, emit) {
   if (
@@ -64,6 +66,7 @@ function verifyRequiredAttributes(node, emit) {
  * @param  {Node} node - The node element
  * @param  {Boolean} isAdInline - True if node is contained in a inline
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  */
 function verifyRequiredSubElements(node, emit, isAdInline) {
   const required = requiredValues[node.nodeName];
@@ -135,6 +138,9 @@ function emitMissingValueWarning(
   { name, parentName, attributes, subElements, oneOfResources },
   emit
 ) {
+  if (!emit) {
+    return;
+  }
   let message = `Element `;
   if (attributes) {
     message += `'${name}' missing required attribute(s) '${attributes.join(
