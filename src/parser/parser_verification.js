@@ -20,15 +20,14 @@ function verifyRequiredValues(node, emit, isAdInline) {
 
   if (hasSubElements(node)) {
     verifyRequiredSubElements(node, emit, isAdInline);
-    for (const nodeKey in node.children) {
-      verifyRequiredValues(node.children[nodeKey], emit, isAdInline);
+    for (let i = 0; i < node.children.length; i++) {
+      verifyRequiredValues(node.children[i], emit, isAdInline);
     }
   } else if (parserUtils.parseNodeText(node).length === 0) {
     emitMissingValueWarning(
       { name: node.nodeName, parentName: node.parentNode.nodeName },
       emit
     );
-    return;
   }
 }
 
@@ -138,9 +137,6 @@ function emitMissingValueWarning(
   { name, parentName, attributes, subElements, oneOfResources },
   emit
 ) {
-  if (!emit) {
-    return;
-  }
   let message = `Element `;
   if (attributes) {
     message += `'${name}' missing required attribute(s) '${attributes.join(

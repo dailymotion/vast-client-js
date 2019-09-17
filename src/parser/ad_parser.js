@@ -56,7 +56,9 @@ function parseInLine(adElement, emit) {
  * @return {Ad}
  */
 function parseAdElement(adTypeElement, emit) {
-  parserVerification.verifyRequiredValues(adTypeElement, emit);
+  if (emit) {
+    parserVerification.verifyRequiredValues(adTypeElement, emit);
+  }
 
   const childNodes = adTypeElement.childNodes;
   const ad = new Ad();
