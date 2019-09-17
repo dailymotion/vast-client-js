@@ -45,11 +45,11 @@ export const requiredValues = {
     attributes: ['delivery', 'type', 'width', 'height']
   },
   NonLinear: {
-    inLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
+    oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
     attributes: ['width', 'height']
   },
   Companion: {
-    inLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
+    oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
     attributes: ['width', 'height']
   },
   StaticResource: {
@@ -59,6 +59,6 @@ export const requiredValues = {
     subElements: ['Icon']
   },
   Icon: {
-    inLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource']
+    oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource']
   }
 };

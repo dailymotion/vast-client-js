@@ -44,13 +44,9 @@ function verifyRequiredAttributes(node, emit) {
     return;
   }
   const requiredAttributes = requiredValues[node.nodeName].attributes;
-  const missingAttributes = [];
-  requiredAttributes.forEach(attributeName => {
-    const attribute = node.getAttribute(attributeName);
-    if (!attribute) {
-      missingAttributes.push(attributeName);
-    }
-  });
+  const missingAttributes = requiredAttributes.filter(
+    attributeName => !node.getAttribute(attributeName)
+  );
   if (missingAttributes.length > 0) {
     emitMissingValueWarning(
       {
@@ -78,14 +74,9 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
 
   if (required.subElements) {
     const requiredSubElements = required.subElements;
-    const missingSubElements = [];
-
-    requiredSubElements.forEach(subElementName => {
-      const subElement = parserUtils.childByName(node, subElementName);
-      if (!subElement) {
-        missingSubElements.push(subElementName);
-      }
-    });
+    const missingSubElements = requiredSubElements.filter(
+      subElementName => !parserUtils.childByName(node, subElementName)
+    );
 
     if (missingSubElements.length > 0) {
       emitMissingValueWarning(
@@ -101,11 +92,11 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
 
   // When InLine format is used some nodes (i.e <NonLinear>, <Companion>, or <Icon>)
   // require at least one of the following resources: StaticResource, IFrameResource, HTMLResource
-  if (!isAdInline || !required.inLineResources) {
+  if (!isAdInline || !required.oneOfinLineResources) {
     return;
   }
 
-  const resourceFound = required.inLineResources.some(resource => {
+  const resourceFound = required.oneOfinLineResources.some(resource => {
     return parserUtils.childByName(node, resource);
   });
   if (!resourceFound) {
@@ -113,7 +104,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
       {
         name: node.nodeName,
         parentName: node.parentNode.nodeName,
-        oneOfResources: required.inLineResources
+        oneOfResources: required.oneOfinLineResources
       },
       emit
     );
@@ -126,7 +117,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
  * @returns {Boolean}
  */
 function hasSubElements(node) {
-  return !node.children || node.children.length !== 0;
+  return node.children && node.children.length !== 0;
 }
 
 /**

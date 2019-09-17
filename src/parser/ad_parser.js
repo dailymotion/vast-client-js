@@ -128,8 +128,7 @@ function parseAdElement(adTypeElement, emit) {
 
       case 'AdVerifications':
         ad.adVerifications = _parseAdVerifications(
-          parserUtils.childrenByName(node, 'Verification'),
-          emit
+          parserUtils.childrenByName(node, 'Verification')
         );
         break;
 
@@ -330,7 +329,6 @@ function _parseExtension(extNode) {
 /**
  * Parses the AdVerifications Element.
  * @param  {Array} verifications - The array of verifications to parse.
- * @param  {Function} emit - Emit function used to trigger Warning event
  * @return {Array<AdVerification>}
  */
 
