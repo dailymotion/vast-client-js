@@ -92,7 +92,7 @@ export class VASTClient {
    */
   get(url, options = {}) {
     const now = Date.now();
-    options = Object.assign(this.defaultOptions, options);
+    options = Object.assign({}, this.defaultOptions, options);
 
     // By default the client resolves only the first Ad or AdPod
     if (!options.hasOwnProperty('resolveAll')) {
