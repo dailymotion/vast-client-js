@@ -1421,7 +1421,7 @@ var VASTParser = function (_EventEmitter) {
         data[_key - 2] = arguments[_key];
       }
 
-      this.emit('VAST-error', Object.assign.apply(Object, [DEFAULT_EVENT_DATA, errorCode].concat(data)));
+      this.emit('VAST-error', Object.assign.apply(Object, [{}, DEFAULT_EVENT_DATA, errorCode].concat(data)));
       util.track(urlTemplates, errorCode);
     }
 
@@ -2084,7 +2084,7 @@ var VASTClient = function () {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       var now = Date.now();
-      options = Object.assign(this.defaultOptions, options);
+      options = Object.assign({}, this.defaultOptions, options);
 
       // By default the client resolves only the first Ad or AdPod
       if (!options.hasOwnProperty('resolveAll')) {
