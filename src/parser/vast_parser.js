@@ -80,7 +80,7 @@ export class VASTParser extends EventEmitter {
   trackVastError(urlTemplates, errorCode, ...data) {
     this.emit(
       'VAST-error',
-      Object.assign(DEFAULT_EVENT_DATA, errorCode, ...data)
+      Object.assign({}, DEFAULT_EVENT_DATA, errorCode, ...data)
     );
     util.track(urlTemplates, errorCode);
   }
