@@ -69,8 +69,13 @@ function verifyRequiredAttributes(node, emit) {
  */
 function verifyRequiredSubElements(node, emit, isAdInline) {
   const required = requiredValues[node.nodeName];
-
-  if (!required) {
+  // Wrapper child elements have no required subElement. (Only InLine does)
+  if (
+    !required ||
+    (!isAdInline &&
+      node.nodeName !== 'Wrapper' &&
+      requiredValues.Wrapper.subElements.indexOf(node.nodeName) === -1)
+  ) {
     return;
   }
 
@@ -169,5 +174,8 @@ function emitMissingValueWarning(
 
 export const parserVerification = {
   verifyRequiredValues,
-  emitMissingValueWarning
+  hasSubElements,
+  emitMissingValueWarning,
+  verifyRequiredAttributes,
+  verifyRequiredSubElements
 };
