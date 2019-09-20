@@ -339,7 +339,7 @@ export class VASTTracker extends EventEmitter {
 
   /**
    * Must be called when the player or the window is closed during the ad.
-   * Calls the `closeLinear` (in VAST 3.0) and `close` tracking URLs.
+   * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
    *
    * @emits VASTTracker#closeLinear
    * @emits VASTTracker#close
