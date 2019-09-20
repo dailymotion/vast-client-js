@@ -51,6 +51,7 @@ vastTracker.on('exitFullscreen', () => {
 |`complete`|Only for linear ads with a duration. Emitted after `complete()` has been called.|`{ trackingURLTemplates: Array<String> }`|
 |`clickthrough`|Emitted when calling `click()` if there is at least one `<clickThroughURLTemplate>` element. A URL will be passed as a data|`String`|
 |`close`|Only for non-linear ads, emitted when `close()` is called|`{ trackingURLTemplates: Array<String> }`|
+|`closeLinear`|Only for linear ads, emitted when `close()` is called|`{ trackingURLTemplates: Array<String> }`|
 |`collapse`|Emitted when calling `setExpand(expanded)` and changing the expand state from true to false|`{ trackingURLTemplates: Array<String> }`|
 |`creativeView`|Emitted when `trackImpression()` is called.|`{ trackingURLTemplates: Array<String> }`|
 |`exitFullscreen`|Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false|`{ trackingURLTemplates: Array<String> }`|
