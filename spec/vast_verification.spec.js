@@ -212,7 +212,7 @@ describe('parserVerification', function() {
       const emitMock = jest.fn();
       const element = getNodesFromXml('<MediaFile></MediaFile>');
       parserVerification.verifyRequiredAttributes(element, emitMock);
-      expect(emitMock.mock.calls.length).toBe(1);
+      expect(emitMock).toHaveBeenCalledTimes(1);
     });
 
     it('should not call the emit function when missing non required attributes', () => {
@@ -222,7 +222,7 @@ describe('parserVerification', function() {
         '<MediaFile delivery="progressive" type="video/mp4" width="1280" height="720"></MediaFile>'
       );
       parserVerification.verifyRequiredAttributes(element, emitMock);
-      expect(emitMock.mock.calls.length).toBe(0);
+      expect(emitMock).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -236,7 +236,7 @@ describe('parserVerification', function() {
         emitMock,
         isAdInLine
       );
-      expect(emitMock.mock.calls.length).toBe(1);
+      expect(emitMock).toHaveBeenCalledTimes(1);
     });
 
     it('should not call the emit function if node inside Wrapper has a missing sub element that is required when inside InLine', () => {
@@ -248,7 +248,7 @@ describe('parserVerification', function() {
         emitMock,
         isAdInLine
       );
-      expect(emitMock.mock.calls.length).toBe(0);
+      expect(emitMock).toHaveBeenCalledTimes(0);
     });
   });
 });

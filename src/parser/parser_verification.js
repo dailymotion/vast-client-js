@@ -69,13 +69,11 @@ function verifyRequiredAttributes(node, emit) {
  */
 function verifyRequiredSubElements(node, emit, isAdInline) {
   const required = requiredValues[node.nodeName];
-  // Wrapper child elements have no required subElement. (Only InLine does)
-  if (
-    !required ||
-    (!isAdInline &&
-      node.nodeName !== 'Wrapper' &&
-      requiredValues.Wrapper.subElements.indexOf(node.nodeName) === -1)
-  ) {
+  // Do not verify subelement if node is a child of wrapper, but verify it if node is the Wrapper itself
+  // Wrapper child have no required subElement. (Only InLine does)
+  const isInWrapperButNotWrapperItself =
+    !isAdInline && node.nodeName !== 'Wrapper';
+  if (!required || isInWrapperButNotWrapperItself) {
     return;
   }
 
