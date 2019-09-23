@@ -140,27 +140,17 @@ function emitMissingValueWarning(
   { name, parentName, attributes, subElements, oneOfResources },
   emit
 ) {
-  let message = `Element `;
+  let message = `Element '${name}'`;
   if (attributes) {
-    message += `'${name}' missing required attribute(s) '${attributes.join(
+    message += ` missing required attribute(s) '${attributes.join(', ')}' `;
+  } else if (subElements) {
+    message += ` missing required sub element(s) '${subElements.join(', ')}' `;
+  } else if (oneOfResources) {
+    message += ` must provide one of the following '${oneOfResources.join(
       ', '
     )}' `;
-  }
-
-  if (subElements) {
-    message += `'${name}' missing required sub element(s) '${subElements.join(
-      ', '
-    )}' `;
-  }
-
-  if (oneOfResources) {
-    message += `'${name}' must provide one of the following '${oneOfResources.join(
-      ', '
-    )}' `;
-  }
-
-  if (!attributes && !subElements && !oneOfResources) {
-    message += `'${name}' is empty`;
+  } else {
+    message += ` is empty`;
   }
 
   emit('VAST-warning', {
