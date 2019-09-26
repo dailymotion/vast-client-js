@@ -178,6 +178,7 @@ export class VASTParser extends EventEmitter {
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
+   * @emits  VASTParser#VAST-warning
    * @return {Promise}
    */
   getAndParseVAST(url, options = {}) {
@@ -201,6 +202,7 @@ export class VASTParser extends EventEmitter {
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
+   * @emits  VASTParser#VAST-warning
    * @return {Promise}
    */
   parseVAST(vastXml, options = {}) {
@@ -233,6 +235,7 @@ export class VASTParser extends EventEmitter {
    * Returns the array or throws an `Error` if an invalid VAST XML is provided
    * @param  {Object} vastXml - An object representing an xml document.
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParser#VAST-warning
    * @return {Array}
    * @throws {Error} `vastXml` must be a valid VAST XMLDocument
    */
@@ -268,11 +271,8 @@ export class VASTParser extends EventEmitter {
         isRootVAST
           ? this.rootErrorURLTemplates.push(errorURLTemplate)
           : this.errorURLTemplates.push(errorURLTemplate);
-      }
-
-      if (node.nodeName === 'Ad') {
-        const ad = parseAd(node);
-
+      } else if (node.nodeName === 'Ad') {
+        const ad = parseAd(node, this.emit.bind(this));
         if (ad) {
           ads.push(ad);
         } else {
@@ -294,6 +294,7 @@ export class VASTParser extends EventEmitter {
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
+   * @emits  VASTParser#VAST-warning
    * @return {Promise}
    */
   parse(

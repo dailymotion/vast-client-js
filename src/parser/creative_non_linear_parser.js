@@ -14,7 +14,6 @@ import { parserUtils } from './parser_utils';
  */
 export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
   const creative = new CreativeNonLinear(creativeAttributes);
-
   parserUtils
     .childrenByName(creativeElement, 'TrackingEvents')
     .forEach(trackingEventsElement => {

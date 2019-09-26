@@ -198,9 +198,9 @@ function assignAttributes(attributes, verificationObject) {
       const attribute = attributes[attrKey];
 
       if (
-          attribute.nodeName &&
-          attribute.nodeValue &&
-          verificationObject.hasOwnProperty(attribute.nodeName)
+        attribute.nodeName &&
+        attribute.nodeValue &&
+        verificationObject.hasOwnProperty(attribute.nodeName)
       ) {
         let value = attribute.nodeValue;
 

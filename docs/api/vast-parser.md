@@ -61,6 +61,19 @@ vastParser.on('VAST-error', ({ ERRORCODE, ERRORMESSAGE, extensions, system }) =>
 });
 ```
 
+### VAST-warning
+
+Event is triggered when the VAST required values are missing according to IAB specifications. It carries the following data:
+- `message: String`
+- `parentElement: String`
+- `specVersion: Number`
+
+```Javascript
+vastParser.on('VAST-warning', ({ message, parentElement, specVersion }) => {
+  // Deal with the warning
+});
+```
+
 ### VAST-resolved
 
 Event is triggered when VAST url has been fetched. It carries the following data:
@@ -189,6 +202,7 @@ Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`]
 #### Events emitted
  * **`VAST-resolved`**
  * **`VAST-resolving`**
+ * **`VAST-warning`**
 
 #### Example
 ```Javascript
@@ -231,6 +245,7 @@ Returns a `Promise` which either resolves with the fully parsed `VASTResponse` o
 #### Events emitted
  * **`VAST-resolved`**
  * **`VAST-resolving`**
+ * **`VAST-warning`**
 
 #### Example
 ```Javascript

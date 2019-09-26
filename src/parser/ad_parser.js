@@ -5,7 +5,7 @@ import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
 import { parserUtils } from './parser_utils';
-
+import { parserVerification } from './parser_verification';
 /**
  * This module provides methods to parse a VAST Ad Element.
  */
@@ -13,9 +13,11 @@ import { parserUtils } from './parser_utils';
 /**
  * Parses an Ad element (can either be a Wrapper or an InLine).
  * @param  {Object} adElement - The VAST Ad element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
-export function parseAd(adElement) {
+export function parseAd(adElement, emit) {
   const childNodes = adElement.childNodes;
 
   for (const adTypeElementKey in childNodes) {
@@ -27,29 +29,44 @@ export function parseAd(adElement) {
 
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-
     if (adTypeElement.nodeName === 'Wrapper') {
-      return parseWrapper(adTypeElement);
+      return parseWrapper(adTypeElement, emit);
     } else if (adTypeElement.nodeName === 'InLine') {
-      return parseInLine(adTypeElement);
+      return parseInLine(adTypeElement, emit);
     }
   }
 }
 
 /**
- * Parses an Inline element.
- * @param  {Object} inLineElement - The VAST Inline element to parse.
+ * Parses an Inline
+ * @param  {Object} ad Element - The VAST Inline element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
-function parseInLine(inLineElement) {
-  const childNodes = inLineElement.childNodes;
+function parseInLine(adElement, emit) {
+  return parseAdElement(adElement, emit);
+}
+
+/**
+ * Parses an ad type (Inline or Wrapper)
+ * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
+ * @return {Ad}
+ */
+function parseAdElement(adTypeElement, emit) {
+  if (emit) {
+    parserVerification.verifyRequiredValues(adTypeElement, emit);
+  }
+
+  const childNodes = adTypeElement.childNodes;
   const ad = new Ad();
-  ad.id = inLineElement.getAttribute('id') || null;
-  ad.sequence = inLineElement.getAttribute('sequence') || null;
+  ad.id = adTypeElement.getAttribute('id') || null;
+  ad.sequence = adTypeElement.getAttribute('sequence') || null;
 
   for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
-
     switch (node.nodeName) {
       case 'Error':
         ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
@@ -159,10 +176,12 @@ function parseInLine(inLineElement) {
 /**
  * Parses a Wrapper element without resolving the wrapped urls.
  * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
-function parseWrapper(wrapperElement) {
-  const ad = parseInLine(wrapperElement);
+function parseWrapper(wrapperElement, emit) {
+  const ad = parseAdElement(wrapperElement, emit);
   let wrapperURLElement = parserUtils.childByName(
     wrapperElement,
     'VASTAdTagURI'
@@ -326,10 +345,7 @@ export function _parseAdVerifications(verifications) {
     const verification = new AdVerification();
     const childNodes = verificationNode.childNodes;
 
-    parserUtils.assignAttributes(
-        verificationNode.attributes,
-        verification
-    );
+    parserUtils.assignAttributes(verificationNode.attributes, verification);
     for (const nodeKey in childNodes) {
       const node = childNodes[nodeKey];
 
@@ -349,7 +365,6 @@ export function _parseAdVerifications(verifications) {
 
   return ver;
 }
-
 
 /**
  * Parses the creative adId Attribute.
