@@ -1,11 +1,9 @@
 import { Creative } from './creative';
 
-export class CreativeCompanion extends Creative {
-  constructor(creativeAttributes = {}) {
-    super(creativeAttributes);
+export function CreativeCompanion(creativeAttributes = {}) {
+  Creative.call(this, creativeAttributes);
 
-    this.type = 'companion';
-    this.required = null;
-    this.variations = [];
-  }
+  this.type = 'companion';
+  this.required = null;
+  this.variations = [];
 }
