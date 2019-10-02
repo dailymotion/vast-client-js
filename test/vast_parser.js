@@ -441,6 +441,7 @@ describe('VASTParser', function() {
           icon.apiFramework.should.equal('VPAID');
           icon.offset.should.equal(15);
           icon.duration.should.equal(90);
+          icon.pxratio.should.equal('2');
           icon.type.should.equal('image/gif');
           icon.staticResource.should.equal(
             'http://example.com/linear-icon.gif'
