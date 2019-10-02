@@ -90,8 +90,14 @@ describe('parseCreativeCompanion', function() {
 
     it('gets companionClickTrackingURLTemplates', () => {
       expect(companion.companionClickTrackingURLTemplates).toEqual([
-        'http://example.com/companion1-clicktracking-first',
-        'http://example.com/companion1-clicktracking-second'
+        {
+          id: '1',
+          url: 'http://example.com/companion1-clicktracking-first'
+        },
+        {
+          id: '2',
+          url: 'http://example.com/companion1-clicktracking-second'
+        }
       ]);
     });
 

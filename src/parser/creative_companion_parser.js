@@ -75,11 +75,14 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
           });
       }
 
-      companionAd.companionClickTrackingURLTemplates = parserUtils
+      parserUtils
         .childrenByName(companionResource, 'CompanionClickTracking')
-        .map(clickTrackingElement =>
-          parserUtils.parseNodeText(clickTrackingElement)
-        );
+        .forEach(clickTrackingElement => {
+          companionAd.companionClickTrackingURLTemplates.push({
+            id: clickTrackingElement.getAttribute('id') || null,
+            url: parserUtils.parseNodeText(clickTrackingElement)
+          });
+        });
 
       companionAd.companionClickThroughURLTemplate =
         parserUtils.parseNodeText(

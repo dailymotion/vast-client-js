@@ -42,10 +42,10 @@
               <Tracking event="progress" offset="60%"><![CDATA[http://example.com/linear-progress-60%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
-              <ClickTracking><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
-              <ClickThrough><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
-              <CustomClick><![CDATA[http://example.com/linear-customclick]]></CustomClick>
+              <ClickTracking id='video-click-1'><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
+              <ClickTracking id='video-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
+              <ClickThrough id='click-through'><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
+              <CustomClick id='custom-click-1'><![CDATA[http://example.com/linear-customclick]]></CustomClick>
             </VideoClicks>
             <MediaFiles>
               <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/linear-asset.mp4]]></MediaFile>
@@ -58,8 +58,8 @@
                 <IconViewTracking><![CDATA[http://example.com/linear-viewtracking]]></IconViewTracking>
                 <IconClicks>
                   <IconClickThrough><![CDATA[http://example.com/linear-clickthrough]]></IconClickThrough>
-                  <IconClickTracking><![CDATA[http://example.com/linear-clicktracking1]]></IconClickTracking>
-                  <IconClickTracking><![CDATA[http://example.com/linear-clicktracking2]]></IconClickTracking>
+                  <IconClickTracking id='icon-click-1'><![CDATA[http://example.com/linear-clicktracking1]]></IconClickTracking>
+                  <IconClickTracking id='icon-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></IconClickTracking>
                 </IconClicks>
               </Icon>
             </Icons>
@@ -74,7 +74,7 @@
                 <Tracking event="creativeView"><![CDATA[http://example.com/companion1-creativeview]]></Tracking>
               </TrackingEvents>
               <CompanionClickThrough><![CDATA[http://example.com/companion1-clickthrough]]></CompanionClickThrough>
-              <CompanionClickTracking><![CDATA[http://example.com/companion1-clicktracking-first]]></CompanionClickTracking>
+              <CompanionClickTracking id="123"><![CDATA[http://example.com/companion1-clicktracking-first]]></CompanionClickTracking>
               <CompanionClickTracking><![CDATA[http://example.com/companion1-clicktracking-second]]></CompanionClickTracking>
             </Companion>
             <Companion width="300" height="60">
@@ -105,7 +105,7 @@
                 <![CDATA[{"key":"value"}]]>
               </AdParameters>
               <NonLinearClickThrough><![CDATA[http://example.com/nonlinear-clickthrough]]></NonLinearClickThrough>
-              <NonLinearClickTracking><![CDATA[http://example.com/nonlinear-clicktracking-1]]></NonLinearClickTracking>
+              <NonLinearClickTracking id='nonlinear-click-1'><![CDATA[http://example.com/nonlinear-clicktracking-1]]></NonLinearClickTracking>
               <NonLinearClickTracking><![CDATA[http://example.com/nonlinear-clicktracking-2]]></NonLinearClickTracking>
             </NonLinear>
             <TrackingEvents>

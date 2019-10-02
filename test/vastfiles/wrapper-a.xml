@@ -49,9 +49,9 @@
               <Tracking event="complete"><![CDATA[http://example.com/wrapperA-linear-complete]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
+              <ClickTracking id='wrapper-video-click-1'><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
               <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking2]]></ClickTracking>
-              <CustomClick><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
+              <CustomClick id='123'><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
             </VideoClicks>
           </Linear>
         </Creative>
@@ -62,7 +62,7 @@
               <Tracking event="progress" offset="90%"><![CDATA[http://example.com/wrapperA-linear-progress-90%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking3]]></ClickTracking>
+              <ClickTracking id='wrapper-video-click-3'><![CDATA[http://example.com/wrapperA-linear-clicktracking3]]></ClickTracking>
             </VideoClicks>
           </Linear>
         </Creative>
