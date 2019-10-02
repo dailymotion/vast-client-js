@@ -4,7 +4,7 @@
     <InLine>
       <AdSystem version="2.0" ><![CDATA[AdServer]]></AdSystem>
       <AdTitle><![CDATA[Ad title]]></AdTitle>
-      <Advertiser><![CDATA[Advertiser name]]></Advertiser>
+      <Advertiser id='advertiser-desc'><![CDATA[Advertiser name]]></Advertiser>
       <Description><![CDATA[Description text]]></Description>
       <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
       <Survey><![CDATA[http://example.com/survey]]></Survey>

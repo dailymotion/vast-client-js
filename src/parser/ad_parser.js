@@ -156,7 +156,10 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Advertiser':
-        ad.advertiser = parserUtils.parseNodeText(node);
+        ad.advertiser = {
+          id: node.getAttribute('id') || null,
+          value: parserUtils.parseNodeText(node)
+        };
         break;
 
       case 'Pricing':

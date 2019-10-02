@@ -164,7 +164,8 @@ describe('VASTParser', function() {
         ad1.system.value.should.eql('AdServer');
         ad1.system.version.should.eql('2.0');
         ad1.title.should.eql('Ad title');
-        ad1.advertiser.should.eql('Advertiser name');
+        ad1.advertiser.id.should.eql('advertiser-desc');
+        ad1.advertiser.value.should.eql('Advertiser name');
         ad1.description.should.eql('Description text');
         ad1.pricing.value.should.eql('1.09');
         ad1.pricing.model.should.eql('CPM');
