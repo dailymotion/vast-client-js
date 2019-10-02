@@ -459,7 +459,7 @@ export class VASTTracker extends EventEmitter {
       variables['CONTENTPLAYHEAD'] = this.progressFormatted();
     }
 
-    util.track(URLTemplates, variables, options);
+    util.track(util.extractURLsFromTemplates(URLTemplates), variables, options);
   }
 
   /**

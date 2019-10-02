@@ -67,6 +67,32 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   return URLs;
 }
 
+/**
+ * Extract the url/s from the URLTemplates.
+ *   If the URLTemplates is an array of urls
+ *   If the URLTemplates object has a url property
+ *   If the URLTemplates is a single string
+ *
+ * TODO: Currently the URLTemplates is not an array when only one url is present.
+ *
+ * @param {Array} URLTemplates - An array of tracking url templates.
+ */
+function extractURLsFromTemplates(URLTemplates) {
+  const URLs = [];
+  if (Array.isArray(URLTemplates)) {
+    URLTemplates.forEach(URLTemplate => {
+      if (URLTemplate.hasOwnProperty('url')) {
+        URLs.push(URLTemplate.url);
+      } else {
+        URLs.push(URLTemplate);
+      }
+    });
+  } else {
+    return URLTemplates;
+  }
+  return URLs;
+}
+
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
 function encodeURIComponentRFC3986(str) {
   return encodeURIComponent(str).replace(
@@ -131,6 +157,7 @@ function joinArrayUnique(arr1 = [], arr2 = []) {
 export const util = {
   track,
   resolveURLTemplates,
+  extractURLsFromTemplates,
   encodeURIComponentRFC3986,
   leftpad,
   range,

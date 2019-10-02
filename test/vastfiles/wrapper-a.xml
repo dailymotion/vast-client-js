@@ -3,9 +3,9 @@
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
-      <VASTAdTagURI>wrapper-b.xml</VASTAdTagURI>
-      <Error>http://example.com/wrapperA-error</Error>
-      <Impression>http://example.com/wrapperA-impression</Impression>
+      <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
+      <Error><![CDATA[http://example.com/wrapperA-error]]></Error>
+      <Impression id="wrapper-a-impression"><![CDATA[http://example.com/wrapperA-impression]]></Impression>
       <Creatives>
         <Creative id="a:ca1">
           <CompanionAds>

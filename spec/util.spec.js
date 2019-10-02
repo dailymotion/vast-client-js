@@ -128,4 +128,51 @@ describe('util', function() {
       expect(util.joinArrayUnique(null, undefined)).toEqual([]);
     });
   });
+
+  describe('#extractURLsFromTemplates', function() {
+    it('should return an array of urls', () => {
+      const input = [
+        {
+          id: null,
+          url: 'http://example.com/wrapperNoTracking-impression'
+        },
+        {
+          id: 'wrapper-a-impression',
+          url: 'http://example.com/wrapperA-impression'
+        },
+        {
+          id: 'wrapper-b-impression1',
+          url: 'http://example.com/wrapperB-impression1'
+        }
+      ];
+
+      const expectedOutput = [
+        'http://example.com/wrapperNoTracking-impression',
+        'http://example.com/wrapperA-impression',
+        'http://example.com/wrapperB-impression1'
+      ];
+
+      const output = util.extractURLsFromTemplates(input);
+
+      expect(output).toEqual(expectedOutput);
+    });
+
+    it('should return the array of urls as passed in', () => {
+      const input = [
+        'http://example.com/wrapperNoTracking-impression',
+        'http://example.com/wrapperA-impression',
+        'http://example.com/wrapperB-impression'
+      ];
+
+      const expectedOutput = [
+        'http://example.com/wrapperNoTracking-impression',
+        'http://example.com/wrapperA-impression',
+        'http://example.com/wrapperB-impression'
+      ];
+
+      const output = util.extractURLsFromTemplates(input);
+
+      expect(output).toEqual(expectedOutput);
+    });
+  });
 });

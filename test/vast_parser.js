@@ -183,13 +183,35 @@ describe('VASTParser', function() {
 
       it('should have merged impression URLs', () => {
         ad1.impressionURLTemplates.should.eql([
-          'http://example.com/wrapperNoTracking-impression',
-          'http://example.com/wrapperA-impression',
-          'http://example.com/wrapperB-impression1',
-          'http://example.com/wrapperB-impression2',
-          'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
-          'http://example.com/impression2_[random]',
-          'http://example.com/impression3_[RANDOM]'
+          {
+            id: null,
+            url: 'http://example.com/wrapperNoTracking-impression'
+          },
+          {
+            id: 'wrapper-a-impression',
+            url: 'http://example.com/wrapperA-impression'
+          },
+          {
+            id: 'wrapper-b-impression1',
+            url: 'http://example.com/wrapperB-impression1'
+          },
+          {
+            id: 'wrapper-b-impression2',
+            url: 'http://example.com/wrapperB-impression2'
+          },
+          {
+            id: 'sample-impression1',
+            url:
+              'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]'
+          },
+          {
+            id: 'sample-impression2',
+            url: 'http://example.com/impression2_[random]'
+          },
+          {
+            id: 'sample-impression3',
+            url: 'http://example.com/impression3_[RANDOM]'
+          }
         ]);
       });
 
@@ -211,7 +233,7 @@ describe('VASTParser', function() {
         ad1.adVerifications[1].browserOptional.should.eql(false);
         ad1.adVerifications[1].apiFramework.should.eql('omid');
         ad1.adVerifications[1].parameters.should.eql(
-            'test-verification-parameter'
+          'test-verification-parameter'
         );
       });
 
@@ -561,11 +583,26 @@ describe('VASTParser', function() {
 
       it('should have merged impression URLs', () => {
         ad2.impressionURLTemplates.should.eql([
-          'http://example.com/wrapperNoTracking-impression',
-          'http://example.com/wrapperA-impression',
-          'http://example.com/wrapperB-impression1',
-          'http://example.com/wrapperB-impression2',
-          'http://example.com/impression1'
+          {
+            id: null,
+            url: 'http://example.com/wrapperNoTracking-impression'
+          },
+          {
+            id: 'wrapper-a-impression',
+            url: 'http://example.com/wrapperA-impression'
+          },
+          {
+            id: 'wrapper-b-impression1',
+            url: 'http://example.com/wrapperB-impression1'
+          },
+          {
+            id: 'wrapper-b-impression2',
+            url: 'http://example.com/wrapperB-impression2'
+          },
+          {
+            id: 'sample-ad2-impression1',
+            url: 'http://example.com/impression1'
+          }
         ]);
       });
 

@@ -9,9 +9,9 @@
       <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
       <Survey><![CDATA[http://example.com/survey]]></Survey>
       <Error><![CDATA[http://example.com/error_[ERRORCODE]]]></Error>
-      <Impression><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
-      <Impression><![CDATA[http://example.com/impression2_[random]]]></Impression>
-      <Impression><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
+      <Impression id="sample-impression1"><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
+      <Impression id="sample-impression2"><![CDATA[http://example.com/impression2_[random]]]></Impression>
+      <Impression id="sample-impression3"><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
       <AdVerifications>
         <Verification vendor="company.com-omid">
           <JavaScriptResource apiFramework="omid" browserOptional="true">
@@ -139,7 +139,7 @@
     <InLine>
       <AdSystem version="2.1" ><![CDATA[AdServer2]]></AdSystem>
       <AdTitle><![CDATA[Ad title 2]]></AdTitle>
-      <Impression><![CDATA[http://example.com/impression1]]></Impression>
+      <Impression id="sample-ad2-impression1"><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
         <Creative id="id873421" adID="adId221144" apiFramework="VPAID">
           <Linear skipoffset="00:00:10" >
