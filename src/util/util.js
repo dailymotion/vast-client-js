@@ -1,3 +1,5 @@
+import isEqual from 'lodash.isequal';
+
 function track(URLTemplates, variables, options) {
   const URLs = resolveURLTemplates(URLTemplates, variables, options);
 
@@ -47,8 +49,9 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
   variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
-  for (const URLTemplateKey in URLTemplates) {
-    let resolveURL = URLTemplates[URLTemplateKey];
+  const URLArray = extractURLsFromTemplates(URLTemplates);
+  for (const URLTemplateKey in URLArray) {
+    let resolveURL = URLArray[URLTemplateKey];
 
     if (typeof resolveURL !== 'string') {
       continue;
@@ -73,24 +76,33 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
  *   If the URLTemplates object has a url property
  *   If the URLTemplates is a single string
  *
- * TODO: Currently the URLTemplates is not an array when only one url is present.
- *
- * @param {Array} URLTemplates - An array of tracking url templates.
+ * @param {Array|String} URLTemplates - An array|string of url templates.
  */
 function extractURLsFromTemplates(URLTemplates) {
-  const URLs = [];
   if (Array.isArray(URLTemplates)) {
-    URLTemplates.forEach(URLTemplate => {
-      if (URLTemplate.hasOwnProperty('url')) {
-        URLs.push(URLTemplate.url);
-      } else {
-        URLs.push(URLTemplate);
-      }
+    return URLTemplates.map(URLTemplate => {
+      return URLTemplate && URLTemplate.hasOwnProperty('url')
+        ? URLTemplate.url
+        : URLTemplate;
     });
-  } else {
-    return URLTemplates;
   }
-  return URLs;
+  return URLTemplates;
+}
+
+/**
+ * Returns a boolean after checking if the object exists in the array.
+ *   true - if the object exists, false otherwise
+ *
+ * @param {Object} obj - The object who existence is to be checked.
+ * @param {Array} list - List of objects.
+ */
+function containsObject(obj, list) {
+  for (let i = 0; i < list.length; i++) {
+    if (isEqual(list[i], obj)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
@@ -137,6 +149,7 @@ function flatten(arr) {
 
 /**
  * Joins two arrays without duplicates
+ *
  * @param {Array} arr1
  * @param {Array} arr2
  * @return {Array}
@@ -154,14 +167,37 @@ function joinArrayUnique(arr1 = [], arr2 = []) {
   }, []);
 }
 
+/**
+ * Joins two arrays of objects without duplicates
+ *
+ * @param {Array} arr1
+ * @param {Array} arr2
+ *
+ * @return {Array}
+ */
+function joinArrayOfUniqueObjs(arr1 = [], arr2 = []) {
+  const firstArr = Array.isArray(arr1) ? arr1 : [];
+  const secondArr = Array.isArray(arr2) ? arr2 : [];
+  const arr = firstArr.concat(secondArr);
+
+  return arr.reduce((res, val) => {
+    if (!containsObject(val, res)) {
+      res.push(val);
+    }
+    return res;
+  }, []);
+}
+
 export const util = {
   track,
   resolveURLTemplates,
   extractURLsFromTemplates,
+  containsObject,
   encodeURIComponentRFC3986,
   leftpad,
   range,
   isNumeric,
   flatten,
-  joinArrayUnique
+  joinArrayUnique,
+  joinArrayOfUniqueObjs
 };

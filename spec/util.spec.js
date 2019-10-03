@@ -175,4 +175,103 @@ describe('util', function() {
       expect(output).toEqual(expectedOutput);
     });
   });
+
+  describe('#containsObject', function() {
+    const obj1 = {
+      id: null,
+      url: 'http://example.com/wrapperNoTracking-impression'
+    };
+    const obj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const copyOfObj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+
+    it('should return false for an empty array', () => {
+      const myArr = [];
+      let output = util.containsObject(obj1, myArr);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for an object existing in the array', () => {
+      const myArr = [];
+      myArr.push(obj1);
+      myArr.push(obj2);
+      let output = util.containsObject(obj2, myArr);
+      expect(output).toBe(true);
+    });
+
+    it('should return true for a copy of an object existing in the array', () => {
+      const myArr = [];
+      myArr.push(obj1);
+      myArr.push(obj2);
+      let output = util.containsObject(copyOfObj2, myArr);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for an object not existing in the array', () => {
+      const myArr = [];
+      myArr.push(obj1);
+      let output = util.containsObject(obj2, myArr);
+      expect(output).toBe(false);
+    });
+  });
+
+  describe('#joinArrayOfUniqueObjs', function() {
+    it('should return an array of unique objects', () => {
+      const obj1 = {
+        id: null,
+        url: 'http://example.com/wrapperNoTracking-impression'
+      };
+      const obj2 = {
+        id: 'wrapper-a-impression',
+        url: 'http://example.com/wrapperA-impression'
+      };
+      const copyOfObj2 = {
+        id: 'wrapper-a-impression',
+        url: 'http://example.com/wrapperA-impression'
+      };
+      const obj3 = {
+        id: 'wrapper-b-impression1',
+        url: 'http://example.com/wrapperB-impression'
+      };
+      const obj4 = {
+        id: 'wrapper-b-impression2',
+        url: 'http://example.com/wrapperB-impression'
+      };
+      const copyOfObj4 = {
+        id: 'wrapper-b-impression2',
+        url: 'http://example.com/wrapperB-impression'
+      };
+
+      const arr1 = [obj1, obj2];
+      const arr2 = [copyOfObj2, obj3, obj4, copyOfObj4];
+
+      const expectedOutput = [
+        {
+          id: null,
+          url: 'http://example.com/wrapperNoTracking-impression'
+        },
+        {
+          id: 'wrapper-a-impression',
+          url: 'http://example.com/wrapperA-impression'
+        },
+        {
+          id: 'wrapper-b-impression1',
+          url: 'http://example.com/wrapperB-impression'
+        },
+        {
+          id: 'wrapper-b-impression2',
+          url: 'http://example.com/wrapperB-impression'
+        }
+      ];
+
+      let outputArr = util.joinArrayOfUniqueObjs(arr1, arr2);
+      expect(outputArr.length).toEqual(4);
+      expect(outputArr).toEqual(expectedOutput);
+    });
+  });
 });

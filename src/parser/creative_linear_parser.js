@@ -51,6 +51,8 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         id: videoClickThroughElement.getAttribute('id') || null,
         url: parserUtils.parseNodeText(videoClickThroughElement)
       };
+    } else {
+      creative.videoClickThroughURLTemplate = null;
     }
 
     parserUtils
