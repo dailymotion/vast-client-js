@@ -1,5 +1,3 @@
-import isEqual from 'lodash.isequal';
-
 function track(URLTemplates, variables, options) {
   const URLs = resolveURLTemplates(URLTemplates, variables, options);
 
@@ -19,7 +17,8 @@ function track(URLTemplates, variables, options) {
  * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
  */
 function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
-  const URLs = [];
+  const resolvedURLs = [];
+  const URLArray = extractURLsFromTemplates(URLTemplates);
 
   // Encode String variables, when given
   if (variables['ASSETURI']) {
@@ -49,7 +48,6 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
   variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
-  const URLArray = extractURLsFromTemplates(URLTemplates);
   for (const URLTemplateKey in URLArray) {
     let resolveURL = URLArray[URLTemplateKey];
 
@@ -64,10 +62,10 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
       resolveURL = resolveURL.replace(macro1, value);
       resolveURL = resolveURL.replace(macro2, value);
     }
-    URLs.push(resolveURL);
+    resolvedURLs.push(resolveURL);
   }
 
-  return URLs;
+  return resolvedURLs;
 }
 
 /**
@@ -98,9 +96,34 @@ function extractURLsFromTemplates(URLTemplates) {
  */
 function containsObject(obj, list) {
   for (let i = 0; i < list.length; i++) {
-    if (isEqual(list[i], obj)) {
+    if (isTemplateObjectEqual(list[i], obj)) {
       return true;
     }
+  }
+  return false;
+}
+
+/**
+ * Returns a boolean after comparing two Template objects.
+ *   true - if the objects are equivalent, false otherwise
+ *
+ * @param {Object} obj1
+ * @param {Object} obj2
+ */
+function isTemplateObjectEqual(obj1, obj2) {
+  if (obj1 && obj2) {
+    const obj1Properties = Object.getOwnPropertyNames(obj1);
+    const obj2Properties = Object.getOwnPropertyNames(obj2);
+
+    // If number of properties is different, objects are not equivalent
+    if (obj1Properties.length !== obj2Properties.length) {
+      return false;
+    }
+
+    if (obj1.id !== obj2.id || obj1.url !== obj2.url) {
+      return false;
+    }
+    return true;
   }
   return false;
 }
@@ -148,26 +171,6 @@ function flatten(arr) {
 }
 
 /**
- * Joins two arrays without duplicates
- *
- * @param {Array} arr1
- * @param {Array} arr2
- * @return {Array}
- */
-function joinArrayUnique(arr1 = [], arr2 = []) {
-  const firstArr = Array.isArray(arr1) ? arr1 : [];
-  const secondArr = Array.isArray(arr2) ? arr2 : [];
-  const arr = firstArr.concat(secondArr);
-
-  return arr.reduce((res, val) => {
-    if (res.indexOf(val) === -1) {
-      res.push(val);
-    }
-    return res;
-  }, []);
-}
-
-/**
  * Joins two arrays of objects without duplicates
  *
  * @param {Array} arr1
@@ -193,11 +196,11 @@ export const util = {
   resolveURLTemplates,
   extractURLsFromTemplates,
   containsObject,
+  isTemplateObjectEqual,
   encodeURIComponentRFC3986,
   leftpad,
   range,
   isNumeric,
   flatten,
-  joinArrayUnique,
   joinArrayOfUniqueObjs
 };

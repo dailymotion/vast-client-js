@@ -112,23 +112,6 @@ describe('util', function() {
     });
   });
 
-  describe('joinArrayUnique', () => {
-    it('should join multiple arrays without duplicates', () => {
-      expect(util.joinArrayUnique([1, 2, 3], [2, 2, 3, 4])).toEqual([
-        1,
-        2,
-        3,
-        4
-      ]);
-    });
-    it('should remove duplicates from one array', () => {
-      expect(util.joinArrayUnique([1, 2, 2, 3])).toEqual([1, 2, 3]);
-    });
-    it('should return empty array if there are no valid inputs', () => {
-      expect(util.joinArrayUnique(null, undefined)).toEqual([]);
-    });
-  });
-
   describe('#extractURLsFromTemplates', function() {
     it('should return an array of urls', () => {
       const input = [
@@ -173,6 +156,74 @@ describe('util', function() {
       const output = util.extractURLsFromTemplates(input);
 
       expect(output).toEqual(expectedOutput);
+    });
+  });
+
+  describe('#isTemplateObjectEqual', function() {
+    const obj1 = {
+      id: null,
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const obj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const copyOfObj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const obj3 = {
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const copyOfObj3 = {
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const obj4 = {
+      id: 'wrapper-a-impression'
+    };
+    const copyOfObj4 = {
+      id: 'wrapper-a-impression'
+    };
+    const obj5 = null;
+
+    it('should return false for unequal objects (ids dont match)', () => {
+      let output = util.isTemplateObjectEqual(obj1, obj2);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for equivalent objects', () => {
+      let output = util.isTemplateObjectEqual(obj2, copyOfObj2);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for unequal objects (id field missing)', () => {
+      let output = util.isTemplateObjectEqual(obj2, obj3);
+      expect(output).toBe(false);
+    });
+
+    it('should return false for unequal objects (url field missing)', () => {
+      let output = util.isTemplateObjectEqual(obj2, obj4);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for equivalent objects without the id', () => {
+      let output = util.isTemplateObjectEqual(obj3, copyOfObj3);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for unequal objects (id/url field missing)', () => {
+      let output = util.isTemplateObjectEqual(obj3, obj4);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for equivalent objects without the url', () => {
+      let output = util.isTemplateObjectEqual(obj4, copyOfObj4);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for unequal objects (an object is null)', () => {
+      let output = util.isTemplateObjectEqual(obj1, obj5);
+      expect(output).toBe(false);
     });
   });
 
