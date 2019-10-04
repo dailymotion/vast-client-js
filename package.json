@@ -25,7 +25,9 @@
   "main": "dist/vast-client-node.min.js",
   "browser": "dist/vast-client.min.js",
   "scripts": {
+    "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
     "build": "rollup -c",
+    "postbuild": "node bundleSize.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
     "test": "mocha && jest",
