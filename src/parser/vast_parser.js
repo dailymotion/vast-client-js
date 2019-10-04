@@ -3,7 +3,7 @@ import { EventEmitter } from '../util/event_emitter';
 import { parserUtils } from './parser_utils';
 import { urlHandler } from '../url_handler';
 import { util } from '../util/util';
-import { VASTResponse } from '../vast_response';
+import { createVASTResponse } from '../vast_response';
 
 const DEFAULT_MAX_WRAPPER_DEPTH = 10;
 const DEFAULT_EVENT_DATA = {
@@ -211,20 +211,21 @@ export class VASTParser extends EventEmitter {
     options.isRootVAST = true;
 
     return this.parse(vastXml, options).then(ads => {
-      return this.buildVASTResponse(ads);
+      return this.buildVASTResponse({ ads });
     });
   }
 
   /**
    * Builds a VASTResponse which can be returned.
    * @param  {Array} ads - An Array of unwrapped ads
-   * @return {VASTResponse}
+   * @return {Object}
    */
   buildVASTResponse(ads) {
-    const response = new VASTResponse();
-    response.ads = ads;
-    response.errorURLTemplates = this.getErrorURLTemplates();
-    response.version = this.vastVersion;
+    const response = createVASTResponse({
+      ads,
+      errorURLTemplates: this.getErrorURLTemplates(),
+      version: this.vastVersion
+    });
     this.completeWrapperResolving(response);
 
     return response;

@@ -1,7 +1,7 @@
-import { CreativeLinear } from '../creative/creative_linear';
-import { Icon } from '../icon';
-import { MediaFile } from '../media_file';
-import { Mezzanine } from '../mezzanine';
+import { createCreativeLinear } from '../creative/creative_linear';
+import { createIcon } from '../icon';
+import { createMediaFile } from '../media_file';
+import { createMezzanine } from '../mezzanine';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -12,11 +12,11 @@ import { parserUtils } from './parser_utils';
  * Parses a Linear element.
  * @param  {Object} creativeElement - The VAST Linear element to parse.
  * @param  {any} creativeAttributes - The attributes of the Linear (optional).
- * @return {CreativeLinear}
+ * @return {Object} creative - The creativeLinear object.
  */
 export function parseCreativeLinear(creativeElement, creativeAttributes) {
   let offset;
-  const creative = new CreativeLinear(creativeAttributes);
+  const creative = createCreativeLinear(creativeAttributes);
 
   creative.duration = parserUtils.parseDuration(
     parserUtils.parseNodeText(
@@ -110,7 +110,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
       parserUtils
         .childrenByName(mediaFilesElement, 'MediaFile')
         .forEach(mediaFileElement => {
-          const mediaFile = new MediaFile();
+          const mediaFile = createMediaFile();
           mediaFile.id = mediaFileElement.getAttribute('id');
           mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
           mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
@@ -172,7 +172,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
       ]);
 
       if (requiredAttributes) {
-        const mezzanine = new Mezzanine();
+        const mezzanine = createMezzanine();
 
         mezzanine.id = mezzanineElement.getAttribute('id');
         mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
@@ -195,7 +195,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
   if (iconsElement) {
     parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
-      const icon = new Icon();
+      const icon = createIcon();
       icon.program = iconElement.getAttribute('program');
       icon.height = parseInt(iconElement.getAttribute('height') || 0);
       icon.width = parseInt(iconElement.getAttribute('width') || 0);

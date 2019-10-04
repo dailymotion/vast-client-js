@@ -1,6 +1,8 @@
-export function Creative(creativeAttributes = {}) {
-  this.id = creativeAttributes.id || null;
-  this.adId = creativeAttributes.adId || null;
-  this.sequence = creativeAttributes.sequence || null;
-  this.apiFramework = creativeAttributes.apiFramework || null;
+export function createCreative(creativeAttributes = {}) {
+  return {
+    id: creativeAttributes.id || null,
+    adId: creativeAttributes.adId || null,
+    sequence: creativeAttributes.sequence || null,
+    apiFramework: creativeAttributes.apiFramework || null
+  };
 }

@@ -1,13 +1,16 @@
-export function AdExtension() {
-  this.name = null;
-  this.value = null;
-  this.attributes = {};
-  this.children = [];
-  this.isEmpty = function() {
-    return (
-      this.value === null &&
-      Object.keys(this.attributes).length === 0 &&
-      this.children.length === 0
-    );
+export function createAdExtension() {
+  return {
+    name: null,
+    value: null,
+    attributes: {},
+    children: []
   };
+}
+
+export function isEmptyExtension(adExtension) {
+  return (
+    adExtension.value === null &&
+    Object.keys(adExtension.attributes).length === 0 &&
+    adExtension.children.length === 0
+  );
 }

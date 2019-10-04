@@ -1,6 +1,6 @@
-import { Ad } from '../ad';
-import { AdExtension } from '../ad_extension';
-import { AdVerification } from '../ad_verification';
+import { createAd } from '../ad';
+import { createAdExtension, isEmptyExtension } from '../ad_extension';
+import { createAdVerification } from '../ad_verification';
 import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
@@ -42,7 +42,7 @@ export function parseAd(adElement, emit) {
  * @param  {Object} ad Element - The VAST Inline element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VASTParser#VAST-warning
- * @return {Ad}
+ * @return {Object} ad - The ad object.
  */
 function parseInLine(adElement, emit) {
   return parseAdElement(adElement, emit);
@@ -53,7 +53,7 @@ function parseInLine(adElement, emit) {
  * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VASTParser#VAST-warning
- * @return {Ad}
+ * @return {Object} ad - The ad object.
  */
 function parseAdElement(adTypeElement, emit) {
   if (emit) {
@@ -61,7 +61,7 @@ function parseAdElement(adTypeElement, emit) {
   }
 
   const childNodes = adTypeElement.childNodes;
-  const ad = new Ad();
+  const ad = createAd();
   ad.id = adTypeElement.getAttribute('id') || null;
   ad.sequence = adTypeElement.getAttribute('sequence') || null;
 
@@ -274,13 +274,13 @@ export function _parseExtensions(extensions) {
 /**
  * Parses an extension child node
  * @param {Node} extNode - The extension node to parse
- * @return {AdExtension|null} - The node parsed to extension
+ * @return {Object|null} - The node parsed to extension
  */
 function _parseExtension(extNode) {
   // Ignore comments
   if (extNode.nodeName === '#comment') return null;
 
-  const ext = new AdExtension();
+  const ext = createAdExtension();
   const extNodeAttrs = extNode.attributes;
   const childNodes = extNode.childNodes;
 
@@ -329,20 +329,20 @@ function _parseExtension(extNode) {
   }
 
   // Only return not empty objects to not pollute extentions
-  return ext.isEmpty() ? null : ext;
+  return isEmptyExtension(ext) ? null : ext;
 }
 
 /**
  * Parses the AdVerifications Element.
  * @param  {Array} verifications - The array of verifications to parse.
- * @return {Array<AdVerification>}
+ * @return {Array<Object>}
  */
 
 export function _parseAdVerifications(verifications) {
   const ver = [];
 
   verifications.forEach(verificationNode => {
-    const verification = new AdVerification();
+    const verification = createAdVerification();
     const childNodes = verificationNode.childNodes;
 
     parserUtils.assignAttributes(verificationNode.attributes, verification);

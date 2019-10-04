@@ -1,9 +1,16 @@
-import { Creative } from './creative';
+import { createCreative } from './creative';
 
-export function CreativeNonLinear(creativeAttributes = {}) {
-  Creative.call(this, creativeAttributes);
-
-  this.type = 'nonlinear';
-  this.variations = [];
-  this.trackingEvents = {};
+export function createCreativeNonLinear(creativeAttributes = {}) {
+  const { id, adId, sequence, apiFramework } = createCreative(
+    creativeAttributes
+  );
+  return {
+    id,
+    adId,
+    sequence,
+    apiFramework,
+    type: 'nonlinear',
+    variations: [],
+    trackingEvents: {}
+  };
 }

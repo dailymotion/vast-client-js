@@ -1,17 +1,28 @@
-import { Creative } from './creative';
+import { createCreative } from './creative';
 
-export function CreativeLinear(creativeAttributes = {}) {
-  Creative.call(this, creativeAttributes);
+export function createCreativeLinear(creativeAttributes = {}) {
+  const { id, adId, sequence, apiFramework } = createCreative(
+    creativeAttributes
+  );
+  return {
+    id,
+    adId,
+    sequence,
+    apiFramework,
+    type: 'linear',
+    duration: 0,
+    skipDelay: null,
+    mediaFiles: [],
+    mezzanine: null,
+    videoClickThroughURLTemplate: null,
+    videoClickTrackingURLTemplates: [],
+    videoCustomClickURLTemplates: [],
+    adParameters: null,
+    icons: [],
+    trackingEvents: {}
+  };
+}
 
-  this.type = 'linear';
-  this.duration = 0;
-  this.skipDelay = null;
-  this.mediaFiles = [];
-  this.mezzanine = null;
-  this.videoClickThroughURLTemplate = null;
-  this.videoClickTrackingURLTemplates = [];
-  this.videoCustomClickURLTemplates = [];
-  this.adParameters = null;
-  this.icons = [];
-  this.trackingEvents = {};
+export function isCreativeLinear(creativeLinear) {
+  return creativeLinear.type === 'linear';
 }

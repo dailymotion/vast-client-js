@@ -1,13 +1,13 @@
-export class Mezzanine {
-  constructor() {
-    this.id = null;
-    this.fileURL = null;
-    this.delivery = null;
-    this.codec = null;
-    this.type = null;
-    this.width = 0;
-    this.height = 0;
-    this.fileSize = 0;
-    this.mediaType = '2D';
-  }
+export function createMezzanine() {
+  return {
+    id: null,
+    fileURL: null,
+    delivery: null,
+    codec: null,
+    type: null,
+    width: 0,
+    height: 0,
+    fileSize: 0,
+    mediaType: '2D'
+  };
 }

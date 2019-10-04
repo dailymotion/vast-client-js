@@ -2,10 +2,11 @@ import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
 import { VASTParser } from '../src/parser/vast_parser';
-import { VASTResponse } from '../src/vast_response';
+// import { createVASTResponse } from '../src/vast_response';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { parserUtils } from '../src/parser/parser_utils.js';
 import { util } from '../src/util/util';
+import { isVASTResponse } from '../src/vast_response';
 
 const vastParser = new VASTParser();
 
@@ -137,7 +138,7 @@ describe('VASTParser', function() {
     });
 
     it('should have returned a VAST response object', () => {
-      this.response.should.be.an.instanceOf(VASTResponse);
+      isVASTResponse(this.response).should.eql(true);
     });
 
     it('should have retrived root VAST version', () => {
@@ -211,7 +212,7 @@ describe('VASTParser', function() {
         ad1.adVerifications[1].browserOptional.should.eql(false);
         ad1.adVerifications[1].apiFramework.should.eql('omid');
         ad1.adVerifications[1].parameters.should.eql(
-            'test-verification-parameter'
+          'test-verification-parameter'
         );
       });
 
@@ -787,7 +788,7 @@ describe('VASTParser', function() {
     });
 
     it('should have returned a VAST response object', () => {
-      this.response.should.be.an.instanceOf(VASTResponse);
+      isVASTResponse(this.response).should.eql(true);
     });
   });
 
@@ -1035,7 +1036,7 @@ describe('VASTParser', function() {
           });
 
           it('should have returned a VAST response object', () => {
-            response.should.be.an.instanceOf(VASTResponse);
+            isVASTResponse(response).should.eql(true);
           });
 
           // we just want to make sure that the sample.xml was loaded correctly

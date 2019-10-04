@@ -1,9 +1,16 @@
-import { Creative } from './creative';
+import { createCreative } from './creative';
 
-export function CreativeCompanion(creativeAttributes = {}) {
-  Creative.call(this, creativeAttributes);
-
-  this.type = 'companion';
-  this.required = null;
-  this.variations = [];
+export function createCreativeCompanion(creativeAttributes = {}) {
+  const { id, adId, sequence, apiFramework } = createCreative(
+    creativeAttributes
+  );
+  return {
+    id,
+    adId,
+    sequence,
+    apiFramework,
+    type: 'companion',
+    required: null,
+    variations: []
+  };
 }
