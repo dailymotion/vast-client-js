@@ -10,7 +10,7 @@ export function createMediaFile() {
     maxBitrate: 0,
     width: 0,
     height: 0,
-    apiFramework: null,
+    apiFramework: null, // @deprecated in VAST 4.1. <InteractiveCreativeFile> should be used instead.
     scalable: null,
     maintainAspectRatio: null
   };
