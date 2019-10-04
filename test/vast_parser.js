@@ -2,7 +2,6 @@ import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
 import { VASTParser } from '../src/parser/vast_parser';
-// import { createVASTResponse } from '../src/vast_response';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { parserUtils } from '../src/parser/parser_utils.js';
 import { util } from '../src/util/util';
