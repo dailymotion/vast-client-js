@@ -5,7 +5,7 @@ import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { util } from '../src/util/util';
-import { CreativeLinear } from '../src/creative/creative_linear';
+import { createCreativeLinear } from '../src/creative/creative_linear';
 
 const now = new Date();
 const vastParser = new VASTParser();
@@ -598,7 +598,7 @@ describe('VASTTracker', function() {
       const eventsSent = [];
       before(() => {
         // Init tracker
-        const creative = new CreativeLinear();
+        const creative = createCreativeLinear();
         creative.videoClickThroughURLTemplate = clickThroughURL;
         const tracker = new VASTTracker(vastClient, {}, creative);
         // Mock emit
@@ -617,7 +617,7 @@ describe('VASTTracker', function() {
       const eventsSent = [];
       before(() => {
         // Init tracker
-        const creative = new CreativeLinear();
+        const creative = createCreativeLinear();
         creative.videoClickThroughURLTemplate = clickThroughURL;
         const tracker = new VASTTracker(vastClient, {}, creative);
         // Mock emit
@@ -672,7 +672,7 @@ describe('VASTTracker', function() {
 
     before(() => {
       // Init tracker
-      const creative = new CreativeLinear();
+      const creative = createCreativeLinear();
       creative.trackingEvents.creativeView = creativeTrackingUrls;
 
       const tracker = new VASTTracker(null, {}, creative);
