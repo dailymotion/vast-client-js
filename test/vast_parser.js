@@ -134,7 +134,7 @@ describe('VASTParser', function() {
     });
 
     it('should have found 2 ads', () => {
-      this.response.ads.should.have.length(2);
+      this.response.ads.length.should.eql(2);
     });
 
     it('should have returned a VAST response object', () => {
