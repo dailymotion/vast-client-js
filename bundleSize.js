@@ -18,11 +18,11 @@ Object.entries(oldValues).forEach(([name, size]) => {
   const newSize = newValues[name];
   const delta = newSize - size;
   const sizeColorFg = delta <= 0 ? '\x1b[32m' : '\x1b[31m';
-  const reset = '\x1b[0m';
+  const resetColorFg = '\x1b[0m';
   const nameColorFg = '\x1b[36m';
   // eslint-disable-next-line no-console
   console.log(
-    `${nameColorFg}%s${reset}%s${sizeColorFg}%s${reset}`,
+    `${nameColorFg}%s${resetColorFg}%s${sizeColorFg}%s${resetColorFg}`,
     `${name}:`,
     ` ${size} B -> ${newSize} B `,
     `(${delta >= 0 ? '+' : ''}${delta} B)`
