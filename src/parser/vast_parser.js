@@ -211,7 +211,7 @@ export class VASTParser extends EventEmitter {
     options.isRootVAST = true;
 
     return this.parse(vastXml, options).then(ads => {
-      return this.buildVASTResponse({ ads });
+      return this.buildVASTResponse(ads);
     });
   }
 
