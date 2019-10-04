@@ -182,7 +182,7 @@ describe('VASTParser', function() {
         ]);
       });
 
-      it('should have merged impression URLs', () => {
+      it('should have merged impression URL templates', () => {
         ad1.impressionURLTemplates.should.eql([
           {
             id: null,
@@ -330,14 +330,14 @@ describe('VASTParser', function() {
           );
         });
 
-        it('should have 1 URL for clickthrough', () => {
+        it('should have 1 clickthrough URL template', () => {
           linear.videoClickThroughURLTemplate.should.eql({
             id: 'click-through',
             url: 'http://example.com/linear-clickthrough'
           });
         });
 
-        it('should have 6 URLs for clicktracking', () => {
+        it('should have 6 clicktracking URL templates', () => {
           linear.videoClickTrackingURLTemplates.should.eql([
             {
               id: 'video-click-1',
@@ -366,7 +366,7 @@ describe('VASTParser', function() {
           ]);
         });
 
-        it('should have 2 URLs for customclick', () => {
+        it('should have 2 customclick URL templates', () => {
           linear.videoCustomClickURLTemplates.should.eql([
             {
               id: 'custom-click-1',
@@ -562,7 +562,7 @@ describe('VASTParser', function() {
               );
             });
 
-            it('should have 2 nonlinear clicktracking urls', () => {
+            it('should have 2 nonlinear clicktracking URL templates', () => {
               nonlinear.nonlinearClickTrackingURLTemplates.should.eql([
                 {
                   id: 'nonlinear-click-1',
@@ -619,7 +619,7 @@ describe('VASTParser', function() {
         ]);
       });
 
-      it('should have merged impression URLs', () => {
+      it('should have merged impression URL templates', () => {
         ad2.impressionURLTemplates.should.eql([
           {
             id: null,
@@ -697,7 +697,7 @@ describe('VASTParser', function() {
           });
         });
 
-        it('should have wrapper customclick URL', () => {
+        it('should have wrapper customclick URL template', () => {
           linear.videoCustomClickURLTemplates.should.eql([
             {
               id: '123',
@@ -706,7 +706,7 @@ describe('VASTParser', function() {
           ]);
         });
 
-        it('should have 5 URLs for clicktracking', () => {
+        it('should have 5 clicktracking URL templates', () => {
           linear.videoClickTrackingURLTemplates.should.eql([
             {
               id: null,
