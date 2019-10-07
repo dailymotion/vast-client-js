@@ -12,6 +12,7 @@ export class Icon {
     this.staticResource = null;
     this.htmlResource = null;
     this.iframeResource = null;
+    this.pxratio = '1';
     this.iconClickThroughURLTemplate = null;
     this.iconClickTrackingURLTemplates = [];
     this.iconViewTrackingURLTemplate = null;

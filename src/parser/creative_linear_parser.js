@@ -213,6 +213,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
       icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
       icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
       icon.apiFramework = iconElement.getAttribute('apiFramework');
+      icon.pxratio = iconElement.getAttribute('pxratio') || '1';
       icon.offset = parserUtils.parseDuration(
         iconElement.getAttribute('offset')
       );
