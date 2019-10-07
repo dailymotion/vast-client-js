@@ -34,6 +34,8 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `adId: String|null`
 - `sequence: Number|null`
 - `apiFramework: String|null`
+- `universalAdId: String|'unknown'`
+- `creativeExtensions: Array<CreativeExtension>` [go to class](#creative-extension)
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
 
@@ -119,6 +121,8 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
 - `adSlotID: String|null`
+- `pxratio: String|'1'`
+- `renderingMode: String|'default'`
 - `staticResources: Array<{ url: String, creativeType: String|null }>`
 - `htmlResources: Array<String>`
 - `iframeResources: Array<String>`
@@ -140,6 +144,7 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `offset: String|null`
 - `duration: Number`
 - `type: String|null`
+- `pxratio: String|'1'`
 - `staticResource: String|null`
 - `htmlResource: String|null`
 - `iframeResource: String|null`
@@ -148,13 +153,23 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `iconViewTrackingURLTemplate: String|null`
 
 ## AdExtension<a name="ad-extension"></a>
+
 - `name: String|null`
 - `value: any`
 - `attributes: Object`
 - `children: Array<AdExtension>`
 - `isEmpty(): Boolean` Returns true when none of these attributes have a value
 
+## CreativeExtension<a name="creative-extension"></a>
+
+- `name: String|null`
+- `value: any`
+- `attributes: Object`
+- `children: Array<CreativeExtension>`
+- `isEmpty(): Boolean` Returns true when none of these attributes have a value
+
 ## AdVerification<a name="ad-verification"></a>
+
 - `apiFramework: String|null` The name of the API framework used to execute the AdVerification code
 - `browserOptional: Boolean` If *true*, this resource is optimized and able to execute in an environment without DOM and other browser built-ins (e.g. iOS' JavaScriptCore).
 - `parameters: String|null` Metadata about the current impression
