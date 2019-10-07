@@ -227,7 +227,7 @@ describe('util', function() {
     });
   });
 
-  describe('#containsObject', function() {
+  describe('#containsTemplateObject', function() {
     const obj1 = {
       id: null,
       url: 'http://example.com/wrapperNoTracking-impression'
@@ -243,7 +243,7 @@ describe('util', function() {
 
     it('should return false for an empty array', () => {
       const myArr = [];
-      let output = util.containsObject(obj1, myArr);
+      let output = util.containsTemplateObject(obj1, myArr);
       expect(output).toBe(false);
     });
 
@@ -251,7 +251,7 @@ describe('util', function() {
       const myArr = [];
       myArr.push(obj1);
       myArr.push(obj2);
-      let output = util.containsObject(obj2, myArr);
+      let output = util.containsTemplateObject(obj2, myArr);
       expect(output).toBe(true);
     });
 
@@ -259,19 +259,19 @@ describe('util', function() {
       const myArr = [];
       myArr.push(obj1);
       myArr.push(obj2);
-      let output = util.containsObject(copyOfObj2, myArr);
+      let output = util.containsTemplateObject(copyOfObj2, myArr);
       expect(output).toBe(true);
     });
 
     it('should return false for an object not existing in the array', () => {
       const myArr = [];
       myArr.push(obj1);
-      let output = util.containsObject(obj2, myArr);
+      let output = util.containsTemplateObject(obj2, myArr);
       expect(output).toBe(false);
     });
   });
 
-  describe('#joinArrayOfUniqueObjs', function() {
+  describe('#joinArrayOfUniqueTemplateObjs', function() {
     it('should return an array of unique objects', () => {
       const obj1 = {
         id: null,
@@ -320,7 +320,7 @@ describe('util', function() {
         }
       ];
 
-      let outputArr = util.joinArrayOfUniqueObjs(arr1, arr2);
+      let outputArr = util.joinArrayOfUniqueTemplateObjs(arr1, arr2);
       expect(outputArr.length).toEqual(4);
       expect(outputArr).toEqual(expectedOutput);
     });

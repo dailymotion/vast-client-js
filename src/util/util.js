@@ -94,7 +94,7 @@ function extractURLsFromTemplates(URLTemplates) {
  * @param {Object} obj - The object who existence is to be checked.
  * @param {Array} list - List of objects.
  */
-function containsObject(obj, list) {
+function containsTemplateObject(obj, list) {
   for (let i = 0; i < list.length; i++) {
     if (isTemplateObjectEqual(list[i], obj)) {
       return true;
@@ -178,13 +178,13 @@ function flatten(arr) {
  *
  * @return {Array}
  */
-function joinArrayOfUniqueObjs(arr1 = [], arr2 = []) {
+function joinArrayOfUniqueTemplateObjs(arr1 = [], arr2 = []) {
   const firstArr = Array.isArray(arr1) ? arr1 : [];
   const secondArr = Array.isArray(arr2) ? arr2 : [];
   const arr = firstArr.concat(secondArr);
 
   return arr.reduce((res, val) => {
-    if (!containsObject(val, res)) {
+    if (!containsTemplateObject(val, res)) {
       res.push(val);
     }
     return res;
@@ -195,12 +195,12 @@ export const util = {
   track,
   resolveURLTemplates,
   extractURLsFromTemplates,
-  containsObject,
+  containsTemplateObject,
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,
   leftpad,
   range,
   isNumeric,
   flatten,
-  joinArrayOfUniqueObjs
+  joinArrayOfUniqueTemplateObjs
 };

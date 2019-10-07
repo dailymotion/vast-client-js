@@ -237,7 +237,10 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         (variation.companionClickTrackingURLTemplates || []).forEach(
           companionClickTrackingURLTemplate => {
             if (
-              !util.containsObject(companionClickTrackingURLTemplate, result)
+              !util.containsTemplateObject(
+                companionClickTrackingURLTemplate,
+                result
+              )
             ) {
               result.push(companionClickTrackingURLTemplate);
             }
@@ -301,7 +304,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     // pass wrapper companion trackers to all companions
     if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
       (creative.variations || []).forEach(variation => {
-        variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueObjs(
+        variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(
           variation.companionClickTrackingURLTemplates,
           wrapperCompanionClickTracking
         );
