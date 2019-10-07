@@ -23,6 +23,9 @@ export const requiredValues = {
   Verification: {
     attributes: ['vendor']
   },
+  UniversalAdId: {
+    attributes: ['idRegistry']
+  },
   JavaScriptResource: {
     attributes: ['apiFramework', 'browserOptional']
   },

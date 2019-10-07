@@ -70,6 +70,7 @@ const missingRequiredAttributes = `
       </AdVerifications>
       <Creatives>
         <Creative>
+          <UniversalAdId>Linear-12345</UniversalAdId>
           <Linear>
             <Duration>00:01:30.123</Duration>
             <MediaFiles>

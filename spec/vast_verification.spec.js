@@ -76,6 +76,7 @@ describe('parserVerification', function() {
         expect.arrayContaining([
           "Element 'Category' missing required attribute(s) 'authority' ",
           "Element 'Pricing' missing required attribute(s) 'model, currency' ",
+          "Element 'UniversalAdId' missing required attribute(s) 'idRegistry' ",
           "Element 'Verification' missing required attribute(s) 'vendor' ",
           "Element 'JavaScriptResource' missing required attribute(s) 'apiFramework, browserOptional' ",
           "Element 'ExecutableResource' missing required attribute(s) 'apiFramework, type' ",

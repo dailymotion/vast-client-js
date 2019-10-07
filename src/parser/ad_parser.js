@@ -1,6 +1,7 @@
 import { Ad } from '../ad';
 import { AdExtension } from '../ad_extension';
 import { AdVerification } from '../ad_verification';
+import { CreativeExtension } from '../creative_extension';
 import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
@@ -90,6 +91,16 @@ function parseAdElement(adTypeElement, emit) {
               apiFramework: creativeElement.getAttribute('apiFramework') || null
             };
 
+            const universalAdIdElement = parserUtils.childByName(
+              creativeElement,
+              'UniversalAdId'
+            );
+
+            const creativeExtensionsElement = parserUtils.childByName(
+              creativeElement,
+              'CreativeExtensions'
+            );
+
             for (const creativeTypeElementKey in creativeElement.childNodes) {
               const creativeTypeElement =
                 creativeElement.childNodes[creativeTypeElementKey];
@@ -101,28 +112,41 @@ function parseAdElement(adTypeElement, emit) {
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
                   break;
                 case 'NonLinearAds':
                   parsedCreative = parseCreativeNonLinear(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
                   break;
                 case 'CompanionAds':
                   parsedCreative = parseCreativeCompanion(
                     creativeTypeElement,
                     creativeAttributes
                   );
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
                   break;
+              }
+
+              if (parsedCreative) {
+                if (universalAdIdElement) {
+                  parsedCreative.universalAdId = {
+                    idRegistry: universalAdIdElement.getAttribute('idRegistry'),
+                    value: parserUtils.parseNodeText(universalAdIdElement)
+                  };
+                }
+                if (creativeExtensionsElement) {
+                  const creativeExtensions = _parseExtensions(
+                    parserUtils.childrenByName(
+                      creativeExtensionsElement,
+                      'CreativeExtension'
+                    ),
+                    'Creative'
+                  );
+                  if (creativeExtensions) {
+                    parsedCreative.creativeExtensions = creativeExtensions;
+                  }
+                }
+                ad.creatives.push(parsedCreative);
               }
             }
           });
@@ -265,10 +289,10 @@ function parseWrapper(wrapperElement, emit) {
  * @param  {Node[]} extensions - The array of extensions to parse.
  * @return {AdExtension[]} - The nodes parsed to extensions
  */
-export function _parseExtensions(extensions) {
+export function _parseExtensions(extensions, type = 'Ad') {
   const exts = [];
   extensions.forEach(extNode => {
-    const ext = _parseExtension(extNode);
+    const ext = _parseExtension(extNode, type);
 
     if (ext) {
       exts.push(ext);
@@ -282,11 +306,17 @@ export function _parseExtensions(extensions) {
  * @param {Node} extNode - The extension node to parse
  * @return {AdExtension|null} - The node parsed to extension
  */
-function _parseExtension(extNode) {
+function _parseExtension(extNode, type) {
   // Ignore comments
   if (extNode.nodeName === '#comment') return null;
 
-  const ext = new AdExtension();
+  let ext;
+  if (type === 'Creative') {
+    ext = new CreativeExtension();
+  } else {
+    ext = new AdExtension();
+  }
+
   const extNodeAttrs = extNode.attributes;
   const childNodes = extNode.childNodes;
 
@@ -308,7 +338,7 @@ function _parseExtension(extNode) {
   // Parse all children
   for (const childNodeKey in childNodes) {
     if (childNodes.hasOwnProperty(childNodeKey)) {
-      const parsedChild = _parseExtension(childNodes[childNodeKey]);
+      const parsedChild = _parseExtension(childNodes[childNodeKey], type);
       if (parsedChild) {
         ext.children.push(parsedChild);
       }
