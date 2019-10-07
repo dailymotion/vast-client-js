@@ -164,7 +164,8 @@ describe('VASTParser', function() {
         ad1.system.value.should.eql('AdServer');
         ad1.system.version.should.eql('2.0');
         ad1.title.should.eql('Ad title');
-        ad1.advertiser.should.eql('Advertiser name');
+        ad1.advertiser.id.should.eql('advertiser-desc');
+        ad1.advertiser.value.should.eql('Advertiser name');
         ad1.description.should.eql('Description text');
         ad1.pricing.value.should.eql('1.09');
         ad1.pricing.model.should.eql('CPM');
@@ -181,15 +182,37 @@ describe('VASTParser', function() {
         ]);
       });
 
-      it('should have merged impression URLs', () => {
+      it('should have merged impression URL templates', () => {
         ad1.impressionURLTemplates.should.eql([
-          'http://example.com/wrapperNoTracking-impression',
-          'http://example.com/wrapperA-impression',
-          'http://example.com/wrapperB-impression1',
-          'http://example.com/wrapperB-impression2',
-          'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
-          'http://example.com/impression2_[random]',
-          'http://example.com/impression3_[RANDOM]'
+          {
+            id: null,
+            url: 'http://example.com/wrapperNoTracking-impression'
+          },
+          {
+            id: 'wrapper-a-impression',
+            url: 'http://example.com/wrapperA-impression'
+          },
+          {
+            id: 'wrapper-b-impression1',
+            url: 'http://example.com/wrapperB-impression1'
+          },
+          {
+            id: 'wrapper-b-impression2',
+            url: 'http://example.com/wrapperB-impression2'
+          },
+          {
+            id: 'sample-impression1',
+            url:
+              'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]'
+          },
+          {
+            id: 'sample-impression2',
+            url: 'http://example.com/impression2_[random]'
+          },
+          {
+            id: 'sample-impression3',
+            url: 'http://example.com/impression3_[RANDOM]'
+          }
         ]);
       });
 
@@ -211,7 +234,7 @@ describe('VASTParser', function() {
         ad1.adVerifications[1].browserOptional.should.eql(false);
         ad1.adVerifications[1].apiFramework.should.eql('omid');
         ad1.adVerifications[1].parameters.should.eql(
-            'test-verification-parameter'
+          'test-verification-parameter'
         );
       });
 
@@ -307,27 +330,52 @@ describe('VASTParser', function() {
           );
         });
 
-        it('should have 1 URL for clickthrough', () => {
-          linear.videoClickThroughURLTemplate.should.eql(
-            'http://example.com/linear-clickthrough'
-          );
+        it('should have 1 clickthrough URL template', () => {
+          linear.videoClickThroughURLTemplate.should.eql({
+            id: 'click-through',
+            url: 'http://example.com/linear-clickthrough'
+          });
         });
 
-        it('should have 5 URLs for clicktracking', () => {
+        it('should have 6 clicktracking URL templates', () => {
           linear.videoClickTrackingURLTemplates.should.eql([
-            'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]',
-            'http://example.com/linear-clicktracking2',
-            'http://example.com/wrapperB-linear-clicktracking',
-            'http://example.com/wrapperA-linear-clicktracking1',
-            'http://example.com/wrapperA-linear-clicktracking2',
-            'http://example.com/wrapperA-linear-clicktracking3'
+            {
+              id: 'video-click-1',
+              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]'
+            },
+            {
+              id: 'video-click-2',
+              url: 'http://example.com/linear-clicktracking2'
+            },
+            {
+              id: 'WRAP',
+              url: 'http://example.com/wrapperB-linear-clicktracking'
+            },
+            {
+              id: 'wrapper-video-click-1',
+              url: 'http://example.com/wrapperA-linear-clicktracking1'
+            },
+            {
+              id: null,
+              url: 'http://example.com/wrapperA-linear-clicktracking2'
+            },
+            {
+              id: 'wrapper-video-click-3',
+              url: 'http://example.com/wrapperA-linear-clicktracking3'
+            }
           ]);
         });
 
-        it('should have 2 URLs for customclick', () => {
+        it('should have 2 customclick URL templates', () => {
           linear.videoCustomClickURLTemplates.should.eql([
-            'http://example.com/linear-customclick',
-            'http://example.com/wrapperA-linear-customclick'
+            {
+              id: 'custom-click-1',
+              url: 'http://example.com/linear-customclick'
+            },
+            {
+              id: '123',
+              url: 'http://example.com/wrapperA-linear-customclick'
+            }
           ]);
         });
 
@@ -401,8 +449,14 @@ describe('VASTParser', function() {
             'http://example.com/linear-clickthrough'
           );
           icon.iconClickTrackingURLTemplates.should.eql([
-            'http://example.com/linear-clicktracking1',
-            'http://example.com/linear-clicktracking2'
+            {
+              id: 'icon-click-1',
+              url: 'http://example.com/linear-clicktracking1'
+            },
+            {
+              id: 'icon-click-2',
+              url: 'http://example.com/linear-clicktracking2'
+            }
           ]);
           icon.iconViewTrackingURLTemplate.should.equal(
             'http://example.com/linear-viewtracking'
@@ -508,10 +562,16 @@ describe('VASTParser', function() {
               );
             });
 
-            it('should have 2 nonlinear clicktracking urls', () => {
+            it('should have 2 nonlinear clicktracking URL templates', () => {
               nonlinear.nonlinearClickTrackingURLTemplates.should.eql([
-                'http://example.com/nonlinear-clicktracking-1',
-                'http://example.com/nonlinear-clicktracking-2'
+                {
+                  id: 'nonlinear-click-1',
+                  url: 'http://example.com/nonlinear-clicktracking-1'
+                },
+                {
+                  id: null,
+                  url: 'http://example.com/nonlinear-clicktracking-2'
+                }
               ]);
             });
 
@@ -559,13 +619,28 @@ describe('VASTParser', function() {
         ]);
       });
 
-      it('should have merged impression URLs', () => {
+      it('should have merged impression URL templates', () => {
         ad2.impressionURLTemplates.should.eql([
-          'http://example.com/wrapperNoTracking-impression',
-          'http://example.com/wrapperA-impression',
-          'http://example.com/wrapperB-impression1',
-          'http://example.com/wrapperB-impression2',
-          'http://example.com/impression1'
+          {
+            id: null,
+            url: 'http://example.com/wrapperNoTracking-impression'
+          },
+          {
+            id: 'wrapper-a-impression',
+            url: 'http://example.com/wrapperA-impression'
+          },
+          {
+            id: 'wrapper-b-impression1',
+            url: 'http://example.com/wrapperB-impression1'
+          },
+          {
+            id: 'wrapper-b-impression2',
+            url: 'http://example.com/wrapperB-impression2'
+          },
+          {
+            id: 'sample-ad2-impression1',
+            url: 'http://example.com/impression1'
+          }
         ]);
       });
 
@@ -616,24 +691,43 @@ describe('VASTParser', function() {
         });
 
         it('should have wrapper clickthrough URL', () => {
-          linear.videoClickThroughURLTemplate.should.eql(
-            'http://example.com/wrapperB-linear-clickthrough'
-          );
+          linear.videoClickThroughURLTemplate.should.eql({
+            id: null,
+            url: 'http://example.com/wrapperB-linear-clickthrough'
+          });
         });
 
-        it('should have wrapper customclick URL', () => {
+        it('should have wrapper customclick URL template', () => {
           linear.videoCustomClickURLTemplates.should.eql([
-            'http://example.com/wrapperA-linear-customclick'
+            {
+              id: '123',
+              url: 'http://example.com/wrapperA-linear-customclick'
+            }
           ]);
         });
 
-        it('should have 5 URLs for clicktracking', () => {
+        it('should have 5 clicktracking URL templates', () => {
           linear.videoClickTrackingURLTemplates.should.eql([
-            'http://example.com/linear-clicktracking',
-            'http://example.com/wrapperB-linear-clicktracking',
-            'http://example.com/wrapperA-linear-clicktracking1',
-            'http://example.com/wrapperA-linear-clicktracking2',
-            'http://example.com/wrapperA-linear-clicktracking3'
+            {
+              id: null,
+              url: 'http://example.com/linear-clicktracking'
+            },
+            {
+              id: 'WRAP',
+              url: 'http://example.com/wrapperB-linear-clicktracking'
+            },
+            {
+              id: 'wrapper-video-click-1',
+              url: 'http://example.com/wrapperA-linear-clicktracking1'
+            },
+            {
+              id: null,
+              url: 'http://example.com/wrapperA-linear-clicktracking2'
+            },
+            {
+              id: 'wrapper-video-click-3',
+              url: 'http://example.com/wrapperA-linear-clicktracking3'
+            }
           ]);
         });
       });

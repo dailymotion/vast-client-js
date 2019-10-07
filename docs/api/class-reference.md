@@ -17,11 +17,11 @@ This class represents a single parsed Ad
 - `system: String|null`
 - `title: String|null`
 - `description: String|null`
-- `advertiser: String|null`
+- `advertiser: Object|null`
 - `pricing: String|null`
 - `survey: String|null`
 - `errorURLTemplates: Array<String>`
-- `impressionURLTemplates: Array<String>`
+- `impressionURLTemplates: Array<Object>`
 - `creatives: Array<Creative>` [go to class](#creative)
 - `extensions: Array<AdExtension>` [go to class](#ad-extension)
 - `adVerifications: Array<AdVerification>` [go to class](#ad-verification)
@@ -42,9 +42,9 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `skipDelay: Number|null`
 - `mediaFiles: Array<MediaFile>` [go to class](#mediafile)
 - `mezzanine: Object<Mezzanine>` [go to class](#mezzanine)
-- `videoClickThroughURLTemplate: String|null`
-- `videoClickTrackingURLTemplates: Array<String>`
-- `videoCustomClickURLTemplates: Array<String>`
+- `videoClickThroughURLTemplate: Object|null`
+- `videoClickTrackingURLTemplates: Array<Object>`
+- `videoCustomClickURLTemplates: Array<Object>`
 - `adParameters: String|null`
 - `icons: Array<Icon>` [go to class](#icon)
 - `trackingEvents: Object`
@@ -105,7 +105,7 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `nonlinearClickThroughURLTemplate: String|null`
-- `nonlinearClickTrackingURLTemplates: Array<String>`
+- `nonlinearClickTrackingURLTemplates: Array<Object>`
 - `adParameters: String|null`
 
 ## CompanionAd<a name="companion-ad"></a>
@@ -124,7 +124,7 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `iframeResources: Array<String>`
 - `altText: String|null`
 - `companionClickThroughURLTemplate: String|null`
-- `companionClickTrackingURLTemplates: Array<String>`
+- `companionClickTrackingURLTemplates: Array<Object>`
 - `trackingEvents: Object`
 - `adParameters: String|null`
 - `xmlEncoded: Boolean|null`
@@ -144,7 +144,7 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `iconClickThroughURLTemplate: String|null`
-- `iconClickTrackingURLTemplates: Array<String>`
+- `iconClickTrackingURLTemplates: Array<Object>`
 - `iconViewTrackingURLTemplate: String|null`
 
 ## AdExtension<a name="ad-extension"></a>

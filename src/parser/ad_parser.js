@@ -73,7 +73,10 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Impression':
-        ad.impressionURLTemplates.push(parserUtils.parseNodeText(node));
+        ad.impressionURLTemplates.push({
+          id: node.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(node)
+        });
         break;
 
       case 'Creatives':
@@ -153,7 +156,10 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Advertiser':
-        ad.advertiser = parserUtils.parseNodeText(node);
+        ad.advertiser = {
+          id: node.getAttribute('id') || null,
+          value: parserUtils.parseNodeText(node)
+        };
         break;
 
       case 'Pricing':

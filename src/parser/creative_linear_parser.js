@@ -42,24 +42,35 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
     'VideoClicks'
   );
   if (videoClicksElement) {
-    creative.videoClickThroughURLTemplate = parserUtils.parseNodeText(
-      parserUtils.childByName(videoClicksElement, 'ClickThrough')
+    const videoClickThroughElement = parserUtils.childByName(
+      videoClicksElement,
+      'ClickThrough'
     );
+    if (videoClickThroughElement) {
+      creative.videoClickThroughURLTemplate = {
+        id: videoClickThroughElement.getAttribute('id') || null,
+        url: parserUtils.parseNodeText(videoClickThroughElement)
+      };
+    } else {
+      creative.videoClickThroughURLTemplate = null;
+    }
 
     parserUtils
       .childrenByName(videoClicksElement, 'ClickTracking')
       .forEach(clickTrackingElement => {
-        creative.videoClickTrackingURLTemplates.push(
-          parserUtils.parseNodeText(clickTrackingElement)
-        );
+        creative.videoClickTrackingURLTemplates.push({
+          id: clickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(clickTrackingElement)
+        });
       });
 
     parserUtils
       .childrenByName(videoClicksElement, 'CustomClick')
       .forEach(customClickElement => {
-        creative.videoCustomClickURLTemplates.push(
-          parserUtils.parseNodeText(customClickElement)
-        );
+        creative.videoCustomClickURLTemplates.push({
+          id: customClickElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(customClickElement)
+        });
       });
   }
 
@@ -241,9 +252,10 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         parserUtils
           .childrenByName(iconClicksElement, 'IconClickTracking')
           .forEach(iconClickTrackingElement => {
-            icon.iconClickTrackingURLTemplates.push(
-              parserUtils.parseNodeText(iconClickTrackingElement)
-            );
+            icon.iconClickTrackingURLTemplates.push({
+              id: iconClickTrackingElement.getAttribute('id') || null,
+              url: parserUtils.parseNodeText(iconClickTrackingElement)
+            });
           });
       }
 

@@ -234,11 +234,18 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   const wrapperCompanionClickTracking = wrapperCompanions.reduce(
     (result, creative) => {
       (creative.variations || []).forEach(variation => {
-        (variation.companionClickTrackingURLTemplates || []).forEach(url => {
-          if (result.indexOf(url) === -1) {
-            result.push(url);
+        (variation.companionClickTrackingURLTemplates || []).forEach(
+          companionClickTrackingURLTemplate => {
+            if (
+              !util.containsTemplateObject(
+                companionClickTrackingURLTemplate,
+                result
+              )
+            ) {
+              result.push(companionClickTrackingURLTemplate);
+            }
           }
-        });
+        );
       });
       return result;
     },
@@ -297,7 +304,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     // pass wrapper companion trackers to all companions
     if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
       (creative.variations || []).forEach(variation => {
-        variation.companionClickTrackingURLTemplates = util.joinArrayUnique(
+        variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(
           variation.companionClickTrackingURLTemplates,
           wrapperCompanionClickTracking
         );
