@@ -1,6 +1,6 @@
 import { Extension } from './extension';
 
-export class AdExtension extends Extension {
+export class CreativeExtension extends Extension {
   constructor() {
     super();
   }

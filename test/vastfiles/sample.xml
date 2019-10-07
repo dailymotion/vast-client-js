@@ -29,6 +29,20 @@
       </AdVerifications>
       <Creatives>
         <Creative id="id130984" adId="adId345690" sequence="1" >
+          <UniversalAdId idRegistry="daily-motion-L">Linear-12345</UniversalAdId>
+          <CreativeExtensions>
+            <CreativeExtension type="creativeExt1">
+              <CreativeExecution model="CPM" currency="USD" source="someone">
+                <![CDATA[ 10.0 ]]>
+              </CreativeExecution>
+            </CreativeExtension>
+            <CreativeExtension type="Count">
+              <![CDATA[ 10 ]]>
+            </CreativeExtension>
+            <CreativeExtension>
+                { key: value }
+            </CreativeExtension>
+          </CreativeExtensions>
           <Linear>
             <Duration>00:01:30.123</Duration>
             <TrackingEvents>
@@ -98,6 +112,7 @@
           </CompanionAds>
         </Creative>
         <Creative id="id130986">
+          <UniversalAdId idRegistry="daily-motion-NL">NonLinear-12345</UniversalAdId>
           <NonLinearAds>
             <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI" >
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
