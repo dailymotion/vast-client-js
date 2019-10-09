@@ -23,6 +23,6 @@ export function createCreativeLinear(creativeAttributes = {}) {
   };
 }
 
-export function isCreativeLinear(creativeLinear) {
-  return creativeLinear.type === 'linear';
+export function isCreativeLinear(ad) {
+  return ad.type === 'linear';
 }

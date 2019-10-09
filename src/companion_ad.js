@@ -22,6 +22,6 @@ export function createCompanionAd(creativeAttributes = {}) {
   };
 }
 
-export function isCompanionAd(companionAd) {
-  return companionAd.adType === 'companionAd';
+export function isCompanionAd(ad) {
+  return ad.adType === 'companionAd';
 }

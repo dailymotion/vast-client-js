@@ -20,6 +20,6 @@ export function createNonLinearAd() {
   };
 }
 
-export function isNonLinearAd(nonLinearAd) {
-  return nonLinearAd.adType === 'nonLinearAd';
+export function isNonLinearAd(ad) {
+  return ad.adType === 'nonLinearAd';
 }

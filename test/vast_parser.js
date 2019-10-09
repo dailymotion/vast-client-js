@@ -5,7 +5,6 @@ import { VASTParser } from '../src/parser/vast_parser';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { parserUtils } from '../src/parser/parser_utils.js';
 import { util } from '../src/util/util';
-import { isVASTResponse } from '../src/vast_response';
 
 const vastParser = new VASTParser();
 
@@ -137,7 +136,11 @@ describe('VASTParser', function() {
     });
 
     it('should have returned a VAST response object', () => {
-      isVASTResponse(this.response).should.eql(true);
+      this.response.should.have.properties(
+        'ads',
+        'errorURLTemplates',
+        'version'
+      );
     });
 
     it('should have retrived root VAST version', () => {
@@ -787,7 +790,11 @@ describe('VASTParser', function() {
     });
 
     it('should have returned a VAST response object', () => {
-      isVASTResponse(this.response).should.eql(true);
+      this.response.should.have.properties(
+        'ads',
+        'errorURLTemplates',
+        'version'
+      );
     });
   });
 
@@ -1035,7 +1042,11 @@ describe('VASTParser', function() {
           });
 
           it('should have returned a VAST response object', () => {
-            isVASTResponse(response).should.eql(true);
+            response.should.have.properties(
+              'ads',
+              'errorURLTemplates',
+              'version'
+            );
           });
 
           // we just want to make sure that the sample.xml was loaded correctly
