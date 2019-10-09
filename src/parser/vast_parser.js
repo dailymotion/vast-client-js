@@ -4,6 +4,7 @@ import { parserUtils } from './parser_utils';
 import { urlHandler } from '../url_handler';
 import { util } from '../util/util';
 import { createVASTResponse } from '../vast_response';
+import { DEFAULT_TIMEOUT } from '../urlhandlers/consts';
 
 const DEFAULT_MAX_WRAPPER_DEPTH = 10;
 const DEFAULT_EVENT_DATA = {
@@ -103,7 +104,7 @@ export class VASTParser extends EventEmitter {
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-  fetchVAST(url, wrapperDepth, originalUrl) {
+  fetchVAST(url, wrapperDepth = 0, originalUrl = null) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
       this.URLTemplateFilters.forEach(filter => {
@@ -111,17 +112,39 @@ export class VASTParser extends EventEmitter {
       });
 
       this.parentURLs.push(url);
-      this.emit('VAST-resolving', { url, wrapperDepth, originalUrl });
-
-      this.urlHandler.get(url, this.fetchingOptions, (err, xml) => {
-        this.emit('VAST-resolved', { url, error: err });
-
-        if (err) {
-          reject(err);
-        } else {
-          resolve(xml);
-        }
+      const timeBeforeGet = performance.now();
+      this.emit('VAST-resolving', {
+        url,
+        originalUrl,
+        wrapperDepth,
+        maxWrapperDepth: this.maxWrapperDepth,
+        timeout: this.fetchingOptions.timeout
       });
+
+      this.urlHandler.get(
+        url,
+        this.fetchingOptions,
+        (error, xml, details = {}) => {
+          const deltaTime = performance.now() - timeBeforeGet;
+          const info = Object.assign(
+            {
+              url,
+              error,
+              duration: deltaTime,
+              wrapperDepth
+            },
+            details
+          );
+
+          this.emit('VAST-resolved', info);
+
+          if (error) {
+            reject(error);
+          } else {
+            resolve(xml);
+          }
+        }
+      );
     });
   }
 
@@ -137,7 +160,7 @@ export class VASTParser extends EventEmitter {
     this.rootErrorURLTemplates = [];
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.fetchingOptions = {
-      timeout: options.timeout,
+      timeout: options.timeout || DEFAULT_TIMEOUT,
       withCredentials: options.withCredentials
     };
 
@@ -254,8 +277,8 @@ export class VASTParser extends EventEmitter {
     const childNodes = vastXml.documentElement.childNodes;
 
     /* Only parse the version of the Root VAST for now because we don't know yet how to
-       handle some cases like multiple wrappers in the same vast
-    */
+     * handle some cases like multiple wrappers in the same vast
+     */
     if (isRootVAST) {
       const vastVersion = vastXml.documentElement.getAttribute('version');
       if (vastVersion) this.vastVersion = vastVersion;
@@ -379,7 +402,7 @@ export class VASTParser extends EventEmitter {
   /**
    * Resolves the wrappers for the given ad in a recursive way.
    * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
-   * @param  {Ad} ad - An ad to be unwrapped.
+   * @param  {Object} ad - An ad object to be unwrapped.
    * @param  {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
    * @param  {String} originalUrl - The original vast url.
    * @return {Promise}
@@ -413,8 +436,8 @@ export class VASTParser extends EventEmitter {
 
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
-      originalUrl = ad.nextWrapperURL;
-
+      // save next url because it gets deleted after fetching
+      const nextURL = ad.nextWrapperURL;
       this.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl)
         .then(xml => {
           return this.parse(xml, {
@@ -446,6 +469,9 @@ export class VASTParser extends EventEmitter {
 
           resolve(ad);
         });
+
+      // Update the originalUrl to the current one after fetching
+      originalUrl = nextURL;
     });
   }
 
