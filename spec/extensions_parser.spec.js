@@ -100,5 +100,21 @@ describe('ExtensionsParser', function() {
     it('validate creativeExtension has length 4', () => {
       expect(parsedCreativeExts.length).toEqual(4);
     });
+
+    it('validate Count extension', () => {
+      const ext = parsedCreativeExts[0];
+      expect(ext.attributes['type']).toEqual('Count');
+      expect(ext.children.length).toEqual(0);
+      expect(ext.name).toEqual('CreativeExtension');
+      expect(ext.value).toEqual('4');
+    });
+
+    it('validate simple JSON in cdata extension', () => {
+      const ext = parsedCreativeExts[1];
+      expect(ext.attributes).toEqual({});
+      expect(ext.children.length).toEqual(0);
+      expect(ext.name).toEqual('CreativeExtension');
+      expect(ext.value).toEqual('{ foo: bar }');
+    });
   });
 });
