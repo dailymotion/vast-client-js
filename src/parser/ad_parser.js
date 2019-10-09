@@ -1,10 +1,7 @@
 import { Ad } from '../ad';
-import { AdExtension } from '../ad_extension';
 import { AdVerification } from '../ad_verification';
-import { CreativeExtension } from '../creative_extension';
-import { parseCreativeCompanion } from './creative_companion_parser';
-import { parseCreativeLinear } from './creative_linear_parser';
-import { parseCreativeNonLinear } from './creative_non_linear_parser';
+import { parseCreatives } from './creatives_parser';
+import { parseExtensions } from './extensions_parser';
 import { parserUtils } from './parser_utils';
 import { parserVerification } from './parser_verification';
 /**
@@ -81,79 +78,13 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Creatives':
-        parserUtils
-          .childrenByName(node, 'Creative')
-          .forEach(creativeElement => {
-            const creativeAttributes = {
-              id: creativeElement.getAttribute('id') || null,
-              adId: parseCreativeAdIdAttribute(creativeElement),
-              sequence: creativeElement.getAttribute('sequence') || null,
-              apiFramework: creativeElement.getAttribute('apiFramework') || null
-            };
-
-            const universalAdIdElement = parserUtils.childByName(
-              creativeElement,
-              'UniversalAdId'
-            );
-
-            const creativeExtensionsElement = parserUtils.childByName(
-              creativeElement,
-              'CreativeExtensions'
-            );
-
-            for (const creativeTypeElementKey in creativeElement.childNodes) {
-              const creativeTypeElement =
-                creativeElement.childNodes[creativeTypeElementKey];
-              let parsedCreative;
-
-              switch (creativeTypeElement.nodeName) {
-                case 'Linear':
-                  parsedCreative = parseCreativeLinear(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  break;
-                case 'NonLinearAds':
-                  parsedCreative = parseCreativeNonLinear(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  break;
-                case 'CompanionAds':
-                  parsedCreative = parseCreativeCompanion(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  break;
-              }
-
-              if (parsedCreative) {
-                if (universalAdIdElement) {
-                  parsedCreative.universalAdId = {
-                    idRegistry: universalAdIdElement.getAttribute('idRegistry'),
-                    value: parserUtils.parseNodeText(universalAdIdElement)
-                  };
-                }
-                if (creativeExtensionsElement) {
-                  const creativeExtensions = _parseExtensions(
-                    parserUtils.childrenByName(
-                      creativeExtensionsElement,
-                      'CreativeExtension'
-                    ),
-                    'Creative'
-                  );
-                  if (creativeExtensions) {
-                    parsedCreative.creativeExtensions = creativeExtensions;
-                  }
-                }
-                ad.creatives.push(parsedCreative);
-              }
-            }
-          });
+        ad.creatives = parseCreatives(
+          parserUtils.childrenByName(node, 'Creative')
+        );
         break;
 
       case 'Extensions':
-        ad.extensions = _parseExtensions(
+        ad.extensions = parseExtensions(
           parserUtils.childrenByName(node, 'Extension')
         );
         break;
@@ -285,90 +216,6 @@ function parseWrapper(wrapperElement, emit) {
 }
 
 /**
- * Parses an array of Extension elements. Exported for unit test purpose
- * @param  {Node[]} extensions - The array of extensions to parse.
- * @return {AdExtension[]} - The nodes parsed to extensions
- */
-export function _parseExtensions(extensions, type = 'Ad') {
-  const exts = [];
-  extensions.forEach(extNode => {
-    const ext = _parseExtension(extNode, type);
-
-    if (ext) {
-      exts.push(ext);
-    }
-  });
-  return exts;
-}
-
-/**
- * Parses an extension child node
- * @param {Node} extNode - The extension node to parse
- * @return {AdExtension|null} - The node parsed to extension
- */
-function _parseExtension(extNode, type) {
-  // Ignore comments
-  if (extNode.nodeName === '#comment') return null;
-
-  let ext;
-  if (type === 'Creative') {
-    ext = new CreativeExtension();
-  } else {
-    ext = new AdExtension();
-  }
-
-  const extNodeAttrs = extNode.attributes;
-  const childNodes = extNode.childNodes;
-
-  ext.name = extNode.nodeName;
-
-  // Parse attributes
-  if (extNode.attributes) {
-    for (const extNodeAttrKey in extNodeAttrs) {
-      if (extNodeAttrs.hasOwnProperty(extNodeAttrKey)) {
-        const extNodeAttr = extNodeAttrs[extNodeAttrKey];
-
-        if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
-          ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
-        }
-      }
-    }
-  }
-
-  // Parse all children
-  for (const childNodeKey in childNodes) {
-    if (childNodes.hasOwnProperty(childNodeKey)) {
-      const parsedChild = _parseExtension(childNodes[childNodeKey], type);
-      if (parsedChild) {
-        ext.children.push(parsedChild);
-      }
-    }
-  }
-
-  /*
-    Only parse value of Nodes with only eather no children or only a cdata or text
-    to avoid useless parsing that would result to a concatenation of all children
-  */
-  if (
-    ext.children.length === 0 ||
-    (ext.children.length === 1 &&
-      ['#cdata-section', '#text'].indexOf(ext.children[0].name) >= 0)
-  ) {
-    const txt = parserUtils.parseNodeText(extNode);
-
-    if (txt !== '') {
-      ext.value = txt;
-    }
-
-    // Remove the children if it's a cdata or simply text to avoid useless children
-    ext.children = [];
-  }
-
-  // Only return not empty objects to not pollute extentions
-  return ext.isEmpty() ? null : ext;
-}
-
-/**
  * Parses the AdVerifications Element.
  * @param  {Array} verifications - The array of verifications to parse.
  * @return {Array<AdVerification>}
@@ -400,18 +247,4 @@ export function _parseAdVerifications(verifications) {
   });
 
   return ver;
-}
-
-/**
- * Parses the creative adId Attribute.
- * @param  {any} creativeElement - The creative element to retrieve the adId from.
- * @return {String|null}
- */
-function parseCreativeAdIdAttribute(creativeElement) {
-  return (
-    creativeElement.getAttribute('AdID') || // VAST 2 spec
-    creativeElement.getAttribute('adID') || // VAST 3 spec
-    creativeElement.getAttribute('adId') || // VAST 4 spec
-    null
-  );
 }

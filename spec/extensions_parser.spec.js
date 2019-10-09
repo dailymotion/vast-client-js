@@ -1,29 +1,18 @@
-import { _parseExtensions } from '../src/parser/ad_parser';
+import { parseExtensions } from '../src/parser/extensions_parser';
 import { parserUtils } from '../src/parser/parser_utils';
 import { getNodesFromXml } from './utils/utils';
-import { adExtensions } from './samples/extensions';
-import { creativeExtensions } from './samples/extensions';
+import { adExtensions, creativeExtensions } from './samples/extensions';
 
-describe('AdParser', function() {
-  describe('Extensions', function() {
-    let parsedAdExts, parsedCreativeExts;
+describe('ExtensionsParser', function() {
+  describe('AdExtensions', function() {
+    let parsedAdExts;
 
     beforeAll(() => {
       const extensionNodes = parserUtils.childrenByName(
         getNodesFromXml(adExtensions),
         'Extension'
       );
-      parsedAdExts = _parseExtensions(extensionNodes);
-
-      const creativeExtensionNodes = parserUtils.childrenByName(
-        getNodesFromXml(creativeExtensions),
-        'CreativeExtension'
-      );
-      parsedCreativeExts = _parseExtensions(creativeExtensionNodes, 'Creative');
-    });
-
-    it('validate creativeExtension has length 4', () => {
-      expect(parsedCreativeExts.length).toEqual(4);
+      parsedAdExts = parseExtensions(extensionNodes);
     });
 
     it('validate WrapperExtension', () => {
@@ -94,6 +83,22 @@ describe('AdParser', function() {
       expect(father.children[2].name).toEqual('Son');
       expect(father.children[2].attributes['age']).toEqual('25');
       expect(father.children[2].value).toEqual('Paul');
+    });
+  });
+
+  describe('CreativeExtensions', function() {
+    let parsedCreativeExts;
+
+    beforeAll(() => {
+      const creativeExtensionNodes = parserUtils.childrenByName(
+        getNodesFromXml(creativeExtensions),
+        'CreativeExtension'
+      );
+      parsedCreativeExts = parseExtensions(creativeExtensionNodes, 'Creative');
+    });
+
+    it('validate creativeExtension has length 4', () => {
+      expect(parsedCreativeExts.length).toEqual(4);
     });
   });
 });
