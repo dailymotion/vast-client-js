@@ -20,7 +20,7 @@ export function parseCreatives(creativeNodes) {
       apiFramework: creativeElement.getAttribute('apiFramework') || null
     };
 
-    let universalAdId = null;
+    let universalAdId;
     const universalAdIdElement = parserUtils.childByName(
       creativeElement,
       'UniversalAdId'
@@ -33,10 +33,20 @@ export function parseCreatives(creativeNodes) {
       };
     }
 
+    let creativeExtensions;
     const creativeExtensionsElement = parserUtils.childByName(
       creativeElement,
       'CreativeExtensions'
     );
+    if (creativeExtensionsElement) {
+      creativeExtensions = parseExtensions(
+        parserUtils.childrenByName(
+          creativeExtensionsElement,
+          'CreativeExtension'
+        ),
+        'Creative'
+      );
+    }
 
     for (const creativeTypeElementKey in creativeElement.childNodes) {
       const creativeTypeElement =
@@ -69,17 +79,8 @@ export function parseCreatives(creativeNodes) {
           parsedCreative.universalAdId = universalAdId;
         }
 
-        if (creativeExtensionsElement) {
-          const creativeExtensions = parseExtensions(
-            parserUtils.childrenByName(
-              creativeExtensionsElement,
-              'CreativeExtension'
-            ),
-            'Creative'
-          );
-          if (creativeExtensions) {
-            parsedCreative.creativeExtensions = creativeExtensions;
-          }
+        if (creativeExtensions) {
+          parsedCreative.creativeExtensions = creativeExtensions;
         }
         creatives.push(parsedCreative);
       }
