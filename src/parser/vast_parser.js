@@ -312,7 +312,8 @@ export class VASTParser extends EventEmitter {
           this.emit('VAST-ad-parsed', {
             type: result.type,
             url,
-            wrapperDepth
+            wrapperDepth,
+            adIndex: ads.length - 1
           });
         } else {
           // VAST version of response not supported.
