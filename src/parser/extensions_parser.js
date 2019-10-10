@@ -1,5 +1,6 @@
-import { createAdExtension, isEmptyExtension } from '../ad_extension';
+import { createAdExtension } from '../ad_extension';
 import { createCreativeExtension } from '../creative_extension';
+import { isEmptyExtension } from '../extension';
 import { parserUtils } from './parser_utils';
 
 /**

@@ -1,16 +1,5 @@
-export function createAdExtension() {
-  return {
-    name: null,
-    value: null,
-    attributes: {},
-    children: []
-  };
-}
+import { createExtension } from './extension';
 
-export function isEmptyExtension(adExtension) {
-  return (
-    adExtension.value === null &&
-    Object.keys(adExtension.attributes).length === 0 &&
-    adExtension.children.length === 0
-  );
+export function createAdExtension() {
+  return createExtension();
 }
