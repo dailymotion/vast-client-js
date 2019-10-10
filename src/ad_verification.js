@@ -1,9 +1,9 @@
-export class AdVerification {
-  constructor() {
-    this.resource = null;
-    this.vendor = null;
-    this.browserOptional = false;
-    this.apiFramework = null;
-    this.parameters = null;
-  }
+export function createAdVerification() {
+  return {
+    resource: null,
+    vendor: null,
+    browserOptional: false,
+    apiFramework: null,
+    parameters: null
+  };
 }

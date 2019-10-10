@@ -2,7 +2,6 @@ import path from 'path';
 import should from 'should';
 import sinon from 'sinon';
 import { VASTParser } from '../src/parser/vast_parser';
-import { VASTResponse } from '../src/vast_response';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { parserUtils } from '../src/parser/parser_utils.js';
 import { util } from '../src/util/util';
@@ -137,7 +136,11 @@ describe('VASTParser', function() {
     });
 
     it('should have returned a VAST response object', () => {
-      this.response.should.be.an.instanceOf(VASTResponse);
+      this.response.should.have.properties(
+        'ads',
+        'errorURLTemplates',
+        'version'
+      );
     });
 
     it('should have retrived root VAST version', () => {
@@ -921,7 +924,11 @@ describe('VASTParser', function() {
     });
 
     it('should have returned a VAST response object', () => {
-      this.response.should.be.an.instanceOf(VASTResponse);
+      this.response.should.have.properties(
+        'ads',
+        'errorURLTemplates',
+        'version'
+      );
     });
   });
 
@@ -1169,7 +1176,11 @@ describe('VASTParser', function() {
           });
 
           it('should have returned a VAST response object', () => {
-            response.should.be.an.instanceOf(VASTResponse);
+            response.should.have.properties(
+              'ads',
+              'errorURLTemplates',
+              'version'
+            );
           });
 
           // we just want to make sure that the sample.xml was loaded correctly
