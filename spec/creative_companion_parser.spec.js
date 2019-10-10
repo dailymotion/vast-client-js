@@ -53,7 +53,9 @@ describe('parseCreativeCompanion', function() {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '1'
+        adSlotID: '1',
+        pxratio: '2',
+        renderingMode: 'end-card'
       });
     });
 
@@ -90,8 +92,14 @@ describe('parseCreativeCompanion', function() {
 
     it('gets companionClickTrackingURLTemplates', () => {
       expect(companion.companionClickTrackingURLTemplates).toEqual([
-        'http://example.com/companion1-clicktracking-first',
-        'http://example.com/companion1-clicktracking-second'
+        {
+          id: '1',
+          url: 'http://example.com/companion1-clicktracking-first'
+        },
+        {
+          id: '2',
+          url: 'http://example.com/companion1-clicktracking-second'
+        }
       ]);
     });
 
@@ -122,7 +130,9 @@ describe('parseCreativeCompanion', function() {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '2'
+        adSlotID: '2',
+        pxratio: '1',
+        renderingMode: 'concurrent'
       });
     });
 
@@ -181,7 +191,9 @@ describe('parseCreativeCompanion', function() {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '3'
+        adSlotID: '3',
+        pxratio: '1',
+        renderingMode: 'default'
       });
     });
 

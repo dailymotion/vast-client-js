@@ -77,9 +77,12 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
 
       companionAd.companionClickTrackingURLTemplates = parserUtils
         .childrenByName(companionResource, 'CompanionClickTracking')
-        .map(clickTrackingElement =>
-          parserUtils.parseNodeText(clickTrackingElement)
-        );
+        .map(clickTrackingElement => {
+          return {
+            id: clickTrackingElement.getAttribute('id') || null,
+            url: parserUtils.parseNodeText(clickTrackingElement)
+          };
+        });
 
       companionAd.companionClickThroughURLTemplate =
         parserUtils.parseNodeText(

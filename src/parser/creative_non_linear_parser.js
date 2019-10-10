@@ -93,9 +93,10 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
       parserUtils
         .childrenByName(nonlinearResource, 'NonLinearClickTracking')
         .forEach(clickTrackingElement => {
-          nonlinearAd.nonlinearClickTrackingURLTemplates.push(
-            parserUtils.parseNodeText(clickTrackingElement)
-          );
+          nonlinearAd.nonlinearClickTrackingURLTemplates.push({
+            id: clickTrackingElement.getAttribute('id') || null,
+            url: parserUtils.parseNodeText(clickTrackingElement)
+          });
         });
 
       creative.variations.push(nonlinearAd);

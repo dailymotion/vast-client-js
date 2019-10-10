@@ -17,11 +17,11 @@ This object represents a single parsed Ad
 - `system: String|null`
 - `title: String|null`
 - `description: String|null`
-- `advertiser: String|null`
+- `advertiser: Object|null`
 - `pricing: String|null`
 - `survey: String|null`
 - `errorURLTemplates: Array<String>`
-- `impressionURLTemplates: Array<String>`
+- `impressionURLTemplates: Array<Object>`
 - `creatives: Array<Object>` [go to object](#creative)
 - `extensions: Array<AdExtension>` [go to class](#ad-extension)
 - `adVerifications: Array<Object>` [go to object](#ad-verification)
@@ -105,7 +105,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `nonlinearClickThroughURLTemplate: String|null`
-- `nonlinearClickTrackingURLTemplates: Array<String>`
+- `nonlinearClickTrackingURLTemplates: Array<Object>`
 - `adParameters: String|null`
 
 ## CompanionAd<a name="companion-ad"></a>
@@ -124,7 +124,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `iframeResources: Array<String>`
 - `altText: String|null`
 - `companionClickThroughURLTemplate: String|null`
-- `companionClickTrackingURLTemplates: Array<String>`
+- `companionClickTrackingURLTemplates: Array<Object>`
 - `trackingEvents: Object`
 - `adParameters: String|null`
 - `xmlEncoded: Boolean|null`
@@ -144,7 +144,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `iconClickThroughURLTemplate: String|null`
-- `iconClickTrackingURLTemplates: Array<String>`
+- `iconClickTrackingURLTemplates: Array<Object>`
 - `iconViewTrackingURLTemplate: String|null`
 
 ## AdExtension<a name="ad-extension"></a>

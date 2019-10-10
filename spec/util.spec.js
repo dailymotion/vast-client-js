@@ -112,20 +112,217 @@ describe('util', function() {
     });
   });
 
-  describe('joinArrayUnique', () => {
-    it('should join multiple arrays without duplicates', () => {
-      expect(util.joinArrayUnique([1, 2, 3], [2, 2, 3, 4])).toEqual([
-        1,
-        2,
-        3,
-        4
-      ]);
+  describe('#extractURLsFromTemplates', function() {
+    it('should return an array of urls', () => {
+      const input = [
+        {
+          id: null,
+          url: 'http://example.com/wrapperNoTracking-impression'
+        },
+        {
+          id: 'wrapper-a-impression',
+          url: 'http://example.com/wrapperA-impression'
+        },
+        {
+          id: 'wrapper-b-impression1',
+          url: 'http://example.com/wrapperB-impression1'
+        }
+      ];
+
+      const expectedOutput = [
+        'http://example.com/wrapperNoTracking-impression',
+        'http://example.com/wrapperA-impression',
+        'http://example.com/wrapperB-impression1'
+      ];
+
+      const output = util.extractURLsFromTemplates(input);
+
+      expect(output).toEqual(expectedOutput);
     });
-    it('should remove duplicates from one array', () => {
-      expect(util.joinArrayUnique([1, 2, 2, 3])).toEqual([1, 2, 3]);
+
+    it('should return the array of urls as passed in', () => {
+      const input = [
+        'http://example.com/wrapperNoTracking-impression',
+        'http://example.com/wrapperA-impression',
+        'http://example.com/wrapperB-impression'
+      ];
+
+      const expectedOutput = [
+        'http://example.com/wrapperNoTracking-impression',
+        'http://example.com/wrapperA-impression',
+        'http://example.com/wrapperB-impression'
+      ];
+
+      const output = util.extractURLsFromTemplates(input);
+
+      expect(output).toEqual(expectedOutput);
     });
-    it('should return empty array if there are no valid inputs', () => {
-      expect(util.joinArrayUnique(null, undefined)).toEqual([]);
+  });
+
+  describe('#isTemplateObjectEqual', function() {
+    const obj1 = {
+      id: null,
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const obj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const copyOfObj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const obj3 = {
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const copyOfObj3 = {
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const obj4 = {
+      id: 'wrapper-a-impression'
+    };
+    const copyOfObj4 = {
+      id: 'wrapper-a-impression'
+    };
+    const obj5 = null;
+
+    it('should return false for unequal objects (ids dont match)', () => {
+      let output = util.isTemplateObjectEqual(obj1, obj2);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for equivalent objects', () => {
+      let output = util.isTemplateObjectEqual(obj2, copyOfObj2);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for unequal objects (id field missing)', () => {
+      let output = util.isTemplateObjectEqual(obj2, obj3);
+      expect(output).toBe(false);
+    });
+
+    it('should return false for unequal objects (url field missing)', () => {
+      let output = util.isTemplateObjectEqual(obj2, obj4);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for equivalent objects without the id', () => {
+      let output = util.isTemplateObjectEqual(obj3, copyOfObj3);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for unequal objects (id/url field missing)', () => {
+      let output = util.isTemplateObjectEqual(obj3, obj4);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for equivalent objects without the url', () => {
+      let output = util.isTemplateObjectEqual(obj4, copyOfObj4);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for unequal objects (an object is null)', () => {
+      let output = util.isTemplateObjectEqual(obj1, obj5);
+      expect(output).toBe(false);
+    });
+  });
+
+  describe('#containsTemplateObject', function() {
+    const obj1 = {
+      id: null,
+      url: 'http://example.com/wrapperNoTracking-impression'
+    };
+    const obj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+    const copyOfObj2 = {
+      id: 'wrapper-a-impression',
+      url: 'http://example.com/wrapperA-impression'
+    };
+
+    it('should return false for an empty array', () => {
+      const myArr = [];
+      let output = util.containsTemplateObject(obj1, myArr);
+      expect(output).toBe(false);
+    });
+
+    it('should return true for an object existing in the array', () => {
+      const myArr = [];
+      myArr.push(obj1);
+      myArr.push(obj2);
+      let output = util.containsTemplateObject(obj2, myArr);
+      expect(output).toBe(true);
+    });
+
+    it('should return true for a copy of an object existing in the array', () => {
+      const myArr = [];
+      myArr.push(obj1);
+      myArr.push(obj2);
+      let output = util.containsTemplateObject(copyOfObj2, myArr);
+      expect(output).toBe(true);
+    });
+
+    it('should return false for an object not existing in the array', () => {
+      const myArr = [];
+      myArr.push(obj1);
+      let output = util.containsTemplateObject(obj2, myArr);
+      expect(output).toBe(false);
+    });
+  });
+
+  describe('#joinArrayOfUniqueTemplateObjs', function() {
+    it('should return an array of unique objects', () => {
+      const obj1 = {
+        id: null,
+        url: 'http://example.com/wrapperNoTracking-impression'
+      };
+      const obj2 = {
+        id: 'wrapper-a-impression',
+        url: 'http://example.com/wrapperA-impression'
+      };
+      const copyOfObj2 = {
+        id: 'wrapper-a-impression',
+        url: 'http://example.com/wrapperA-impression'
+      };
+      const obj3 = {
+        id: 'wrapper-b-impression1',
+        url: 'http://example.com/wrapperB-impression'
+      };
+      const obj4 = {
+        id: 'wrapper-b-impression2',
+        url: 'http://example.com/wrapperB-impression'
+      };
+      const copyOfObj4 = {
+        id: 'wrapper-b-impression2',
+        url: 'http://example.com/wrapperB-impression'
+      };
+
+      const arr1 = [obj1, obj2];
+      const arr2 = [copyOfObj2, obj3, obj4, copyOfObj4];
+
+      const expectedOutput = [
+        {
+          id: null,
+          url: 'http://example.com/wrapperNoTracking-impression'
+        },
+        {
+          id: 'wrapper-a-impression',
+          url: 'http://example.com/wrapperA-impression'
+        },
+        {
+          id: 'wrapper-b-impression1',
+          url: 'http://example.com/wrapperB-impression'
+        },
+        {
+          id: 'wrapper-b-impression2',
+          url: 'http://example.com/wrapperB-impression'
+        }
+      ];
+
+      let outputArr = util.joinArrayOfUniqueTemplateObjs(arr1, arr2);
+      expect(outputArr.length).toEqual(4);
+      expect(outputArr).toEqual(expectedOutput);
     });
   });
 });

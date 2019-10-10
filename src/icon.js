@@ -12,6 +12,7 @@ export function createIcon() {
     staticResource: null,
     htmlResource: null,
     iframeResource: null,
+    pxratio: '1',
     iconClickThroughURLTemplate: null,
     iconClickTrackingURLTemplates: [],
     iconViewTrackingURLTemplate: null

@@ -10,6 +10,8 @@ export function createCompanionAd(creativeAttributes = {}) {
     expandedHeight: creativeAttributes.expandedHeight || null,
     apiFramework: creativeAttributes.apiFramework || null,
     adSlotID: creativeAttributes.adSlotID || null,
+    pxratio: creativeAttributes.pxratio || '1',
+    renderingMode: creativeAttributes.renderingMode || 'default',
     staticResources: [],
     htmlResources: [],
     iframeResources: [],
