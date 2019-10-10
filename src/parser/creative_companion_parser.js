@@ -1,5 +1,5 @@
-import { CompanionAd } from '../companion_ad';
-import { CreativeCompanion } from '../creative/creative_companion';
+import { createCompanionAd } from '../companion_ad';
+import { createCreativeCompanion } from '../creative/creative_companion';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -10,16 +10,16 @@ import { parserUtils } from './parser_utils';
  * Parses a CompanionAd.
  * @param  {Object} creativeElement - The VAST CompanionAd element to parse.
  * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
- * @return {CreativeCompanion}
+ * @return {Object} creative - The creative object.
  */
 export function parseCreativeCompanion(creativeElement, creativeAttributes) {
-  const creative = new CreativeCompanion(creativeAttributes);
+  const creative = createCreativeCompanion(creativeAttributes);
   creative.required = creativeElement.getAttribute('required') || null;
 
   creative.variations = parserUtils
     .childrenByName(creativeElement, 'Companion')
     .map(companionResource => {
-      const companionAd = new CompanionAd(
+      const companionAd = createCompanionAd(
         parserUtils.parseAttributes(companionResource)
       );
 

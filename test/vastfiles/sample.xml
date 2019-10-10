@@ -157,6 +157,7 @@
       <Impression id="sample-ad2-impression1"><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
         <Creative id="id873421" adID="adId221144" apiFramework="VPAID">
+          <UniversalAdId>Linear-id873421</UniversalAdId>
           <Linear skipoffset="00:00:10" >
             <Duration>30</Duration>
             <MediaFiles>

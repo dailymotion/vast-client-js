@@ -1,11 +1,16 @@
-import { Creative } from './creative';
+import { createCreative } from './creative';
 
-export class CreativeCompanion extends Creative {
-  constructor(creativeAttributes = {}) {
-    super(creativeAttributes);
-
-    this.type = 'companion';
-    this.required = null;
-    this.variations = [];
-  }
+export function createCreativeCompanion(creativeAttributes = {}) {
+  const { id, adId, sequence, apiFramework } = createCreative(
+    creativeAttributes
+  );
+  return {
+    id,
+    adId,
+    sequence,
+    apiFramework,
+    type: 'companion',
+    required: null,
+    variations: []
+  };
 }
