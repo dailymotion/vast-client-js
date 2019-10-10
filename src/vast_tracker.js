@@ -1,7 +1,7 @@
-import { CompanionAd } from './companion_ad';
-import { CreativeLinear } from './creative/creative_linear';
+import { isCompanionAd } from './companion_ad';
+import { isCreativeLinear } from './creative/creative_linear';
 import { EventEmitter } from './util/event_emitter';
-import { NonLinearAd } from './non_linear_ad';
+import { isNonLinearAd } from './non_linear_ad';
 import { util } from './util/util';
 
 /**
@@ -25,7 +25,7 @@ export class VASTTracker extends EventEmitter {
    * @param {VASTClient} client - An instance of VASTClient that can be updated by the tracker. [optional]
    * @param {Ad} ad - The ad to track.
    * @param {Creative} creative - The creative to track.
-   * @param {CompanionAd|NonLinearAd} [variation=null] - An optional variation of the creative.
+   * @param {Object} [variation=null] - An optional variation of the creative.
    * @constructor
    */
   constructor(client, ad, creative, variation = null) {
@@ -65,7 +65,7 @@ export class VASTTracker extends EventEmitter {
     // Nonlinear and companion creatives provide some tracking information at a variation level
     // While linear creatives provided that at a creative level. That's why we need to
     // differentiate how we retrieve some tracking information.
-    if (this.creative instanceof CreativeLinear) {
+    if (isCreativeLinear(this.creative)) {
       this._initLinearTracking();
     } else {
       this._initVariationTracking();
@@ -125,11 +125,11 @@ export class VASTTracker extends EventEmitter {
       }
     }
 
-    if (this.variation instanceof NonLinearAd) {
+    if (isNonLinearAd(this.variation)) {
       this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
       this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
       this.setDuration(this.variation.minSuggestedDuration);
-    } else if (this.variation instanceof CompanionAd) {
+    } else if (isCompanionAd(this.variation)) {
       this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
       this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
     }

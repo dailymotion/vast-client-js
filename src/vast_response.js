@@ -1,7 +1,7 @@
-export class VASTResponse {
-  constructor() {
-    this.ads = [];
-    this.errorURLTemplates = [];
-    this.version = null;
-  }
+export function createVASTResponse({ ads, errorURLTemplates, version }) {
+  return {
+    ads: ads || [],
+    errorURLTemplates: errorURLTemplates || [],
+    version: version || null
+  };
 }

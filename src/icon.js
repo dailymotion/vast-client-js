@@ -1,20 +1,20 @@
-export class Icon {
-  constructor() {
-    this.program = null;
-    this.height = 0;
-    this.width = 0;
-    this.xPosition = 0;
-    this.yPosition = 0;
-    this.apiFramework = null;
-    this.offset = null;
-    this.duration = 0;
-    this.type = null;
-    this.staticResource = null;
-    this.htmlResource = null;
-    this.iframeResource = null;
-    this.pxratio = '1';
-    this.iconClickThroughURLTemplate = null;
-    this.iconClickTrackingURLTemplates = [];
-    this.iconViewTrackingURLTemplate = null;
-  }
+export function createIcon() {
+  return {
+    program: null,
+    height: 0,
+    width: 0,
+    xPosition: 0,
+    yPosition: 0,
+    apiFramework: null,
+    offset: null,
+    duration: 0,
+    type: null,
+    staticResource: null,
+    htmlResource: null,
+    iframeResource: null,
+    pxratio: '1',
+    iconClickThroughURLTemplate: null,
+    iconClickTrackingURLTemplates: [],
+    iconViewTrackingURLTemplate: null
+  };
 }

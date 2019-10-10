@@ -1,16 +1,16 @@
-# Class reference
+# Object reference
 
 ## VASTResponse
 
-This class represents a parsed VAST response.
+This object represents a parsed VAST response.
 
-- `ads: Array<Ad>` [go to class](#ad)
+- `ads: Array<Object>` [go to object](#ad)
 - `errorURLTemplates: Array<String>`
 - `version: String`
 
 ## Ad<a name="ad"></a>
 
-This class represents a single parsed Ad
+This object represents a single parsed Ad
 
 - `id: String|null`
 - `sequence: Number|null`
@@ -22,13 +22,13 @@ This class represents a single parsed Ad
 - `survey: String|null`
 - `errorURLTemplates: Array<String>`
 - `impressionURLTemplates: Array<Object>`
-- `creatives: Array<Creative>` [go to class](#creative)
+- `creatives: Array<Object>` [go to object](#creative)
 - `extensions: Array<AdExtension>` [go to class](#ad-extension)
-- `adVerifications: Array<AdVerification>` [go to class](#ad-verification)
+- `adVerifications: Array<Object>` [go to object](#ad-verification)
 
 ## Creative<a name="creative"></a>
 
-This class represents a generic Creative. It's used as a parent class for more specific creative implementations.
+This object represents a generic Creative. It's used as a parent object for more specific creative implementations.
 
 - `id: String|null`
 - `adId: String|null`
@@ -40,26 +40,26 @@ This class represents a generic Creative. It's used as a parent class for more s
 - `type: String`
 - `duration: Number`
 - `skipDelay: Number|null`
-- `mediaFiles: Array<MediaFile>` [go to class](#mediafile)
-- `mezzanine: Object<Mezzanine>` [go to class](#mezzanine)
-- `videoClickThroughURLTemplate: Object|null`
-- `videoClickTrackingURLTemplates: Array<Object>`
-- `videoCustomClickURLTemplates: Array<Object>`
+- `mediaFiles: Array<Object>` [go to object](#mediafile)
+- `mezzanine: Object<Object>` [go to object](#mezzanine)
+- `videoClickThroughURLTemplate: String|null`
+- `videoClickTrackingURLTemplates: Array<String>`
+- `videoCustomClickURLTemplates: Array<String>`
 - `adParameters: String|null`
-- `icons: Array<Icon>` [go to class](#icon)
+- `icons: Array<Object>` [go to object](#icon)
 - `trackingEvents: Object`
 
 ## CreativeNonLinear *extends* Creative<a name="creative-non-linear"></a>
 
 - `type: String`
-- `variations: Array<NonLinearAd>` [go to class](#non-linear-ad)
+- `variations: Array<Object>` [go to object](#non-linear-ad)
 - `trackingEvents: Object`
 
 ## CreativeCompanion *extends* Creative<a name="creative-companion"></a>
 
 - `type: String`
 - `required: String|null`
-- `variations: Array<CompanionAd>` [go to class](#companion-ad)
+- `variations: Array<Object>` [go to object](#companion-ad)
 
 ## MediaFile<a name="mediafile"></a>
 
