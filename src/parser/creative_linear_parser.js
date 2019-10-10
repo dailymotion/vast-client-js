@@ -1,5 +1,7 @@
 import { createCreativeLinear } from '../creative/creative_linear';
+import { createClosedCaptionFile } from '../closed_caption_file';
 import { createIcon } from '../icon';
+import { createInteractiveCreativeFile } from '../interactive_creative_file';
 import { createMediaFile } from '../media_file';
 import { createMezzanine } from '../mezzanine';
 import { parserUtils } from './parser_utils';
@@ -127,8 +129,13 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
           mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
           mediaFile.codec = mediaFileElement.getAttribute('codec');
           mediaFile.mimeType = mediaFileElement.getAttribute('type');
+          mediaFile.mediaType =
+            mediaFileElement.getAttribute('mediaType') || '2D';
           mediaFile.apiFramework = mediaFileElement.getAttribute(
             'apiFramework'
+          );
+          mediaFile.fileSize = parseInt(
+            mediaFileElement.getAttribute('fileSize') || 0
           );
           mediaFile.bitrate = parseInt(
             mediaFileElement.getAttribute('bitrate') || 0
@@ -170,6 +177,57 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
           creative.mediaFiles.push(mediaFile);
         });
+
+      const interactiveCreativeElement = parserUtils.childByName(
+        mediaFilesElement,
+        'InteractiveCreativeFile'
+      );
+      if (interactiveCreativeElement) {
+        const interactiveCreativeFile = createInteractiveCreativeFile();
+        interactiveCreativeFile.type = interactiveCreativeElement.getAttribute(
+          'type'
+        );
+        interactiveCreativeFile.apiFramework = interactiveCreativeElement.getAttribute(
+          'apiFramework'
+        );
+        let variableDuration = interactiveCreativeElement.getAttribute(
+          'variableDuration'
+        );
+        if (variableDuration && typeof variableDuration === 'string') {
+          variableDuration = variableDuration.toLowerCase();
+          if (variableDuration === 'true') {
+            interactiveCreativeFile.variableDuration = true;
+          } else if (variableDuration === 'false') {
+            interactiveCreativeFile.variableDuration = false;
+          }
+        }
+        interactiveCreativeFile.fileURL = parserUtils.parseNodeText(
+          interactiveCreativeElement
+        );
+
+        creative.interactiveCreativeFile = interactiveCreativeFile;
+      }
+
+      const closedCaptionElements = parserUtils.childByName(
+        mediaFilesElement,
+        'ClosedCaptionFiles'
+      );
+      if (closedCaptionElements) {
+        parserUtils
+          .childrenByName(closedCaptionElements, 'ClosedCaptionFile')
+          .forEach(closedCaptionElement => {
+            const closedCaptionFile = createClosedCaptionFile();
+            closedCaptionFile.type = closedCaptionElement.getAttribute('type');
+            closedCaptionFile.language = closedCaptionElement.getAttribute(
+              'language'
+            );
+            closedCaptionFile.fileURL = parserUtils.parseNodeText(
+              closedCaptionElement
+            );
+
+            creative.closedCaptionFiles.push(closedCaptionFile);
+          });
+      }
 
       const mezzanineElement = parserUtils.childByName(
         mediaFilesElement,
