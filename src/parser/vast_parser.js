@@ -125,13 +125,14 @@ export class VASTParser extends EventEmitter {
         url,
         this.fetchingOptions,
         (error, xml, details = {}) => {
-          const deltaTime = performance.now() - timeBeforeGet;
+          const deltaTime = Math.round(performance.now() - timeBeforeGet);
           const info = Object.assign(
             {
               url,
+              originalUrl,
+              wrapperDepth,
               error,
-              duration: deltaTime,
-              wrapperDepth
+              duration: deltaTime
             },
             details
           );
@@ -211,6 +212,7 @@ export class VASTParser extends EventEmitter {
     return this.fetchVAST(url).then(xml => {
       options.originalUrl = url;
       options.isRootVAST = true;
+      options.url = url;
 
       return this.parse(xml, options).then(ads => {
         return this.buildVASTResponse(ads);
@@ -260,16 +262,22 @@ export class VASTParser extends EventEmitter {
    * @param  {Object} vastXml - An object representing an xml document.
    * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
    * @emits  VASTParser#VAST-warning
+   * @emits VASTParser#VAST-ad-parsed
    * @return {Array}
    * @throws {Error} `vastXml` must be a valid VAST XMLDocument
    */
-  parseVastXml(vastXml, { isRootVAST = false }) {
+  parseVastXml(vastXml, { isRootVAST = false, url = null, wrapperDepth = 0 }) {
     // check if is a valid VAST document
     if (
       !vastXml ||
       !vastXml.documentElement ||
       vastXml.documentElement.nodeName !== 'VAST'
     ) {
+      this.emit('VAST-ad-parsed', {
+        type: 'ERROR',
+        url,
+        wrapperDepth
+      });
       throw new Error('Invalid VAST XMLDocument');
     }
 
@@ -296,9 +304,16 @@ export class VASTParser extends EventEmitter {
           ? this.rootErrorURLTemplates.push(errorURLTemplate)
           : this.errorURLTemplates.push(errorURLTemplate);
       } else if (node.nodeName === 'Ad') {
-        const ad = parseAd(node, this.emit.bind(this));
-        if (ad) {
-          ads.push(ad);
+        const result = parseAd(node, this.emit.bind(this));
+
+        if (result.ad) {
+          ads.push(result.ad);
+
+          this.emit('VAST-ad-parsed', {
+            type: result.type,
+            url,
+            wrapperDepth
+          });
         } else {
           // VAST version of response not supported.
           this.trackVastError(this.getErrorURLTemplates(), {
@@ -314,16 +329,17 @@ export class VASTParser extends EventEmitter {
   /**
    * Parses the given xml Object into an array of unwrapped ads.
    * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
-   * @param  {Object} vastXml - An object representing an xml document.
-   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits  VASTParser#VAST-resolving
-   * @emits  VASTParser#VAST-resolved
-   * @emits  VASTParser#VAST-warning
+   * @param {Object} vastXml - An object representing an xml document.
+   * @param {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits VASTParser#VAST-resolving
+   * @emits VASTParser#VAST-resolved
+   * @emits VASTParser#VAST-warning
    * @return {Promise}
    */
   parse(
     vastXml,
     {
+      url = null,
       resolveAll = true,
       wrapperSequence = null,
       originalUrl = null,
@@ -333,7 +349,11 @@ export class VASTParser extends EventEmitter {
   ) {
     let ads = [];
     try {
-      ads = this.parseVastXml(vastXml, { isRootVAST });
+      ads = this.parseVastXml(vastXml, {
+        isRootVAST,
+        url,
+        wrapperDepth
+      });
     } catch (e) {
       return Promise.reject(e);
     }
@@ -441,6 +461,7 @@ export class VASTParser extends EventEmitter {
       this.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl)
         .then(xml => {
           return this.parse(xml, {
+            url: ad.nextWrapperURL,
             originalUrl,
             wrapperSequence,
             wrapperDepth
