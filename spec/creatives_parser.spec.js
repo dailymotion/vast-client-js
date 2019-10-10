@@ -33,8 +33,8 @@ describe('CreativesParser', function() {
       const creative = parsedCreatives[1];
       expect(creative.id).toEqual('id130985');
       expect(creative.adId).toEqual('adId345691');
-      expect(creative.universalAdId.idRegistry).toEqual(null);
-      expect(creative.universalAdId.value).toEqual('unknown');
+      expect(creative.universalAdId.idRegistry).toEqual('unknown');
+      expect(creative.universalAdId.value).toEqual(null);
       expect(creative.type).toEqual('companion');
       expect(creative.variations.length).toEqual(3);
     });

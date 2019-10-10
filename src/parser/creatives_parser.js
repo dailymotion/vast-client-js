@@ -20,10 +20,18 @@ export function parseCreatives(creativeNodes) {
       apiFramework: creativeElement.getAttribute('apiFramework') || null
     };
 
+    let universalAdId = null;
     const universalAdIdElement = parserUtils.childByName(
       creativeElement,
       'UniversalAdId'
     );
+    if (universalAdIdElement) {
+      universalAdId = {
+        idRegistry:
+          universalAdIdElement.getAttribute('idRegistry') || 'unknown',
+        value: parserUtils.parseNodeText(universalAdIdElement)
+      };
+    }
 
     const creativeExtensionsElement = parserUtils.childByName(
       creativeElement,
@@ -57,12 +65,8 @@ export function parseCreatives(creativeNodes) {
       }
 
       if (parsedCreative) {
-        if (universalAdIdElement) {
-          parsedCreative.universalAdId = {
-            idRegistry:
-              universalAdIdElement.getAttribute('idRegistry') || 'unknown',
-            value: parserUtils.parseNodeText(universalAdIdElement)
-          };
+        if (universalAdId) {
+          parsedCreative.universalAdId = universalAdId;
         }
 
         if (creativeExtensionsElement) {

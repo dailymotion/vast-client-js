@@ -726,8 +726,8 @@ describe('VASTParser', function() {
         });
 
         it('should have a UniversalAdId with value=unknown and idRegistry=null', () => {
-          should.equal(linear.universalAdId.value, 'unknown');
-          should.equal(linear.universalAdId.idRegistry, null);
+          should.equal(linear.universalAdId.value, null);
+          should.equal(linear.universalAdId.idRegistry, 'unknown');
         });
 
         it('should have wrapper clickthrough URL', () => {
