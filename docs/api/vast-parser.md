@@ -74,11 +74,31 @@ vastParser.on('VAST-warning', ({ message, parentElement, specVersion }) => {
 });
 ```
 
+### VAST-resolving
+
+Event is triggered when `fetchVAST` function is called, before the fetching started. It carries the following data:
+- `url: String`
+- `originalUrl: String|Null`
+- `wrapperDepth: Number`
+- `maxWrapperDepth: Number`
+- `timeout: Number`
+
+```Javascript
+vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
+  // Access to the info
+});
+```
+
 ### VAST-resolved
 
-Event is triggered when VAST url has been fetched. It carries the following data:
-- `url: Number`
-- `error: Error [optional]`
+Event is triggered when `fetchVAST` function is called, after the fetching was done. It carries the following data:
+- `url: String`
+- `originalUrl: String|Null`
+- `wrapperDepth: Number`
+- `error: Error|Null`
+- `duration: Number`
+- `byteLength: Number|undefined`
+- `statusCode: Number|undefined`
 
 ```Javascript
 vastParser.on('VAST-resolved', ({ url, error }) => {
@@ -86,12 +106,13 @@ vastParser.on('VAST-resolved', ({ url, error }) => {
 });
 ```
 
-### VAST-resolving
+### VAST-ad-parsed
 
-Event is triggered when `fetchVAST` function is called. It carries the following data:
+Event is triggered when `parseVastXml` function is called, when an Ad tag has been parsed. It carries the following data:
 - `url: String`
-- `wrapperDepth: Number [optional]`
-- `originalUrl: String [optional]`
+- `wrapperDepth: Number`
+- `type: 'ERROR'|'WRAPPER'|'INLINE'`
+- `adIndex: Number|undefined`
 
 ```Javascript
 vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
@@ -176,25 +197,27 @@ Tracks the error provided in the errorCode parameter and emits a `VAST-error` ev
  * **`errorCode: Object`** - An Object containing the error data
  * **`data: Object`** - One (or more) Object containing additional data
 
-### fetchVAST(url)
+### fetchVAST(url, wrapperDepth = 0, originalUrl = null)
 Fetches a VAST document for the given url. Returns a `Promise` which resolves with the fetched xml or rejects with an error, according to the result of the request.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
+ * **`wrapperDepth: Number`** - Number of wrappers that have occurred
+ * **`originalUrl: String`** - The url of the inline or of the first wrapper
 
 #### Events emitted
  * **`VAST-resolved`**
  * **`VAST-resolving`**
 
-### getAndParseVAST(url, options)<a name="getandparse"></a>
+### getAndParseVAST(url, options = {})<a name="getandparse"></a>
 Fetches and parses a VAST for the given url.
-Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse) or rejects with an `Error`.
+Returns a `Promise` which either resolves with the fully parsed [VASTResponse](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse) or rejects with an `Error`.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
  * **`options: Object`** - An optional Object of parameters to be used in the request
-    * `timeout: Number` - A custom timeout for the requests (default `0`)
-    * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
+    * `timeout: Number` - A custom timeout for the requests (default `120000`)
+    * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR URLHandler (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
     * `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
@@ -230,14 +253,14 @@ vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options)
 ```
 
 ### parseVAST(vastXml, options)<a name="parse"></a>
-Parses the given xml Object into a [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse).
+Parses the given xml Object into a [VASTResponse](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse).
 Returns a `Promise` which either resolves with the fully parsed `VASTResponse` or rejects with an `Error`.
 
 #### Parameters
  * **`vastXml: Object`** - An object representing an xml document
  * **`options: Object`** - An optional Object of parameters to be used in the parsing process
-    * `timeout: Number` - A custom timeout for the possible wrapper resolving requests (default `0`)
-    * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR and FLASH URLHandlers (default `false`)
+    * `timeout: Number` - A custom timeout for the possible wrapper resolving requests (default `120000`)
+    * `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR URLHandler (default `false`)
     * `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `0`)
     * `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
     * `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
@@ -290,6 +313,9 @@ Parses the given xml Object into an array of ads. Returns the array or throws an
 #### Parameters
 * **`vastXml: Object`** - An object representing an xml document.
 * **`options: Object`** - An optional Object of parameters to be used in the parsing process.
+
+#### Events emitted
+ * **`VAST-ad-parsed`**
 
 ### resolveWrappers(ad, wrapperDepth, originalUrl)
 Resolves the wrappers for the given ad in a recursive way. Returns a `Promise` which resolves with the unwrapped ad or rejects with an error.
