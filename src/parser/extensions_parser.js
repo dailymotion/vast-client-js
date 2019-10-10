@@ -1,5 +1,5 @@
-import { AdExtension } from '../ad_extension';
-import { CreativeExtension } from '../creative_extension';
+import { createAdExtension, isEmptyExtension } from '../ad_extension';
+import { createCreativeExtension } from '../creative_extension';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -31,9 +31,9 @@ function _parseExtension(extNode, type) {
 
   let ext;
   if (type === 'Creative') {
-    ext = new CreativeExtension();
+    ext = createCreativeExtension();
   } else {
-    ext = new AdExtension();
+    ext = createAdExtension();
   }
 
   const extNodeAttrs = extNode.attributes;
@@ -84,5 +84,5 @@ function _parseExtension(extNode, type) {
   }
 
   // Only return not empty objects to not pollute extentions
-  return ext.isEmpty() ? null : ext;
+  return isEmptyExtension(ext) ? null : ext;
 }

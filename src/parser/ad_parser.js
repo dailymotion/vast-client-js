@@ -1,5 +1,5 @@
-import { Ad } from '../ad';
-import { AdVerification } from '../ad_verification';
+import { createAd } from '../ad';
+import { createAdVerification } from '../ad_verification';
 import { parseCreatives } from './creatives_parser';
 import { parseExtensions } from './extensions_parser';
 import { parserUtils } from './parser_utils';
@@ -40,7 +40,7 @@ export function parseAd(adElement, emit) {
  * @param  {Object} ad Element - The VAST Inline element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VASTParser#VAST-warning
- * @return {Ad}
+ * @return {Object} ad - The ad object.
  */
 function parseInLine(adElement, emit) {
   return parseAdElement(adElement, emit);
@@ -51,7 +51,7 @@ function parseInLine(adElement, emit) {
  * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VASTParser#VAST-warning
- * @return {Ad}
+ * @return {Object} ad - The ad object.
  */
 function parseAdElement(adTypeElement, emit) {
   if (emit) {
@@ -59,7 +59,7 @@ function parseAdElement(adTypeElement, emit) {
   }
 
   const childNodes = adTypeElement.childNodes;
-  const ad = new Ad();
+  const ad = createAd();
   ad.id = adTypeElement.getAttribute('id') || null;
   ad.sequence = adTypeElement.getAttribute('sequence') || null;
 
@@ -218,14 +218,14 @@ function parseWrapper(wrapperElement, emit) {
 /**
  * Parses the AdVerifications Element.
  * @param  {Array} verifications - The array of verifications to parse.
- * @return {Array<AdVerification>}
+ * @return {Array<Object>}
  */
 
 export function _parseAdVerifications(verifications) {
   const ver = [];
 
   verifications.forEach(verificationNode => {
-    const verification = new AdVerification();
+    const verification = createAdVerification();
     const childNodes = verificationNode.childNodes;
 
     parserUtils.assignAttributes(verificationNode.attributes, verification);
