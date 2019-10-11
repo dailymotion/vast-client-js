@@ -4,6 +4,8 @@ export function createAdVerification() {
     vendor: null,
     browserOptional: false,
     apiFramework: null,
-    parameters: null
+    type: null,
+    parameters: null,
+    trackingEvents: {}
   };
 }

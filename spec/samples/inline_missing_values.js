@@ -59,13 +59,21 @@ const missingRequiredAttributes = `
       <AdVerifications>
         <Verification>
           <JavaScriptResource>
-            <Verification vendor="company2.com-omid">
-              <ExecutableResource>
-                <![CDATA[http://example.com/omid2]]>
-              </ExecutableResource>
-            </Verification>
             <![CDATA[http://example.com/omid1]]>
           </JavaScriptResource>
+        </Verification>
+        <Verification>
+          <JavaScriptResource apiFramework="omid">
+            <![CDATA[http://example.com/omid1]]>
+          </JavaScriptResource>
+        </Verification>
+        <Verification vendor="company2.com-omid">
+          <ExecutableResource>
+            <![CDATA[http://example.com/omid2.exe]]>
+          </ExecutableResource>
+          <TrackingEvents>
+            <Tracking><![CDATA[http://example.com/verification-not-executed-EXE]]></Tracking>
+          </TrackingEvents>
         </Verification>
       </AdVerifications>
       <Creatives>

@@ -138,7 +138,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
 - `adSlotID: String|null`
-- `pxratio: String|'1'` The pixel ratio for which the companion creative is intended
+- `pxratio: String|'1'` The pixel ratio for which the companion creative is intended. Default value = 1
 - `renderingMode: String|'default'` Used to indicate when and where to use this companion ad. Default value = default
 - `staticResources: Array<{ url: String, creativeType: String|null }>`
 - `htmlResources: Array<String>`
@@ -161,7 +161,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `offset: String|null`
 - `duration: Number`
 - `type: String|null`
-- `pxratio: String|'1'` The pixel ratio for which the icon creative is intended
+- `pxratio: String|'1'` The pixel ratio for which the icon creative is intended. Default value = 1
 - `staticResource: String|null`
 - `htmlResource: String|null`
 - `iframeResource: String|null`

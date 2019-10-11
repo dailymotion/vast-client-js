@@ -32,6 +32,9 @@ export const requiredValues = {
   ExecutableResource: {
     attributes: ['apiFramework', 'type']
   },
+  Tracking: {
+    attributes: ['event']
+  },
   Creatives: {
     subElements: ['Creative']
   },

@@ -227,8 +227,8 @@ describe('VASTParser', function() {
         ad1.extensions.should.have.length(4);
       });
 
-      it('should have 2 AdVerification URLs VAST 4.1', () => {
-        ad1.adVerifications.should.have.length(2);
+      it('should have 3 AdVerification URLs VAST 4.1', () => {
+        ad1.adVerifications.should.have.length(3);
       });
 
       it('validate second adVerification', () => {
@@ -239,6 +239,32 @@ describe('VASTParser', function() {
         ad1.adVerifications[1].parameters.should.eql(
           'test-verification-parameter'
         );
+        ad1.adVerifications[1].trackingEvents.should.have.keys(
+          'verificationNotExecuted'
+        );
+        ad1.adVerifications[1].trackingEvents[
+          'verificationNotExecuted'
+        ].should.eql(['http://example.com/verification-not-executed-JS']);
+      });
+
+      it('validate third adVerification', () => {
+        ad1.adVerifications[2].resource.should.eql(
+          'http://example.com/omid1.exe'
+        );
+        ad1.adVerifications[2].vendor.should.eql('company.daily.com-omid');
+        ad1.adVerifications[2].browserOptional.should.eql(false);
+        ad1.adVerifications[2].apiFramework.should.eql('omid');
+        ad1.adVerifications[2].type.should.eql('executable');
+        should.equal(ad1.adVerifications[2].parameters, null);
+        ad1.adVerifications[2].trackingEvents.should.have.keys(
+          'verificationNotExecuted'
+        );
+        ad1.adVerifications[2].trackingEvents[
+          'verificationNotExecuted'
+        ].should.eql([
+          'http://example.com/verification-not-executed-EXE',
+          'http://sample.com/verification-not-executed-EXE'
+        ]);
       });
 
       it('should not have trackingEvents property', () => {
