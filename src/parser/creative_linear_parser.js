@@ -192,65 +192,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
   if (iconsElement) {
     parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
-      const icon = createIcon();
-      icon.program = iconElement.getAttribute('program');
-      icon.height = parseInt(iconElement.getAttribute('height') || 0);
-      icon.width = parseInt(iconElement.getAttribute('width') || 0);
-      icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
-      icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
-      icon.apiFramework = iconElement.getAttribute('apiFramework');
-      icon.pxratio = iconElement.getAttribute('pxratio') || '1';
-      icon.offset = parserUtils.parseDuration(
-        iconElement.getAttribute('offset')
-      );
-      icon.duration = parserUtils.parseDuration(
-        iconElement.getAttribute('duration')
-      );
-
-      parserUtils
-        .childrenByName(iconElement, 'HTMLResource')
-        .forEach(htmlElement => {
-          icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
-          icon.htmlResource = parserUtils.parseNodeText(htmlElement);
-        });
-
-      parserUtils
-        .childrenByName(iconElement, 'IFrameResource')
-        .forEach(iframeElement => {
-          icon.type = iframeElement.getAttribute('creativeType') || 0;
-          icon.iframeResource = parserUtils.parseNodeText(iframeElement);
-        });
-
-      parserUtils
-        .childrenByName(iconElement, 'StaticResource')
-        .forEach(staticElement => {
-          icon.type = staticElement.getAttribute('creativeType') || 0;
-          icon.staticResource = parserUtils.parseNodeText(staticElement);
-        });
-
-      const iconClicksElement = parserUtils.childByName(
-        iconElement,
-        'IconClicks'
-      );
-      if (iconClicksElement) {
-        icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(
-          parserUtils.childByName(iconClicksElement, 'IconClickThrough')
-        );
-        parserUtils
-          .childrenByName(iconClicksElement, 'IconClickTracking')
-          .forEach(iconClickTrackingElement => {
-            icon.iconClickTrackingURLTemplates.push({
-              id: iconClickTrackingElement.getAttribute('id') || null,
-              url: parserUtils.parseNodeText(iconClickTrackingElement)
-            });
-          });
-      }
-
-      icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(
-        parserUtils.childByName(iconElement, 'IconViewTracking')
-      );
-
-      creative.icons.push(icon);
+      creative.icons.push(parseIcon(iconElement));
     });
   }
 
@@ -307,7 +249,7 @@ function parseMediaFile(mediaFileElement) {
 }
 
 /**
- * Parses the InteractiveCreativeFile element from VAST.
+ * Parses the InteractiveCreativeFile element from VAST MediaFiles node.
  * @param  {Object} interactiveCreativeElement - The VAST InteractiveCreativeFile element.
  * @return {Object} - Parsed interactiveCreativeFile object.
  */
@@ -334,6 +276,67 @@ function parseInteractiveCreativeFile(interactiveCreativeElement) {
     interactiveCreativeElement
   );
   return interactiveCreativeFile;
+}
+
+/**
+ * Parses the Icon element from VAST.
+ * @param  {Object} iconElement - The VAST Icon element.
+ * @return {Object} - Parsed icon object.
+ */
+function parseIcon(iconElement) {
+  const icon = createIcon(iconElement);
+  icon.program = iconElement.getAttribute('program');
+  icon.height = parseInt(iconElement.getAttribute('height') || 0);
+  icon.width = parseInt(iconElement.getAttribute('width') || 0);
+  icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
+  icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
+  icon.apiFramework = iconElement.getAttribute('apiFramework');
+  icon.pxratio = iconElement.getAttribute('pxratio') || '1';
+  icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
+  icon.duration = parserUtils.parseDuration(
+    iconElement.getAttribute('duration')
+  );
+
+  parserUtils
+    .childrenByName(iconElement, 'HTMLResource')
+    .forEach(htmlElement => {
+      icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
+      icon.htmlResource = parserUtils.parseNodeText(htmlElement);
+    });
+
+  parserUtils
+    .childrenByName(iconElement, 'IFrameResource')
+    .forEach(iframeElement => {
+      icon.type = iframeElement.getAttribute('creativeType') || 0;
+      icon.iframeResource = parserUtils.parseNodeText(iframeElement);
+    });
+
+  parserUtils
+    .childrenByName(iconElement, 'StaticResource')
+    .forEach(staticElement => {
+      icon.type = staticElement.getAttribute('creativeType') || 0;
+      icon.staticResource = parserUtils.parseNodeText(staticElement);
+    });
+
+  const iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
+  if (iconClicksElement) {
+    icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(
+      parserUtils.childByName(iconClicksElement, 'IconClickThrough')
+    );
+    parserUtils
+      .childrenByName(iconClicksElement, 'IconClickTracking')
+      .forEach(iconClickTrackingElement => {
+        icon.iconClickTrackingURLTemplates.push({
+          id: iconClickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(iconClickTrackingElement)
+        });
+      });
+  }
+
+  icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(
+    parserUtils.childByName(iconElement, 'IconViewTracking')
+  );
+  return icon;
 }
 
 /**
