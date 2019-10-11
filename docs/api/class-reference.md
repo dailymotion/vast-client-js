@@ -23,7 +23,7 @@ This object represents a single parsed Ad
 - `errorURLTemplates: Array<String>`
 - `impressionURLTemplates: Array<Object>`
 - `creatives: Array<Object>` [go to object](#creative)
-- `extensions: Array<Object>` [go to class](#extension)
+- `extensions: Array<Object>` [go to object](#extension)
 - `adVerifications: Array<Object>` [go to object](#ad-verification)
 
 ## Creative<a name="creative"></a>
@@ -35,7 +35,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `sequence: Number|null`
 - `apiFramework: String|null`
 - `universalAdId: Object|null`
-- `creativeExtensions: Array<Object>` [go to class](#extension)
+- `creativeExtensions: Array<Object>` [go to object](#extension)
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
 
