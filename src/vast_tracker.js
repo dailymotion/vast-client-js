@@ -338,6 +338,85 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
+   * Must be called if the ad was not and will not be played
+   * This is a terminal event; no other tracking events should be sent when this is used.
+   * Calls the notUsed tracking URLs.
+   *
+   * @emits VASTTracker#notUsed
+   */
+  notUsed() {
+    this.track('notUsed');
+    this.trackingEvents = [];
+  }
+
+  /**
+   * An optional metric that can capture all other user interactions
+   * under one metric such as hover-overs, or custom clicks. It should NOT replace
+   * clickthrough events or other existing events like mute, unmute, pause, etc.
+   * Calls the otherAdInteraction tracking URLs.
+   *
+   * @emits VASTTracker#otherAdInteraction
+   */
+  otherAdInteraction() {
+    this.track('otherAdInteraction');
+  }
+
+  /**
+   * Must be called if the user clicked or otherwise activated a control used to
+   * pause streaming content,* which either expands the ad within the player’s
+   * viewable area or “takes-over” the streaming content area by launching
+   * additional portion of the ad.
+   * Calls the acceptInvitation tracking URLs.
+   *
+   * @emits VASTTracker#acceptInvitation
+   */
+  acceptInvitation() {
+    this.track('acceptInvitation');
+  }
+
+  /**
+   * Must be called if user activated a control to expand the creative.
+   * Calls the adExpand tracking URLs.
+   *
+   * @emits VASTTracker#adExpand
+   */
+  adExpand() {
+    this.track('adExpand');
+  }
+
+  /**
+   * Must be called when the user activated a control to reduce the creative to its original dimensions.
+   * Calls the adCollapse tracking URLs.
+   *
+   * @emits VASTTracker#adCollapse
+   */
+  adCollapse() {
+    this.track('adCollapse');
+  }
+
+  /**
+   * Must be called if the user clicked or otherwise activated a control used to minimize the ad.
+   * Calls the minimize tracking URLs.
+   * @emits VASTTracker#minimize
+   */
+  minimize() {
+    this.track('minimize');
+  }
+
+  /**
+   * The time that the initial ad is displayed. This time is based on
+   * the time between the impression and either the completed length of display based
+   * on the agreement between transactional parties or a close, minimize, or accept
+   * invitation event.
+   * The time has to be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] for VAST 4.1
+   * Calls the overlayViewDuration tracking URLs.
+   * @emits VASTTracker#overlayViewDuration
+   */
+  overlayViewDuration() {
+    this.track('overlayViewDuration');
+  }
+
+  /**
    * Must be called when the player or the window is closed during the ad.
    * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
    *
