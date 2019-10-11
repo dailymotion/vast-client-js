@@ -315,6 +315,85 @@ function parseIcon(iconElement) {
 }
 
 /**
+ * Parses the MediaFile element from VAST.
+ * @param  {Object} mediaFileElement - The VAST MediaFile element.
+ * @return {Object} - Parsed mediaFile object.
+ */
+function parseMediaFile(mediaFileElement) {
+  const mediaFile = createMediaFile();
+  mediaFile.id = mediaFileElement.getAttribute('id');
+  mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
+  mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
+  mediaFile.codec = mediaFileElement.getAttribute('codec');
+  mediaFile.mimeType = mediaFileElement.getAttribute('type');
+  mediaFile.mediaType = mediaFileElement.getAttribute('mediaType') || '2D';
+  mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
+  mediaFile.fileSize = parseInt(mediaFileElement.getAttribute('fileSize') || 0);
+  mediaFile.bitrate = parseInt(mediaFileElement.getAttribute('bitrate') || 0);
+  mediaFile.minBitrate = parseInt(
+    mediaFileElement.getAttribute('minBitrate') || 0
+  );
+  mediaFile.maxBitrate = parseInt(
+    mediaFileElement.getAttribute('maxBitrate') || 0
+  );
+  mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
+  mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
+
+  let scalable = mediaFileElement.getAttribute('scalable');
+  if (scalable && typeof scalable === 'string') {
+    scalable = scalable.toLowerCase();
+    if (scalable === 'true') {
+      mediaFile.scalable = true;
+    } else if (scalable === 'false') {
+      mediaFile.scalable = false;
+    }
+  }
+
+  let maintainAspectRatio = mediaFileElement.getAttribute(
+    'maintainAspectRatio'
+  );
+  if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
+    maintainAspectRatio = maintainAspectRatio.toLowerCase();
+    if (maintainAspectRatio === 'true') {
+      mediaFile.maintainAspectRatio = true;
+    } else if (maintainAspectRatio === 'false') {
+      mediaFile.maintainAspectRatio = false;
+    }
+  }
+  return mediaFile;
+}
+
+/**
+ * Parses the InteractiveCreativeFile element from VAST.
+ * @param  {Object} interactiveCreativeElement - The VAST InteractiveCreativeFile element.
+ * @return {Object} - Parsed interactiveCreativeFile object.
+ */
+function parseInteractiveCreativeFile(interactiveCreativeElement) {
+  const interactiveCreativeFile = createInteractiveCreativeFile();
+  interactiveCreativeFile.type = interactiveCreativeElement.getAttribute(
+    'type'
+  );
+  interactiveCreativeFile.apiFramework = interactiveCreativeElement.getAttribute(
+    'apiFramework'
+  );
+  let variableDuration = interactiveCreativeElement.getAttribute(
+    'variableDuration'
+  );
+  if (variableDuration && typeof variableDuration === 'string') {
+    variableDuration = variableDuration.toLowerCase();
+    if (variableDuration === 'true') {
+      interactiveCreativeFile.variableDuration = true;
+    } else if (variableDuration === 'false') {
+      interactiveCreativeFile.variableDuration = false;
+    }
+  }
+  interactiveCreativeFile.fileURL = parserUtils.parseNodeText(
+    interactiveCreativeElement
+  );
+  return interactiveCreativeFile;
+}
+
+/**
  * Parses an horizontal position into a String ('left' or 'right') or into a Number.
  * @param  {String} xPosition - The x position to parse.
  * @return {String|Number}
