@@ -23,7 +23,7 @@ This object represents a single parsed Ad
 - `errorURLTemplates: Array<String>`
 - `impressionURLTemplates: Array<Object>`
 - `creatives: Array<Object>` [go to object](#creative)
-- `extensions: Array<AdExtension>` [go to class](#ad-extension)
+- `extensions: Array<Object>` [go to class](#extension)
 - `adVerifications: Array<Object>` [go to object](#ad-verification)
 
 ## Creative<a name="creative"></a>
@@ -34,8 +34,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `adId: String|null`
 - `sequence: Number|null`
 - `apiFramework: String|null`
-- `universalAdId: String|'unknown'`
-- `creativeExtensions: Array<CreativeExtension>` [go to class](#creative-extension)
+- `universalAdId: Object|null`
+- `creativeExtensions: Array<Object>` [go to class](#extension)
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
 
@@ -152,20 +152,12 @@ This object represents a generic Creative. It's used as a parent object for more
 - `iconClickTrackingURLTemplates: Array<Object>`
 - `iconViewTrackingURLTemplate: String|null`
 
-## AdExtension<a name="ad-extension"></a>
+## Extension<a name="extension"></a>
 
 - `name: String|null`
 - `value: any`
 - `attributes: Object`
-- `children: Array<AdExtension>`
-- `isEmpty(): Boolean` Returns true when none of these attributes have a value
-
-## CreativeExtension<a name="creative-extension"></a>
-
-- `name: String|null`
-- `value: any`
-- `attributes: Object`
-- `children: Array<CreativeExtension>`
+- `children: Array<Extension>`
 - `isEmpty(): Boolean` Returns true when none of these attributes have a value
 
 ## AdVerification<a name="ad-verification"></a>
