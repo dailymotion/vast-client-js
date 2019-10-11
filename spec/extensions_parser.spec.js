@@ -94,7 +94,7 @@ describe('ExtensionsParser', function() {
         getNodesFromXml(creativeExtensions),
         'CreativeExtension'
       );
-      parsedCreativeExts = parseExtensions(creativeExtensionNodes, 'Creative');
+      parsedCreativeExts = parseExtensions(creativeExtensionNodes);
     });
 
     it('validate creativeExtension has length 4', () => {

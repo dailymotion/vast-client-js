@@ -1,6 +1,4 @@
-import { createAdExtension } from '../ad_extension';
-import { createCreativeExtension } from '../creative_extension';
-import { isEmptyExtension } from '../extension';
+import { createExtension, isEmptyExtension } from '../extension';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -9,10 +7,10 @@ import { parserUtils } from './parser_utils';
  * @param  {String} type - The type of extensions to parse.(Ad|Creative)
  * @return {AdExtension[]|CreativeExtension[]} - The nodes parsed to extensions
  */
-export function parseExtensions(extensions, type = 'Ad') {
+export function parseExtensions(extensions) {
   const exts = [];
   extensions.forEach(extNode => {
-    const ext = _parseExtension(extNode, type);
+    const ext = _parseExtension(extNode);
 
     if (ext) {
       exts.push(ext);
@@ -26,16 +24,11 @@ export function parseExtensions(extensions, type = 'Ad') {
  * @param {Node} extNode - The extension node to parse
  * @return {AdExtension|CreativeExtension|null} - The node parsed to extension
  */
-function _parseExtension(extNode, type) {
+function _parseExtension(extNode) {
   // Ignore comments
   if (extNode.nodeName === '#comment') return null;
 
-  let ext;
-  if (type === 'Creative') {
-    ext = createCreativeExtension();
-  } else {
-    ext = createAdExtension();
-  }
+  const ext = createExtension();
 
   const extNodeAttrs = extNode.attributes;
   const childNodes = extNode.childNodes;
@@ -58,7 +51,7 @@ function _parseExtension(extNode, type) {
   // Parse all children
   for (const childNodeKey in childNodes) {
     if (childNodes.hasOwnProperty(childNodeKey)) {
-      const parsedChild = _parseExtension(childNodes[childNodeKey], type);
+      const parsedChild = _parseExtension(childNodes[childNodeKey]);
       if (parsedChild) {
         ext.children.push(parsedChild);
       }

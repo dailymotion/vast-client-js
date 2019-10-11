@@ -43,8 +43,7 @@ export function parseCreatives(creativeNodes) {
         parserUtils.childrenByName(
           creativeExtensionsElement,
           'CreativeExtension'
-        ),
-        'Creative'
+        )
       );
     }
 
