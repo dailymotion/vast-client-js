@@ -37,12 +37,10 @@ describe('VASTTracker', function() {
           vastTracker.minimize();
         });
 
-        it('should have sent minimize event', () => {
+        it('should have emitted minimize event and called trackUrl', () => {
           expect(spyEmitter).toHaveBeenCalledWith('minimize', {
             trackingURLTemplates: ['http://example.com/linear-minimize']
           });
-        });
-        it('should call trackURLs', () => {
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-minimize'
           ]);
@@ -54,14 +52,12 @@ describe('VASTTracker', function() {
           vastTracker.otherAdInteraction();
         });
 
-        it('should have sent otherAdInteraction event', () => {
+        it('should have emitted otherAdInteraction event and called trackUrl', () => {
           expect(spyEmitter).toHaveBeenCalledWith('otherAdInteraction', {
             trackingURLTemplates: [
               'http://example.com/linear-otherAdInteraction'
             ]
           });
-        });
-        it('should call trackURLs', () => {
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-otherAdInteraction'
           ]);
@@ -73,12 +69,10 @@ describe('VASTTracker', function() {
           vastTracker.acceptInvitation();
         });
 
-        it('should have sent acceptInvitation event', () => {
+        it('should have emitted acceptInvitation event and called trackUrl', () => {
           expect(spyEmitter).toHaveBeenCalledWith('acceptInvitation', {
             trackingURLTemplates: ['http://example.com/linear-acceptInvitation']
           });
-        });
-        it('should call trackURLs', () => {
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-acceptInvitation'
           ]);
@@ -90,12 +84,10 @@ describe('VASTTracker', function() {
           vastTracker.adExpand();
         });
 
-        it('should have sent adExpand event', () => {
+        it('should have emitted adExpand event and called trackUrl', () => {
           expect(spyEmitter).toHaveBeenCalledWith('adExpand', {
             trackingURLTemplates: ['http://example.com/linear-adExpand']
           });
-        });
-        it('should call trackURLs', () => {
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-adExpand'
           ]);
@@ -107,12 +99,10 @@ describe('VASTTracker', function() {
           vastTracker.adCollapse();
         });
 
-        it('should have sent adCollapse event', () => {
+        it('should have emitted adCollapse event and called trackUrl', () => {
           expect(spyEmitter).toHaveBeenCalledWith('adCollapse', {
             trackingURLTemplates: ['http://example.com/linear-adCollapse']
           });
-        });
-        it('should call trackURLs', () => {
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-adCollapse'
           ]);
@@ -124,17 +114,32 @@ describe('VASTTracker', function() {
           vastTracker.overlayViewDuration();
         });
 
-        it('should have sent adExpand event', () => {
+        it('should have emitted adExpand event and called trackUrl', () => {
           expect(spyEmitter).toHaveBeenCalledWith('overlayViewDuration', {
             trackingURLTemplates: [
               'http://example.com/linear-overlayViewDuration'
             ]
           });
-        });
-        it('should call trackURLs', () => {
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-overlayViewDuration'
           ]);
+        });
+      });
+
+      describe('#notUsed', () => {
+        it('should have emitted adExpand event and called trackUrl', () => {
+          vastTracker.notUsed();
+          expect(spyEmitter).toHaveBeenCalledWith('notUsed', {
+            trackingURLTemplates: ['http://example.com/linear-notUsed']
+          });
+          expect(spyTrackUrl).toHaveBeenCalledWith([
+            'http://example.com/linear-notUsed'
+          ]);
+        });
+
+        it('should not emitted any other event', () => {
+          vastTracker.adCollapse();
+          expect(spyEmitter).not.toHaveBeenCalled();
         });
       });
     });

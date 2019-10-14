@@ -46,6 +46,7 @@ export const inlineTrackers = `
               <Tracking event="adCollapse"><![CDATA[http://example.com/linear-adCollapse]]></Tracking>
               <Tracking event="minimize"><![CDATA[http://example.com/linear-minimize]]></Tracking>
               <Tracking event="overlayViewDuration"><![CDATA[http://example.com/linear-overlayViewDuration]]></Tracking>
+              <Tracking event="notUsed"><![CDATA[http://example.com/linear-notUsed]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
               <ClickTracking id='video-click-1'><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
