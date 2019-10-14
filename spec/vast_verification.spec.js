@@ -38,6 +38,7 @@ describe('parserVerification', function() {
         expect.arrayContaining([
           "Element 'InLine' missing required sub element(s) 'AdSystem, AdTitle, Impression, AdServingId' ",
           "Element 'Creatives' missing required sub element(s) 'Creative' ",
+          "Element 'Creative' missing required sub element(s) 'UniversalAdId' ",
           "Element 'Linear' missing required sub element(s) 'MediaFiles, Duration' ",
           "Element 'Icons' missing required sub element(s) 'Icon' ",
           "Element 'MediaFiles' missing required sub element(s) 'MediaFile' "

@@ -35,6 +35,9 @@ export const requiredValues = {
   Creatives: {
     subElements: ['Creative']
   },
+  Creative: {
+    subElements: ['UniversalAdId']
+  },
   Linear: {
     subElements: ['MediaFiles', 'Duration']
   },
