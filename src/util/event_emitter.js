@@ -125,10 +125,7 @@ export class EventEmitter {
   }
 }
 
-/**
- * exported for unit tests only
- */
-export function onceWrap(target, event, handler) {
+function onceWrap(target, event, handler) {
   const state = {
     fired: false,
     wrapFn: undefined
