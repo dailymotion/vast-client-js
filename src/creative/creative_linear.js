@@ -14,6 +14,8 @@ export function createCreativeLinear(creativeAttributes = {}) {
     skipDelay: null,
     mediaFiles: [],
     mezzanine: null,
+    interactiveCreativeFile: null,
+    closedCaptionFiles: [],
     videoClickThroughURLTemplate: null,
     videoClickTrackingURLTemplates: [],
     videoCustomClickURLTemplates: [],

@@ -1,5 +1,7 @@
 import { createCreativeLinear } from '../creative/creative_linear';
+import { createClosedCaptionFile } from '../closed_caption_file';
 import { createIcon } from '../icon';
+import { createInteractiveCreativeFile } from '../interactive_creative_file';
 import { createMediaFile } from '../media_file';
 import { createMezzanine } from '../mezzanine';
 import { parserUtils } from './parser_utils';
@@ -121,55 +123,39 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
       parserUtils
         .childrenByName(mediaFilesElement, 'MediaFile')
         .forEach(mediaFileElement => {
-          const mediaFile = createMediaFile();
-          mediaFile.id = mediaFileElement.getAttribute('id');
-          mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
-          mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
-          mediaFile.codec = mediaFileElement.getAttribute('codec');
-          mediaFile.mimeType = mediaFileElement.getAttribute('type');
-          mediaFile.apiFramework = mediaFileElement.getAttribute(
-            'apiFramework'
-          );
-          mediaFile.bitrate = parseInt(
-            mediaFileElement.getAttribute('bitrate') || 0
-          );
-          mediaFile.minBitrate = parseInt(
-            mediaFileElement.getAttribute('minBitrate') || 0
-          );
-          mediaFile.maxBitrate = parseInt(
-            mediaFileElement.getAttribute('maxBitrate') || 0
-          );
-          mediaFile.width = parseInt(
-            mediaFileElement.getAttribute('width') || 0
-          );
-          mediaFile.height = parseInt(
-            mediaFileElement.getAttribute('height') || 0
-          );
-
-          let scalable = mediaFileElement.getAttribute('scalable');
-          if (scalable && typeof scalable === 'string') {
-            scalable = scalable.toLowerCase();
-            if (scalable === 'true') {
-              mediaFile.scalable = true;
-            } else if (scalable === 'false') {
-              mediaFile.scalable = false;
-            }
-          }
-
-          let maintainAspectRatio = mediaFileElement.getAttribute(
-            'maintainAspectRatio'
-          );
-          if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
-            maintainAspectRatio = maintainAspectRatio.toLowerCase();
-            if (maintainAspectRatio === 'true') {
-              mediaFile.maintainAspectRatio = true;
-            } else if (maintainAspectRatio === 'false') {
-              mediaFile.maintainAspectRatio = false;
-            }
-          }
-
-          creative.mediaFiles.push(mediaFile);
+          creative.mediaFiles.push(parseMediaFile(mediaFileElement));
         });
+
+      const interactiveCreativeElement = parserUtils.childByName(
+        mediaFilesElement,
+        'InteractiveCreativeFile'
+      );
+      if (interactiveCreativeElement) {
+        creative.interactiveCreativeFile = parseInteractiveCreativeFile(
+          interactiveCreativeElement
+        );
+      }
+
+      const closedCaptionElements = parserUtils.childByName(
+        mediaFilesElement,
+        'ClosedCaptionFiles'
+      );
+      if (closedCaptionElements) {
+        parserUtils
+          .childrenByName(closedCaptionElements, 'ClosedCaptionFile')
+          .forEach(closedCaptionElement => {
+            const closedCaptionFile = createClosedCaptionFile();
+            closedCaptionFile.type = closedCaptionElement.getAttribute('type');
+            closedCaptionFile.language = closedCaptionElement.getAttribute(
+              'language'
+            );
+            closedCaptionFile.fileURL = parserUtils.parseNodeText(
+              closedCaptionElement
+            );
+
+            creative.closedCaptionFiles.push(closedCaptionFile);
+          });
+      }
 
       const mezzanineElement = parserUtils.childByName(
         mediaFilesElement,
@@ -206,69 +192,151 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
   if (iconsElement) {
     parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
-      const icon = createIcon();
-      icon.program = iconElement.getAttribute('program');
-      icon.height = parseInt(iconElement.getAttribute('height') || 0);
-      icon.width = parseInt(iconElement.getAttribute('width') || 0);
-      icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
-      icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
-      icon.apiFramework = iconElement.getAttribute('apiFramework');
-      icon.pxratio = iconElement.getAttribute('pxratio') || '1';
-      icon.offset = parserUtils.parseDuration(
-        iconElement.getAttribute('offset')
-      );
-      icon.duration = parserUtils.parseDuration(
-        iconElement.getAttribute('duration')
-      );
-
-      parserUtils
-        .childrenByName(iconElement, 'HTMLResource')
-        .forEach(htmlElement => {
-          icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
-          icon.htmlResource = parserUtils.parseNodeText(htmlElement);
-        });
-
-      parserUtils
-        .childrenByName(iconElement, 'IFrameResource')
-        .forEach(iframeElement => {
-          icon.type = iframeElement.getAttribute('creativeType') || 0;
-          icon.iframeResource = parserUtils.parseNodeText(iframeElement);
-        });
-
-      parserUtils
-        .childrenByName(iconElement, 'StaticResource')
-        .forEach(staticElement => {
-          icon.type = staticElement.getAttribute('creativeType') || 0;
-          icon.staticResource = parserUtils.parseNodeText(staticElement);
-        });
-
-      const iconClicksElement = parserUtils.childByName(
-        iconElement,
-        'IconClicks'
-      );
-      if (iconClicksElement) {
-        icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(
-          parserUtils.childByName(iconClicksElement, 'IconClickThrough')
-        );
-        parserUtils
-          .childrenByName(iconClicksElement, 'IconClickTracking')
-          .forEach(iconClickTrackingElement => {
-            icon.iconClickTrackingURLTemplates.push({
-              id: iconClickTrackingElement.getAttribute('id') || null,
-              url: parserUtils.parseNodeText(iconClickTrackingElement)
-            });
-          });
-      }
-
-      icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(
-        parserUtils.childByName(iconElement, 'IconViewTracking')
-      );
-
-      creative.icons.push(icon);
+      creative.icons.push(parseIcon(iconElement));
     });
   }
 
   return creative;
+}
+
+/**
+ * Parses the MediaFile element from VAST.
+ * @param  {Object} mediaFileElement - The VAST MediaFile element.
+ * @return {Object} - Parsed mediaFile object.
+ */
+function parseMediaFile(mediaFileElement) {
+  const mediaFile = createMediaFile();
+  mediaFile.id = mediaFileElement.getAttribute('id');
+  mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
+  mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
+  mediaFile.codec = mediaFileElement.getAttribute('codec');
+  mediaFile.mimeType = mediaFileElement.getAttribute('type');
+  mediaFile.mediaType = mediaFileElement.getAttribute('mediaType') || '2D';
+  mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
+  mediaFile.fileSize = parseInt(mediaFileElement.getAttribute('fileSize') || 0);
+  mediaFile.bitrate = parseInt(mediaFileElement.getAttribute('bitrate') || 0);
+  mediaFile.minBitrate = parseInt(
+    mediaFileElement.getAttribute('minBitrate') || 0
+  );
+  mediaFile.maxBitrate = parseInt(
+    mediaFileElement.getAttribute('maxBitrate') || 0
+  );
+  mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
+  mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
+
+  let scalable = mediaFileElement.getAttribute('scalable');
+  if (scalable && typeof scalable === 'string') {
+    scalable = scalable.toLowerCase();
+    if (scalable === 'true') {
+      mediaFile.scalable = true;
+    } else if (scalable === 'false') {
+      mediaFile.scalable = false;
+    }
+  }
+
+  let maintainAspectRatio = mediaFileElement.getAttribute(
+    'maintainAspectRatio'
+  );
+  if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
+    maintainAspectRatio = maintainAspectRatio.toLowerCase();
+    if (maintainAspectRatio === 'true') {
+      mediaFile.maintainAspectRatio = true;
+    } else if (maintainAspectRatio === 'false') {
+      mediaFile.maintainAspectRatio = false;
+    }
+  }
+  return mediaFile;
+}
+
+/**
+ * Parses the InteractiveCreativeFile element from VAST MediaFiles node.
+ * @param  {Object} interactiveCreativeElement - The VAST InteractiveCreativeFile element.
+ * @return {Object} - Parsed interactiveCreativeFile object.
+ */
+function parseInteractiveCreativeFile(interactiveCreativeElement) {
+  const interactiveCreativeFile = createInteractiveCreativeFile();
+  interactiveCreativeFile.type = interactiveCreativeElement.getAttribute(
+    'type'
+  );
+  interactiveCreativeFile.apiFramework = interactiveCreativeElement.getAttribute(
+    'apiFramework'
+  );
+  let variableDuration = interactiveCreativeElement.getAttribute(
+    'variableDuration'
+  );
+  if (variableDuration && typeof variableDuration === 'string') {
+    variableDuration = variableDuration.toLowerCase();
+    if (variableDuration === 'true') {
+      interactiveCreativeFile.variableDuration = true;
+    } else if (variableDuration === 'false') {
+      interactiveCreativeFile.variableDuration = false;
+    }
+  }
+  interactiveCreativeFile.fileURL = parserUtils.parseNodeText(
+    interactiveCreativeElement
+  );
+  return interactiveCreativeFile;
+}
+
+/**
+ * Parses the Icon element from VAST.
+ * @param  {Object} iconElement - The VAST Icon element.
+ * @return {Object} - Parsed icon object.
+ */
+function parseIcon(iconElement) {
+  const icon = createIcon(iconElement);
+  icon.program = iconElement.getAttribute('program');
+  icon.height = parseInt(iconElement.getAttribute('height') || 0);
+  icon.width = parseInt(iconElement.getAttribute('width') || 0);
+  icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
+  icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
+  icon.apiFramework = iconElement.getAttribute('apiFramework');
+  icon.pxratio = iconElement.getAttribute('pxratio') || '1';
+  icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
+  icon.duration = parserUtils.parseDuration(
+    iconElement.getAttribute('duration')
+  );
+
+  parserUtils
+    .childrenByName(iconElement, 'HTMLResource')
+    .forEach(htmlElement => {
+      icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
+      icon.htmlResource = parserUtils.parseNodeText(htmlElement);
+    });
+
+  parserUtils
+    .childrenByName(iconElement, 'IFrameResource')
+    .forEach(iframeElement => {
+      icon.type = iframeElement.getAttribute('creativeType') || 0;
+      icon.iframeResource = parserUtils.parseNodeText(iframeElement);
+    });
+
+  parserUtils
+    .childrenByName(iconElement, 'StaticResource')
+    .forEach(staticElement => {
+      icon.type = staticElement.getAttribute('creativeType') || 0;
+      icon.staticResource = parserUtils.parseNodeText(staticElement);
+    });
+
+  const iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
+  if (iconClicksElement) {
+    icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(
+      parserUtils.childByName(iconClicksElement, 'IconClickThrough')
+    );
+    parserUtils
+      .childrenByName(iconClicksElement, 'IconClickTracking')
+      .forEach(iconClickTrackingElement => {
+        icon.iconClickTrackingURLTemplates.push({
+          id: iconClickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(iconClickTrackingElement)
+        });
+      });
+  }
+
+  icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(
+    parserUtils.childByName(iconElement, 'IconViewTracking')
+  );
+  return icon;
 }
 
 /**
