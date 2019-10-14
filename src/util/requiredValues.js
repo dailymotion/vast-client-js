@@ -23,6 +23,9 @@ export const requiredValues = {
   Verification: {
     attributes: ['vendor']
   },
+  UniversalAdId: {
+    attributes: ['idRegistry']
+  },
   JavaScriptResource: {
     attributes: ['apiFramework', 'browserOptional']
   },
@@ -31,6 +34,9 @@ export const requiredValues = {
   },
   Creatives: {
     subElements: ['Creative']
+  },
+  Creative: {
+    subElements: ['UniversalAdId']
   },
   Linear: {
     subElements: ['MediaFiles', 'Duration']

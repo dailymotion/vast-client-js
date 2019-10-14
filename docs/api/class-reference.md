@@ -23,7 +23,7 @@ This object represents a single parsed Ad
 - `errorURLTemplates: Array<String>`
 - `impressionURLTemplates: Array<Object>`
 - `creatives: Array<Object>` [go to object](#creative)
-- `extensions: Array<AdExtension>` [go to class](#ad-extension)
+- `extensions: Array<Object>` [go to object](#extension)
 - `adVerifications: Array<Object>` [go to object](#ad-verification)
 
 ## Creative<a name="creative"></a>
@@ -34,6 +34,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `adId: String|null`
 - `sequence: Number|null`
 - `apiFramework: String|null`
+- `universalAdId: Object|null`
+- `creativeExtensions: Array<Object>` [go to object](#extension)
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
 
@@ -119,6 +121,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
 - `adSlotID: String|null`
+- `pxratio: String|'1'`
+- `renderingMode: String|'default'`
 - `staticResources: Array<{ url: String, creativeType: String|null }>`
 - `htmlResources: Array<String>`
 - `iframeResources: Array<String>`
@@ -140,6 +144,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `offset: String|null`
 - `duration: Number`
 - `type: String|null`
+- `pxratio: String|'1'`
 - `staticResource: String|null`
 - `htmlResource: String|null`
 - `iframeResource: String|null`
@@ -147,14 +152,16 @@ This object represents a generic Creative. It's used as a parent object for more
 - `iconClickTrackingURLTemplates: Array<Object>`
 - `iconViewTrackingURLTemplate: String|null`
 
-## AdExtension<a name="ad-extension"></a>
+## Extension<a name="extension"></a>
+
 - `name: String|null`
 - `value: any`
 - `attributes: Object`
-- `children: Array<AdExtension>`
+- `children: Array<Extension>`
 - `isEmpty(): Boolean` Returns true when none of these attributes have a value
 
 ## AdVerification<a name="ad-verification"></a>
+
 - `apiFramework: String|null` The name of the API framework used to execute the AdVerification code
 - `browserOptional: Boolean` If *true*, this resource is optimized and able to execute in an environment without DOM and other browser built-ins (e.g. iOS' JavaScriptCore).
 - `parameters: String|null` Metadata about the current impression

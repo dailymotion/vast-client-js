@@ -1,22 +1,22 @@
-import { _parseExtensions } from '../src/parser/ad_parser';
+import { parseExtensions } from '../src/parser/extensions_parser';
 import { parserUtils } from '../src/parser/parser_utils';
 import { getNodesFromXml } from './utils/utils';
-import { extensions } from './samples/extensions';
+import { adExtensions, creativeExtensions } from './samples/extensions';
 
-describe('AdParser', function() {
-  describe('Extensions', function() {
-    let parsedExts;
+describe('ExtensionsParser', function() {
+  describe('AdExtensions', function() {
+    let parsedAdExts;
 
     beforeAll(() => {
       const extensionNodes = parserUtils.childrenByName(
-        getNodesFromXml(extensions),
+        getNodesFromXml(adExtensions),
         'Extension'
       );
-      parsedExts = _parseExtensions(extensionNodes);
+      parsedAdExts = parseExtensions(extensionNodes);
     });
 
     it('validate WrapperExtension', () => {
-      const ext = parsedExts[0];
+      const ext = parsedAdExts[0];
       expect(ext.attributes['type']).toEqual('WrapperExtension');
       expect(ext.children.length).toEqual(1);
       expect(ext.children[0].name).toEqual('extension_tag');
@@ -24,7 +24,7 @@ describe('AdParser', function() {
     });
 
     it('validate Count extension', () => {
-      const ext = parsedExts[1];
+      const ext = parsedAdExts[1];
       expect(ext.attributes['type']).toEqual('Count');
       expect(ext.children.length).toEqual(0);
       expect(ext.name).toEqual('Extension');
@@ -32,7 +32,7 @@ describe('AdParser', function() {
     });
 
     it('validate simple JSON on cdata extension', () => {
-      const ext = parsedExts[2];
+      const ext = parsedAdExts[2];
       expect(ext.attributes).toEqual({});
       expect(ext.children.length).toEqual(0);
       expect(ext.name).toEqual('Extension');
@@ -40,7 +40,7 @@ describe('AdParser', function() {
     });
 
     it('validate Pricing extension', () => {
-      const ext = parsedExts[3];
+      const ext = parsedAdExts[3];
       expect(ext.attributes['type']).toEqual('Pricing');
       expect(ext.children.length).toEqual(2);
       const prices = ext.children[0];
@@ -62,7 +62,7 @@ describe('AdParser', function() {
     });
 
     it('validate an overly nested extension', () => {
-      const ext = parsedExts[4];
+      const ext = parsedAdExts[4];
       expect(ext.attributes['type']).toEqual('OverlyNestedExtension');
       expect(ext.children.length).toEqual(1);
       const greatFather = ext.children[0];
@@ -83,6 +83,38 @@ describe('AdParser', function() {
       expect(father.children[2].name).toEqual('Son');
       expect(father.children[2].attributes['age']).toEqual('25');
       expect(father.children[2].value).toEqual('Paul');
+    });
+  });
+
+  describe('CreativeExtensions', function() {
+    let parsedCreativeExts;
+
+    beforeAll(() => {
+      const creativeExtensionNodes = parserUtils.childrenByName(
+        getNodesFromXml(creativeExtensions),
+        'CreativeExtension'
+      );
+      parsedCreativeExts = parseExtensions(creativeExtensionNodes);
+    });
+
+    it('validate creativeExtension has length 4', () => {
+      expect(parsedCreativeExts.length).toEqual(4);
+    });
+
+    it('validate Count extension', () => {
+      const ext = parsedCreativeExts[0];
+      expect(ext.attributes['type']).toEqual('Count');
+      expect(ext.children.length).toEqual(0);
+      expect(ext.name).toEqual('CreativeExtension');
+      expect(ext.value).toEqual('4');
+    });
+
+    it('validate simple JSON in cdata extension', () => {
+      const ext = parsedCreativeExts[1];
+      expect(ext.attributes).toEqual({});
+      expect(ext.children.length).toEqual(0);
+      expect(ext.name).toEqual('CreativeExtension');
+      expect(ext.value).toEqual('{ foo: bar }');
     });
   });
 });
