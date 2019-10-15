@@ -382,3 +382,160 @@ vastTracker.on('creativeView', () => {
   // impression tracking URLs have been called
 });
 ```
+
+### notUsed()
+Must be called if the ad was not and will not be played (e.g. it was prefetched for a particular
+ad break but was not chosen for playback). This allows ad servers to reuse an ad earlier
+than otherwise would be possible due to budget/frequency capping. This is a terminal event;
+no other tracking events should be sent when this is used. Player support is
+optional and if implemented is provided on a best effort basis as it is not technically
+possible to fire this event for every unused ad (e.g. when the player itself is terminated
+before playback). This is a terminal event; no other tracking events should be sent when this is used.
+
+Calls the notUsed tracking URLs.
+
+#### Events emitted
+ * **`notUsed`**
+
+#### Example
+```Javascript
+vastTracker.on('notUsed', () => {
+  // notUsed tracking URLs have been called
+});
+
+// Called notUsed if the ad was not and will not be played.
+vastTracker.notUsed();
+
+```
+
+### otherAdInteraction()
+An optional metric that can capture all other user interactions
+under one metric such as hover-overs, or custom clicks. It should NOT replace
+clickthrough events or other existing events like mute, unmute, pause, etc.
+
+Calls the otherAdInteraction tracking URLs.
+
+#### Events emitted
+ * **`otherAdInteraction`**
+
+#### Example
+```Javascript
+// Bind mouseover listener to the player
+player.addEventListener('mouseover', () => vastTracker.otherAdInteraction() );
+
+vastTracker.on('otherAdInteraction', () => {
+  // otherAdInteraction tracking URLs have been called
+});
+```
+
+### acceptInvitation()
+The user clicked or otherwise activated a control used to pause
+streaming content, which either expands the ad within the player’s viewable area or
+“takes-over” the streaming content area by launching an additional portion of the ad. An ad in video format ad is usually played upon acceptance, but other forms of
+media such as games, animation, tutorials, social media, or other engaging media
+are also used.
+
+Calls the acceptInvitation tracking URLs.
+
+#### Events emitted
+ * **`acceptInvitation`**
+
+#### Example
+```Javascript
+// Bind click listener to the invitation button
+invitationButton.on('click', () => {
+  vastTracker.acceptInvitation();
+});
+
+vastTracker.on('acceptInvitation', () => {
+  // acceptInvitation tracking URLs have been called
+});
+```
+
+### adExpand()
+The user activated a control to expand the creative.
+
+Calls the adExpand tracking URLs.
+
+#### Events emitted
+ * **`adExpand`**
+
+#### Example
+```Javascript
+// Bind click listener to the ad expand button
+adExpandButton.on('click', () => {
+  vastTracker.adExpand();
+});
+
+vastTracker.on('adExpand', () => {
+  // adExpand tracking URLs have been called
+});
+```
+
+### adCollapse()
+The user activated a control to reduce the creative to its original
+dimensions.
+
+Calls the adCollapse tracking URLs.
+
+#### Events emitted
+ * **`adCollapse`**
+
+#### Example
+```Javascript
+// Bind click listener to the ad collapse button
+adCollapseButton.on('click', () => {
+  vastTracker.adCollapse();
+});
+
+vastTracker.on('adCollapse', () => {
+  // adCollapse tracking URLs have been called
+});
+```
+
+### minimize()
+The user clicked or otherwise activated a control used to minimize the ad
+to a size smaller than a collapsed ad but without fully dispatching the ad from the
+player environment. Unlike a collapsed ad that is big enough to display it’s message,
+the minimized ad is only big enough to offer a control that enables the user to
+redisplay the ad if desired.
+
+Calls the minimize tracking URLs.
+
+#### Events emitted
+ * **`minimize`**
+
+#### Example
+```Javascript
+// Bind click listener to the ad collapse button
+minimizeButton.on('click', () => {
+  vastTracker.minimize();
+});
+
+vastTracker.on('minimize', () => {
+  // minimize tracking URLs have been called
+});
+```
+
+### overlayViewDuration()
+The time that the initial ad is displayed. This time is based on
+the time between the impression and either the completed length of display based
+on the agreement between transactional parties or a close, minimize, or accept
+invitation event.
+
+Calls the overlayViewDuration tracking URLs.
+
+#### Events emitted
+ * **`overlayViewDuration`**
+
+#### Example
+```Javascript
+// Bind click listener to the ad collapse button
+minimizeButton.on('click', () => {
+  vastTracker.minimize();
+});
+
+vastTracker.on('overlayViewDuration', () => {
+  // overlayViewDuration tracking URLs have been called
+});
+```
