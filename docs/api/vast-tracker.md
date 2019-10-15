@@ -73,6 +73,13 @@ vastTracker.on('exitFullscreen', () => {
 |`start`|Only for linear ads with a duration. Emitted on the 1st non-null `setProgress(duration)` call|`{ trackingURLTemplates: Array<String> }`|
 |`thirdQuartile`|Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration|`{ trackingURLTemplates: Array<String> }`|
 |`unmute`|Emitted when calling `setMuted(muted)` and changing the mute state from true to false|`{ trackingURLTemplates: Array<String> }`|
+|`notUsed`|Emitted when calling `notUsed()`.This is a terminal event; no other tracking events are sent when this is used|`{ trackingURLTemplates: Array<String> }`|
+|`otherAdInteraction`|Emitted when calling `otherAdInteraction()`|`{ trackingURLTemplates: Array<String> }`|
+|`acceptInvitation`|Emitted when calling `acceptInvitation()`|`{ trackingURLTemplates: Array<String> }`|
+|`adExpand`|Emitted when calling `adExpand()`|`{ trackingURLTemplates: Array<String> }`|
+|`adCollapse`|Emitted when calling `adCollapse()`|`{ trackingURLTemplates: Array<String> }`|
+|`minimize`|Emitted when calling `minimize()`|`{ trackingURLTemplates: Array<String> }`|
+|`overlayViewDuration`|Emitted when calling `overlayViewDuration()`|`{ trackingURLTemplates: Array<String> }`|
 
 ## Public Methods 💚 <a name="methods"></a>
 
