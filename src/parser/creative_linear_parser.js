@@ -254,24 +254,9 @@ function parseMediaFile(mediaFileElement) {
  * @return {Object} - Parsed interactiveCreativeFile object.
  */
 function parseInteractiveCreativeFile(interactiveCreativeElement) {
-  const interactiveCreativeFile = createInteractiveCreativeFile();
-  interactiveCreativeFile.type = interactiveCreativeElement.getAttribute(
-    'type'
+  const interactiveCreativeFile = createInteractiveCreativeFile(
+    parserUtils.parseAttributes(interactiveCreativeElement)
   );
-  interactiveCreativeFile.apiFramework = interactiveCreativeElement.getAttribute(
-    'apiFramework'
-  );
-  let variableDuration = interactiveCreativeElement.getAttribute(
-    'variableDuration'
-  );
-  if (variableDuration && typeof variableDuration === 'string') {
-    variableDuration = variableDuration.toLowerCase();
-    if (variableDuration === 'true') {
-      interactiveCreativeFile.variableDuration = true;
-    } else if (variableDuration === 'false') {
-      interactiveCreativeFile.variableDuration = false;
-    }
-  }
   interactiveCreativeFile.fileURL = parserUtils.parseNodeText(
     interactiveCreativeElement
   );

@@ -44,7 +44,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `skipDelay: Number|null`
 - `mediaFiles: Array<Object>` [go to object](#mediafile)
 - `mezzanine: Object<Object>` [go to object](#mezzanine)
-- `interactiveCreativeFile: Object<Object>` [go to object](#interactivecreativefile)
+- `interactiveCreativeFile: Object  ` [go to object](#interactivecreativefile)
 - `closedCaptionFiles: Array<Object>` [go to object](#closedcaptionfile)
 - `videoClickThroughURLTemplate: String|null`
 - `videoClickTrackingURLTemplates: Array<String>`
@@ -97,15 +97,15 @@ This object represents a generic Creative. It's used as a parent object for more
 
 ## InteractiveCreativeFile<a name="interactivecreativefile"></a>
 
-- `type: String` MIME type for the file provided
-- `apiFramework: String` Identifies the API needed to execute the resource file, if applicable
-- `variableDuration: Boolean`  Identifies whether the ad always drops when the duration is reached, or if it can potentially extend the duration by pausing the underlying video or delaying the adStopped call after adVideoComplete
+- `type: String|null` MIME type for the file provided
+- `apiFramework: String|null` Identifies the API needed to execute the resource file, if applicable
+- `variableDuration: Boolean|null`  Identifies whether the ad always drops when the duration is reached, or if it can potentially extend the duration by pausing the underlying video or delaying the adStopped call after adVideoComplete
 - `fileURL: String|null`
 
 ## ClosedCaptionFile<a name="closedcaptionfile"></a>
 
-- `type: String` MIME type for the file provided
-- `language: String` Language of the Closed Caption File using ISO 631-1 codes
+- `type: String|null` MIME type for the file provided
+- `language: String|null` Language of the Closed Caption File using ISO 631-1 codes
 - `fileURL: String|null`
 
 ## NonLinearAd<a name="non-linear-ad"></a>
