@@ -370,7 +370,7 @@ describe('VASTParser', function() {
             'application/javascript'
           );
           linear.interactiveCreativeFile.apiFramework.should.equal('simpleApp');
-          linear.interactiveCreativeFile.variableDuration.should.equal(true);
+          linear.interactiveCreativeFile.variableDuration.should.equal(false);
           linear.interactiveCreativeFile.fileURL.should.equal(
             'http://example.com/linear-interactive-creative.js'
           );

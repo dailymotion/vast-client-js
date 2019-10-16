@@ -144,10 +144,8 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         parserUtils
           .childrenByName(closedCaptionElements, 'ClosedCaptionFile')
           .forEach(closedCaptionElement => {
-            const closedCaptionFile = createClosedCaptionFile();
-            closedCaptionFile.type = closedCaptionElement.getAttribute('type');
-            closedCaptionFile.language = closedCaptionElement.getAttribute(
-              'language'
+            const closedCaptionFile = createClosedCaptionFile(
+              parserUtils.parseAttributes(closedCaptionElement)
             );
             closedCaptionFile.fileURL = parserUtils.parseNodeText(
               closedCaptionElement
@@ -224,26 +222,18 @@ function parseMediaFile(mediaFileElement) {
   mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
   mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
 
-  let scalable = mediaFileElement.getAttribute('scalable');
+  const scalable = mediaFileElement.getAttribute('scalable');
   if (scalable && typeof scalable === 'string') {
-    scalable = scalable.toLowerCase();
-    if (scalable === 'true') {
-      mediaFile.scalable = true;
-    } else if (scalable === 'false') {
-      mediaFile.scalable = false;
-    }
+    mediaFile.scalable = parserUtils.parseBoolean(scalable);
   }
 
-  let maintainAspectRatio = mediaFileElement.getAttribute(
+  const maintainAspectRatio = mediaFileElement.getAttribute(
     'maintainAspectRatio'
   );
   if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
-    maintainAspectRatio = maintainAspectRatio.toLowerCase();
-    if (maintainAspectRatio === 'true') {
-      mediaFile.maintainAspectRatio = true;
-    } else if (maintainAspectRatio === 'false') {
-      mediaFile.maintainAspectRatio = false;
-    }
+    mediaFile.maintainAspectRatio = parserUtils.parseBoolean(
+      maintainAspectRatio
+    );
   }
   return mediaFile;
 }

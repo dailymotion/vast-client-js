@@ -6,10 +6,9 @@ export function createInteractiveCreativeFile(
   return {
     type: interactiveCreativeAttributes.type || null,
     apiFramework: interactiveCreativeAttributes.apiFramework || null,
-    variableDuration:
-      parserUtils.parseBoolean(
-        interactiveCreativeAttributes.variableDuration
-      ) || null,
+    variableDuration: parserUtils.parseBoolean(
+      interactiveCreativeAttributes.variableDuration
+    ),
     fileURL: null
   };
 }

@@ -65,7 +65,7 @@
               <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true" fileSize="345670"><![CDATA[http://example.com/linear-asset.mp4]]></MediaFile>
               <MediaFile apiFramework="VPAID" type="application/javascript" width="512" height="288" delivery="progressive" mediaType="3D"><![CDATA[parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D]]></MediaFile>
               <Mezzanine id="mezzanine-id-165468451" type="video/mp4" width="1080" height="720" delivery="progressive" codec="h264" fileSize="700"><![CDATA[http://example.com/linear-mezzanine.mp4]]></Mezzanine>
-              <InteractiveCreativeFile type="application/javascript" apiFramework="simpleApp" variableDuration="true"><![CDATA[http://example.com/linear-interactive-creative.js]]></InteractiveCreativeFile>
+              <InteractiveCreativeFile type="application/javascript" apiFramework="simpleApp" variableDuration="false"><![CDATA[http://example.com/linear-interactive-creative.js]]></InteractiveCreativeFile>
               <ClosedCaptionFiles>
                 <ClosedCaptionFile type="text/srt" language="en">
                   <![CDATA[https://mycdn.example.com/creatives/creative001.srt]]>

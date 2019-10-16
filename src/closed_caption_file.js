@@ -1,7 +1,7 @@
-export function createClosedCaptionFile() {
+export function createClosedCaptionFile(closedCaptionAttributes = {}) {
   return {
-    type: null,
-    language: null,
+    type: closedCaptionAttributes.type || null,
+    language: closedCaptionAttributes.language || null,
     fileURL: null
   };
 }
