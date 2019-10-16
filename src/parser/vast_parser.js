@@ -99,12 +99,12 @@ export class VASTParser extends EventEmitter {
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
    * @param {Number} wrapperDepth - how many times the current url has been wrapped
-   * @param {String} originalUrl - url of original wrapper
+   * @param {String} previousUrl - url of the previous VAST
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-  fetchVAST(url, wrapperDepth = 0, originalUrl = null) {
+  fetchVAST(url, wrapperDepth = 0, previousUrl = null) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
       this.URLTemplateFilters.forEach(filter => {
@@ -112,10 +112,10 @@ export class VASTParser extends EventEmitter {
       });
 
       this.parentURLs.push(url);
-      const timeBeforeGet = performance.now();
+      const timeBeforeGet = Date.now();
       this.emit('VAST-resolving', {
         url,
-        originalUrl,
+        previousUrl,
         wrapperDepth,
         maxWrapperDepth: this.maxWrapperDepth,
         timeout: this.fetchingOptions.timeout
@@ -125,11 +125,11 @@ export class VASTParser extends EventEmitter {
         url,
         this.fetchingOptions,
         (error, xml, details = {}) => {
-          const deltaTime = Math.round(performance.now() - timeBeforeGet);
+          const deltaTime = Math.round(Date.now() - timeBeforeGet);
           const info = Object.assign(
             {
               url,
-              originalUrl,
+              previousUrl,
               wrapperDepth,
               error,
               duration: deltaTime
@@ -189,7 +189,7 @@ export class VASTParser extends EventEmitter {
 
     return this.resolveAds(ads, {
       wrapperDepth: 0,
-      originalUrl: this.rootURL
+      previousUrl: this.rootURL
     }).then(resolvedAds => {
       return this.buildVASTResponse(resolvedAds);
     });
@@ -210,7 +210,7 @@ export class VASTParser extends EventEmitter {
     this.rootURL = url;
 
     return this.fetchVAST(url).then(xml => {
-      options.originalUrl = url;
+      options.previousUrl = url;
       options.isRootVAST = true;
       options.url = url;
 
@@ -343,7 +343,7 @@ export class VASTParser extends EventEmitter {
       url = null,
       resolveAll = true,
       wrapperSequence = null,
-      originalUrl = null,
+      previousUrl = null,
       wrapperDepth = 0,
       isRootVAST = false
     }
@@ -381,7 +381,7 @@ export class VASTParser extends EventEmitter {
       ads = this.remainingAds.shift();
     }
 
-    return this.resolveAds(ads, { wrapperDepth, originalUrl });
+    return this.resolveAds(ads, { wrapperDepth, previousUrl, url });
   }
 
   /**
@@ -391,14 +391,15 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - An options Object containing resolving parameters
    * @return {Promise}
    */
-  resolveAds(ads = [], { wrapperDepth, originalUrl }) {
+  resolveAds(ads = [], { wrapperDepth, previousUrl, url }) {
     const resolveWrappersPromises = [];
+    previousUrl = url;
 
     ads.forEach(ad => {
       const resolveWrappersPromise = this.resolveWrappers(
         ad,
         wrapperDepth,
-        originalUrl
+        previousUrl
       );
 
       resolveWrappersPromises.push(resolveWrappersPromise);
@@ -412,7 +413,8 @@ export class VASTParser extends EventEmitter {
 
         return this.resolveAds(remainingAdsToResolve, {
           wrapperDepth,
-          originalUrl
+          previousUrl,
+          url
         });
       }
 
@@ -423,12 +425,12 @@ export class VASTParser extends EventEmitter {
   /**
    * Resolves the wrappers for the given ad in a recursive way.
    * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
-   * @param  {Object} ad - An ad object to be unwrapped.
-   * @param  {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
-   * @param  {String} originalUrl - The original vast url.
+   * @param {Object} ad - An ad object to be unwrapped.
+   * @param {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
+   * @param {String} previousUrl - The previous vast url.
    * @return {Promise}
    */
-  resolveWrappers(ad, wrapperDepth, originalUrl) {
+  resolveWrappers(ad, wrapperDepth, previousUrl) {
     return new Promise(resolve => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
@@ -452,18 +454,16 @@ export class VASTParser extends EventEmitter {
       // Get full URL
       ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(
         ad.nextWrapperURL,
-        originalUrl
+        previousUrl
       );
 
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
-      // save next url because it gets deleted after fetching
-      const nextURL = ad.nextWrapperURL;
-      this.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl)
+      this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl)
         .then(xml => {
           return this.parse(xml, {
             url: ad.nextWrapperURL,
-            originalUrl,
+            previousUrl,
             wrapperSequence,
             wrapperDepth
           }).then(unwrappedAds => {
@@ -491,15 +491,12 @@ export class VASTParser extends EventEmitter {
 
           resolve(ad);
         });
-
-      // Update the originalUrl to the current one after fetching
-      originalUrl = nextURL;
     });
   }
 
   /**
    * Takes care of handling errors when the wrappers are resolved.
-   * @param {VASTResponse} vastResponse - A resolved VASTResponse.
+   * @param {Object} vastResponse - A resolved VASTResponse.
    */
   completeWrapperResolving(vastResponse) {
     // We've to wait for all <Ad> elements to be parsed before handling error so we can:

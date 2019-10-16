@@ -78,13 +78,13 @@ vastParser.on('VAST-warning', ({ message, parentElement, specVersion }) => {
 
 Event is triggered when `fetchVAST` function is called, before the fetching started. It carries the following data:
 - `url: String`
-- `originalUrl: String|Null`
+- `previousUrl: String|Null`
 - `wrapperDepth: Number`
 - `maxWrapperDepth: Number`
 - `timeout: Number`
 
 ```Javascript
-vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
+vastParser.on('VAST-resolving', ({ url, wrapperDepth, previousUrl }) => {
   // Access to the info
 });
 ```
@@ -93,7 +93,7 @@ vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
 
 Event is triggered when `fetchVAST` function is called, after the fetching was done. It carries the following data:
 - `url: String`
-- `originalUrl: String|Null`
+- `previousUrl: String|Null`
 - `wrapperDepth: Number`
 - `error: Error|Null`
 - `duration: Number`
@@ -115,7 +115,7 @@ Event is triggered when `parseVastXml` function is called, when an Ad tag has be
 - `adIndex: Number|undefined`
 
 ```Javascript
-vastParser.on('VAST-resolving', ({ url, wrapperDepth, originalUrl }) => {
+vastParser.on('VAST-resolving', ({ url, wrapperDepth, previousUrl }) => {
   // Access to the info
 });
 ```
@@ -197,13 +197,13 @@ Tracks the error provided in the errorCode parameter and emits a `VAST-error` ev
  * **`errorCode: Object`** - An Object containing the error data
  * **`data: Object`** - One (or more) Object containing additional data
 
-### fetchVAST(url, wrapperDepth = 0, originalUrl = null)
+### fetchVAST(url, wrapperDepth = 0, previousUrl = null)
 Fetches a VAST document for the given url. Returns a `Promise` which resolves with the fetched xml or rejects with an error, according to the result of the request.
 
 #### Parameters
  * **`url: String`** - The url to request the VAST document
  * **`wrapperDepth: Number`** - Number of wrappers that have occurred
- * **`originalUrl: String`** - The url of the inline or of the first wrapper
+ * **`previousUrl: String`** - The url of the previous VAST
 
 #### Events emitted
  * **`VAST-resolved`**
@@ -317,13 +317,20 @@ Parses the given xml Object into an array of ads. Returns the array or throws an
 #### Events emitted
  * **`VAST-ad-parsed`**
 
-### resolveWrappers(ad, wrapperDepth, originalUrl)
+### resolveAds(ads = [], options)
+Resolves each ad in a VAST (by calling resolveWrappers). If no ads are returned and there are remaining ads from a previous VAST (like an ad buffet), it will resolve the remaining ads.
+
+#### Parameters
+ * **`ads: Array<Ad>`** - An array of ads to be unwrapped in parallel.
+ * **`options: Object`** - An Object of parameters to be used in the unwrapping process.
+
+### resolveWrappers(ad, wrapperDepth, previousUrl)
 Resolves the wrappers for the given ad in a recursive way. Returns a `Promise` which resolves with the unwrapped ad or rejects with an error.
 
 #### Parameters
  * **`ad: Ad`** - An ad to be unwrapped.
  * **`wrapperDepth: Number`** - The reached depth in the wrapper resolving chain.
- * **`originalUrl: String`** - The original vast url.
+ * **`previousUrl: String`** - The url of the previous VAST
 
 ### completeWrapperResolving(vastResponse)
 Takes care of handling errors when the wrappers are resolved.
