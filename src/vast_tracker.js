@@ -412,6 +412,7 @@ export class VASTTracker extends EventEmitter {
    * Calls the overlayViewDuration tracking URLs.
    * @emits VASTTracker#overlayViewDuration
    */
+  // TODO : Pass the duration as a parameter and replace the corresponding macro with it
   overlayViewDuration() {
     this.track('overlayViewDuration');
   }
