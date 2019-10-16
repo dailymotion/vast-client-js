@@ -1,93 +1,202 @@
-export const inlineTrackers = `
-<VAST version="2.1">
-  <Ad id="ad_id_0001" sequence="1">
-    <InLine>
-      <AdSystem version="2.0"><![CDATA[AdServer]]></AdSystem>
-      <AdTitle><![CDATA[Ad title]]></AdTitle>
-      <Advertiser id='advertiser-desc'><![CDATA[Advertiser name]]></Advertiser>
-      <Description><![CDATA[Description text]]></Description>
-      <Pricing model="CPM" currency="USD"><![CDATA[1.09]]></Pricing>
-      <Survey><![CDATA[http://example.com/survey]]></Survey>
-      <Error><![CDATA[http://example.com/error_[ERRORCODE]]]></Error>
-      <Impression id="sample-impression1"><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
-      <Impression id="sample-impression2"><![CDATA[http://example.com/impression2_[random]]]></Impression>
-      <Impression id="sample-impression3"><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
-      <AdVerifications>
-        <Verification vendor="company.com-omid">
-          <JavaScriptResource apiFramework="omid" browserOptional="true">
-            <![CDATA[http://example.com/omid1]]>
-          </JavaScriptResource>
-        </Verification>
-        <Verification vendor="company2.com-omid">
-          <JavaScriptResource apiFramework="omid" browserOptional="false">
-            <![CDATA[http://example.com/omid2]]>
-          </JavaScriptResource>
-          <VerificationParameters>
-            <![CDATA[test-verification-parameter]]>
-          </VerificationParameters>
-        </Verification>
-      </AdVerifications>
-      <Creatives>
-        <Creative id="id130984" adId="adId345690" sequence="1">
-          <Linear>
-            <Duration>00:01:30.123</Duration>
-            <TrackingEvents>
-              <Tracking event="midpoint"><![CDATA[http://example.com/linear-midpoint]]></Tracking>
-              <Tracking event="complete"><![CDATA[http://example.com/linear-complete]]></Tracking>
-              <Tracking event="start"><![CDATA[http://example.com/linear-start]]></Tracking>
-              <Tracking event="firstQuartile"><![CDATA[http://example.com/linear-firstQuartile]]></Tracking>
-              <Tracking event="close"><![CDATA[http://example.com/linear-close]]></Tracking>
-              <Tracking event="thirdQuartile"><![CDATA[http://example.com/linear-thirdQuartile]]></Tracking>
-              <Tracking event="progress" offset="00:00:30.000"><![CDATA[http://example.com/linear-progress-30sec]]></Tracking>
-              <Tracking event="progress" offset="60%"><![CDATA[http://example.com/linear-progress-60%]]></Tracking>
-              <Tracking event="otherAdInteraction"><![CDATA[http://example.com/linear-otherAdInteraction]]></Tracking>
-              <Tracking event="acceptInvitation"><![CDATA[http://example.com/linear-acceptInvitation]]></Tracking>
-              <Tracking event="adExpand"><![CDATA[http://example.com/linear-adExpand]]></Tracking>
-              <Tracking event="adCollapse"><![CDATA[http://example.com/linear-adCollapse]]></Tracking>
-              <Tracking event="minimize"><![CDATA[http://example.com/linear-minimize]]></Tracking>
-              <Tracking event="overlayViewDuration"><![CDATA[http://example.com/linear-overlayViewDuration]]></Tracking>
-              <Tracking event="notUsed"><![CDATA[http://example.com/linear-notUsed]]></Tracking>
-            </TrackingEvents>
-            <VideoClicks>
-              <ClickTracking id='video-click-1'><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
-              <ClickTracking id='video-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
-              <ClickThrough id='click-through'><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
-              <CustomClick id='custom-click-1'><![CDATA[http://example.com/linear-customclick]]></CustomClick>
-            </VideoClicks>
-            <MediaFiles>
-              <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/linear-asset.mp4]]></MediaFile>
-              <MediaFile apiFramework="VPAID" type="application/javascript" width="512" height="288" delivery="progressive"><![CDATA[parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D]]></MediaFile>
-              <Mezzanine id="mezzanine-id-165468451" type="video/mp4" width="1080" height="720" delivery="progressive" codec="h264" fileSize="700"><![CDATA[http://example.com/linear-mezzanine.mp4]]></Mezzanine>
-            </MediaFiles>
-            <Icons>
-              <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID" pxratio="2">
-                <StaticResource creativeType="image/gif"><![CDATA[http://example.com/linear-icon.gif]]></StaticResource>
-                <IconViewTracking><![CDATA[http://example.com/linear-viewtracking]]></IconViewTracking>
-                <IconClicks>
-                  <IconClickThrough><![CDATA[http://example.com/linear-clickthrough]]></IconClickThrough>
-                  <IconClickTracking id='icon-click-1'><![CDATA[http://example.com/linear-clicktracking1]]></IconClickTracking>
-                  <IconClickTracking id='icon-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></IconClickTracking>
-                </IconClicks>
-              </Icon>
-            </Icons>
-          </Linear>
-        </Creative>
-      </Creatives>
-      <Extensions>
-        <Extension type="Pricing">
-          <Price model="CPM" currency="USD" source="someone">
-            <![CDATA[ 0 ]]>
-          </Price>
-        </Extension>
-        <Extension type="Count">
-          <!-- -->
-          <![CDATA[ 4 ]]>
-        </Extension>
-        <Extension>
-            { foo: bar }
-        </Extension>
-      </Extensions>
-    </InLine>
-  </Ad>
-</VAST>
-`;
+export const inlineTrackersParsed = {
+  ads: [
+    {
+      id: 'ad_id_0001',
+      sequence: '1',
+      system: { value: 'AdServer', version: '2.0' },
+      title: 'Ad title',
+      description: 'Description text',
+      advertiser: { id: 'advertiser-desc', value: 'Advertiser name' },
+      pricing: { value: '1.09', model: 'CPM', currency: 'USD' },
+      survey: 'http://example.com/survey',
+      errorURLTemplates: ['http://example.com/error_[ERRORCODE]'],
+      impressionURLTemplates: [
+        {
+          id: 'sample-impression1',
+          url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]'
+        },
+        {
+          id: 'sample-impression2',
+          url: 'http://example.com/impression2_[random]'
+        },
+        {
+          id: 'sample-impression3',
+          url: 'http://example.com/impression3_[RANDOM]'
+        }
+      ],
+      creatives: [
+        {
+          id: 'id130984',
+          adId: 'adId345690',
+          sequence: '1',
+          apiFramework: null,
+          type: 'linear',
+          duration: 90.123,
+          skipDelay: null,
+          mediaFiles: [
+            {
+              id: null,
+              fileURL: 'http://example.com/linear-asset.mp4',
+              deliveryType: 'progressive',
+              mimeType: 'video/mp4',
+              codec: null,
+              bitrate: 849,
+              minBitrate: 0,
+              maxBitrate: 0,
+              width: 512,
+              height: 288,
+              apiFramework: null,
+              scalable: true,
+              maintainAspectRatio: null
+            },
+            {
+              id: null,
+              fileURL:
+                'parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D',
+              deliveryType: 'progressive',
+              mimeType: 'application/javascript',
+              codec: null,
+              bitrate: 0,
+              minBitrate: 0,
+              maxBitrate: 0,
+              width: 512,
+              height: 288,
+              apiFramework: 'VPAID',
+              scalable: null,
+              maintainAspectRatio: null
+            }
+          ],
+          mezzanine: {
+            id: 'mezzanine-id-165468451',
+            fileURL: 'http://example.com/linear-mezzanine.mp4',
+            delivery: 'progressive',
+            codec: 'h264',
+            type: 'video/mp4',
+            width: 1080,
+            height: 720,
+            fileSize: 700,
+            mediaType: '2D'
+          },
+          videoClickThroughURLTemplate: {
+            id: 'click-through',
+            url: 'http://example.com/linear-clickthrough'
+          },
+          videoClickTrackingURLTemplates: [
+            {
+              id: 'video-click-1',
+              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]'
+            },
+            {
+              id: 'video-click-2',
+              url: 'http://example.com/linear-clicktracking2'
+            }
+          ],
+          videoCustomClickURLTemplates: [
+            {
+              id: 'custom-click-1',
+              url: 'http://example.com/linear-customclick'
+            }
+          ],
+          adParameters: null,
+          icons: [
+            {
+              program: 'ad1',
+              height: 20,
+              width: 60,
+              xPosition: 'left',
+              yPosition: 'bottom',
+              apiFramework: 'VPAID',
+              offset: 15,
+              duration: 90,
+              type: 'image/gif',
+              staticResource: 'http://example.com/linear-icon.gif',
+              htmlResource: null,
+              iframeResource: null,
+              pxratio: '2',
+              iconClickThroughURLTemplate:
+                'http://example.com/linear-clickthrough',
+              iconClickTrackingURLTemplates: [
+                {
+                  id: 'icon-click-1',
+                  url: 'http://example.com/linear-clicktracking1'
+                },
+                {
+                  id: 'icon-click-2',
+                  url: 'http://example.com/linear-clicktracking2'
+                }
+              ],
+              iconViewTrackingURLTemplate:
+                'http://example.com/linear-viewtracking'
+            }
+          ],
+          trackingEvents: {
+            midpoint: ['http://example.com/linear-midpoint'],
+            complete: ['http://example.com/linear-complete'],
+            start: ['http://example.com/linear-start'],
+            firstQuartile: ['http://example.com/linear-firstQuartile'],
+            close: ['http://example.com/linear-close'],
+            thirdQuartile: ['http://example.com/linear-thirdQuartile'],
+            'progress-30': ['http://example.com/linear-progress-30sec'],
+            'progress-60%': ['http://example.com/linear-progress-60%'],
+            otherAdInteraction: [
+              'http://example.com/linear-otherAdInteraction'
+            ],
+            acceptInvitation: ['http://example.com/linear-acceptInvitation'],
+            adExpand: ['http://example.com/linear-adExpand'],
+            adCollapse: ['http://example.com/linear-adCollapse'],
+            minimize: ['http://example.com/linear-minimize'],
+            overlayViewDuration: [
+              'http://example.com/linear-overlayViewDuration'
+            ],
+            notUsed: ['http://example.com/linear-notUsed']
+          }
+        }
+      ],
+      extensions: [
+        {
+          name: 'Extension',
+          value: null,
+          attributes: { type: 'Pricing' },
+          children: [
+            {
+              name: 'Price',
+              value: '0',
+              attributes: { model: 'CPM', currency: 'USD', source: 'someone' },
+              children: []
+            }
+          ]
+        },
+        {
+          name: 'Extension',
+          value: '4',
+          attributes: { type: 'Count' },
+          children: []
+        },
+        {
+          name: 'Extension',
+          value: '{ foo: bar }',
+          attributes: {},
+          children: []
+        }
+      ],
+      adVerifications: [
+        {
+          resource: 'http://example.com/omid1',
+          vendor: 'company.com-omid',
+          browserOptional: true,
+          apiFramework: 'omid',
+          parameters: null
+        },
+        {
+          resource: 'http://example.com/omid2',
+          vendor: 'company2.com-omid',
+          browserOptional: false,
+          apiFramework: 'omid',
+          parameters: 'test-verification-parameter'
+        }
+      ]
+    }
+  ],
+  errorURLTemplates: [],
+  version: '2.1'
+};

@@ -1,32 +1,18 @@
 import { VASTClient } from '../src/vast_client';
-import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
-import { inlineTrackers } from '../spec/samples/inline_trackers';
+import { inlineTrackersParsed } from '../spec/samples/inline_trackers';
 
-const vastParser = new VASTParser();
 const vastClient = new VASTClient();
 
 describe('VASTTracker', function() {
   describe('#constructor', function() {
     let vastTracker = null;
-    let response = {};
-
-    beforeAll(done => {
-      const vastXml = new window.DOMParser().parseFromString(
-        inlineTrackers,
-        'text/xml'
-      );
-      vastParser.parseVAST(vastXml).then(res => {
-        response = res;
-        done();
-      });
-    });
 
     describe('#linear', () => {
       let spyEmitter;
       let spyTrackUrl;
-      beforeAll(() => {
-        const ad = response.ads[0];
+      beforeEach(() => {
+        const ad = inlineTrackersParsed.ads[0];
         vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
         spyEmitter = jest.spyOn(vastTracker, 'emit');
         spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
@@ -127,19 +113,17 @@ describe('VASTTracker', function() {
       });
 
       describe('#notUsed', () => {
-        it('should have emitted adExpand event and called trackUrl', () => {
+        it('should have emitted adExpand event, called trackUrl and not emitted any other event', () => {
           vastTracker.notUsed();
+          vastTracker.adCollapse();
+
           expect(spyEmitter).toHaveBeenCalledWith('notUsed', {
             trackingURLTemplates: ['http://example.com/linear-notUsed']
           });
           expect(spyTrackUrl).toHaveBeenCalledWith([
             'http://example.com/linear-notUsed'
           ]);
-        });
-
-        it('should not emitted any other event', () => {
-          vastTracker.adCollapse();
-          expect(spyEmitter).not.toHaveBeenCalled();
+          expect(spyEmitter).toHaveBeenCalledTimes(1);
         });
       });
     });

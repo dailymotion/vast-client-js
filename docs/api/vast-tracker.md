@@ -386,8 +386,7 @@ vastTracker.on('creativeView', () => {
 ### notUsed()
 Must be called if the ad was not and will not be played (e.g. it was prefetched for a particular
 ad break but was not chosen for playback). This allows ad servers to reuse an ad earlier
-than otherwise would be possible due to budget/frequency capping. This is a terminal event;
-no other tracking events should be sent when this is used. Player support is
+than otherwise would be possible due to budget/frequency capping. Player support is
 optional and if implemented is provided on a best effort basis as it is not technically
 possible to fire this event for every unused ad (e.g. when the player itself is terminated
 before playback). This is a terminal event; no other tracking events should be sent when this is used.
@@ -530,12 +529,9 @@ Calls the overlayViewDuration tracking URLs.
 
 #### Example
 ```Javascript
-// Bind click listener to the ad collapse button
-minimizeButton.on('click', () => {
-  vastTracker.minimize();
-});
-
 vastTracker.on('overlayViewDuration', () => {
   // overlayViewDuration tracking URLs have been called
 });
+// Call the overlayViewDuration event
+vastTracker.overlayViewDuration();
 ```
