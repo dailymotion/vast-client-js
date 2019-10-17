@@ -180,7 +180,6 @@ This object represents a generic Creative. It's used as a parent object for more
 - `value: any`
 - `attributes: Object`
 - `children: Array<Extension>`
-- `isEmpty(): Boolean` Returns true when none of these attributes have a value
 
 ## AdVerification<a name="ad-verification"></a>
 
