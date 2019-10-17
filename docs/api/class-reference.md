@@ -184,3 +184,6 @@ This object represents a generic Creative. It's used as a parent object for more
 - `parameters: String|null` Metadata about the current impression
 - `resource: String|null` URI to the JavaScript file used to collect verification data
 - `vendor: String|null` An identifier for the verification vendor
+- `type: String|null` The type of executable resource provided
+- `parameters: String|null`  string intended for bootstrapping the verification code and providing metadata about the current impression
+- `trackingEvents: Object`
