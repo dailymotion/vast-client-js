@@ -44,6 +44,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `skipDelay: Number|null`
 - `mediaFiles: Array<Object>` [go to object](#mediafile)
 - `mezzanine: Object<Object>` [go to object](#mezzanine)
+- `interactiveCreativeFile: Object  ` [go to object](#interactivecreativefile)
+- `closedCaptionFiles: Array<Object>` [go to object](#closedcaptionfile)
 - `videoClickThroughURLTemplate: String|null`
 - `videoClickTrackingURLTemplates: Array<String>`
 - `videoCustomClickURLTemplates: Array<String>`
@@ -75,6 +77,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `maxBitrate: Number`
 - `width: Number`
 - `height: Number`
+- `fileSize: Number|null`
+- `mediaType: String|null` Type of media file (3D / 360 / etc). Optional. Default value = 2D
 - `apiFramework: String|null`
 - `scalable: Boolean|null`
 - `maintainAspectRatio: Boolean|null`
@@ -89,6 +93,19 @@ This object represents a generic Creative. It's used as a parent object for more
 - `id: String|null`
 - `fileSize: Number|null`
 - `mediaType: String|null` Type of media file (3D / 360 / etc). Optional. Default value = 2D
+- `fileURL: String|null`
+
+## InteractiveCreativeFile<a name="interactivecreativefile"></a>
+
+- `type: String|null` MIME type for the file provided
+- `apiFramework: String|null` Identifies the API needed to execute the resource file, if applicable
+- `variableDuration: Boolean|null`  Identifies whether the ad always drops when the duration is reached, or if it can potentially extend the duration by pausing the underlying video or delaying the adStopped call after adVideoComplete
+- `fileURL: String|null`
+
+## ClosedCaptionFile<a name="closedcaptionfile"></a>
+
+- `type: String|null` MIME type for the file provided
+- `language: String|null` Language of the Closed Caption File using ISO 631-1 codes
 - `fileURL: String|null`
 
 ## NonLinearAd<a name="non-linear-ad"></a>
@@ -121,8 +138,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
 - `adSlotID: String|null`
-- `pxratio: String|'1'`
-- `renderingMode: String|'default'`
+- `pxratio: String|'1'` The pixel ratio for which the companion creative is intended
+- `renderingMode: String|'default'` Used to indicate when and where to use this companion ad. Default value = default
 - `staticResources: Array<{ url: String, creativeType: String|null }>`
 - `htmlResources: Array<String>`
 - `iframeResources: Array<String>`
@@ -144,7 +161,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `offset: String|null`
 - `duration: Number`
 - `type: String|null`
-- `pxratio: String|'1'`
+- `pxratio: String|'1'` The pixel ratio for which the icon creative is intended
 - `staticResource: String|null`
 - `htmlResource: String|null`
 - `iframeResource: String|null`

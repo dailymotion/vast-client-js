@@ -73,7 +73,7 @@ function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
  * @return {Boolean}
  */
 function parseBoolean(booleanString) {
-  return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
+  return ['true', 'TRUE', 'True', '1'].indexOf(booleanString) !== -1;
 }
 
 /**

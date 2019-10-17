@@ -332,6 +332,8 @@ describe('VASTParser', function() {
           linear.mediaFiles[0].width.should.equal(512);
           linear.mediaFiles[0].height.should.equal(288);
           linear.mediaFiles[0].mimeType.should.equal('video/mp4');
+          linear.mediaFiles[0].fileSize.should.equal(345670);
+          linear.mediaFiles[0].mediaType.should.equal('2D');
           linear.mediaFiles[0].fileURL.should.equal(
             'http://example.com/linear-asset.mp4'
           );
@@ -341,6 +343,7 @@ describe('VASTParser', function() {
           linear.mediaFiles[1].width.should.equal(512);
           linear.mediaFiles[1].height.should.equal(288);
           linear.mediaFiles[1].mimeType.should.equal('application/javascript');
+          linear.mediaFiles[1].mediaType.should.equal('3D');
           linear.mediaFiles[1].apiFramework.should.equal('VPAID');
           linear.mediaFiles[1].deliveryType.should.equal('progressive');
           linear.mediaFiles[1].fileURL.should.equal(
@@ -359,6 +362,55 @@ describe('VASTParser', function() {
           linear.mezzanine.mediaType.should.equal('2D');
           linear.mezzanine.fileURL.should.equal(
             'http://example.com/linear-mezzanine.mp4'
+          );
+        });
+
+        it('should have parsed interactivecreative file attributes', () => {
+          linear.interactiveCreativeFile.type.should.equal(
+            'application/javascript'
+          );
+          linear.interactiveCreativeFile.apiFramework.should.equal('simpleApp');
+          linear.interactiveCreativeFile.variableDuration.should.equal(false);
+          linear.interactiveCreativeFile.fileURL.should.equal(
+            'http://example.com/linear-interactive-creative.js'
+          );
+        });
+
+        it('should have 4 closedcaption files', () => {
+          linear.closedCaptionFiles.should.have.length(4);
+        });
+
+        it('should have parsed 1st closedcaption file attributes', () => {
+          linear.closedCaptionFiles[0].type.should.equal('text/srt');
+          linear.closedCaptionFiles[0].language.should.equal('en');
+          linear.closedCaptionFiles[0].fileURL.should.equal(
+            'https://mycdn.example.com/creatives/creative001.srt'
+          );
+        });
+
+        it('should have parsed 2nd closedcaption file attributes', () => {
+          linear.closedCaptionFiles[1].type.should.equal('text/srt');
+          linear.closedCaptionFiles[1].language.should.equal('fr');
+          linear.closedCaptionFiles[1].fileURL.should.equal(
+            'https://mycdn.example.com/creatives/creative001-1.srt'
+          );
+        });
+
+        it('should have parsed 3rd closedcaption file attributes', () => {
+          linear.closedCaptionFiles[2].type.should.equal('text/vtt');
+          linear.closedCaptionFiles[2].language.should.equal('zh-TW');
+          linear.closedCaptionFiles[2].fileURL.should.equal(
+            'https://mycdn.example.com/creatives/creative001.vtt'
+          );
+        });
+
+        it('should have parsed 4th closedcaption file attributes', () => {
+          linear.closedCaptionFiles[3].type.should.equal(
+            'application/ttml+xml'
+          );
+          linear.closedCaptionFiles[3].language.should.equal('zh-CH');
+          linear.closedCaptionFiles[3].fileURL.should.equal(
+            'https://mycdn.example.com/creatives/creative001.ttml'
           );
         });
 
