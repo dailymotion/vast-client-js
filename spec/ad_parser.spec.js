@@ -1,6 +1,5 @@
 import { parseAd } from '../src/parser/ad_parser';
 import { getNodesFromXml } from './utils/utils';
-import { inlineAd, wrapperAd, invalidAd } from './samples/ad';
 
 describe('AdParser', () => {
   describe('parseAd', () => {
@@ -8,9 +7,13 @@ describe('AdParser', () => {
     const emit = () => {};
 
     beforeAll(() => {
-      inlineAdNode = getNodesFromXml(inlineAd);
-      wrapperAdNode = getNodesFromXml(wrapperAd);
-      invalidAdNode = getNodesFromXml(invalidAd);
+      inlineAdNode = getNodesFromXml(
+        '<Ad id="id-123" sequence="seq-123"><InLine></InLine></Ad>'
+      );
+      wrapperAdNode = getNodesFromXml(
+        '<Ad><Wrapper><VASTAdTagURI>foo</VASTAdTagURI></Wrapper></Ad>'
+      );
+      invalidAdNode = getNodesFromXml('<Ad><Foo></Foo></Ad>');
     });
 
     it('correctly returns inline and passes ad attributes down', () => {

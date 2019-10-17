@@ -189,7 +189,7 @@ export class VASTParser extends EventEmitter {
 
     return this.resolveAds(ads, {
       wrapperDepth: 0,
-      previousUrl: this.rootURL
+      url: this.rootURL
     }).then(resolvedAds => {
       return this.buildVASTResponse(resolvedAds);
     });

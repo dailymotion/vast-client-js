@@ -158,6 +158,29 @@ describe('VASTClient', () => {
       it('returns true for hasRemainingAds', () => {
         expect(VastClient.hasRemainingAds()).toBeTruthy();
       });
+
+      describe('getNextAds', () => {
+        it('resolves all next ads if requested', () => {
+          return VastClient.getNextAds(true).then(res => {
+            expect(res).toEqual({
+              ads: expect.any(Array),
+              errorURLTemplates: [],
+              version: '3.0'
+            });
+            expect(res.ads).toHaveLength(3);
+          });
+        });
+        it('resolves only next ad if requested', () => {
+          return VastClient.getNextAds(false).then(res => {
+            expect(res).toEqual({
+              ads: expect.any(Array),
+              errorURLTemplates: [],
+              version: '3.0'
+            });
+            expect(res.ads).toHaveLength(2);
+          });
+        });
+      });
     });
 
     describe('with resolveAll set to true', () => {
