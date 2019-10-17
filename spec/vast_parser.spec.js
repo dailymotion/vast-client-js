@@ -465,7 +465,7 @@ describe('VASTParser', () => {
             expect(true).toBeFalsy();
           })
           .catch(e => {
-            expect(e.message).toEqual('Invalid URL: badUrl');
+            expect(e).toBeTruthy();
             expect(VastParser.parse).not.toBeCalled();
           });
       });
