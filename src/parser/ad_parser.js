@@ -27,6 +27,7 @@ export function parseAd(adElement, emit) {
 
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
+    parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
     if (adTypeElement.nodeName === 'Wrapper') {
       return parseWrapper(adTypeElement, emit);
     } else if (adTypeElement.nodeName === 'InLine') {
@@ -62,6 +63,7 @@ function parseAdElement(adTypeElement, emit) {
   const ad = createAd();
   ad.id = adTypeElement.getAttribute('id') || null;
   ad.sequence = adTypeElement.getAttribute('sequence') || null;
+  ad.adType = adTypeElement.getAttribute('adType') || null;
 
   for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
@@ -104,6 +106,25 @@ function parseAdElement(adTypeElement, emit) {
 
       case 'AdTitle':
         ad.title = parserUtils.parseNodeText(node);
+        break;
+
+      case 'AdServingId':
+        ad.adServingId = parserUtils.parseNodeText(node);
+        break;
+
+      case 'Category':
+        ad.categories.push({
+          authority: node.getAttribute('authority') || null,
+          value: parserUtils.parseNodeText(node)
+        });
+        break;
+
+      case 'Expires':
+        ad.expires = parseInt(parserUtils.parseNodeText(node));
+        break;
+
+      case 'ViewableImpression':
+        ad.viewableImpression = _parseViewableImpression(node);
         break;
 
       case 'Description':
@@ -220,7 +241,6 @@ function parseWrapper(wrapperElement, emit) {
  * @param  {Array} verifications - The array of verifications to parse.
  * @return {Array<Object>}
  */
-
 export function _parseAdVerifications(verifications) {
   const ver = [];
 
@@ -269,4 +289,43 @@ export function _parseAdVerifications(verifications) {
   });
 
   return ver;
+}
+
+/**
+ * Parses the ViewableImpression Element.
+ * @param  {Object} viewableImpressionNode - The ViewableImpression node element.
+ * @return {Object} viewableImpression - The viewableImpression object
+ */
+export function _parseViewableImpression(viewableImpressionNode) {
+  const viewableImpression = {};
+  viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
+
+  for (const viewableImpressionElementKey in viewableImpressionNode.childNodes) {
+    const viewableImpressionElement =
+      viewableImpressionNode.childNodes[viewableImpressionElementKey];
+    const viewableImpressionNodeName = viewableImpressionElement.nodeName;
+    const viewableImpressionNodeValue = parserUtils.parseNodeText(
+      viewableImpressionElement
+    );
+
+    switch (viewableImpressionNodeName) {
+      case 'Viewable':
+      case 'NotViewable':
+      case 'ViewUndetermined':
+        if (viewableImpressionNodeValue) {
+          const viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
+          if (
+            !Array.isArray(viewableImpression[viewableImpressionNodeNameLower])
+          ) {
+            viewableImpression[viewableImpressionNodeNameLower] = [];
+          }
+          viewableImpression[viewableImpressionNodeNameLower].push(
+            viewableImpressionNodeValue
+          );
+        }
+        break;
+    }
+  }
+
+  return viewableImpression;
 }

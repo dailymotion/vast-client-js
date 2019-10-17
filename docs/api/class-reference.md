@@ -14,6 +14,11 @@ This object represents a single parsed Ad
 
 - `id: String|null`
 - `sequence: Number|null`
+- `adType: 'video'` An optional string that identifies the type of ad. Default value = video
+- `adServingId: String`
+- `categories: Array<Object>` [go to object](#category)
+- `expires: Integer|null`
+- `viewableImpression: Object` [go to object](#viewable-impression)
 - `system: String|null`
 - `title: String|null`
 - `description: String|null`
@@ -186,3 +191,15 @@ This object represents a generic Creative. It's used as a parent object for more
 - `type: String|null` The type of executable resource provided
 - `parameters: String|null`  String intended for bootstrapping the verification code and providing metadata about the current impression
 - `trackingEvents: Object`
+
+## Category<a name="category"></a>
+
+- `authority: String` A URL for the organizational authority that produced the list being used to identify ad content category
+- `value: String` A category code or label that identifies the ad content category
+
+## ViewableImpression<a name="viewable-impression"></a>
+
+- `id: String|null`
+- `viewable: Array<String>`
+- `notviewable: Array<String>`
+- `viewundetermined: Array<String>`
