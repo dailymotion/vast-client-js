@@ -7,7 +7,7 @@ import {
   viewableImpressionPartial
 } from './samples/viewable_impression';
 
-describe('CreativesParser', function() {
+describe('AdParser', function() {
   describe('parseAdElement', function() {
     const adElement = getNodesFromXml(linearAd);
     let ad = null;

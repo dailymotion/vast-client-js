@@ -1,4 +1,4 @@
-export const viewableImpression = `<Ad>
+export const viewableImpression = `<InLine>
   <ViewableImpression id="viewable_impression">
     <Viewable>
       <![CDATA[http://www.example.com/viewable_impression_1]]>
@@ -19,10 +19,10 @@ export const viewableImpression = `<Ad>
       <![CDATA[http://www.example.com/view_undetermined_1]]>
     </ViewUndetermined>
   </ViewableImpression>
-</Ad>
+</InLine>
 `;
 
-export const viewableImpressionPartial = `<Ad>
+export const viewableImpressionPartial = `<InLine>
   <ViewableImpression>
     <Viewable>
       <![CDATA[http://www.example.com/viewable_impression_1]]>
@@ -31,5 +31,5 @@ export const viewableImpressionPartial = `<Ad>
       <![CDATA[]]>
     </NotViewable>
   </ViewableImpression>
-</Ad>
+</InLine>
 `;
