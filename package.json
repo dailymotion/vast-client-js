@@ -25,9 +25,10 @@
   "main": "dist/vast-client-node.min.js",
   "browser": "dist/vast-client.min.js",
   "scripts": {
+    "performance": "node performance_test.js",
     "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
     "build": "rollup -c",
-    "postbuild": "node bundleSize.js",
+    "postbuild": "node bundle_size.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
     "test": "mocha && jest",
