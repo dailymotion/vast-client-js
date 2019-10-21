@@ -12,6 +12,13 @@ const childMissingRequiredSubElements = `
 <VAST version="2.1">
   <Ad>
     <InLine>
+      <AdVerifications>
+        <Verification vendor="company2.com-omid">
+          <VerificationParameters>
+            <![CDATA[test-verification-parameter]]>
+          </VerificationParameters>
+        </Verification>
+      </AdVerifications>
       <Creatives>
         <Creative>
           <Linear>

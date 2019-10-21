@@ -41,6 +41,7 @@ describe('parserVerification', function() {
           "Element 'Creative' missing required sub element(s) 'UniversalAdId' ",
           "Element 'Linear' missing required sub element(s) 'MediaFiles, Duration' ",
           "Element 'Icons' missing required sub element(s) 'Icon' ",
+          "Element 'Verification' must provide one of the following 'JavaScriptResource, ExecutableResource' ",
           "Element 'MediaFiles' missing required sub element(s) 'MediaFile' "
         ])
       );

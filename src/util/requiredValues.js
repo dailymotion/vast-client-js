@@ -21,6 +21,7 @@ export const requiredValues = {
     attributes: ['model', 'currency']
   },
   Verification: {
+    oneOfinLineResources: ['JavaScriptResource', 'ExecutableResource'],
     attributes: ['vendor']
   },
   UniversalAdId: {
