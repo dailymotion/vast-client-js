@@ -207,6 +207,11 @@ export class VASTParser extends EventEmitter {
    */
   getAndParseVAST(url, options = {}) {
     this.initParsingStatus(options);
+
+    this.URLTemplateFilters.forEach(filter => {
+      url = filter(url);
+    });
+
     this.rootURL = url;
 
     return this.fetchVAST(url).then(xml => {
@@ -456,6 +461,10 @@ export class VASTParser extends EventEmitter {
         ad.nextWrapperURL,
         previousUrl
       );
+
+      this.URLTemplateFilters.forEach(filter => {
+        ad.nextWrapperURL = filter(ad.nextWrapperURL);
+      });
 
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
