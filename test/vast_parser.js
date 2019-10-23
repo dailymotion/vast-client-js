@@ -698,10 +698,12 @@ describe('VASTParser', function() {
           });
       });
 
-      it('should have called 2 times URLtemplateFilter ', () => {
-        this.templateFilterCalls.should.have.length(2);
+      it('should have called 4 times URLtemplateFilter ', () => {
+        this.templateFilterCalls.should.have.length(4);
         this.templateFilterCalls.should.eql([
           urlfor('wrapper-sequence.xml'),
+          urlfor('wrapper-sequence.xml'),
+          urlfor('sample-wrapped.xml'),
           urlfor('sample-wrapped.xml')
         ]);
       });
@@ -815,11 +817,14 @@ describe('VASTParser', function() {
       vastParser.countURLTemplateFilters().should.equal(1);
     });
 
-    it('should have called 3 times URLtemplateFilter ', () => {
-      this.templateFilterCalls.should.have.length(3);
+    it('should have called 6 times URLtemplateFilter ', () => {
+      this.templateFilterCalls.should.have.length(6);
       this.templateFilterCalls.should.eql([
         urlfor('wrapper-a.xml'),
+        urlfor('wrapper-a.xml'),
         urlfor('wrapper-b.xml'),
+        urlfor('wrapper-b.xml'),
+        urlfor('sample.xml'),
         urlfor('sample.xml')
       ]);
     });
