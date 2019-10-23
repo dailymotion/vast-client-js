@@ -274,7 +274,8 @@ describe('VASTParser', () => {
                   type: 'WRAPPER',
                   url: wrapperAVastUrl,
                   wrapperDepth: 0,
-                  adIndex: 0
+                  adIndex: 0,
+                  vastVersion: '2.0'
                 }
               ],
               [
@@ -283,7 +284,8 @@ describe('VASTParser', () => {
                   type: 'WRAPPER',
                   url: wrapperAVastUrl,
                   wrapperDepth: 0,
-                  adIndex: 1
+                  adIndex: 1,
+                  vastVersion: '2.0'
                 }
               ],
               // RESOLVING AD 1 (WRAPPER B) IN WRAPPER A
@@ -326,7 +328,8 @@ describe('VASTParser', () => {
                   type: 'WRAPPER',
                   url: wrapperBVastUrl,
                   wrapperDepth: 1,
-                  adIndex: 0
+                  adIndex: 0,
+                  vastVersion: '2.0'
                 }
               ],
               // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
@@ -358,7 +361,8 @@ describe('VASTParser', () => {
                   type: 'INLINE',
                   url: inlineVpaidVastUrl,
                   wrapperDepth: 1,
-                  adIndex: 0
+                  adIndex: 0,
+                  vastVersion: '2.0'
                 }
               ],
               // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
@@ -379,7 +383,8 @@ describe('VASTParser', () => {
                   type: 'INLINE',
                   url: inlineSampleVastUrl,
                   wrapperDepth: 2,
-                  adIndex: 0
+                  adIndex: 0,
+                  vastVersion: '2.1'
                 }
               ],
               [
@@ -388,7 +393,8 @@ describe('VASTParser', () => {
                   type: 'INLINE',
                   url: inlineSampleVastUrl,
                   wrapperDepth: 2,
-                  adIndex: 1
+                  adIndex: 1,
+                  vastVersion: '2.1'
                 }
               ]
             ])
@@ -591,7 +597,8 @@ describe('VASTParser', () => {
             adIndex: 0,
             type: 'INLINE',
             url: inlineSampleVastUrl,
-            wrapperDepth: 0
+            wrapperDepth: 0,
+            vastVersion: '2.1'
           }
         ],
         [
@@ -600,7 +607,8 @@ describe('VASTParser', () => {
             adIndex: 1,
             type: 'INLINE',
             url: inlineSampleVastUrl,
-            wrapperDepth: 0
+            wrapperDepth: 0,
+            vastVersion: '2.1'
           }
         ]
       ]);

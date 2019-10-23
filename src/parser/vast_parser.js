@@ -292,8 +292,8 @@ export class VASTParser extends EventEmitter {
     /* Only parse the version of the Root VAST for now because we don't know yet how to
      * handle some cases like multiple wrappers in the same vast
      */
+    const vastVersion = vastXml.documentElement.getAttribute('version');
     if (isRootVAST) {
-      const vastVersion = vastXml.documentElement.getAttribute('version');
       if (vastVersion) this.vastVersion = vastVersion;
     }
 
@@ -318,7 +318,8 @@ export class VASTParser extends EventEmitter {
             type: result.type,
             url,
             wrapperDepth,
-            adIndex: ads.length - 1
+            adIndex: ads.length - 1,
+            vastVersion
           });
         } else {
           // VAST version of response not supported.
