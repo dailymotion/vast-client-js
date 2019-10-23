@@ -41,6 +41,7 @@ describe('parserVerification', function() {
           "Element 'Creative' missing required sub element(s) 'UniversalAdId' ",
           "Element 'Linear' missing required sub element(s) 'MediaFiles, Duration' ",
           "Element 'Icons' missing required sub element(s) 'Icon' ",
+          "Element 'Verification' must provide one of the following 'JavaScriptResource, ExecutableResource' ",
           "Element 'MediaFiles' missing required sub element(s) 'MediaFile' "
         ])
       );
@@ -80,7 +81,9 @@ describe('parserVerification', function() {
           "Element 'UniversalAdId' missing required attribute(s) 'idRegistry' ",
           "Element 'Verification' missing required attribute(s) 'vendor' ",
           "Element 'JavaScriptResource' missing required attribute(s) 'apiFramework, browserOptional' ",
+          "Element 'JavaScriptResource' missing required attribute(s) 'browserOptional' ",
           "Element 'ExecutableResource' missing required attribute(s) 'apiFramework, type' ",
+          "Element 'Tracking' missing required attribute(s) 'event' ",
           "Element 'MediaFile' missing required attribute(s) 'delivery, type, width, height' ",
           "Element 'Mezzanine' missing required attribute(s) 'delivery, type, width, height' ",
           "Element 'Icon' must provide one of the following 'StaticResource, IFrameResource, HTMLResource' ",

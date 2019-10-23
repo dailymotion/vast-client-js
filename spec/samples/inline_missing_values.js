@@ -12,6 +12,13 @@ const childMissingRequiredSubElements = `
 <VAST version="2.1">
   <Ad>
     <InLine>
+      <AdVerifications>
+        <Verification vendor="company2.com-omid">
+          <VerificationParameters>
+            <![CDATA[test-verification-parameter]]>
+          </VerificationParameters>
+        </Verification>
+      </AdVerifications>
       <Creatives>
         <Creative>
           <Linear>
@@ -59,13 +66,21 @@ const missingRequiredAttributes = `
       <AdVerifications>
         <Verification>
           <JavaScriptResource>
-            <Verification vendor="company2.com-omid">
-              <ExecutableResource>
-                <![CDATA[http://example.com/omid2]]>
-              </ExecutableResource>
-            </Verification>
             <![CDATA[http://example.com/omid1]]>
           </JavaScriptResource>
+        </Verification>
+        <Verification>
+          <JavaScriptResource apiFramework="omid">
+            <![CDATA[http://example.com/omid1]]>
+          </JavaScriptResource>
+        </Verification>
+        <Verification vendor="company2.com-omid">
+          <ExecutableResource>
+            <![CDATA[http://example.com/omid2.exe]]>
+          </ExecutableResource>
+          <TrackingEvents>
+            <Tracking><![CDATA[http://example.com/verification-not-executed-EXE]]></Tracking>
+          </TrackingEvents>
         </Verification>
       </AdVerifications>
       <Creatives>

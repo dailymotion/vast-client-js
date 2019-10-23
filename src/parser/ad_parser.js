@@ -234,6 +234,7 @@ export function _parseAdVerifications(verifications) {
 
       switch (node.nodeName) {
         case 'JavaScriptResource':
+        case 'ExecutableResource':
           verification.resource = parserUtils.parseNodeText(node);
           parserUtils.assignAttributes(node.attributes, verification);
           break;
@@ -241,6 +242,27 @@ export function _parseAdVerifications(verifications) {
           verification.parameters = parserUtils.parseNodeText(node);
           break;
       }
+    }
+
+    const trackingEventsElement = parserUtils.childByName(
+      verificationNode,
+      'TrackingEvents'
+    );
+    if (trackingEventsElement) {
+      parserUtils
+        .childrenByName(trackingEventsElement, 'Tracking')
+        .forEach(trackingElement => {
+          const eventName = trackingElement.getAttribute('event');
+          const trackingURLTemplate = parserUtils.parseNodeText(
+            trackingElement
+          );
+          if (eventName && trackingURLTemplate) {
+            if (!Array.isArray(verification.trackingEvents[eventName])) {
+              verification.trackingEvents[eventName] = [];
+            }
+            verification.trackingEvents[eventName].push(trackingURLTemplate);
+          }
+        });
     }
 
     ver.push(verification);

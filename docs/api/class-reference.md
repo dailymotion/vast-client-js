@@ -138,7 +138,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
 - `adSlotID: String|null`
-- `pxratio: String|'1'` The pixel ratio for which the companion creative is intended
+- `pxratio: String|'1'` The pixel ratio for which the companion creative is intended. Default value = 1
 - `renderingMode: String|'default'` Used to indicate when and where to use this companion ad. Default value = default
 - `staticResources: Array<{ url: String, creativeType: String|null }>`
 - `htmlResources: Array<String>`
@@ -161,7 +161,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `offset: String|null`
 - `duration: Number`
 - `type: String|null`
-- `pxratio: String|'1'` The pixel ratio for which the icon creative is intended
+- `pxratio: String|'1'` The pixel ratio for which the icon creative is intended. Default value = 1
 - `staticResource: String|null`
 - `htmlResource: String|null`
 - `iframeResource: String|null`
@@ -181,6 +181,8 @@ This object represents a generic Creative. It's used as a parent object for more
 
 - `apiFramework: String|null` The name of the API framework used to execute the AdVerification code
 - `browserOptional: Boolean` If *true*, this resource is optimized and able to execute in an environment without DOM and other browser built-ins (e.g. iOS' JavaScriptCore).
-- `parameters: String|null` Metadata about the current impression
 - `resource: String|null` URI to the JavaScript file used to collect verification data
 - `vendor: String|null` An identifier for the verification vendor
+- `type: String|null` The type of executable resource provided
+- `parameters: String|null`  String intended for bootstrapping the verification code and providing metadata about the current impression
+- `trackingEvents: Object`

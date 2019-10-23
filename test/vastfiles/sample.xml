@@ -25,6 +25,18 @@
           <VerificationParameters>
             <![CDATA[test-verification-parameter]]>
           </VerificationParameters>
+          <TrackingEvents>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://example.com/verification-not-executed-JS]]></Tracking>
+          </TrackingEvents>
+        </Verification>
+        <Verification vendor="company.daily.com-omid">
+          <ExecutableResource apiFramework="omid" type="executable">
+            <![CDATA[http://example.com/omid1.exe]]>
+          </ExecutableResource>
+          <TrackingEvents>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://example.com/verification-not-executed-EXE]]></Tracking>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://sample.com/verification-not-executed-EXE]]></Tracking>
+          </TrackingEvents>
         </Verification>
       </AdVerifications>
       <Creatives>

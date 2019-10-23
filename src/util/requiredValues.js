@@ -21,6 +21,7 @@ export const requiredValues = {
     attributes: ['model', 'currency']
   },
   Verification: {
+    oneOfinLineResources: ['JavaScriptResource', 'ExecutableResource'],
     attributes: ['vendor']
   },
   UniversalAdId: {
@@ -31,6 +32,9 @@ export const requiredValues = {
   },
   ExecutableResource: {
     attributes: ['apiFramework', 'type']
+  },
+  Tracking: {
+    attributes: ['event']
   },
   Creatives: {
     subElements: ['Creative']
