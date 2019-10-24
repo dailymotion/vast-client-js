@@ -30,7 +30,11 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('minimize', {
           trackingURLTemplates: adTrackingUrls.minimize
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.minimize);
+
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.minimize,
+          expect.anything()
+        );
       });
     });
 
@@ -46,7 +50,8 @@ describe('VASTTracker', function() {
           trackingURLTemplates: adTrackingUrls.otherAdInteraction
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          adTrackingUrls.otherAdInteraction
+          adTrackingUrls.otherAdInteraction,
+          expect.anything()
         );
       });
     });
@@ -63,7 +68,8 @@ describe('VASTTracker', function() {
           trackingURLTemplates: adTrackingUrls.acceptInvitation
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          adTrackingUrls.acceptInvitation
+          adTrackingUrls.acceptInvitation,
+          expect.anything()
         );
       });
     });
@@ -79,7 +85,10 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('adExpand', {
           trackingURLTemplates: adTrackingUrls.adExpand
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.adExpand);
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.adExpand,
+          expect.anything()
+        );
       });
     });
 
@@ -94,7 +103,10 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('adCollapse', {
           trackingURLTemplates: adTrackingUrls.adCollapse
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.adCollapse);
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.adCollapse,
+          expect.anything()
+        );
       });
     });
 
@@ -110,7 +122,8 @@ describe('VASTTracker', function() {
           trackingURLTemplates: adTrackingUrls.overlayViewDuration
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          adTrackingUrls.overlayViewDuration
+          adTrackingUrls.overlayViewDuration,
+          expect.anything()
         );
       });
     });
@@ -126,7 +139,10 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('notUsed', {
           trackingURLTemplates: adTrackingUrls.notUsed
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.notUsed);
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.notUsed,
+          expect.anything()
+        );
         expect(spyEmitter).toHaveBeenCalledTimes(1);
       });
     });

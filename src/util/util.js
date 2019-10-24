@@ -1,3 +1,5 @@
+import { supportedMacros } from './macros';
+
 function track(URLTemplates, variables, options) {
   const URLs = resolveURLTemplates(URLTemplates, variables, options);
 
@@ -21,14 +23,18 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   const URLArray = extractURLsFromTemplates(URLTemplates);
 
   // Encode String variables, when given
-  if (variables['ASSETURI']) {
-    variables['ASSETURI'] = encodeURIComponentRFC3986(variables['ASSETURI']);
-  }
-  if (variables['CONTENTPLAYHEAD']) {
-    variables['CONTENTPLAYHEAD'] = encodeURIComponentRFC3986(
-      variables['CONTENTPLAYHEAD']
-    );
-  }
+  // CONTENTPLAYHEAD @deprecated for VAST 4.1 replaced with ADPLAYHEAD and MEDIAPLAYHEAD
+  [
+    'CONTENTPLAYHEAD',
+    'ADPLAYHEAD',
+    'MEDIAPLAYHEAD',
+    'UNIVERSALADID',
+    'ASSETURI'
+  ].forEach(macro => {
+    if (variables[macro]) {
+      variables[macro] = encodeURIComponentRFC3986(variables[macro]);
+    }
+  });
 
   // Set default value for invalid ERRORCODE
   if (
@@ -54,18 +60,60 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
     if (typeof resolveURL !== 'string') {
       continue;
     }
-
-    for (const key in variables) {
-      const value = variables[key];
-      const macro1 = `[${key}]`;
-      const macro2 = `%%${key}%%`;
-      resolveURL = resolveURL.replace(macro1, value);
-      resolveURL = resolveURL.replace(macro2, value);
-    }
+    resolveURL = replaceUrlMacros(resolveURL, variables);
     resolvedURLs.push(resolveURL);
   }
-
   return resolvedURLs;
+}
+
+/**
+ * Replace the macros tracking url with their value.
+ * If no value is provided for a supported macro and it exists in the url,
+ * it will be replaced by -1 as described by the VAST 4.1 iab specifications
+ *
+ * @param {String} url - Tracking url.
+ * @param {Object} macros - Object of macros to be replaced in the tracking calls
+ */
+function replaceUrlMacros(url, macros) {
+  url = replaceMacrosValues(url, macros);
+  // match any macros from the url that was not replaced
+  const remainingMacros = url.match(/[^[\]]+(?=])/g);
+  if (!remainingMacros) {
+    return url;
+  }
+
+  let supportedRemainingMacros = remainingMacros.filter(
+    macro => supportedMacros.indexOf(macro) > -1
+  );
+  if (!supportedRemainingMacros) {
+    return url;
+  }
+
+  supportedRemainingMacros = supportedRemainingMacros.reduce(
+    (accumulator, macro) => {
+      accumulator[macro] = -1;
+      return accumulator;
+    },
+    {}
+  );
+  return replaceMacrosValues(url, supportedRemainingMacros);
+}
+
+/**
+ * Replace the macros tracking url with their value.
+ *
+ * @param {String} url - Tracking url.
+ * @param {Object} macros - Object of macros to be replaced in the tracking calls
+ */
+function replaceMacrosValues(url, macros) {
+  for (const key in macros) {
+    const value = macros[key];
+    const macro1 = `[${key}]`;
+    const macro2 = `%%${key}%%`;
+    url = url.replace(macro1, value);
+    url = url.replace(macro2, value);
+  }
+  return url;
 }
 
 /**

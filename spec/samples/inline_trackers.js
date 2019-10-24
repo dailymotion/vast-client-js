@@ -146,9 +146,13 @@ export const inlineTrackersParsed = {
             adCollapse: ['http://example.com/linear-adCollapse'],
             minimize: ['http://example.com/linear-minimize'],
             overlayViewDuration: [
-              'http://example.com/linear-overlayViewDuration'
+              'http://example.com/linear-overlayViewDuration&mph=[MEDIAPLAYHEAD]&ctp=[CONTENTPLAYHEAD]&uadid=[UNIVERSALADID]'
             ],
-            notUsed: ['http://example.com/linear-notUsed']
+            notUsed: ['http://example.com/linear-notUsed&assetURI=[ASSETURI]']
+          },
+          universalAdId: {
+            idRegistry: 'sample-registry',
+            value: '000123'
           }
         }
       ],
