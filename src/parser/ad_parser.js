@@ -60,10 +60,7 @@ function parseAdElement(adTypeElement, emit) {
   }
 
   const childNodes = adTypeElement.childNodes;
-  const ad = createAd();
-  ad.id = adTypeElement.getAttribute('id') || null;
-  ad.sequence = adTypeElement.getAttribute('sequence') || null;
-  ad.adType = adTypeElement.getAttribute('adType') || null;
+  const ad = createAd(parserUtils.parseAttributes(adTypeElement));
 
   for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
@@ -120,7 +117,7 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Expires':
-        ad.expires = parseInt(parserUtils.parseNodeText(node));
+        ad.expires = parseInt(parserUtils.parseNodeText(node), 10);
         break;
 
       case 'ViewableImpression':
@@ -299,31 +296,30 @@ export function _parseAdVerifications(verifications) {
 export function _parseViewableImpression(viewableImpressionNode) {
   const viewableImpression = {};
   viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
-
-  for (const viewableImpressionElementKey in viewableImpressionNode.childNodes) {
+  const viewableImpressionChildNodes = viewableImpressionNode.childNodes;
+  for (const viewableImpressionElementKey in viewableImpressionChildNodes) {
     const viewableImpressionElement =
-      viewableImpressionNode.childNodes[viewableImpressionElementKey];
+      viewableImpressionChildNodes[viewableImpressionElementKey];
     const viewableImpressionNodeName = viewableImpressionElement.nodeName;
     const viewableImpressionNodeValue = parserUtils.parseNodeText(
       viewableImpressionElement
     );
 
-    switch (viewableImpressionNodeName) {
-      case 'Viewable':
-      case 'NotViewable':
-      case 'ViewUndetermined':
-        if (viewableImpressionNodeValue) {
-          const viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
-          if (
-            !Array.isArray(viewableImpression[viewableImpressionNodeNameLower])
-          ) {
-            viewableImpression[viewableImpressionNodeNameLower] = [];
-          }
-          viewableImpression[viewableImpressionNodeNameLower].push(
-            viewableImpressionNodeValue
-          );
-        }
-        break;
+    if (
+      viewableImpressionNodeName !== 'Viewable' &&
+      viewableImpressionNodeName !== 'NotViewable' &&
+      viewableImpressionNodeName !== 'ViewUndetermined' &&
+      !viewableImpressionNodeValue
+    ) {
+      continue;
+    } else {
+      const viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
+      if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
+        viewableImpression[viewableImpressionNodeNameLower] = [];
+      }
+      viewableImpression[viewableImpressionNodeNameLower].push(
+        viewableImpressionNodeValue
+      );
     }
   }
 

@@ -17,7 +17,7 @@ This object represents a single parsed Ad
 - `adType: 'video'` An optional string that identifies the type of ad. Default value = video
 - `adServingId: String`
 - `categories: Array<Object>` [go to object](#category)
-- `expires: Integer|null`
+- `expires: Number|null`
 - `viewableImpression: Object` [go to object](#viewable-impression)
 - `system: String|null`
 - `title: String|null`

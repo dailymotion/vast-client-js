@@ -1,8 +1,8 @@
-export function createAd() {
+export function createAd(adAttributes = {}) {
   return {
-    id: null,
-    sequence: null,
-    adType: null,
+    id: adAttributes.id || null,
+    sequence: adAttributes.sequence || null,
+    adType: adAttributes.adType || null,
     adServingId: null,
     categories: [],
     expires: null,

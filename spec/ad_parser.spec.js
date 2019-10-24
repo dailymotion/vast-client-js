@@ -8,7 +8,7 @@ import {
 } from './samples/viewable_impression';
 
 describe('AdParser', function() {
-  describe('parseAdElement', function() {
+  describe('parseAd', function() {
     const adElement = getNodesFromXml(linearAd);
     let ad = null;
 
