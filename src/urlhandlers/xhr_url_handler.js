@@ -29,13 +29,14 @@ function handleLoad(request, cb) {
 }
 
 function handleFail(request, cb, isTimeout) {
+  const statusCode = !isTimeout ? request.status : 408; // Request timeout
   const msg = isTimeout
-    ? `XHRURLHandler: Request timed out after ${request.timeout} ms.`
-    : `XHRURLHandler: ${request.statusText}`;
+    ? `XHRURLHandler: Request timed out after ${
+        request.timeout
+      } ms (${statusCode})`
+    : `XHRURLHandler: ${request.statusText} (${statusCode})`;
 
-  cb(new Error(msg), null, {
-    statusCode: !isTimeout ? request.status : 408 // Request timeout
-  });
+  cb(new Error(msg), null, { statusCode });
 }
 
 function get(url, options, cb) {
