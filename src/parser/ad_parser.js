@@ -161,6 +161,15 @@ function parseAdElement(adTypeElement, emit) {
           value: parserUtils.parseNodeText(node)
         });
         break;
+
+      case 'Wrapper':
+        ad.wrapper = {
+          followAdditionalWrappers:
+            node.getAttribute('followAdditionalWrappers') || true,
+          allowMultipleAds: node.getAttribute('allowMultipleAds') || false,
+          fallbackOnNoAd: node.getAttribute('fallbackOnNoAd') || null
+        };
+        break;
     }
   }
 
