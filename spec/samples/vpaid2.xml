@@ -1,0 +1,29 @@
+<VAST version="2.0">
+  <Ad id="preroll-1">
+    <InLine>
+      <AdSystem>2.0</AdSystem>
+      <AdTitle>5773100</AdTitle>
+      <Creatives>
+        <Creative>
+          <Linear>
+            <Duration>00:00:01</Duration>
+            <MediaFiles>
+              <MediaFile height="270" width="370" type="application/x-shockwave-flash">
+                <![CDATA[http://static.scanscout.com/ads/vpaidad3.swf?adData=http%3A//app.scanscout.com/ssframework/adStreamJSController.xml%3Fa%3Dgetadscheduleforcontent%26PI%3D567%26scheduleVersion%3Dnull%26HI%3D567|preroll|7496075541100999745%26AI%3D0]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+        <Creative>
+          <CompanionAds>
+            <Companion height="250" width="300" id="573242">
+              <HTMLResource>
+                <![CDATA[<A onClick="var i= new Image(1,1); i.src='http://app.scanscout.com/ssframework/log/log.png?a=logitemaction&RI=573242&CbC=1&CbF=true&EC=0&RC=0&SmC=2&CbM=1.0E-5&VI=44cfc3b2382300cb751ba129fe51f46a&admode=preroll&PRI=7496075541100999745&RprC=5&ADsn=20&VcaI=192,197&RrC=1&VgI=44cfc3b2382300cb751ba129fe51f46a&AVI=142&Ust=ma&Uctry=us&CI=1247549&AC=4&PI=567&Udma=506&ADI=5773100&VclF=true';" HREF="http://vaseline.com" target="_blank"> <IMG SRC="http://media.scanscout.com/ads/vaseline300x250Companion.jpg" BORDER=0 WIDTH=300 HEIGHT=250 ALT="Click Here"> </A> <img src="http://app.scanscout.com/ssframework/log/log.png?a=logitemaction&RI=573242&CbC=1&CbF=true&EC=1&RC=0&SmC=2&CbM=1.0E-5&VI=44cfc3b2382300cb751ba129fe51f46a&admode=preroll&PRI=7496075541100999745&RprC=5&ADsn=20&VcaI=192,197&RrC=1&VgI=44cfc3b2382300cb751ba129fe51f46a&AVI=142&Ust=ma&Uctry=us&CI=1247549&AC=4&PI=567&Udma=506&ADI=5773100&VclF=true" height="1" width="1">]]>
+              </HTMLResource>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>
