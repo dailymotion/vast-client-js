@@ -154,6 +154,13 @@ function parseAdElement(adTypeElement, emit) {
       case 'Survey':
         ad.survey = parserUtils.parseNodeText(node);
         break;
+
+      case 'BlockedAdCategories':
+        ad.blockedAdCategories.push({
+          authority: node.getAttribute('authority') || null,
+          value: parserUtils.parseNodeText(node)
+        });
+        break;
     }
   }
 
