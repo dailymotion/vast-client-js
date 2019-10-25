@@ -246,6 +246,7 @@ export const util = {
   containsTemplateObject,
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,
+  replaceUrlMacros,
   leftpad,
   range,
   isNumeric,

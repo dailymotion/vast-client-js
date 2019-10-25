@@ -419,16 +419,32 @@ export class VASTTracker extends EventEmitter {
   /**
    * Must be called if the player did not or was not able to execute the provided
    * verification code.The [REASON] macro must be filled with reason code
-   * Calls the minimize tracking URLs.
+   * Calls the verificationNotExecuted trackings URLs.
    *
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#verificationNotExecuted
    */
   verificationNotExecuted(macros = {}) {
-    this.track('verificationNotExecuted', false, {
-      macros
+    if (
+      !(this.ad && this.ad.adVerifications && this.ad.adVerifications.length)
+    ) {
+      return;
+    }
+
+    this.ad.adVerifications.forEach(verification => {
+      if (
+        verification.trackingEvents &&
+        verification.trackingEvents.verificationNotExecuted
+      ) {
+        this.trackURLs(
+          verification.trackingEvents.verificationNotExecuted,
+          macros
+        );
+        this.emit('verificationNotExecuted', null);
+      }
     });
   }
+
   /**
    * The time that the initial ad is displayed. This time is based on
    * the time between the impression and either the completed length of display based

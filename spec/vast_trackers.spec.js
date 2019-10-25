@@ -11,8 +11,9 @@ describe('VASTTracker', function() {
     let spyEmitter;
     let spyTrackUrl;
     let adTrackingUrls;
+    let ad;
     beforeEach(() => {
-      const ad = inlineTrackersParsed.ads[0];
+      ad = inlineTrackersParsed.ads[0];
       adTrackingUrls = ad.creatives[0].trackingEvents;
       vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
       spyEmitter = jest.spyOn(vastTracker, 'emit');
@@ -34,6 +35,29 @@ describe('VASTTracker', function() {
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.minimize,
           expect.anything()
+        );
+      });
+    });
+
+    describe('#verificationNotExecuted', () => {
+      let verificationUrls;
+      let reasonMacro = { REASON: 3 };
+      beforeEach(() => {
+        verificationUrls =
+          ad.adVerifications[0].trackingEvents.verificationNotExecuted;
+        vastTracker.verificationNotExecuted(reasonMacro);
+      });
+      it('should be defined', () => {
+        expect(verificationUrls).toBeDefined();
+      });
+      it('should have emitted verificationNotExecuted event and called trackUrl', () => {
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          verificationUrls,
+          expect.objectContaining(reasonMacro)
+        );
+        expect(spyEmitter).toHaveBeenCalledWith(
+          'verificationNotExecuted',
+          null
         );
       });
     });

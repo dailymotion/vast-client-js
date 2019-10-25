@@ -325,4 +325,37 @@ describe('util', function() {
       expect(outputArr).toEqual(expectedOutput);
     });
   });
+
+  describe('#replaceUrlMacros', function() {
+    it('replace macro with corresponding values', () => {
+      const replacedUrlMacros = util.replaceUrlMacros(
+        'http://test.com?bp=[BREAKPOSITION]',
+        {
+          BREAKPOSITION: 2
+        }
+      );
+      expect(replacedUrlMacros).toEqual('http://test.com?bp=2');
+    });
+
+    it('replace multiple macros with corresponding values', () => {
+      const replacedUrlMacros = util.replaceUrlMacros(
+        'http://test.com?bp=[BREAKPOSITION]&ext=[EXTENSIONS]',
+        {
+          BREAKPOSITION: 2,
+          EXTENSIONS: ['AdVerifications', 'extensionA', 'extensionB']
+        }
+      );
+      expect(replacedUrlMacros).toEqual(
+        'http://test.com?bp=2&ext=AdVerifications,extensionA,extensionB'
+      );
+    });
+
+    it('replace macro without value with -1', () => {
+      const replacedUrlMacros = util.replaceUrlMacros(
+        'http://test.com?bp=[BREAKPOSITION]',
+        {}
+      );
+      expect(replacedUrlMacros).toEqual('http://test.com?bp=-1');
+    });
+  });
 });
