@@ -28,9 +28,12 @@ describe('AdParser', function() {
     });
 
     it('correctly returns inline and passes ad attributes down', () => {
-      let inLineAd = parseAd(inlineAdNode, emit);
       expect(parseAd(inlineAdNode, emit)).toEqual({
-        ad: expect.objectContaining({ id: 'id-123', sequence: 'seq-123' }),
+        ad: expect.objectContaining({
+          id: 'id-123',
+          sequence: 'seq-123',
+          adType: null
+        }),
         type: 'INLINE'
       });
     });
