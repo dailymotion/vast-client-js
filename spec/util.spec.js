@@ -12,8 +12,8 @@ describe('util', function() {
     const encodedPlayhead = encodeRFC3986(playhead);
     const encodedTimestamp = encodeRFC3986(now);
 
-    const resolve = (URLTemplate, variables) =>
-      util.resolveURLTemplates([URLTemplate], variables)[0];
+    const resolve = (URLTemplate, macros) =>
+      util.resolveURLTemplates([URLTemplate], macros)[0];
 
     const realDateToISOString = Date.prototype.toISOString;
 

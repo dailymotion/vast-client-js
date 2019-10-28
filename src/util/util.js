@@ -1,7 +1,7 @@
 import { supportedMacros } from './macros';
 
-function track(URLTemplates, variables, options) {
-  const URLs = resolveURLTemplates(URLTemplates, variables, options);
+function track(URLTemplates, macros, options) {
+  const URLs = resolveURLTemplates(URLTemplates, macros, options);
 
   URLs.forEach(URL => {
     if (typeof window !== 'undefined' && window !== null) {
@@ -15,33 +15,33 @@ function track(URLTemplates, variables, options) {
  * Replace the provided URLTemplates with the given values
  *
  * @param {Array} URLTemplates - An array of tracking url templates.
- * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+ * @param {Object} [macros={}] - An optional Object of parameters to be used in the tracking calls.
  * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
  */
-function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
+function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
   const resolvedURLs = [];
   const URLArray = extractURLsFromTemplates(URLTemplates);
 
   // Set default value for invalid ERRORCODE
   if (
-    variables['ERRORCODE'] &&
+    macros['ERRORCODE'] &&
     !options.isCustomCode &&
-    !/^[0-9]{3}$/.test(variables['ERRORCODE'])
+    !/^[0-9]{3}$/.test(macros['ERRORCODE'])
   ) {
-    variables['ERRORCODE'] = 900;
+    macros['ERRORCODE'] = 900;
   }
 
   // Calc random/time based macros
-  variables['CACHEBUSTING'] = leftpad(
+  macros['CACHEBUSTING'] = leftpad(
     Math.round(Math.random() * 1.0e8).toString()
   );
-  variables['TIMESTAMP'] = new Date().toISOString();
+  macros['TIMESTAMP'] = new Date().toISOString();
 
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
-  variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
+  macros['RANDOM'] = macros['random'] = macros['CACHEBUSTING'];
 
-  for (const macro in variables) {
-    variables[macro] = encodeURIComponentRFC3986(variables[macro]);
+  for (const macro in macros) {
+    macros[macro] = encodeURIComponentRFC3986(macros[macro]);
   }
 
   for (const URLTemplateKey in URLArray) {
@@ -50,7 +50,7 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
     if (typeof resolveURL !== 'string') {
       continue;
     }
-    const replacedUrlMacros = replaceUrlMacros(resolveURL, variables);
+    const replacedUrlMacros = replaceUrlMacros(resolveURL, macros);
     resolvedURLs.push(replacedUrlMacros);
   }
   return resolvedURLs;

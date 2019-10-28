@@ -4,6 +4,7 @@ The `VASTTracker` class provides methods to track the execution of an Ad.
 
 * [Constructor](#constructor)
 * [Events](#events)
+* [Macros](#macros)
 * [Methods](#methods)
 
 ## Constructor<a name="constructor"></a>
@@ -632,3 +633,40 @@ vastTracker.on('verificationNotExecuted', () => {
 // Call the overlayViewDuration event
 vastTracker.verificationNotExecuted({REASON: 3});
 ```
+
+### track(eventName, { macros, once })
+Calls the tracking URLs for the given eventName and emits the event.
+
+#### Parameters
+* **`eventName: Object`** - The event name
+* **`macros: Object`** - An optional Object of macros to be used in the tracking calls.
+* **`once: Boolean`** - An optional Boolean to define if the event has to be tracked only once.
+
+#### Events emitted
+* **`given eventName`**
+
+#### Example
+```Javascript
+// Track the tracking URLs for skip event
+vastTracker.track('skip', { macros });
+```
+
+## Private Methods ⚠️
+
+These methods documentation is provided in order to make the tracker internal logic clearer. It should not be considered as part of the class public API.
+
+### trackURLs(URLTemplates, macros , options)
+Calls the tracking urls templates with the given macros.
+Also automatically replaces the deducted value for following macros:
+- CONTENTPLAYHEAD (deprecated for VAST 4.1)
+- ADPLAYHEAD
+- MEDIAPLAYHEAD
+- ADPLAYHEAD
+- ASSETURI
+- PODSEQUENCE
+- UNIVERSALADID
+
+#### Parameters
+* **`URLTemplates: Array`** - An array of tracking url templates.
+* **`macros: Object`** - An optional Object of macros to be used in the tracking calls.
+* **`option: Object`** - An optional Object of options to be used in the tracking calls.

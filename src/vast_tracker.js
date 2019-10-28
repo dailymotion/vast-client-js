@@ -198,11 +198,11 @@ export class VASTTracker extends EventEmitter {
       }
 
       events.forEach(eventName => {
-        this.track(eventName, macros, true);
+        this.track(eventName, { macros, once: true });
       });
 
       if (progress < this.progress) {
-        this.track('rewind', macros);
+        this.track('rewind', { macros });
       }
     }
 
@@ -237,7 +237,7 @@ export class VASTTracker extends EventEmitter {
    */
   setMuted(muted, macros = {}) {
     if (this.muted !== muted) {
-      this.track(muted ? 'mute' : 'unmute', macros);
+      this.track(muted ? 'mute' : 'unmute', { macros });
     }
     this.muted = muted;
   }
@@ -252,7 +252,7 @@ export class VASTTracker extends EventEmitter {
    */
   setPaused(paused, macros = {}) {
     if (this.paused !== paused) {
-      this.track(paused ? 'pause' : 'resume', macros);
+      this.track(paused ? 'pause' : 'resume', { macros });
     }
     this.paused = paused;
   }
@@ -267,7 +267,7 @@ export class VASTTracker extends EventEmitter {
    */
   setFullscreen(fullscreen, macros = {}) {
     if (this.fullscreen !== fullscreen) {
-      this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', macros);
+      this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', { macros });
     }
     this.fullscreen = fullscreen;
   }
@@ -284,8 +284,8 @@ export class VASTTracker extends EventEmitter {
    */
   setExpand(expanded, macros = {}) {
     if (this.expanded !== expanded) {
-      this.track(expanded ? 'expand' : 'collapse', macros);
-      this.track(expanded ? 'playerExpand' : 'playerCollapse', macros);
+      this.track(expanded ? 'expand' : 'collapse', { macros });
+      this.track(expanded ? 'playerExpand' : 'playerCollapse', { macros });
     }
     this.expanded = expanded;
   }
@@ -314,7 +314,7 @@ export class VASTTracker extends EventEmitter {
     if (!this.impressed) {
       this.impressed = true;
       this.trackURLs(this.ad.impressionURLTemplates);
-      this.track('creativeView', macros);
+      this.track('creativeView', { macros });
     }
   }
 
@@ -341,7 +341,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#complete
    */
   complete(macros = {}) {
-    this.track('complete', macros);
+    this.track('complete', { macros });
   }
 
   /**
@@ -353,7 +353,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#notUsed
    */
   notUsed(macros = {}) {
-    this.track('notUsed', macros);
+    this.track('notUsed', { macros });
     this.trackingEvents = [];
   }
 
@@ -367,7 +367,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#otherAdInteraction
    */
   otherAdInteraction(macros = {}) {
-    this.track('otherAdInteraction', macros);
+    this.track('otherAdInteraction', { macros });
   }
 
   /**
@@ -381,7 +381,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#acceptInvitation
    */
   acceptInvitation(macros = {}) {
-    this.track('acceptInvitation', macros);
+    this.track('acceptInvitation', { macros });
   }
 
   /**
@@ -392,7 +392,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#adExpand
    */
   adExpand(macros = {}) {
-    this.track('adExpand', macros);
+    this.track('adExpand', { macros });
   }
 
   /**
@@ -403,7 +403,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#adCollapse
    */
   adCollapse(macros = {}) {
-    this.track('adCollapse', macros);
+    this.track('adCollapse', { macros });
   }
 
   /**
@@ -414,7 +414,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#minimize
    */
   minimize(macros = {}) {
-    this.track('minimize', macros);
+    this.track('minimize', { macros });
   }
 
   /**
@@ -464,7 +464,7 @@ export class VASTTracker extends EventEmitter {
   overlayViewDuration(duration, macros = {}) {
     macros['CONTENTPLAYHEAD'] = duration;
     macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
-    this.track('overlayViewDuration', macros);
+    this.track('overlayViewDuration', { macros });
   }
 
   /**
@@ -476,7 +476,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#close
    */
   close(macros = {}) {
-    this.track(this.linear ? 'closeLinear' : 'close', macros);
+    this.track(this.linear ? 'closeLinear' : 'close', { macros });
   }
 
   /**
@@ -486,7 +486,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#skip
    */
   skip(macros = {}) {
-    this.track('skip', macros);
+    this.track('skip', { macros });
   }
 
   /**
@@ -498,7 +498,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#loaded
    */
   load(macros = {}) {
-    this.track('loaded', macros);
+    this.track('loaded', { macros });
   }
 
   /**
@@ -522,17 +522,14 @@ export class VASTTracker extends EventEmitter {
       this.clickThroughURLTemplate || fallbackClickThroughURL;
 
     if (clickThroughURLTemplate) {
-      const timeProgress = this.progressFormatted();
-      const variables = this.linear
-        ? {
-            CONTENTPLAYHEAD: timeProgress,
-            MEDIAPLAYHEAD: timeProgress,
-            ADPLAYHEAD: timeProgress
-          }
-        : {};
+      if (this.linear) {
+        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
+          macros['CONTENTPLAYHEAD'];
+      }
       const clickThroughURL = util.resolveURLTemplates(
         [clickThroughURLTemplate],
-        variables
+        macros
       )[0];
 
       this.emit('clickthrough', clickThroughURL);
@@ -543,11 +540,11 @@ export class VASTTracker extends EventEmitter {
    * Calls the tracking URLs for the given eventName and emits the event.
    *
    * @param {String} eventName - The name of the event.
-   * @param {Object} [variables={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
+   * @param {Object} [macros ={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
    * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
    *
    */
-  track(eventName, variables, once = false) {
+  track(eventName, { macros = {}, once = false }) {
     // closeLinear event was introduced in VAST 3.0
     // Fallback to vast 2.0 close event if necessary
     if (
@@ -563,7 +560,7 @@ export class VASTTracker extends EventEmitter {
 
     if (trackingURLTemplates) {
       this.emit(eventName, { trackingURLTemplates });
-      this.trackURLs(trackingURLTemplates, variables);
+      this.trackURLs(trackingURLTemplates, macros);
     } else if (isAlwaysEmitEvent) {
       this.emit(eventName, null);
     }
@@ -580,13 +577,13 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Calls the tracking urls templates with the given variables.
+   * Calls the tracking urls templates with the given macros .
    *
    * @param {Array} URLTemplates - An array of tracking url templates.
-   * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+   * @param {Object} [macros ={}] - An optional Object of parameters to be used in the tracking calls.
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
-  trackURLs(URLTemplates, variables = {}, options = {}) {
+  trackURLs(URLTemplates, macros = {}, options = {}) {
     if (this.linear) {
       if (
         this.creative &&
@@ -594,13 +591,13 @@ export class VASTTracker extends EventEmitter {
         this.creative.mediaFiles[0] &&
         this.creative.mediaFiles[0].fileURL
       ) {
-        variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
+        macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-      if (!variables['CONTENTPLAYHEAD'] && this.progress) {
+      if (!macros['CONTENTPLAYHEAD'] && this.progress) {
         //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
-        variables['CONTENTPLAYHEAD'] = this.progressFormatted();
-        variables['MEDIAPLAYHEAD'] = variables['ADPLAYHEAD'] =
-          variables['CONTENTPLAYHEAD'];
+        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
+          macros['CONTENTPLAYHEAD'];
       }
     }
     if (
@@ -609,16 +606,16 @@ export class VASTTracker extends EventEmitter {
       this.creative.universalAdId.idRegistry &&
       this.creative.universalAdId.value
     ) {
-      variables['UNIVERSALADID'] = `${this.creative.universalAdId.idRegistry} ${
+      macros['UNIVERSALADID'] = `${this.creative.universalAdId.idRegistry} ${
         this.creative.universalAdId.value
       }`;
     }
 
     if (this.ad && this.ad.sequence) {
-      variables['PODSEQUENCE'] = this.ad.sequence;
+      macros['PODSEQUENCE'] = this.ad.sequence;
     }
 
-    util.track(URLTemplates, variables, options);
+    util.track(URLTemplates, macros, options);
   }
 
   /**
