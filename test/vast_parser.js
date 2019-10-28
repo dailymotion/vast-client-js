@@ -823,9 +823,9 @@ describe('VASTParser', function() {
       });
 
       it('should have default attributes value for wrapper', () => {
-        this.response.ads[0].wrapper.followAdditionalWrappers.should.eql(true);
-        this.response.ads[0].wrapper.allowMultipleAds.should.eql(false);
-        should.equal(this.response.ads[0].wrapper.fallbackOnNoAd, null);
+        this.response.ads[0].followAdditionalWrappers.should.eql(true);
+        this.response.ads[0].allowMultipleAds.should.eql(false);
+        should.equal(this.response.ads[0].fallbackOnNoAd, null);
       });
     });
 
@@ -897,9 +897,9 @@ describe('VASTParser', function() {
       });
 
       it('should have good attributes value for wrapper', () => {
-        this.response.ads[0].wrapper.followAdditionalWrappers.should.eql(false);
-        this.response.ads[0].wrapper.allowMultipleAds.should.eql(true);
-        this.response.ads[0].wrapper.fallbackOnNoAd.should.eql(true);
+        this.response.ads[0].followAdditionalWrappers.should.eql(false);
+        this.response.ads[0].allowMultipleAds.should.eql(true);
+        this.response.ads[0].fallbackOnNoAd.should.eql(true);
       });
     });
   });

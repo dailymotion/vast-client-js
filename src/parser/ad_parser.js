@@ -17,7 +17,11 @@ import { parserVerification } from './parser_verification';
  * @emits  VASTParser#VAST-warning
  * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
  */
-export function parseAd(adElement, emit, { ignoreNextWrapper }) {
+export function parseAd(
+  adElement,
+  emit,
+  { allowMultipleAds, followAdditionalWrappers }
+) {
   const childNodes = adElement.childNodes;
 
   for (const adTypeElementKey in childNodes) {
@@ -27,7 +31,7 @@ export function parseAd(adElement, emit, { ignoreNextWrapper }) {
       continue;
     }
 
-    if (adTypeElement.nodeName === 'Wrapper' && ignoreNextWrapper) {
+    if (adTypeElement.nodeName === 'Wrapper' && !followAdditionalWrappers) {
       continue;
     }
 
@@ -37,7 +41,10 @@ export function parseAd(adElement, emit, { ignoreNextWrapper }) {
     if (adTypeElement.nodeName === 'Wrapper') {
       return { ad: parseWrapper(adTypeElement, emit), type: 'WRAPPER' };
     } else if (adTypeElement.nodeName === 'InLine') {
-      return { ad: parseInLine(adTypeElement, emit), type: 'INLINE' };
+      return {
+        ad: parseInLine(adTypeElement, emit, { allowMultipleAds }),
+        type: 'INLINE'
+      };
     }
   }
 }
@@ -46,10 +53,16 @@ export function parseAd(adElement, emit, { ignoreNextWrapper }) {
  * Parses an Inline
  * @param  {Object} adElement Element - The VAST Inline element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
  * @emits  VASTParser#VAST-warning
  * @return {Object} ad - The ad object.
  */
-function parseInLine(adElement, emit) {
+function parseInLine(adElement, emit, { allowMultipleAds = false }) {
+  const sequence = adElement.getAttribute('sequence') || null;
+  if (sequence && !allowMultipleAds) {
+    //return;
+  }
+
   return parseAdElement(adElement, emit);
 }
 
@@ -57,6 +70,7 @@ function parseInLine(adElement, emit) {
  * Parses an ad type (Inline or Wrapper)
  * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
  * @emits  VASTParser#VAST-warning
  * @return {Object} ad - The ad object.
  */
@@ -189,20 +203,20 @@ function parseWrapper(wrapperElement, emit) {
   const allowMultipleAdsValue = wrapperElement.getAttribute('allowMultipleAds');
   const fallbackOnNoAdValue = wrapperElement.getAttribute('fallbackOnNoAd');
 
-  ad.wrapper = {
-    followAdditionalWrappers:
-      followAdditionalWrappersValue !== ''
-        ? parserUtils.parseBoolean(followAdditionalWrappersValue)
-        : true,
-    allowMultipleAds:
-      allowMultipleAdsValue !== ''
-        ? parserUtils.parseBoolean(allowMultipleAdsValue)
-        : false,
-    fallbackOnNoAd:
-      fallbackOnNoAdValue !== ''
-        ? parserUtils.parseBoolean(fallbackOnNoAdValue)
-        : null
-  };
+  ad.followAdditionalWrappers =
+    followAdditionalWrappersValue !== ''
+      ? parserUtils.parseBoolean(followAdditionalWrappersValue)
+      : true;
+
+  ad.allowMultipleAds =
+    allowMultipleAdsValue !== ''
+      ? parserUtils.parseBoolean(allowMultipleAdsValue)
+      : false;
+
+  ad.fallbackOnNoAd =
+    fallbackOnNoAdValue !== ''
+      ? parserUtils.parseBoolean(fallbackOnNoAdValue)
+      : null;
 
   let wrapperURLElement = parserUtils.childByName(
     wrapperElement,

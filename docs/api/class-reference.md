@@ -208,7 +208,3 @@ This object represents a generic Creative. It's used as a parent object for more
 
 - `authority: String`
 - `value: String`
-
-## Wrapper<a name="wrapper"></a>
-
-- `attributes: Object`

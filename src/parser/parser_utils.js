@@ -228,7 +228,9 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
-  unwrappedAd.wrapper = wrapper.wrapper;
+  unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
+  unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
+  unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
 
   const wrapperCompanions = (wrapper.creatives || []).filter(
     creative => creative && creative.type === 'companion'

@@ -277,7 +277,8 @@ export class VASTParser extends EventEmitter {
       isRootVAST = false,
       url = null,
       wrapperDepth = 0,
-      ignoreNextWrapper = false
+      allowMultipleAds,
+      followAdditionalWrappers
     }
   ) {
     // check if is a valid VAST document
@@ -318,7 +319,8 @@ export class VASTParser extends EventEmitter {
           : this.errorURLTemplates.push(errorURLTemplate);
       } else if (node.nodeName === 'Ad') {
         const result = parseAd(node, this.emit.bind(this), {
-          ignoreNextWrapper
+          allowMultipleAds,
+          followAdditionalWrappers
         });
 
         if (result.ad) {
@@ -362,7 +364,8 @@ export class VASTParser extends EventEmitter {
       previousUrl = null,
       wrapperDepth = 0,
       isRootVAST = false,
-      ignoreNextWrapper = false
+      followAdditionalWrappers = true,
+      allowMultipleAds = false
     }
   ) {
     let ads = [];
@@ -371,7 +374,8 @@ export class VASTParser extends EventEmitter {
         isRootVAST,
         url,
         wrapperDepth,
-        ignoreNextWrapper
+        allowMultipleAds,
+        followAdditionalWrappers
       });
     } catch (e) {
       return Promise.reject(e);
@@ -488,7 +492,8 @@ export class VASTParser extends EventEmitter {
             previousUrl,
             wrapperSequence,
             wrapperDepth,
-            ignoreNextWrapper: !ad.wrapper.followAdditionalWrappers
+            followAdditionalWrappers: ad.followAdditionalWrappers,
+            allowMultipleAds: ad.allowMultipleAds
           }).then(unwrappedAds => {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {
