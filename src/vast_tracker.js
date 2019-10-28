@@ -231,6 +231,7 @@ export class VASTTracker extends EventEmitter {
    * Updates the mute state and calls the mute/unmute tracking URLs.
    *
    * @param {Boolean} muted - Indicates if the video is muted or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#mute
    * @emits VASTTracker#unmute
    */
@@ -426,7 +427,9 @@ export class VASTTracker extends EventEmitter {
    */
   verificationNotExecuted(macros = {}) {
     if (
-      !(this.ad && this.ad.adVerifications && this.ad.adVerifications.length)
+      !this.ad ||
+      !this.ad.adVerifications ||
+      !this.ad.adVerifications.length
     ) {
       return;
     }
@@ -519,12 +522,12 @@ export class VASTTracker extends EventEmitter {
       this.clickThroughURLTemplate || fallbackClickThroughURL;
 
     if (clickThroughURLTemplate) {
-      const timeProgess = this.progressFormatted();
+      const timeProgress = this.progressFormatted();
       const variables = this.linear
         ? {
-            CONTENTPLAYHEAD: timeProgess,
-            MEDIAPLAYHEAD: timeProgess,
-            ADPLAYHEAD: timeProgess
+            CONTENTPLAYHEAD: timeProgress,
+            MEDIAPLAYHEAD: timeProgress,
+            ADPLAYHEAD: timeProgress
           }
         : {};
       const clickThroughURL = util.resolveURLTemplates(
@@ -593,12 +596,9 @@ export class VASTTracker extends EventEmitter {
       ) {
         variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-
-      const progress = this.progressFormatted();
-      // Do not set contentPlayHead if progress is NaN or already set
-      if (!variables['CONTENTPLAYHEAD'] && progress !== progress) {
+      if (!variables['CONTENTPLAYHEAD'] && this.progress) {
         //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
-        variables['CONTENTPLAYHEAD'] = progress;
+        variables['CONTENTPLAYHEAD'] = this.progressFormatted();
         variables['MEDIAPLAYHEAD'] = variables['ADPLAYHEAD'] =
           variables['CONTENTPLAYHEAD'];
       }

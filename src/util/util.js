@@ -22,20 +22,6 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   const resolvedURLs = [];
   const URLArray = extractURLsFromTemplates(URLTemplates);
 
-  // Encode String variables, when given
-  // CONTENTPLAYHEAD @deprecated for VAST 4.1 replaced with ADPLAYHEAD and MEDIAPLAYHEAD
-  [
-    'CONTENTPLAYHEAD',
-    'ADPLAYHEAD',
-    'MEDIAPLAYHEAD',
-    'UNIVERSALADID',
-    'ASSETURI'
-  ].forEach(macro => {
-    if (variables[macro]) {
-      variables[macro] = encodeURIComponentRFC3986(variables[macro]);
-    }
-  });
-
   // Set default value for invalid ERRORCODE
   if (
     variables['ERRORCODE'] &&
@@ -49,19 +35,23 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
   variables['CACHEBUSTING'] = leftpad(
     Math.round(Math.random() * 1.0e8).toString()
   );
-  variables['TIMESTAMP'] = encodeURIComponentRFC3986(new Date().toISOString());
+  variables['TIMESTAMP'] = new Date().toISOString();
 
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
   variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
 
+  for (const macro in variables) {
+    variables[macro] = encodeURIComponentRFC3986(variables[macro]);
+  }
+
   for (const URLTemplateKey in URLArray) {
-    let resolveURL = URLArray[URLTemplateKey];
+    const resolveURL = URLArray[URLTemplateKey];
 
     if (typeof resolveURL !== 'string') {
       continue;
     }
-    resolveURL = replaceUrlMacros(resolveURL, variables);
-    resolvedURLs.push(resolveURL);
+    const replacedUrlMacros = replaceUrlMacros(resolveURL, variables);
+    resolvedURLs.push(replacedUrlMacros);
   }
   return resolvedURLs;
 }
@@ -106,14 +96,15 @@ function replaceUrlMacros(url, macros) {
  * @param {Object} macros - Object of macros to be replaced in the tracking calls
  */
 function replaceMacrosValues(url, macros) {
+  let replacedMacrosUrl = url;
   for (const key in macros) {
     const value = macros[key];
     const macro1 = `[${key}]`;
     const macro2 = `%%${key}%%`;
-    url = url.replace(macro1, value);
-    url = url.replace(macro2, value);
+    replacedMacrosUrl = replacedMacrosUrl.replace(macro1, value);
+    replacedMacrosUrl = replacedMacrosUrl.replace(macro2, value);
   }
-  return url;
+  return replacedMacrosUrl;
 }
 
 /**
