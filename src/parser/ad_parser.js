@@ -306,9 +306,9 @@ export function _parseViewableImpression(viewableImpressionNode) {
     );
 
     if (
-      viewableImpressionNodeName !== 'Viewable' &&
-      viewableImpressionNodeName !== 'NotViewable' &&
-      viewableImpressionNodeName !== 'ViewUndetermined' &&
+      (viewableImpressionNodeName !== 'Viewable' &&
+        viewableImpressionNodeName !== 'NotViewable' &&
+        viewableImpressionNodeName !== 'ViewUndetermined') ||
       !viewableImpressionNodeValue
     ) {
       continue;

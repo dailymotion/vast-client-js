@@ -9,11 +9,73 @@ import {
 
 describe('AdParser', function() {
   describe('parseAd', function() {
-    const adElement = getNodesFromXml(linearAd);
-    let ad = null;
+    let inlineAdNode, wrapperAdNode, invalidAdNode, adElement, ad;
+    const emit = () => {};
+
+    beforeAll(() => {
+      inlineAdNode = getNodesFromXml(
+        '<Ad id="id-123" sequence="seq-123"><InLine></InLine></Ad>'
+      );
+      wrapperAdNode = getNodesFromXml(
+        '<Ad><Wrapper><VASTAdTagURI>foo</VASTAdTagURI></Wrapper></Ad>'
+      );
+      invalidAdNode = getNodesFromXml('<Ad><Foo></Foo></Ad>');
+      adElement = getNodesFromXml(linearAd);
+    });
 
     beforeEach(() => {
       ad = parseAd(adElement, null);
+    });
+
+    it('correctly returns inline and passes ad attributes down', () => {
+      expect(parseAd(inlineAdNode, emit)).toEqual({
+        adServingId: null,
+        adType: null,
+        adVerifications: [],
+        advertiser: null,
+        categories: [],
+        creatives: [],
+        description: null,
+        errorURLTemplates: [],
+        expires: null,
+        extensions: [],
+        id: 'id-123',
+        impressionURLTemplates: [],
+        pricing: null,
+        sequence: 'seq-123',
+        survey: null,
+        system: null,
+        title: null,
+        viewableImpression: {}
+      });
+    });
+
+    it('correctly returns wrapper', () => {
+      expect(parseAd(wrapperAdNode, emit)).toEqual({
+        adServingId: null,
+        adType: null,
+        adVerifications: [],
+        advertiser: null,
+        categories: [],
+        creatives: [],
+        description: null,
+        errorURLTemplates: [],
+        expires: null,
+        extensions: [],
+        id: null,
+        nextWrapperURL: 'foo',
+        impressionURLTemplates: [],
+        pricing: null,
+        sequence: null,
+        survey: null,
+        system: null,
+        title: null,
+        viewableImpression: {}
+      });
+    });
+
+    it('does not return if ad does not contain wrapper or inline', () => {
+      expect(parseAd(invalidAdNode, emit)).toBeUndefined();
     });
 
     it('contains the required Ad sub-elements values', () => {
