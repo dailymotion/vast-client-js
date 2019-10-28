@@ -17,26 +17,11 @@ describe('VASTParser', function() {
   describe('#getAndParseVAST', function() {
     this.response = null;
     let _response = null;
-    this.templateFilterCalls = [];
-    let eventsTriggered = null;
     const options = {
       urlhandler: nodeURLHandler
     };
 
     before(done => {
-      eventsTriggered = [];
-
-      vastParser.on('VAST-resolving', variables =>
-        eventsTriggered.push({ name: 'VAST-resolving', data: variables })
-      );
-      vastParser.on('VAST-resolved', variables =>
-        eventsTriggered.push({ name: 'VAST-resolved', data: variables })
-      );
-
-      vastParser.addURLTemplateFilter(url => {
-        this.templateFilterCalls.push(url);
-        return url;
-      });
       vastParser
         .getAndParseVAST(urlfor('wrapper-notracking.xml'), options)
         .then(response => {
@@ -47,88 +32,8 @@ describe('VASTParser', function() {
     });
 
     after(() => {
-      eventsTriggered = [];
       vastParser.removeAllListeners();
       vastParser.clearURLTemplateFilters();
-    });
-
-    it('should have 1 filter defined', () => {
-      vastParser.countURLTemplateFilters().should.equal(1);
-    });
-
-    it('should have called 4 times URLtemplateFilter ', () => {
-      this.templateFilterCalls.should.have.length(4);
-      this.templateFilterCalls.should.eql([
-        urlfor('wrapper-notracking.xml'),
-        urlfor('wrapper-a.xml'),
-        urlfor('wrapper-b.xml'),
-        urlfor('sample.xml')
-      ]);
-    });
-
-    it('should have emitted resolving/resolved events', () => {
-      eventsTriggered.should.eql([
-        {
-          name: 'VAST-resolving',
-          data: {
-            url: urlfor('wrapper-notracking.xml'),
-            wrapperDepth: undefined,
-            originalUrl: undefined
-          }
-        },
-        {
-          name: 'VAST-resolved',
-          data: {
-            url: urlfor('wrapper-notracking.xml'),
-            error: null
-          }
-        },
-        {
-          name: 'VAST-resolving',
-          data: {
-            url: urlfor('wrapper-a.xml'),
-            wrapperDepth: 1,
-            originalUrl: urlfor('wrapper-a.xml')
-          }
-        },
-        {
-          name: 'VAST-resolved',
-          data: {
-            url: urlfor('wrapper-a.xml'),
-            error: null
-          }
-        },
-        {
-          name: 'VAST-resolving',
-          data: {
-            url: urlfor('wrapper-b.xml'),
-            wrapperDepth: 2,
-            originalUrl: urlfor('wrapper-b.xml')
-          }
-        },
-        {
-          name: 'VAST-resolved',
-          data: {
-            url: urlfor('wrapper-b.xml'),
-            error: null
-          }
-        },
-        {
-          name: 'VAST-resolving',
-          data: {
-            url: urlfor('sample.xml'),
-            wrapperDepth: 3,
-            originalUrl: urlfor('sample.xml')
-          }
-        },
-        {
-          name: 'VAST-resolved',
-          data: {
-            url: urlfor('sample.xml'),
-            error: null
-          }
-        }
-      ]);
     });
 
     it('should have found 2 ads', () => {
@@ -871,10 +776,12 @@ describe('VASTParser', function() {
           });
       });
 
-      it('should have called 2 times URLtemplateFilter ', () => {
-        this.templateFilterCalls.should.have.length(2);
+      it('should have called 4 times URLtemplateFilter ', () => {
+        this.templateFilterCalls.should.have.length(4);
         this.templateFilterCalls.should.eql([
           urlfor('wrapper-sequence.xml'),
+          urlfor('wrapper-sequence.xml'),
+          urlfor('sample-wrapped.xml'),
           urlfor('sample-wrapped.xml')
         ]);
       });
@@ -988,11 +895,14 @@ describe('VASTParser', function() {
       vastParser.countURLTemplateFilters().should.equal(1);
     });
 
-    it('should have called 3 times URLtemplateFilter ', () => {
-      this.templateFilterCalls.should.have.length(3);
+    it('should have called 6 times URLtemplateFilter ', () => {
+      this.templateFilterCalls.should.have.length(6);
       this.templateFilterCalls.should.eql([
         urlfor('wrapper-a.xml'),
+        urlfor('wrapper-a.xml'),
         urlfor('wrapper-b.xml'),
+        urlfor('wrapper-b.xml'),
+        urlfor('sample.xml'),
         urlfor('sample.xml')
       ]);
     });
@@ -1139,45 +1049,6 @@ describe('VASTParser', function() {
       });
     });
 
-    describe('#Invalid XML file (parsing error)', function() {
-      it('returns an error', done => {
-        vastParser
-          .getAndParseVAST(urlfor('invalid-xmlfile.xml'), options)
-          .catch(err => {
-            // Error returned
-            err.should.be
-              .instanceof(Error)
-              .and.have.property('message', 'Invalid VAST XMLDocument');
-            done();
-          });
-      });
-
-      it('when wrapped, emits a VAST-error & track', done => {
-        vastParser
-          .getAndParseVAST(urlfor('wrapper-invalid-xmlfile.xml'), options)
-          .then(response => {
-            // Response doesn't have any ads
-            response.ads.should.eql([]);
-            // Error has been triggered
-            dataTriggered.length.should.eql(1);
-            dataTriggered[0].ERRORCODE.should.eql(301);
-            dataTriggered[0].extensions[0].children[0].name.should.eql(
-              'paramWrapperInvalidXmlfile'
-            );
-            dataTriggered[0].extensions[0].children[0].value.should.eql(
-              'valueWrapperInvalidXmlfile'
-            );
-            // Tracking has been done
-            trackCalls.length.should.eql(1);
-            trackCalls[0].templates.should.eql([
-              'http://example.com/wrapper-invalid-xmlfile_wrapper-error'
-            ]);
-            trackCalls[0].variables.should.eql({ ERRORCODE: 301 });
-            done();
-          });
-      });
-    });
-
     describe('#Wrapper URL unavailable/timeout', () => {
       it('emits a VAST-error & track', done => {
         vastParser
@@ -1273,30 +1144,6 @@ describe('VASTParser', function() {
 
           done();
         });
-    });
-  });
-
-  // Leave at the end
-  describe('parsing events', function() {
-    describe('failed wrapper resolution', function() {
-      let lastErr = null;
-      const vastParser = new VASTParser();
-
-      before(done => {
-        const options = { urlhandler: nodeURLHandler };
-        vastParser.on('VAST-resolved', variables => {
-          lastErr = variables.error;
-        });
-        vastParser
-          .getAndParseVAST(urlfor('wrapper-unavailable-url.xml'), options)
-          .then(() => {
-            done();
-          });
-      });
-
-      it('should show error when emitting resolved event', function() {
-        lastErr.should.not.equal(null);
-      });
     });
   });
 });

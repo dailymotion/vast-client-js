@@ -25,6 +25,7 @@ function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
     variables['ASSETURI'] = encodeURIComponentRFC3986(variables['ASSETURI']);
   }
   if (variables['CONTENTPLAYHEAD']) {
+    // @deprecated in VAST 4.1
     variables['CONTENTPLAYHEAD'] = encodeURIComponentRFC3986(
       variables['CONTENTPLAYHEAD']
     );

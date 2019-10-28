@@ -12,7 +12,7 @@ export function createAd(adAttributes = {}) {
     description: null,
     advertiser: null,
     pricing: null,
-    survey: null,
+    survey: null, // @deprecated in VAST 4.1
     errorURLTemplates: [],
     impressionURLTemplates: [],
     creatives: [],

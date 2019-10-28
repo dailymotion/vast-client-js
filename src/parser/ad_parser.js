@@ -13,7 +13,7 @@ import { parserVerification } from './parser_verification';
  * @param  {Object} adElement - The VAST Ad element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event
  * @emits  VASTParser#VAST-warning
- * @return {Ad}
+ * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
  */
 export function parseAd(adElement, emit) {
   const childNodes = adElement.childNodes;
@@ -29,16 +29,16 @@ export function parseAd(adElement, emit) {
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
     if (adTypeElement.nodeName === 'Wrapper') {
-      return parseWrapper(adTypeElement, emit);
+      return { ad: parseWrapper(adTypeElement, emit), type: 'WRAPPER' };
     } else if (adTypeElement.nodeName === 'InLine') {
-      return parseInLine(adTypeElement, emit);
+      return { ad: parseInLine(adTypeElement, emit), type: 'INLINE' };
     }
   }
 }
 
 /**
  * Parses an Inline
- * @param  {Object} ad Element - The VAST Inline element to parse.
+ * @param  {Object} adElement Element - The VAST Inline element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VASTParser#VAST-warning
  * @return {Object} ad - The ad object.
