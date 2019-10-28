@@ -228,6 +228,8 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
+  unwrappedAd.wrapper = wrapper.wrapper;
+
   const wrapperCompanions = (wrapper.creatives || []).filter(
     creative => creative && creative.type === 'companion'
   );

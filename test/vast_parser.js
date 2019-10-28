@@ -821,6 +821,12 @@ describe('VASTParser', function() {
       it('should have carried sequence over from wrapper', () => {
         this.response.ads[0].sequence.should.eql('1');
       });
+
+      it('should have default attributes value for wrapper', () => {
+        this.response.ads[0].wrapper.followAdditionalWrappers.should.eql(true);
+        this.response.ads[0].wrapper.allowMultipleAds.should.eql(false);
+        should.equal(this.response.ads[0].wrapper.fallbackOnNoAd, null);
+      });
     });
 
     describe('#VPAID', function() {
@@ -870,6 +876,30 @@ describe('VASTParser', function() {
       it('should have maintened the sequence when resolving wrappers', () => {
         this.response.ads[0].sequence.should.be.equal('1');
         this.response.ads[1].sequence.should.be.equal('2');
+      });
+    });
+
+    describe('#For the wrapper with attributes', function() {
+      this.response = null;
+      this.templateFilterCalls = [];
+
+      before(done => {
+        vastParser.addURLTemplateFilter(url => {
+          this.templateFilterCalls.push(url);
+          return url;
+        });
+        vastParser
+          .getAndParseVAST(urlfor('wrapper-with-blocks.xml'), options)
+          .then(response => {
+            this.response = response;
+            done();
+          });
+      });
+
+      it('should have good attributes value for wrapper', () => {
+        this.response.ads[0].wrapper.followAdditionalWrappers.should.eql(false);
+        this.response.ads[0].wrapper.allowMultipleAds.should.eql(true);
+        this.response.ads[0].wrapper.fallbackOnNoAd.should.eql(true);
       });
     });
   });

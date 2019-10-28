@@ -271,7 +271,15 @@ export class VASTParser extends EventEmitter {
    * @return {Array}
    * @throws {Error} `vastXml` must be a valid VAST XMLDocument
    */
-  parseVastXml(vastXml, { isRootVAST = false, url = null, wrapperDepth = 0 }) {
+  parseVastXml(
+    vastXml,
+    {
+      isRootVAST = false,
+      url = null,
+      wrapperDepth = 0,
+      ignoreNextWrapper = false
+    }
+  ) {
     // check if is a valid VAST document
     if (
       !vastXml ||
@@ -309,7 +317,9 @@ export class VASTParser extends EventEmitter {
           ? this.rootErrorURLTemplates.push(errorURLTemplate)
           : this.errorURLTemplates.push(errorURLTemplate);
       } else if (node.nodeName === 'Ad') {
-        const result = parseAd(node, this.emit.bind(this));
+        const result = parseAd(node, this.emit.bind(this), {
+          ignoreNextWrapper
+        });
 
         if (result.ad) {
           ads.push(result.ad);
@@ -351,7 +361,8 @@ export class VASTParser extends EventEmitter {
       wrapperSequence = null,
       previousUrl = null,
       wrapperDepth = 0,
-      isRootVAST = false
+      isRootVAST = false,
+      ignoreNextWrapper = false
     }
   ) {
     let ads = [];
@@ -359,7 +370,8 @@ export class VASTParser extends EventEmitter {
       ads = this.parseVastXml(vastXml, {
         isRootVAST,
         url,
-        wrapperDepth
+        wrapperDepth,
+        ignoreNextWrapper
       });
     } catch (e) {
       return Promise.reject(e);
@@ -475,7 +487,8 @@ export class VASTParser extends EventEmitter {
             url: ad.nextWrapperURL,
             previousUrl,
             wrapperSequence,
-            wrapperDepth
+            wrapperDepth,
+            ignoreNextWrapper: !ad.wrapper.followAdditionalWrappers
           }).then(unwrappedAds => {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {

@@ -21,6 +21,7 @@ export function createAd(adAttributes = {}) {
     followAdditionalWrappers: true,
     allowMultipleAds: false,
     fallbackOnNoAd: null,
-    blockedAdCategories: []
+    blockedAdCategories: [],
+    wrapper: null
   };
 }

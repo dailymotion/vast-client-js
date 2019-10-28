@@ -4,6 +4,7 @@ import { parseCreatives } from './creatives_parser';
 import { parseExtensions } from './extensions_parser';
 import { parserUtils } from './parser_utils';
 import { parserVerification } from './parser_verification';
+
 /**
  * This module provides methods to parse a VAST Ad Element.
  */
@@ -12,16 +13,21 @@ import { parserVerification } from './parser_verification';
  * Parses an Ad element (can either be a Wrapper or an InLine).
  * @param  {Object} adElement - The VAST Ad element to parse.
  * @param  {Function} emit - Emit function used to trigger Warning event
+ * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
  * @emits  VASTParser#VAST-warning
  * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
  */
-export function parseAd(adElement, emit) {
+export function parseAd(adElement, emit, { ignoreNextWrapper }) {
   const childNodes = adElement.childNodes;
 
   for (const adTypeElementKey in childNodes) {
     const adTypeElement = childNodes[adTypeElementKey];
 
     if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
+      continue;
+    }
+
+    if (adTypeElement.nodeName === 'Wrapper' && ignoreNextWrapper) {
       continue;
     }
 
@@ -161,15 +167,6 @@ function parseAdElement(adTypeElement, emit) {
           value: parserUtils.parseNodeText(node)
         });
         break;
-
-      case 'Wrapper':
-        ad.wrapper = {
-          followAdditionalWrappers:
-            node.getAttribute('followAdditionalWrappers') || true,
-          allowMultipleAds: node.getAttribute('allowMultipleAds') || false,
-          fallbackOnNoAd: node.getAttribute('fallbackOnNoAd') || null
-        };
-        break;
     }
   }
 
@@ -185,6 +182,28 @@ function parseAdElement(adTypeElement, emit) {
  */
 function parseWrapper(wrapperElement, emit) {
   const ad = parseAdElement(wrapperElement, emit);
+
+  const followAdditionalWrappersValue = wrapperElement.getAttribute(
+    'followAdditionalWrappers'
+  );
+  const allowMultipleAdsValue = wrapperElement.getAttribute('allowMultipleAds');
+  const fallbackOnNoAdValue = wrapperElement.getAttribute('fallbackOnNoAd');
+
+  ad.wrapper = {
+    followAdditionalWrappers:
+      followAdditionalWrappersValue !== ''
+        ? parserUtils.parseBoolean(followAdditionalWrappersValue)
+        : true,
+    allowMultipleAds:
+      allowMultipleAdsValue !== ''
+        ? parserUtils.parseBoolean(allowMultipleAdsValue)
+        : false,
+    fallbackOnNoAd:
+      fallbackOnNoAdValue !== ''
+        ? parserUtils.parseBoolean(fallbackOnNoAdValue)
+        : null
+  };
+
   let wrapperURLElement = parserUtils.childByName(
     wrapperElement,
     'VASTAdTagURI'
