@@ -24,53 +24,21 @@ describe('AdParser', function() {
     });
 
     beforeEach(() => {
-      ad = parseAd(adElement, null);
+      ad = parseAd(adElement, null).ad;
     });
 
     it('correctly returns inline and passes ad attributes down', () => {
+      let inLineAd = parseAd(inlineAdNode, emit);
       expect(parseAd(inlineAdNode, emit)).toEqual({
-        adServingId: null,
-        adType: null,
-        adVerifications: [],
-        advertiser: null,
-        categories: [],
-        creatives: [],
-        description: null,
-        errorURLTemplates: [],
-        expires: null,
-        extensions: [],
-        id: 'id-123',
-        impressionURLTemplates: [],
-        pricing: null,
-        sequence: 'seq-123',
-        survey: null,
-        system: null,
-        title: null,
-        viewableImpression: {}
+        ad: expect.objectContaining({ id: 'id-123', sequence: 'seq-123' }),
+        type: 'INLINE'
       });
     });
 
     it('correctly returns wrapper', () => {
       expect(parseAd(wrapperAdNode, emit)).toEqual({
-        adServingId: null,
-        adType: null,
-        adVerifications: [],
-        advertiser: null,
-        categories: [],
-        creatives: [],
-        description: null,
-        errorURLTemplates: [],
-        expires: null,
-        extensions: [],
-        id: null,
-        nextWrapperURL: 'foo',
-        impressionURLTemplates: [],
-        pricing: null,
-        sequence: null,
-        survey: null,
-        system: null,
-        title: null,
-        viewableImpression: {}
+        ad: expect.any(Object),
+        type: 'WRAPPER'
       });
     });
 
