@@ -55,10 +55,9 @@ describe('VASTTracker', function() {
           verificationUrls,
           expect.objectContaining(reasonMacro)
         );
-        expect(spyEmitter).toHaveBeenCalledWith(
-          'verificationNotExecuted',
-          null
-        );
+        expect(spyEmitter).toHaveBeenCalledWith('verificationNotExecuted', {
+          trackingURLTemplates: verificationUrls
+        });
       });
     });
 

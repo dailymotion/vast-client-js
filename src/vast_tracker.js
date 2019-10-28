@@ -436,11 +436,12 @@ export class VASTTracker extends EventEmitter {
         verification.trackingEvents &&
         verification.trackingEvents.verificationNotExecuted
       ) {
-        this.trackURLs(
-          verification.trackingEvents.verificationNotExecuted,
-          macros
-        );
-        this.emit('verificationNotExecuted', null);
+        const verifsNotExecuted =
+          verification.trackingEvents.verificationNotExecuted;
+        this.trackURLs(verifsNotExecuted, macros);
+        this.emit('verificationNotExecuted', {
+          trackingURLTemplates: verifsNotExecuted
+        });
       }
     });
   }
@@ -505,12 +506,12 @@ export class VASTTracker extends EventEmitter {
    * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
    * @emits VASTTracker#clickthrough
    */
-  click(fallbackClickThroughURL = null) {
+  click(fallbackClickThroughURL = null, macros = {}) {
     if (
       this.clickTrackingURLTemplates &&
       this.clickTrackingURLTemplates.length
     ) {
-      this.trackURLs(this.clickTrackingURLTemplates);
+      this.trackURLs(this.clickTrackingURLTemplates, macros);
     }
 
     // Use the provided fallbackClickThroughURL as a fallback
