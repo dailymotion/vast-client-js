@@ -431,7 +431,7 @@ export class VASTTracker extends EventEmitter {
       !this.ad.adVerifications ||
       !this.ad.adVerifications.length
     ) {
-      return;
+      throw new Error('No adVerifications provided');
     }
 
     this.ad.adVerifications.forEach(verification => {

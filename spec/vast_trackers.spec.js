@@ -63,6 +63,12 @@ describe('VASTTracker', function() {
           trackingURLTemplates: verificationUrls
         });
       });
+      it('should throw missing AdVerification error', () => {
+        ad.adVerifications.length = 0;
+        expect(() => {
+          vastTracker.verificationNotExecuted(reasonMacro);
+        }).toThrowError('No adVerifications provided');
+      });
     });
 
     describe('#otherAdInteraction', () => {
