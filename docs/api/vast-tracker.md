@@ -638,7 +638,7 @@ vastTracker.verificationNotExecuted({REASON: 3});
 Calls the tracking URLs for the given eventName and emits the event.
 
 #### Parameters
-* **`eventName: Object`** - The event name
+* **`eventName: String`** - The event name
 * **`macros: Object`** - An optional Object of macros to be used in the tracking calls.
 * **`once: Boolean`** - An optional Boolean to define if the event has to be tracked only once.
 
@@ -667,6 +667,6 @@ Also automatically replaces the deducted value for following macros:
 - UNIVERSALADID
 
 #### Parameters
-* **`URLTemplates: Array`** - An array of tracking url templates.
+* **`URLTemplates: Array<String|Object>`** - An array of tracking url templates.
 * **`macros: Object`** - An optional Object of macros to be used in the tracking calls.
 * **`option: Object`** - An optional Object of options to be used in the tracking calls.
