@@ -112,7 +112,7 @@ describe('util', function() {
     });
   });
 
-  describe('#extractURLsFromTemplates', function() {
+  describe('extractURLsFromTemplates', function() {
     it('should return an array of urls', () => {
       const input = [
         {
@@ -159,7 +159,7 @@ describe('util', function() {
     });
   });
 
-  describe('#isTemplateObjectEqual', function() {
+  describe('isTemplateObjectEqual', function() {
     const obj1 = {
       id: null,
       url: 'http://example.com/wrapperA-impression'
@@ -227,7 +227,7 @@ describe('util', function() {
     });
   });
 
-  describe('#containsTemplateObject', function() {
+  describe('containsTemplateObject', function() {
     const obj1 = {
       id: null,
       url: 'http://example.com/wrapperNoTracking-impression'
@@ -271,7 +271,7 @@ describe('util', function() {
     });
   });
 
-  describe('#joinArrayOfUniqueTemplateObjs', function() {
+  describe('joinArrayOfUniqueTemplateObjs', function() {
     it('should return an array of unique objects', () => {
       const obj1 = {
         id: null,
