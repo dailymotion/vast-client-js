@@ -146,9 +146,13 @@ export const inlineTrackersParsed = {
             adCollapse: ['http://example.com/linear-adCollapse'],
             minimize: ['http://example.com/linear-minimize'],
             overlayViewDuration: [
-              'http://example.com/linear-overlayViewDuration'
+              'http://example.com/linear-overlayViewDuration&mph=[MEDIAPLAYHEAD]&ctp=[CONTENTPLAYHEAD]&uadid=[UNIVERSALADID]'
             ],
-            notUsed: ['http://example.com/linear-notUsed']
+            notUsed: ['http://example.com/linear-notUsed&assetURI=[ASSETURI]']
+          },
+          universalAdId: {
+            idRegistry: 'sample-registry',
+            value: '000123'
           }
         }
       ],
@@ -185,14 +189,12 @@ export const inlineTrackersParsed = {
           vendor: 'company.com-omid',
           browserOptional: true,
           apiFramework: 'omid',
-          parameters: null
-        },
-        {
-          resource: 'http://example.com/omid2',
-          vendor: 'company2.com-omid',
-          browserOptional: false,
-          apiFramework: 'omid',
-          parameters: 'test-verification-parameter'
+          parameters: null,
+          trackingEvents: {
+            verificationNotExecuted: [
+              'http://example.com/verification-not-executed-JS?reason=[REASON]'
+            ]
+          }
         }
       ]
     }

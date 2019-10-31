@@ -11,8 +11,9 @@ describe('VASTTracker', function() {
     let spyEmitter;
     let spyTrackUrl;
     let adTrackingUrls;
+    let ad;
     beforeEach(() => {
-      const ad = inlineTrackersParsed.ads[0];
+      ad = inlineTrackersParsed.ads[0];
       adTrackingUrls = ad.creatives[0].trackingEvents;
       vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
       spyEmitter = jest.spyOn(vastTracker, 'emit');
@@ -30,7 +31,43 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('minimize', {
           trackingURLTemplates: adTrackingUrls.minimize
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.minimize);
+
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.minimize,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
+        );
+      });
+    });
+
+    describe('#verificationNotExecuted', () => {
+      let verificationUrls;
+      let reasonMacro = { REASON: 3 };
+      beforeEach(() => {
+        verificationUrls =
+          ad.adVerifications[0].trackingEvents.verificationNotExecuted;
+        vastTracker.verificationNotExecuted(reasonMacro);
+      });
+      it('should be defined', () => {
+        expect(verificationUrls).toBeDefined();
+      });
+      it('should have emitted verificationNotExecuted event and called trackUrl', () => {
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          verificationUrls,
+          expect.objectContaining(reasonMacro)
+        );
+        expect(spyEmitter).toHaveBeenCalledWith('verificationNotExecuted', {
+          trackingURLTemplates: verificationUrls
+        });
+      });
+      it('should throw missing AdVerification error', () => {
+        ad.adVerifications.length = 0;
+        expect(() => {
+          vastTracker.verificationNotExecuted(reasonMacro);
+        }).toThrowError('No adVerifications provided');
       });
     });
 
@@ -46,7 +83,12 @@ describe('VASTTracker', function() {
           trackingURLTemplates: adTrackingUrls.otherAdInteraction
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          adTrackingUrls.otherAdInteraction
+          adTrackingUrls.otherAdInteraction,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
         );
       });
     });
@@ -63,7 +105,12 @@ describe('VASTTracker', function() {
           trackingURLTemplates: adTrackingUrls.acceptInvitation
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          adTrackingUrls.acceptInvitation
+          adTrackingUrls.acceptInvitation,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
         );
       });
     });
@@ -79,7 +126,14 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('adExpand', {
           trackingURLTemplates: adTrackingUrls.adExpand
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.adExpand);
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.adExpand,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
+        );
       });
     });
 
@@ -94,7 +148,14 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('adCollapse', {
           trackingURLTemplates: adTrackingUrls.adCollapse
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.adCollapse);
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.adCollapse,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
+        );
       });
     });
 
@@ -110,7 +171,12 @@ describe('VASTTracker', function() {
           trackingURLTemplates: adTrackingUrls.overlayViewDuration
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          adTrackingUrls.overlayViewDuration
+          adTrackingUrls.overlayViewDuration,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
         );
       });
     });
@@ -126,7 +192,14 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledWith('notUsed', {
           trackingURLTemplates: adTrackingUrls.notUsed
         });
-        expect(spyTrackUrl).toHaveBeenCalledWith(adTrackingUrls.notUsed);
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          adTrackingUrls.notUsed,
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+            UNIVERSALADID: 'sample-registry%20000123',
+            PODSEQUENCE: '1'
+          })
+        );
         expect(spyEmitter).toHaveBeenCalledTimes(1);
       });
     });

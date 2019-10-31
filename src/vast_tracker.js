@@ -155,6 +155,7 @@ export class VASTTracker extends EventEmitter {
    * This is required for tracking time related events.
    *
    * @param {Number} progress - Current playback time in seconds.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#start
    * @emits VASTTracker#skip-countdown
    * @emits VASTTracker#progress-[0-100]%
@@ -164,7 +165,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#midpoint
    * @emits VASTTracker#thirdQuartile
    */
-  setProgress(progress) {
+  setProgress(progress, macros = {}) {
     const skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
     if (skipDelay !== -1 && !this.skippable) {
@@ -197,11 +198,11 @@ export class VASTTracker extends EventEmitter {
       }
 
       events.forEach(eventName => {
-        this.track(eventName, true);
+        this.track(eventName, { macros, once: true });
       });
 
       if (progress < this.progress) {
-        this.track('rewind');
+        this.track('rewind', { macros });
       }
     }
 
@@ -230,12 +231,13 @@ export class VASTTracker extends EventEmitter {
    * Updates the mute state and calls the mute/unmute tracking URLs.
    *
    * @param {Boolean} muted - Indicates if the video is muted or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#mute
    * @emits VASTTracker#unmute
    */
-  setMuted(muted) {
+  setMuted(muted, macros = {}) {
     if (this.muted !== muted) {
-      this.track(muted ? 'mute' : 'unmute');
+      this.track(muted ? 'mute' : 'unmute', { macros });
     }
     this.muted = muted;
   }
@@ -244,12 +246,13 @@ export class VASTTracker extends EventEmitter {
    * Update the pause state and call the resume/pause tracking URLs.
    *
    * @param {Boolean} paused - Indicates if the video is paused or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#pause
    * @emits VASTTracker#resume
    */
-  setPaused(paused) {
+  setPaused(paused, macros = {}) {
     if (this.paused !== paused) {
-      this.track(paused ? 'pause' : 'resume');
+      this.track(paused ? 'pause' : 'resume', { macros });
     }
     this.paused = paused;
   }
@@ -258,12 +261,13 @@ export class VASTTracker extends EventEmitter {
    * Updates the fullscreen state and calls the fullscreen tracking URLs.
    *
    * @param {Boolean} fullscreen - Indicates if the video is in fulscreen mode or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#fullscreen
    * @emits VASTTracker#exitFullscreen
    */
-  setFullscreen(fullscreen) {
+  setFullscreen(fullscreen, macros = {}) {
     if (this.fullscreen !== fullscreen) {
-      this.track(fullscreen ? 'fullscreen' : 'exitFullscreen');
+      this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', { macros });
     }
     this.fullscreen = fullscreen;
   }
@@ -272,15 +276,16 @@ export class VASTTracker extends EventEmitter {
    * Updates the expand state and calls the expand/collapse tracking URLs.
    *
    * @param {Boolean} expanded - Indicates if the video is expanded or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#expand
    * @emits VASTTracker#playerExpand
    * @emits VASTTracker#collapse
    * @emits VASTTracker#playerCollapse
    */
-  setExpand(expanded) {
+  setExpand(expanded, macros = {}) {
     if (this.expanded !== expanded) {
-      this.track(expanded ? 'expand' : 'collapse');
-      this.track(expanded ? 'playerExpand' : 'playerCollapse');
+      this.track(expanded ? 'expand' : 'collapse', { macros });
+      this.track(expanded ? 'playerExpand' : 'playerCollapse', { macros });
     }
     this.expanded = expanded;
   }
@@ -301,14 +306,15 @@ export class VASTTracker extends EventEmitter {
 
   /**
    * Tracks an impression (can be called only once).
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    *
    * @emits VASTTracker#creativeView
    */
-  trackImpression() {
+  trackImpression(macros = {}) {
     if (!this.impressed) {
       this.impressed = true;
       this.trackURLs(this.ad.impressionURLTemplates);
-      this.track('creativeView');
+      this.track('creativeView', { macros });
     }
   }
 
@@ -331,10 +337,11 @@ export class VASTTracker extends EventEmitter {
    * Must be called when the user watched the linear creative until its end.
    * Calls the complete tracking URLs.
    *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#complete
    */
-  complete() {
-    this.track('complete');
+  complete(macros = {}) {
+    this.track('complete', { macros });
   }
 
   /**
@@ -342,10 +349,11 @@ export class VASTTracker extends EventEmitter {
    * This is a terminal event; no other tracking events should be sent when this is used.
    * Calls the notUsed tracking URLs.
    *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#notUsed
    */
-  notUsed() {
-    this.track('notUsed');
+  notUsed(macros = {}) {
+    this.track('notUsed', { macros });
     this.trackingEvents = [];
   }
 
@@ -355,10 +363,11 @@ export class VASTTracker extends EventEmitter {
    * clickthrough events or other existing events like mute, unmute, pause, etc.
    * Calls the otherAdInteraction tracking URLs.
    *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#otherAdInteraction
    */
-  otherAdInteraction() {
-    this.track('otherAdInteraction');
+  otherAdInteraction(macros = {}) {
+    this.track('otherAdInteraction', { macros });
   }
 
   /**
@@ -368,39 +377,76 @@ export class VASTTracker extends EventEmitter {
    * additional portion of the ad.
    * Calls the acceptInvitation tracking URLs.
    *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#acceptInvitation
    */
-  acceptInvitation() {
-    this.track('acceptInvitation');
+  acceptInvitation(macros = {}) {
+    this.track('acceptInvitation', { macros });
   }
 
   /**
    * Must be called if user activated a control to expand the creative.
    * Calls the adExpand tracking URLs.
    *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#adExpand
    */
-  adExpand() {
-    this.track('adExpand');
+  adExpand(macros = {}) {
+    this.track('adExpand', { macros });
   }
 
   /**
    * Must be called when the user activated a control to reduce the creative to its original dimensions.
    * Calls the adCollapse tracking URLs.
    *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#adCollapse
    */
-  adCollapse() {
-    this.track('adCollapse');
+  adCollapse(macros = {}) {
+    this.track('adCollapse', { macros });
   }
 
   /**
    * Must be called if the user clicked or otherwise activated a control used to minimize the ad.
    * Calls the minimize tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#minimize
    */
-  minimize() {
-    this.track('minimize');
+  minimize(macros = {}) {
+    this.track('minimize', { macros });
+  }
+
+  /**
+   * Must be called if the player did not or was not able to execute the provided
+   * verification code.The [REASON] macro must be filled with reason code
+   * Calls the verificationNotExecuted trackings URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#verificationNotExecuted
+   */
+  verificationNotExecuted(macros = {}) {
+    if (
+      !this.ad ||
+      !this.ad.adVerifications ||
+      !this.ad.adVerifications.length
+    ) {
+      throw new Error('No adVerifications provided');
+    }
+
+    this.ad.adVerifications.forEach(verification => {
+      if (
+        verification.trackingEvents &&
+        verification.trackingEvents.verificationNotExecuted
+      ) {
+        const verifsNotExecuted =
+          verification.trackingEvents.verificationNotExecuted;
+        this.trackURLs(verifsNotExecuted, macros);
+        this.emit('verificationNotExecuted', {
+          trackingURLTemplates: verifsNotExecuted
+        });
+      }
+    });
   }
 
   /**
@@ -408,44 +454,51 @@ export class VASTTracker extends EventEmitter {
    * the time between the impression and either the completed length of display based
    * on the agreement between transactional parties or a close, minimize, or accept
    * invitation event.
-   * The time has to be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] for VAST 4.1
+   * The time will be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] macros for VAST 4.1
    * Calls the overlayViewDuration tracking URLs.
+   *
+   * @param {String} duration - The time that the initial ad is displayed.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#overlayViewDuration
    */
-  // TODO : Pass the duration as a parameter and replace the corresponding macro with it
-  overlayViewDuration() {
-    this.track('overlayViewDuration');
+  overlayViewDuration(duration, macros = {}) {
+    macros['CONTENTPLAYHEAD'] = duration;
+    macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+    this.track('overlayViewDuration', { macros });
   }
 
   /**
    * Must be called when the player or the window is closed during the ad.
    * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    *
    * @emits VASTTracker#closeLinear
    * @emits VASTTracker#close
    */
-  close() {
-    this.track(this.linear ? 'closeLinear' : 'close');
+  close(macros = {}) {
+    this.track(this.linear ? 'closeLinear' : 'close', { macros });
   }
 
   /**
    * Must be called when the skip button is clicked. Calls the skip tracking URLs.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    *
    * @emits VASTTracker#skip
    */
-  skip() {
-    this.track('skip');
+  skip(macros = {}) {
+    this.track('skip', { macros });
   }
 
   /**
    * Must be called then loaded and buffered the creative’s media and assets either fully
    * or to the extent that it is ready to play the media
    * Calls the loaded tracking URLs.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    *
    * @emits VASTTracker#loaded
    */
-  load() {
-    this.track('loaded');
+  load(macros = {}) {
+    this.track('loaded', { macros });
   }
 
   /**
@@ -456,12 +509,12 @@ export class VASTTracker extends EventEmitter {
    * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
    * @emits VASTTracker#clickthrough
    */
-  click(fallbackClickThroughURL = null) {
+  click(fallbackClickThroughURL = null, macros = {}) {
     if (
       this.clickTrackingURLTemplates &&
       this.clickTrackingURLTemplates.length
     ) {
-      this.trackURLs(this.clickTrackingURLTemplates);
+      this.trackURLs(this.clickTrackingURLTemplates, macros);
     }
 
     // Use the provided fallbackClickThroughURL as a fallback
@@ -469,12 +522,14 @@ export class VASTTracker extends EventEmitter {
       this.clickThroughURLTemplate || fallbackClickThroughURL;
 
     if (clickThroughURLTemplate) {
-      const variables = this.linear
-        ? { CONTENTPLAYHEAD: this.progressFormatted() }
-        : {};
+      if (this.linear) {
+        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
+          macros['CONTENTPLAYHEAD'];
+      }
       const clickThroughURL = util.resolveURLTemplates(
         [clickThroughURLTemplate],
-        variables
+        macros
       )[0];
 
       this.emit('clickthrough', clickThroughURL);
@@ -485,9 +540,11 @@ export class VASTTracker extends EventEmitter {
    * Calls the tracking URLs for the given eventName and emits the event.
    *
    * @param {String} eventName - The name of the event.
+   * @param {Object} [macros ={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
    * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
+   *
    */
-  track(eventName, once = false) {
+  track(eventName, { macros = {}, once = false }) {
     // closeLinear event was introduced in VAST 3.0
     // Fallback to vast 2.0 close event if necessary
     if (
@@ -503,7 +560,7 @@ export class VASTTracker extends EventEmitter {
 
     if (trackingURLTemplates) {
       this.emit(eventName, { trackingURLTemplates });
-      this.trackURLs(trackingURLTemplates);
+      this.trackURLs(trackingURLTemplates, macros);
     } else if (isAlwaysEmitEvent) {
       this.emit(eventName, null);
     }
@@ -520,13 +577,13 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Calls the tracking urls templates with the given variables.
+   * Calls the tracking urls templates with the given macros .
    *
    * @param {Array} URLTemplates - An array of tracking url templates.
-   * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+   * @param {Object} [macros ={}] - An optional Object of parameters to be used in the tracking calls.
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
-  trackURLs(URLTemplates, variables = {}, options = {}) {
+  trackURLs(URLTemplates, macros = {}, options = {}) {
     if (this.linear) {
       if (
         this.creative &&
@@ -534,12 +591,31 @@ export class VASTTracker extends EventEmitter {
         this.creative.mediaFiles[0] &&
         this.creative.mediaFiles[0].fileURL
       ) {
-        variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
+        macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-      variables['CONTENTPLAYHEAD'] = this.progressFormatted();
+      if (!macros['CONTENTPLAYHEAD'] && this.progress) {
+        //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
+        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
+          macros['CONTENTPLAYHEAD'];
+      }
+    }
+    if (
+      this.creative &&
+      this.creative.universalAdId &&
+      this.creative.universalAdId.idRegistry &&
+      this.creative.universalAdId.value
+    ) {
+      macros['UNIVERSALADID'] = `${this.creative.universalAdId.idRegistry} ${
+        this.creative.universalAdId.value
+      }`;
     }
 
-    util.track(URLTemplates, variables, options);
+    if (this.ad && this.ad.sequence) {
+      macros['PODSEQUENCE'] = this.ad.sequence;
+    }
+
+    util.track(URLTemplates, macros, options);
   }
 
   /**

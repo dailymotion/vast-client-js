@@ -4,6 +4,7 @@ The `VASTTracker` class provides methods to track the execution of an Ad.
 
 * [Constructor](#constructor)
 * [Events](#events)
+* [Macros](#macros)
 * [Methods](#methods)
 
 ## Constructor<a name="constructor"></a>
@@ -80,6 +81,38 @@ vastTracker.on('exitFullscreen', () => {
 |`adCollapse`|Emitted when calling `adCollapse()`|`{ trackingURLTemplates: Array<String> }`|
 |`minimize`|Emitted when calling `minimize()`|`{ trackingURLTemplates: Array<String> }`|
 |`overlayViewDuration`|Emitted when calling `overlayViewDuration()`|`{ trackingURLTemplates: Array<String> }`|
+|`verificationNotExecuted`|Emitted when calling `verificationNotExecuted()`|`{ trackingURLTemplates: Array<String> }`|
+
+## Macros <a name="macros"></a>
+
+Ad servers and other entities need access to additional data from the publisher to meet client needs for a clearer view into the details of how and where their video is being shown. This is done through the use of macros.
+
+The list of supported macros is in the file [macros.js](src/util/macros.js).
+The following macro value will be set automatically by vast-client if it exists in the tracking url:
+- CONTENTPLAYHEAD
+- ADPLAYHEAD
+- MEDIAPLAYHEAD
+- ADPLAYHEAD
+- ASSETURI
+- PODSEQUENCE
+- UNIVERSALADID
+
+For any others supported macros, they need to be passed as a parameter when calling tracking methods and must exists in tracking url to be replaced.
+
+If a macro is not passed as param but exist in the tracking url and is supported it will be replaced with `-1` as specified by iAB.
+
+#### Example
+Considering having the following tracker in the VAST xml
+```xml
+<Tracking event="skip"><![CDATA[https://example.com/tracking/skip?d=[DOMAIN]&adcount=[ADCOUNT]&podseq=[PODSEQUENCE]&playerstate=[PLAYERSTATE]]]></Tracking>
+```
+Call the vastTracker method with specified macros and values
+```Javascript
+const macrosParam = {CONTENTURI: 'https://mycontentserver.com/video.mp4', ADCOUNT: 2}
+vastTracker.skip(macrosParam);
+```
+Macros will be replaced and the skip tracking URL will be called with the following URL:
+`https://example.com/tracking/skip?curi=https%3A%2F%2Fmycontentserver.com%2Fvideo.mp4&adcount=2&podseq=1&playerstate=-1`
 
 ## Public Methods 💚 <a name="methods"></a>
 
@@ -101,8 +134,11 @@ player.on('error', () => {
 });
 ```
 
-### load()
+### load(macros)
 Must be called when the player considers that it has loaded and buffered the creative’s media and assets either fully or to the extent that it is ready to play the media.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`loaded`**
@@ -119,8 +155,11 @@ vastTracker.on('loaded', () => {
 });
 ```
 
-### complete()
+### complete(macros)
 Must be called when the user watched the linear creative until its end. Calls the complete tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`complete`**
@@ -137,8 +176,11 @@ vastTracker.on('complete', () => {
 });
 ```
 
-### click()
+### click(macros)
 Must be called when the user clicks on the creative. Calls the tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`clickthrough`**
@@ -156,8 +198,11 @@ vastTracker.on('clickthrough', url => {
 });
 ```
 
-### close()
+### close(macros)
 Must be called when the player or the window is closed during the ad. Calls the `closeLinear` (in VAST 3.0) and `close` tracking URLs
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`closeLinear`**
@@ -181,8 +226,11 @@ vastTracker.on('close', () => {
 });
 ```
 
-### skip()
+### skip(macros)
 Must be called when the skip button is clicked. Calls the skip tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`skip`**
@@ -205,11 +253,12 @@ Sets the duration of the ad and updates the quartiles based on that.
 #### Parameters
  * **`duration: Number`** - The duration of the ad
 
-### setExpand(expanded)
+### setExpand(expanded, macros)
 Updates the expand state and calls the expand/collapse as well as playerExpand/playerCollapse for VAST 4.1. tracking URLs.
 
 #### Parameters
  * **`expanded: Boolean`** - Indicates if the video is expanded or not
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`expand`**
@@ -241,11 +290,12 @@ vastTracker.on('collapse', () => {
 });
 ```
 
-### setFullscreen(fullscreen)
+### setFullscreen(fullscreen,macros)
 Updates the fullscreen state and calls the fullscreen tracking URLs.
 
 #### Parameters
  * **`fullscreen: Boolean`** - Indicates if the video is in fulscreen mode or not
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`fullscreen`**
@@ -269,11 +319,12 @@ vastTracker.on('exitFullscreen', () => {
 });
 ```
 
-### setMuted(muted)
+### setMuted(muted, macros)
 Updates the mute state and calls the mute/unmute tracking URLs.
 
 #### Parameters
  * **`muted: Boolean`** - Indicates if the video is muted or not
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`mute`**
@@ -295,11 +346,12 @@ vastTracker.on('unmute', () => {
 });
 ```
 
-### setPaused(paused)
+### setPaused(paused, macros)
 Update the pause state and call the resume/pause tracking URLs.
 
 #### Parameters
  * **`paused: Boolean`** - Indicates if the video is paused or not
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`pause`**
@@ -320,11 +372,12 @@ vastTracker.on('pause', () => {
 });
 ```
 
-### setProgress(progress)
+### setProgress(progress, macros)
 Sets the duration of the ad and updates the quartiles based on that. This is required for tracking time related events such as `start`, `firstQuartile`, `midpoint`, `thirdQuartile` or `rewind`.
 
 #### Parameters
  * **`progress: Number`** - Current playback time in seconds
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`start`**
@@ -362,11 +415,14 @@ Do not call this method if you want to keep the original `Skipoffset` value.
 vastTracker.setSkipDelay(5);
 ```
 
-### trackImpression()
+### trackImpression(macros)
 Reports the impression URI. Can only be called once. Will report the following URI:
 
  * All `<Impression>` URI from the `<InLine>` and `<Wrapper>` tracking elements.
  * The `creativeView` URI from the `<Tracking>` events
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`creativeView`**
@@ -383,7 +439,7 @@ vastTracker.on('creativeView', () => {
 });
 ```
 
-### notUsed()
+### notUsed(macros)
 Must be called if the ad was not and will not be played (e.g. it was prefetched for a particular
 ad break but was not chosen for playback). This allows ad servers to reuse an ad earlier
 than otherwise would be possible due to budget/frequency capping. Player support is
@@ -392,6 +448,9 @@ possible to fire this event for every unused ad (e.g. when the player itself is 
 before playback). This is a terminal event; no other tracking events should be sent when this is used.
 
 Calls the notUsed tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`notUsed`**
@@ -407,12 +466,15 @@ vastTracker.notUsed();
 
 ```
 
-### otherAdInteraction()
+### otherAdInteraction(macros)
 An optional metric that can capture all other user interactions
 under one metric such as hover-overs, or custom clicks. It should NOT replace
 clickthrough events or other existing events like mute, unmute, pause, etc.
 
 Calls the otherAdInteraction tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`otherAdInteraction`**
@@ -427,7 +489,7 @@ vastTracker.on('otherAdInteraction', () => {
 });
 ```
 
-### acceptInvitation()
+### acceptInvitation(macros)
 The user clicked or otherwise activated a control used to pause
 streaming content, which either expands the ad within the player’s viewable area or
 “takes-over” the streaming content area by launching an additional portion of the ad. An ad in video format ad is usually played upon acceptance, but other forms of
@@ -435,6 +497,9 @@ media such as games, animation, tutorials, social media, or other engaging media
 are also used.
 
 Calls the acceptInvitation tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`acceptInvitation`**
@@ -451,10 +516,13 @@ vastTracker.on('acceptInvitation', () => {
 });
 ```
 
-### adExpand()
+### adExpand(macros)
 The user activated a control to expand the creative.
 
 Calls the adExpand tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`adExpand`**
@@ -471,11 +539,14 @@ vastTracker.on('adExpand', () => {
 });
 ```
 
-### adCollapse()
+### adCollapse(macros)
 The user activated a control to reduce the creative to its original
 dimensions.
 
 Calls the adCollapse tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`adCollapse`**
@@ -492,7 +563,7 @@ vastTracker.on('adCollapse', () => {
 });
 ```
 
-### minimize()
+### minimize(macros)
 The user clicked or otherwise activated a control used to minimize the ad
 to a size smaller than a collapsed ad but without fully dispatching the ad from the
 player environment. Unlike a collapsed ad that is big enough to display it’s message,
@@ -500,6 +571,9 @@ the minimized ad is only big enough to offer a control that enables the user to
 redisplay the ad if desired.
 
 Calls the minimize tracking URLs.
+
+#### Parameters
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`minimize`**
@@ -516,13 +590,17 @@ vastTracker.on('minimize', () => {
 });
 ```
 
-### overlayViewDuration()
+### overlayViewDuration(duration, macros)
 The time that the initial ad is displayed. This time is based on
 the time between the impression and either the completed length of display based
 on the agreement between transactional parties or a close, minimize, or accept
-invitation event.
+invitation event. The macros [ADPLAYHEAD] and [MEDIAPLAYHEAD] will be replaced with duration value. [CONTENTPLAYHEAD] will also be replaced but this macro is deprecated
 
 Calls the overlayViewDuration tracking URLs.
+
+#### Parameters
+ * **`duration: String`** - The time that the initial ad is displayed
+ * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
  * **`overlayViewDuration`**
@@ -535,3 +613,60 @@ vastTracker.on('overlayViewDuration', () => {
 // Call the overlayViewDuration event
 vastTracker.overlayViewDuration();
 ```
+
+### verificationNotExecuted(macros)
+Must be called if the player did not or was not able to execute the provided verification code.The [REASON] macro must be filled with reason code. Reason code values can be found in the VAST specification.
+
+Calls the verificationNotExecuted trackings URLs.
+
+#### Parameters
+ * **`macros: Object`** - Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+
+#### Events emitted
+ * **`verificationNotExecuted`**
+
+#### Example
+```Javascript
+vastTracker.on('verificationNotExecuted', () => {
+  // verificationNotExecuted tracking URLs have been called
+});
+// Call the overlayViewDuration event
+vastTracker.verificationNotExecuted({REASON: 3});
+```
+
+### track(eventName, { macros, once })
+Calls the tracking URLs for the given eventName and emits the event.
+
+#### Parameters
+* **`eventName: String`** - The event name
+* **`macros: Object`** - An optional Object of macros to be used in the tracking calls.
+* **`once: Boolean`** - An optional Boolean to define if the event has to be tracked only once.
+
+#### Events emitted
+* **`given eventName`**
+
+#### Example
+```Javascript
+// Track the tracking URLs for skip event
+vastTracker.track('skip', { macros });
+```
+
+## Private Methods ⚠️
+
+These methods documentation is provided in order to make the tracker internal logic clearer. It should not be considered as part of the class public API.
+
+### trackURLs(URLTemplates, macros , options)
+Calls the tracking urls templates with the given macros.
+Also automatically replaces the deducted value for following macros:
+- CONTENTPLAYHEAD (deprecated for VAST 4.1)
+- ADPLAYHEAD
+- MEDIAPLAYHEAD
+- ADPLAYHEAD
+- ASSETURI
+- PODSEQUENCE
+- UNIVERSALADID
+
+#### Parameters
+* **`URLTemplates: Array<String|Object>`** - An array of tracking url templates.
+* **`macros: Object`** - An optional Object of macros to be used in the tracking calls.
+* **`option: Object`** - An optional Object of options to be used in the tracking calls.

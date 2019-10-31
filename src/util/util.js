@@ -1,5 +1,7 @@
-function track(URLTemplates, variables, options) {
-  const URLs = resolveURLTemplates(URLTemplates, variables, options);
+import { supportedMacros } from './macros';
+
+function track(URLTemplates, macros, options) {
+  const URLs = resolveURLTemplates(URLTemplates, macros, options);
 
   URLs.forEach(URL => {
     if (typeof window !== 'undefined' && window !== null) {
@@ -13,60 +15,96 @@ function track(URLTemplates, variables, options) {
  * Replace the provided URLTemplates with the given values
  *
  * @param {Array} URLTemplates - An array of tracking url templates.
- * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+ * @param {Object} [macros={}] - An optional Object of parameters to be used in the tracking calls.
  * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
  */
-function resolveURLTemplates(URLTemplates, variables = {}, options = {}) {
+function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
   const resolvedURLs = [];
   const URLArray = extractURLsFromTemplates(URLTemplates);
 
-  // Encode String variables, when given
-  if (variables['ASSETURI']) {
-    variables['ASSETURI'] = encodeURIComponentRFC3986(variables['ASSETURI']);
-  }
-  if (variables['CONTENTPLAYHEAD']) {
-    // @deprecated in VAST 4.1
-    variables['CONTENTPLAYHEAD'] = encodeURIComponentRFC3986(
-      variables['CONTENTPLAYHEAD']
-    );
-  }
-
   // Set default value for invalid ERRORCODE
   if (
-    variables['ERRORCODE'] &&
+    macros['ERRORCODE'] &&
     !options.isCustomCode &&
-    !/^[0-9]{3}$/.test(variables['ERRORCODE'])
+    !/^[0-9]{3}$/.test(macros['ERRORCODE'])
   ) {
-    variables['ERRORCODE'] = 900;
+    macros['ERRORCODE'] = 900;
   }
 
   // Calc random/time based macros
-  variables['CACHEBUSTING'] = leftpad(
+  macros['CACHEBUSTING'] = leftpad(
     Math.round(Math.random() * 1.0e8).toString()
   );
-  variables['TIMESTAMP'] = encodeURIComponentRFC3986(new Date().toISOString());
+  macros['TIMESTAMP'] = new Date().toISOString();
 
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
-  variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
+  macros['RANDOM'] = macros['random'] = macros['CACHEBUSTING'];
+
+  for (const macro in macros) {
+    macros[macro] = encodeURIComponentRFC3986(macros[macro]);
+  }
 
   for (const URLTemplateKey in URLArray) {
-    let resolveURL = URLArray[URLTemplateKey];
+    const resolveURL = URLArray[URLTemplateKey];
 
     if (typeof resolveURL !== 'string') {
       continue;
     }
+    resolvedURLs.push(replaceUrlMacros(resolveURL, macros));
+  }
+  return resolvedURLs;
+}
 
-    for (const key in variables) {
-      const value = variables[key];
-      const macro1 = `[${key}]`;
-      const macro2 = `%%${key}%%`;
-      resolveURL = resolveURL.replace(macro1, value);
-      resolveURL = resolveURL.replace(macro2, value);
-    }
-    resolvedURLs.push(resolveURL);
+/**
+ * Replace the macros tracking url with their value.
+ * If no value is provided for a supported macro and it exists in the url,
+ * it will be replaced by -1 as described by the VAST 4.1 iab specifications
+ *
+ * @param {String} url - Tracking url.
+ * @param {Object} macros - Object of macros to be replaced in the tracking calls
+ */
+function replaceUrlMacros(url, macros) {
+  url = replaceMacrosValues(url, macros);
+  // match any macros from the url that was not replaced
+  const remainingMacros = url.match(/[^[\]]+(?=])/g);
+  if (!remainingMacros) {
+    return url;
   }
 
-  return resolvedURLs;
+  let supportedRemainingMacros = remainingMacros.filter(
+    macro => supportedMacros.indexOf(macro) > -1
+  );
+  if (supportedRemainingMacros.length === 0) {
+    return url;
+  }
+
+  supportedRemainingMacros = supportedRemainingMacros.reduce(
+    (accumulator, macro) => {
+      accumulator[macro] = -1;
+      return accumulator;
+    },
+    {}
+  );
+  return replaceMacrosValues(url, supportedRemainingMacros);
+}
+
+/**
+ * Replace the macros tracking url with their value.
+ *
+ * @param {String} url - Tracking url.
+ * @param {Object} macros - Object of macros to be replaced in the tracking calls
+ */
+function replaceMacrosValues(url, macros) {
+  let replacedMacrosUrl = url;
+  for (const key in macros) {
+    const value = macros[key];
+    // this will match [${key}] and %%${key}%% and replace it
+    replacedMacrosUrl = replacedMacrosUrl.replace(
+      new RegExp(`(?:\\[|%%)(${key})(?:\\]|%%)`, 'g'),
+      value
+    );
+  }
+  return replacedMacrosUrl;
 }
 
 /**
@@ -199,6 +237,7 @@ export const util = {
   containsTemplateObject,
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,
+  replaceUrlMacros,
   leftpad,
   range,
   isNumeric,
