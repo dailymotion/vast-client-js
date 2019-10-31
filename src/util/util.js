@@ -50,8 +50,7 @@ function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
     if (typeof resolveURL !== 'string') {
       continue;
     }
-    const replacedUrlMacros = replaceUrlMacros(resolveURL, macros);
-    resolvedURLs.push(replacedUrlMacros);
+    resolvedURLs.push(replaceUrlMacros(resolveURL, macros));
   }
   return resolvedURLs;
 }
@@ -75,7 +74,7 @@ function replaceUrlMacros(url, macros) {
   let supportedRemainingMacros = remainingMacros.filter(
     macro => supportedMacros.indexOf(macro) > -1
   );
-  if (!supportedRemainingMacros) {
+  if (supportedRemainingMacros.length === 0) {
     return url;
   }
 
@@ -99,10 +98,11 @@ function replaceMacrosValues(url, macros) {
   let replacedMacrosUrl = url;
   for (const key in macros) {
     const value = macros[key];
-    const macro1 = `[${key}]`;
-    const macro2 = `%%${key}%%`;
-    replacedMacrosUrl = replacedMacrosUrl.replace(macro1, value);
-    replacedMacrosUrl = replacedMacrosUrl.replace(macro2, value);
+    // this will match [${key}] and %%${key}%% and replace it
+    replacedMacrosUrl = replacedMacrosUrl.replace(
+      new RegExp(`(?:\\[|%%)(${key})(?:\\]|%%)`, 'g'),
+      value
+    );
   }
   return replacedMacrosUrl;
 }
