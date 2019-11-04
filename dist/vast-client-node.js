@@ -86,9 +86,15 @@ function _possibleConstructorReturn(self, call) {
 }
 
 function createAd() {
+  var adAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
-    id: null,
-    sequence: null,
+    id: adAttributes.id || null,
+    sequence: adAttributes.sequence || null,
+    adType: adAttributes.adType || null,
+    adServingId: null,
+    categories: [],
+    expires: null,
+    viewableImpression: {},
     system: null,
     title: null,
     description: null,
@@ -181,8 +187,17 @@ function createCreativeCompanion() {
   };
 }
 
-function track(URLTemplates, variables, options) {
-  var URLs = resolveURLTemplates(URLTemplates, variables, options);
+var supportedMacros = ['CONTENTPLAYHEAD', // @deprecated VAST 4.1
+'ADPLAYHEAD', 'MEDIAPLAYHEAD', 'ADPLAYHEAD', 'ASSETURI', 'PODSEQUENCE', 'UNIVERSALADID', 'CONTENTURI', 'CONTENTID', 'VERIFICATIONVENDORS', 'EXTENSIONS', 'DEVICEIP', 'SERVERSIDE', 'CLIENTUA', 'SERVERUA', 'DEVICEUA', 'TRANSACTIONID', 'ADCOUNT', 'BREAKPOSITION', 'PLACEMENTTYPE', 'IFA', 'IFATYPE', 'LATLONG', 'DOMAIN', 'PAGEURL', 'APPBUNDLE', 'VASTVERSIONS', 'APIFRAMEWORKS', 'MEDIAMIME', 'PLAYERCAPABILITIES', 'CLICKTYPE', 'PLAYERSTATE', 'INVENTORYSTATE', 'CLICKPOS', 'PLAYERSIZE', 'LIMITADTRACKING', 'REGULATIONS', 'GDPRCONSENT', // <BlockedAdCategories> element is not parsed for now so the vastTracker
+// can't replace the macro with element value automatically.
+// The player need to pass it inside "macro" parameter when calling trackers
+'BLOCKEDADCATEGORIES', 'ADCATEGORIES', // <Category> element is also not parsed for now. Same instructions as above
+'ADTYPE', //adType attribute of <Ad> element is not parsed for now. Same instructions as above
+'ADSERVINGID' // <AdServingId> element is also not parsed for now. Same instructions as above
+];
+
+function track(URLTemplates, macros, options) {
+  var URLs = resolveURLTemplates(URLTemplates, macros, options);
   URLs.forEach(function (URL) {
     if (typeof window !== 'undefined' && window !== null) {
       var i = new Image();
@@ -194,36 +209,30 @@ function track(URLTemplates, variables, options) {
  * Replace the provided URLTemplates with the given values
  *
  * @param {Array} URLTemplates - An array of tracking url templates.
- * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+ * @param {Object} [macros={}] - An optional Object of parameters to be used in the tracking calls.
  * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
  */
 
 
 function resolveURLTemplates(URLTemplates) {
-  var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var resolvedURLs = [];
-  var URLArray = extractURLsFromTemplates(URLTemplates); // Encode String variables, when given
+  var URLArray = extractURLsFromTemplates(URLTemplates); // Set default value for invalid ERRORCODE
 
-  if (variables['ASSETURI']) {
-    variables['ASSETURI'] = encodeURIComponentRFC3986(variables['ASSETURI']);
-  }
-
-  if (variables['CONTENTPLAYHEAD']) {
-    // @deprecated in VAST 4.1
-    variables['CONTENTPLAYHEAD'] = encodeURIComponentRFC3986(variables['CONTENTPLAYHEAD']);
-  } // Set default value for invalid ERRORCODE
-
-
-  if (variables['ERRORCODE'] && !options.isCustomCode && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
-    variables['ERRORCODE'] = 900;
+  if (macros['ERRORCODE'] && !options.isCustomCode && !/^[0-9]{3}$/.test(macros['ERRORCODE'])) {
+    macros['ERRORCODE'] = 900;
   } // Calc random/time based macros
 
 
-  variables['CACHEBUSTING'] = leftpad(Math.round(Math.random() * 1.0e8).toString());
-  variables['TIMESTAMP'] = encodeURIComponentRFC3986(new Date().toISOString()); // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
+  macros['CACHEBUSTING'] = leftpad(Math.round(Math.random() * 1.0e8).toString());
+  macros['TIMESTAMP'] = new Date().toISOString(); // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
 
-  variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
+  macros['RANDOM'] = macros['random'] = macros['CACHEBUSTING'];
+
+  for (var macro in macros) {
+    macros[macro] = encodeURIComponentRFC3986(macros[macro]);
+  }
 
   for (var URLTemplateKey in URLArray) {
     var resolveURL = URLArray[URLTemplateKey];
@@ -232,18 +241,62 @@ function resolveURLTemplates(URLTemplates) {
       continue;
     }
 
-    for (var key in variables) {
-      var value = variables[key];
-      var macro1 = "[".concat(key, "]");
-      var macro2 = "%%".concat(key, "%%");
-      resolveURL = resolveURL.replace(macro1, value);
-      resolveURL = resolveURL.replace(macro2, value);
-    }
-
-    resolvedURLs.push(resolveURL);
+    resolvedURLs.push(replaceUrlMacros(resolveURL, macros));
   }
 
   return resolvedURLs;
+}
+/**
+ * Replace the macros tracking url with their value.
+ * If no value is provided for a supported macro and it exists in the url,
+ * it will be replaced by -1 as described by the VAST 4.1 iab specifications
+ *
+ * @param {String} url - Tracking url.
+ * @param {Object} macros - Object of macros to be replaced in the tracking calls
+ */
+
+
+function replaceUrlMacros(url, macros) {
+  url = replaceMacrosValues(url, macros); // match any macros from the url that was not replaced
+
+  var remainingMacros = url.match(/[^[\]]+(?=])/g);
+
+  if (!remainingMacros) {
+    return url;
+  }
+
+  var supportedRemainingMacros = remainingMacros.filter(function (macro) {
+    return supportedMacros.indexOf(macro) > -1;
+  });
+
+  if (supportedRemainingMacros.length === 0) {
+    return url;
+  }
+
+  supportedRemainingMacros = supportedRemainingMacros.reduce(function (accumulator, macro) {
+    accumulator[macro] = -1;
+    return accumulator;
+  }, {});
+  return replaceMacrosValues(url, supportedRemainingMacros);
+}
+/**
+ * Replace the macros tracking url with their value.
+ *
+ * @param {String} url - Tracking url.
+ * @param {Object} macros - Object of macros to be replaced in the tracking calls
+ */
+
+
+function replaceMacrosValues(url, macros) {
+  var replacedMacrosUrl = url;
+
+  for (var key in macros) {
+    var value = macros[key]; // this will match [${key}] and %%${key}%% and replace it
+
+    replacedMacrosUrl = replacedMacrosUrl.replace(new RegExp("(?:\\[|%%)(".concat(key, ")(?:\\]|%%)"), 'g'), value);
+  }
+
+  return replacedMacrosUrl;
 }
 /**
  * Extract the url/s from the URLTemplates.
@@ -380,6 +433,7 @@ var util = {
   containsTemplateObject: containsTemplateObject,
   isTemplateObjectEqual: isTemplateObjectEqual,
   encodeURIComponentRFC3986: encodeURIComponentRFC3986,
+  replaceUrlMacros: replaceUrlMacros,
   leftpad: leftpad,
   range: range,
   isNumeric: isNumeric,
@@ -1682,6 +1736,7 @@ function parseAd(adElement, emit) {
 
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
+    parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
 
     if (adTypeElement.nodeName === 'Wrapper') {
       return {
@@ -1722,9 +1777,7 @@ function parseAdElement(adTypeElement, emit) {
   }
 
   var childNodes = adTypeElement.childNodes;
-  var ad = createAd();
-  ad.id = adTypeElement.getAttribute('id') || null;
-  ad.sequence = adTypeElement.getAttribute('sequence') || null;
+  var ad = createAd(parserUtils.parseAttributes(adTypeElement));
 
   for (var nodeKey in childNodes) {
     var node = childNodes[nodeKey];
@@ -1762,6 +1815,25 @@ function parseAdElement(adTypeElement, emit) {
 
       case 'AdTitle':
         ad.title = parserUtils.parseNodeText(node);
+        break;
+
+      case 'AdServingId':
+        ad.adServingId = parserUtils.parseNodeText(node);
+        break;
+
+      case 'Category':
+        ad.categories.push({
+          authority: node.getAttribute('authority') || null,
+          value: parserUtils.parseNodeText(node)
+        });
+        break;
+
+      case 'Expires':
+        ad.expires = parseInt(parserUtils.parseNodeText(node), 10);
+        break;
+
+      case 'ViewableImpression':
+        ad.viewableImpression = _parseViewableImpression(node);
         break;
 
       case 'Description':
@@ -1928,6 +2000,37 @@ function _parseAdVerifications(verifications) {
     ver.push(verification);
   });
   return ver;
+}
+/**
+ * Parses the ViewableImpression Element.
+ * @param  {Object} viewableImpressionNode - The ViewableImpression node element.
+ * @return {Object} viewableImpression - The viewableImpression object
+ */
+
+function _parseViewableImpression(viewableImpressionNode) {
+  var viewableImpression = {};
+  viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
+  var viewableImpressionChildNodes = viewableImpressionNode.childNodes;
+
+  for (var viewableImpressionElementKey in viewableImpressionChildNodes) {
+    var viewableImpressionElement = viewableImpressionChildNodes[viewableImpressionElementKey];
+    var viewableImpressionNodeName = viewableImpressionElement.nodeName;
+    var viewableImpressionNodeValue = parserUtils.parseNodeText(viewableImpressionElement);
+
+    if (viewableImpressionNodeName !== 'Viewable' && viewableImpressionNodeName !== 'NotViewable' && viewableImpressionNodeName !== 'ViewUndetermined' || !viewableImpressionNodeValue) {
+      continue;
+    } else {
+      var viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
+
+      if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
+        viewableImpression[viewableImpressionNodeNameLower] = [];
+      }
+
+      viewableImpression[viewableImpressionNodeNameLower].push(viewableImpressionNodeValue);
+    }
+  }
+
+  return viewableImpression;
 }
 
 var EventEmitter =
@@ -2110,6 +2213,8 @@ function onceWrap(target, event, handler) {
   return onceWrapper;
 }
 
+var DEFAULT_TIMEOUT = 120000;
+
 var uri = require('url');
 
 var fs = require('fs');
@@ -2119,9 +2224,6 @@ var http = require('http');
 var https = require('https');
 
 var DOMParser = require('xmldom').DOMParser;
-
-var _require = require('./consts'),
-    DEFAULT_TIMEOUT = _require.DEFAULT_TIMEOUT;
 
 function get(url, options, cb) {
   url = uri.parse(url);
@@ -2184,8 +2286,6 @@ var nodeURLHandler = {
   get: get
 };
 
-var DEFAULT_TIMEOUT$1 = 120000;
-
 function xhr() {
   try {
     var request = new window.XMLHttpRequest();
@@ -2233,7 +2333,7 @@ function get$1(url, options, cb) {
   try {
     var request = xhr();
     request.open('GET', url);
-    request.timeout = options.timeout || DEFAULT_TIMEOUT$1;
+    request.timeout = options.timeout || DEFAULT_TIMEOUT;
     request.withCredentials = options.withCredentials || false;
     request.overrideMimeType && request.overrideMimeType('text/xml');
 
@@ -2480,7 +2580,7 @@ function (_EventEmitter) {
       this.rootErrorURLTemplates = [];
       this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
       this.fetchingOptions = {
-        timeout: options.timeout || DEFAULT_TIMEOUT$1,
+        timeout: options.timeout || DEFAULT_TIMEOUT,
         withCredentials: options.withCredentials
       };
       this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
@@ -3319,6 +3419,7 @@ function (_EventEmitter) {
      * This is required for tracking time related events.
      *
      * @param {Number} progress - Current playback time in seconds.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#start
      * @emits VASTTracker#skip-countdown
      * @emits VASTTracker#progress-[0-100]%
@@ -3334,6 +3435,7 @@ function (_EventEmitter) {
     value: function setProgress(progress) {
       var _this2 = this;
 
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
       if (skipDelay !== -1 && !this.skippable) {
@@ -3363,11 +3465,16 @@ function (_EventEmitter) {
         }
 
         events.forEach(function (eventName) {
-          _this2.track(eventName, true);
+          _this2.track(eventName, {
+            macros: macros,
+            once: true
+          });
         });
 
         if (progress < this.progress) {
-          this.track('rewind');
+          this.track('rewind', {
+            macros: macros
+          });
         }
       }
 
@@ -3398,6 +3505,7 @@ function (_EventEmitter) {
      * Updates the mute state and calls the mute/unmute tracking URLs.
      *
      * @param {Boolean} muted - Indicates if the video is muted or not.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#mute
      * @emits VASTTracker#unmute
      */
@@ -3405,8 +3513,12 @@ function (_EventEmitter) {
   }, {
     key: "setMuted",
     value: function setMuted(muted) {
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       if (this.muted !== muted) {
-        this.track(muted ? 'mute' : 'unmute');
+        this.track(muted ? 'mute' : 'unmute', {
+          macros: macros
+        });
       }
 
       this.muted = muted;
@@ -3415,6 +3527,7 @@ function (_EventEmitter) {
      * Update the pause state and call the resume/pause tracking URLs.
      *
      * @param {Boolean} paused - Indicates if the video is paused or not.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#pause
      * @emits VASTTracker#resume
      */
@@ -3422,8 +3535,12 @@ function (_EventEmitter) {
   }, {
     key: "setPaused",
     value: function setPaused(paused) {
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       if (this.paused !== paused) {
-        this.track(paused ? 'pause' : 'resume');
+        this.track(paused ? 'pause' : 'resume', {
+          macros: macros
+        });
       }
 
       this.paused = paused;
@@ -3432,6 +3549,7 @@ function (_EventEmitter) {
      * Updates the fullscreen state and calls the fullscreen tracking URLs.
      *
      * @param {Boolean} fullscreen - Indicates if the video is in fulscreen mode or not.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#fullscreen
      * @emits VASTTracker#exitFullscreen
      */
@@ -3439,8 +3557,12 @@ function (_EventEmitter) {
   }, {
     key: "setFullscreen",
     value: function setFullscreen(fullscreen) {
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       if (this.fullscreen !== fullscreen) {
-        this.track(fullscreen ? 'fullscreen' : 'exitFullscreen');
+        this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', {
+          macros: macros
+        });
       }
 
       this.fullscreen = fullscreen;
@@ -3449,6 +3571,7 @@ function (_EventEmitter) {
      * Updates the expand state and calls the expand/collapse tracking URLs.
      *
      * @param {Boolean} expanded - Indicates if the video is expanded or not.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#expand
      * @emits VASTTracker#playerExpand
      * @emits VASTTracker#collapse
@@ -3458,9 +3581,15 @@ function (_EventEmitter) {
   }, {
     key: "setExpand",
     value: function setExpand(expanded) {
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       if (this.expanded !== expanded) {
-        this.track(expanded ? 'expand' : 'collapse');
-        this.track(expanded ? 'playerExpand' : 'playerCollapse');
+        this.track(expanded ? 'expand' : 'collapse', {
+          macros: macros
+        });
+        this.track(expanded ? 'playerExpand' : 'playerCollapse', {
+          macros: macros
+        });
       }
 
       this.expanded = expanded;
@@ -3483,6 +3612,7 @@ function (_EventEmitter) {
     }
     /**
      * Tracks an impression (can be called only once).
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      *
      * @emits VASTTracker#creativeView
      */
@@ -3490,10 +3620,14 @@ function (_EventEmitter) {
   }, {
     key: "trackImpression",
     value: function trackImpression() {
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
       if (!this.impressed) {
         this.impressed = true;
         this.trackURLs(this.ad.impressionURLTemplates);
-        this.track('creativeView');
+        this.track('creativeView', {
+          macros: macros
+        });
       }
     }
     /**
@@ -3518,26 +3652,34 @@ function (_EventEmitter) {
      * Must be called when the user watched the linear creative until its end.
      * Calls the complete tracking URLs.
      *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#complete
      */
 
   }, {
     key: "complete",
     value: function complete() {
-      this.track('complete');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('complete', {
+        macros: macros
+      });
     }
     /**
      * Must be called if the ad was not and will not be played
      * This is a terminal event; no other tracking events should be sent when this is used.
      * Calls the notUsed tracking URLs.
      *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#notUsed
      */
 
   }, {
     key: "notUsed",
     value: function notUsed() {
-      this.track('notUsed');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('notUsed', {
+        macros: macros
+      });
       this.trackingEvents = [];
     }
     /**
@@ -3546,13 +3688,17 @@ function (_EventEmitter) {
      * clickthrough events or other existing events like mute, unmute, pause, etc.
      * Calls the otherAdInteraction tracking URLs.
      *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#otherAdInteraction
      */
 
   }, {
     key: "otherAdInteraction",
     value: function otherAdInteraction() {
-      this.track('otherAdInteraction');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('otherAdInteraction', {
+        macros: macros
+      });
     }
     /**
      * Must be called if the user clicked or otherwise activated a control used to
@@ -3561,68 +3707,125 @@ function (_EventEmitter) {
      * additional portion of the ad.
      * Calls the acceptInvitation tracking URLs.
      *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#acceptInvitation
      */
 
   }, {
     key: "acceptInvitation",
     value: function acceptInvitation() {
-      this.track('acceptInvitation');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('acceptInvitation', {
+        macros: macros
+      });
     }
     /**
      * Must be called if user activated a control to expand the creative.
      * Calls the adExpand tracking URLs.
      *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#adExpand
      */
 
   }, {
     key: "adExpand",
     value: function adExpand() {
-      this.track('adExpand');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('adExpand', {
+        macros: macros
+      });
     }
     /**
      * Must be called when the user activated a control to reduce the creative to its original dimensions.
      * Calls the adCollapse tracking URLs.
      *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#adCollapse
      */
 
   }, {
     key: "adCollapse",
     value: function adCollapse() {
-      this.track('adCollapse');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('adCollapse', {
+        macros: macros
+      });
     }
     /**
      * Must be called if the user clicked or otherwise activated a control used to minimize the ad.
      * Calls the minimize tracking URLs.
+     *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#minimize
      */
 
   }, {
     key: "minimize",
     value: function minimize() {
-      this.track('minimize');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('minimize', {
+        macros: macros
+      });
+    }
+    /**
+     * Must be called if the player did not or was not able to execute the provided
+     * verification code.The [REASON] macro must be filled with reason code
+     * Calls the verificationNotExecuted trackings URLs.
+     *
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+     * @emits VASTTracker#verificationNotExecuted
+     */
+
+  }, {
+    key: "verificationNotExecuted",
+    value: function verificationNotExecuted() {
+      var _this3 = this;
+
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      if (!this.ad || !this.ad.adVerifications || !this.ad.adVerifications.length) {
+        throw new Error('No adVerifications provided');
+      }
+
+      this.ad.adVerifications.forEach(function (verification) {
+        if (verification.trackingEvents && verification.trackingEvents.verificationNotExecuted) {
+          var verifsNotExecuted = verification.trackingEvents.verificationNotExecuted;
+
+          _this3.trackURLs(verifsNotExecuted, macros);
+
+          _this3.emit('verificationNotExecuted', {
+            trackingURLTemplates: verifsNotExecuted
+          });
+        }
+      });
     }
     /**
      * The time that the initial ad is displayed. This time is based on
      * the time between the impression and either the completed length of display based
      * on the agreement between transactional parties or a close, minimize, or accept
      * invitation event.
-     * The time has to be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] for VAST 4.1
+     * The time will be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] macros for VAST 4.1
      * Calls the overlayViewDuration tracking URLs.
+     *
+     * @param {String} duration - The time that the initial ad is displayed.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#overlayViewDuration
      */
-    // TODO : Pass the duration as a parameter and replace the corresponding macro with it
 
   }, {
     key: "overlayViewDuration",
-    value: function overlayViewDuration() {
-      this.track('overlayViewDuration');
+    value: function overlayViewDuration(duration) {
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      macros['CONTENTPLAYHEAD'] = duration;
+      macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+      this.track('overlayViewDuration', {
+        macros: macros
+      });
     }
     /**
      * Must be called when the player or the window is closed during the ad.
      * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      *
      * @emits VASTTracker#closeLinear
      * @emits VASTTracker#close
@@ -3631,10 +3834,14 @@ function (_EventEmitter) {
   }, {
     key: "close",
     value: function close() {
-      this.track(this.linear ? 'closeLinear' : 'close');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track(this.linear ? 'closeLinear' : 'close', {
+        macros: macros
+      });
     }
     /**
      * Must be called when the skip button is clicked. Calls the skip tracking URLs.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      *
      * @emits VASTTracker#skip
      */
@@ -3642,12 +3849,16 @@ function (_EventEmitter) {
   }, {
     key: "skip",
     value: function skip() {
-      this.track('skip');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('skip', {
+        macros: macros
+      });
     }
     /**
      * Must be called then loaded and buffered the creative’s media and assets either fully
      * or to the extent that it is ready to play the media
      * Calls the loaded tracking URLs.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      *
      * @emits VASTTracker#loaded
      */
@@ -3655,7 +3866,10 @@ function (_EventEmitter) {
   }, {
     key: "load",
     value: function load() {
-      this.track('loaded');
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.track('loaded', {
+        macros: macros
+      });
     }
     /**
      * Must be called when the user clicks on the creative.
@@ -3670,19 +3884,22 @@ function (_EventEmitter) {
     key: "click",
     value: function click() {
       var fallbackClickThroughURL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       if (this.clickTrackingURLTemplates && this.clickTrackingURLTemplates.length) {
-        this.trackURLs(this.clickTrackingURLTemplates);
+        this.trackURLs(this.clickTrackingURLTemplates, macros);
       } // Use the provided fallbackClickThroughURL as a fallback
 
 
       var clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL;
 
       if (clickThroughURLTemplate) {
-        var variables = this.linear ? {
-          CONTENTPLAYHEAD: this.progressFormatted()
-        } : {};
-        var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], variables)[0];
+        if (this.linear) {
+          macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+          macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+        }
+
+        var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], macros)[0];
         this.emit('clickthrough', clickThroughURL);
       }
     }
@@ -3690,13 +3907,18 @@ function (_EventEmitter) {
      * Calls the tracking URLs for the given eventName and emits the event.
      *
      * @param {String} eventName - The name of the event.
+     * @param {Object} [macros ={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
      * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
+     *
      */
 
   }, {
     key: "track",
-    value: function track(eventName) {
-      var once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    value: function track(eventName, _ref) {
+      var _ref$macros = _ref.macros,
+          macros = _ref$macros === void 0 ? {} : _ref$macros,
+          _ref$once = _ref.once,
+          once = _ref$once === void 0 ? false : _ref$once;
 
       // closeLinear event was introduced in VAST 3.0
       // Fallback to vast 2.0 close event if necessary
@@ -3711,7 +3933,7 @@ function (_EventEmitter) {
         this.emit(eventName, {
           trackingURLTemplates: trackingURLTemplates
         });
-        this.trackURLs(trackingURLTemplates);
+        this.trackURLs(trackingURLTemplates, macros);
       } else if (isAlwaysEmitEvent) {
         this.emit(eventName, null);
       }
@@ -3725,28 +3947,40 @@ function (_EventEmitter) {
       }
     }
     /**
-     * Calls the tracking urls templates with the given variables.
+     * Calls the tracking urls templates with the given macros .
      *
      * @param {Array} URLTemplates - An array of tracking url templates.
-     * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+     * @param {Object} [macros ={}] - An optional Object of parameters to be used in the tracking calls.
      * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
      */
 
   }, {
     key: "trackURLs",
     value: function trackURLs(URLTemplates) {
-      var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
       if (this.linear) {
         if (this.creative && this.creative.mediaFiles && this.creative.mediaFiles[0] && this.creative.mediaFiles[0].fileURL) {
-          variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
+          macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
         }
 
-        variables['CONTENTPLAYHEAD'] = this.progressFormatted();
+        if (!macros['CONTENTPLAYHEAD'] && this.progress) {
+          //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
+          macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+          macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+        }
       }
 
-      util.track(URLTemplates, variables, options);
+      if (this.creative && this.creative.universalAdId && this.creative.universalAdId.idRegistry && this.creative.universalAdId.value) {
+        macros['UNIVERSALADID'] = "".concat(this.creative.universalAdId.idRegistry, " ").concat(this.creative.universalAdId.value);
+      }
+
+      if (this.ad && this.ad.sequence) {
+        macros['PODSEQUENCE'] = this.ad.sequence;
+      }
+
+      util.track(URLTemplates, macros, options);
     }
     /**
      * Formats time progress in a readable string.
