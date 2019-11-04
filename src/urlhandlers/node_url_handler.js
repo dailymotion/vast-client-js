@@ -1,9 +1,10 @@
+import { DEFAULT_TIMEOUT } from './consts';
+
 const uri = require('url');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const DOMParser = require('xmldom').DOMParser;
-const { DEFAULT_TIMEOUT } = require('./consts');
 
 function get(url, options, cb) {
   url = uri.parse(url);
