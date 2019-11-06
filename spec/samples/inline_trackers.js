@@ -10,6 +10,20 @@ export const inlineTrackersParsed = {
       description: 'Description text',
       advertiser: { id: 'advertiser-desc', value: 'Advertiser name' },
       pricing: { value: '1.09', model: 'CPM', currency: 'USD' },
+      categories: [
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'Category-A'
+        },
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'Category-B'
+        },
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'Category-C'
+        }
+      ],
       survey: 'http://example.com/survey',
       errorURLTemplates: ['http://example.com/error_[ERRORCODE]'],
       impressionURLTemplates: [
@@ -144,7 +158,7 @@ export const inlineTrackersParsed = {
               'http://example.com/linear-otherAdInteraction'
             ],
             acceptInvitation: [
-              'http://example.com/linear-acceptInvitation?adServingId=[ADSERVINGID]&adtype=[ADTYPE]'
+              'http://example.com/linear-acceptInvitation?category=[ADCATEGORIES]&adServingId=[ADSERVINGID]&adtype=[ADTYPE]'
             ],
             adExpand: ['http://example.com/linear-adExpand'],
             adCollapse: ['http://example.com/linear-adCollapse'],

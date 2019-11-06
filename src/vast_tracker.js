@@ -621,6 +621,11 @@ export class VASTTracker extends EventEmitter {
       if (this.ad.adServingId) {
         macros['ADSERVINGID'] = this.ad.adServingId;
       }
+      if (this.ad.categories && this.ad.categories.length) {
+        macros['ADCATEGORIES'] = this.ad.categories
+          .map(categorie => categorie.value)
+          .join(',');
+      }
     }
 
     util.track(URLTemplates, macros, options);

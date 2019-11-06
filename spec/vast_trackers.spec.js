@@ -17,7 +17,8 @@ describe('VASTTracker', function() {
       UNIVERSALADID: 'sample-registry%20000123',
       PODSEQUENCE: '1',
       ADSERVINGID: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
-      ADTYPE: 'video'
+      ADTYPE: 'video',
+      ADCATEGORIES: 'Category-A%2CCategory-B%2CCategory-C'
     };
     beforeEach(() => {
       ad = inlineTrackersParsed.ads[0];
@@ -161,8 +162,9 @@ describe('VASTTracker', function() {
           adTrackingUrls.overlayViewDuration,
           expect.objectContaining({
             ...expectedMacros,
-            ADSERVINGID: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
-            ADTYPE: 'video'
+            ADPLAYHEAD: '00%3A00%3A30',
+            CONTENTPLAYHEAD: '00%3A00%3A30',
+            MEDIAPLAYHEAD: '00%3A00%3A30'
           })
         );
       });
