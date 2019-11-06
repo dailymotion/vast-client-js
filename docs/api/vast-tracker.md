@@ -96,6 +96,9 @@ The following macro value will be set automatically by vast-client if it exists 
 - ASSETURI
 - PODSEQUENCE
 - UNIVERSALADID
+- ADTYPE
+- ADSERVINGID
+- ADCATEGORIES
 
 For any others supported macros, they need to be passed as a parameter when calling tracking methods and must exists in tracking url to be replaced.
 
@@ -665,6 +668,9 @@ Also automatically replaces the deducted value for following macros:
 - ASSETURI
 - PODSEQUENCE
 - UNIVERSALADID
+- ADTYPE
+- ADSERVINGID
+- ADCATEGORIES
 
 #### Parameters
 * **`URLTemplates: Array<String|Object>`** - An array of tracking url templates.

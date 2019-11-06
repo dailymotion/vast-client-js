@@ -3,11 +3,27 @@ export const inlineTrackersParsed = {
     {
       id: 'ad_id_0001',
       sequence: '1',
+      adType: 'video',
+      adServingId: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
       system: { value: 'AdServer', version: '2.0' },
       title: 'Ad title',
       description: 'Description text',
       advertiser: { id: 'advertiser-desc', value: 'Advertiser name' },
       pricing: { value: '1.09', model: 'CPM', currency: 'USD' },
+      categories: [
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'Category-A'
+        },
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'Category-B'
+        },
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'Category-C'
+        }
+      ],
       survey: 'http://example.com/survey',
       errorURLTemplates: ['http://example.com/error_[ERRORCODE]'],
       impressionURLTemplates: [
@@ -141,7 +157,9 @@ export const inlineTrackersParsed = {
             otherAdInteraction: [
               'http://example.com/linear-otherAdInteraction'
             ],
-            acceptInvitation: ['http://example.com/linear-acceptInvitation'],
+            acceptInvitation: [
+              'http://example.com/linear-acceptInvitation?category=[ADCATEGORIES]&adServingId=[ADSERVINGID]&adtype=[ADTYPE]'
+            ],
             adExpand: ['http://example.com/linear-adExpand'],
             adCollapse: ['http://example.com/linear-adCollapse'],
             minimize: ['http://example.com/linear-minimize'],

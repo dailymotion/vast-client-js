@@ -41,7 +41,7 @@ export const supportedMacros = [
   // can't replace the macro with element value automatically.
   // The player need to pass it inside "macro" parameter when calling trackers
   'BLOCKEDADCATEGORIES',
-  'ADCATEGORIES', // <Category> element is also not parsed for now. Same instructions as above
-  'ADTYPE', //adType attribute of <Ad> element is not parsed for now. Same instructions as above
-  'ADSERVINGID' // <AdServingId> element is also not parsed for now. Same instructions as above
+  'ADCATEGORIES',
+  'ADTYPE',
+  'ADSERVINGID'
 ];

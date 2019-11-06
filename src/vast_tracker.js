@@ -611,8 +611,21 @@ export class VASTTracker extends EventEmitter {
       }`;
     }
 
-    if (this.ad && this.ad.sequence) {
-      macros['PODSEQUENCE'] = this.ad.sequence;
+    if (this.ad) {
+      if (this.ad.sequence) {
+        macros['PODSEQUENCE'] = this.ad.sequence;
+      }
+      if (this.ad.adType) {
+        macros['ADTYPE'] = this.ad.adType;
+      }
+      if (this.ad.adServingId) {
+        macros['ADSERVINGID'] = this.ad.adServingId;
+      }
+      if (this.ad.categories && this.ad.categories.length) {
+        macros['ADCATEGORIES'] = this.ad.categories
+          .map(categorie => categorie.value)
+          .join(',');
+      }
     }
 
     util.track(URLTemplates, macros, options);

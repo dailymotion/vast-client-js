@@ -12,6 +12,14 @@ describe('VASTTracker', function() {
     let spyTrackUrl;
     let adTrackingUrls;
     let ad;
+    const expectedMacros = {
+      ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
+      UNIVERSALADID: 'sample-registry%20000123',
+      PODSEQUENCE: '1',
+      ADSERVINGID: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
+      ADTYPE: 'video',
+      ADCATEGORIES: 'Category-A%2CCategory-B%2CCategory-C'
+    };
     beforeEach(() => {
       ad = inlineTrackersParsed.ads[0];
       adTrackingUrls = ad.creatives[0].trackingEvents;
@@ -34,11 +42,7 @@ describe('VASTTracker', function() {
 
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.minimize,
-          expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
-          })
+          expect.objectContaining(expectedMacros)
         );
       });
     });
@@ -84,11 +88,7 @@ describe('VASTTracker', function() {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.otherAdInteraction,
-          expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
-          })
+          expect.objectContaining(expectedMacros)
         );
       });
     });
@@ -106,11 +106,7 @@ describe('VASTTracker', function() {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.acceptInvitation,
-          expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
-          })
+          expect.objectContaining(expectedMacros)
         );
       });
     });
@@ -128,11 +124,7 @@ describe('VASTTracker', function() {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.adExpand,
-          expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
-          })
+          expect.objectContaining(expectedMacros)
         );
       });
     });
@@ -150,11 +142,7 @@ describe('VASTTracker', function() {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.adCollapse,
-          expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
-          })
+          expect.objectContaining(expectedMacros)
         );
       });
     });
@@ -173,9 +161,10 @@ describe('VASTTracker', function() {
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.overlayViewDuration,
           expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
+            ...expectedMacros,
+            ADPLAYHEAD: '00%3A00%3A30',
+            CONTENTPLAYHEAD: '00%3A00%3A30',
+            MEDIAPLAYHEAD: '00%3A00%3A30'
           })
         );
       });
@@ -194,11 +183,7 @@ describe('VASTTracker', function() {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.notUsed,
-          expect.objectContaining({
-            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-            UNIVERSALADID: 'sample-registry%20000123',
-            PODSEQUENCE: '1'
-          })
+          expect.objectContaining(expectedMacros)
         );
         expect(spyEmitter).toHaveBeenCalledTimes(1);
       });
