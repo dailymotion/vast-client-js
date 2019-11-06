@@ -6,3 +6,4 @@ node_modules/
 test/
 spec/
 jest.config.js
+performance/

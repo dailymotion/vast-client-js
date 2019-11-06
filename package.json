@@ -25,7 +25,7 @@
   "main": "dist/vast-client-node.min.js",
   "browser": "dist/vast-client.min.js",
   "scripts": {
-    "performance": "node performance_test.js",
+    "performance": "node performance/performance_test.js",
     "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
     "build": "rollup -c",
     "postbuild": "node bundle_size.js",
