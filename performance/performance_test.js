@@ -6,6 +6,13 @@ const getAverage = list => {
   return list.reduce((res, value) => (res += value), 0) / list.length;
 };
 
+/**
+ * Calculates the average time taken of the given async test by running it multiple times.
+ * Each run is executed in a child process, to not share resources between test runs.
+ * The given async test must pass the time taken in a console log, for the performance test to work.
+ * @param {String} name - name of the test for the console log
+ * @param {String} testFilePath - absolute path to the test file
+ */
 const runAsyncTimeAverageTest = async (name, testFilePath) => {
   const times = [];
 
@@ -15,7 +22,10 @@ const runAsyncTimeAverageTest = async (name, testFilePath) => {
         const proc = spawn("node", [testFilePath]);
 
         proc.stdout.on("data", (data) => {
-          resolve(+data.toString())
+          const dataString = data.toString()
+          if (dataString.match(/^\d+|\d+\.\d+$/g)) {
+            resolve(+dataString)
+          }
         })
         proc.stderr.on("data", (error) => {
           reject(error.toString());
