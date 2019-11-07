@@ -9,8 +9,7 @@ const timeBefore = Date.now();
 
 VastClient.get(url)
   .then(() => {
-    const timeAfter = Date.now();
-    console.log(timeAfter - timeBefore);
+    console.log(Date.now() - timeBefore);
   })
   .catch((e) => {
     console.error(e)

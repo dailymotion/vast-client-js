@@ -16,7 +16,7 @@ const getAverage = list => {
 const runAsyncTimeAverageTest = async (name, testFilePath) => {
   const times = [];
 
-  for(let i = 0; i < numberOfRuns; i++) {
+  for (let i = 0; i < numberOfRuns; i++) {
     try {
       const time = await new Promise((resolve, reject) => {
         const proc = spawn("node", [testFilePath]);
@@ -24,7 +24,7 @@ const runAsyncTimeAverageTest = async (name, testFilePath) => {
         proc.stdout.on("data", (data) => {
           const dataString = data.toString()
           if (dataString.match(/^\d+|\d+\.\d+$/g)) {
-            resolve(+dataString)
+            resolve(parseInt(dataString, 10))
           }
         })
         proc.stderr.on("data", (error) => {

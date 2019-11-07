@@ -12,8 +12,7 @@ const VastParser = new VASTParser();
 const timeBefore = Date.now();
 VastParser.parseVAST(inlineXml)
   .then(() => {
-    const timeAfter = Date.now();
-    console.log(timeAfter - timeBefore);
+    console.log(Date.now() - timeBefore);
   })
   .catch((e) => {
     console.error(e)
