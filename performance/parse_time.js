@@ -1,18 +1,18 @@
-const path = require('path');
 const xmldom = require('xmldom');
 const fs = require('fs');
+const process = require('process');
 const { VASTParser } = require('../dist/vast-client-node.min.js');
 
-const url = path.join(__dirname, '..', 'spec', 'samples', 'inline-linear.xml');
-const stringifiedXml = fs.readFileSync(url).toString();
+const stringifiedXml = fs.readFileSync('spec/samples/inline-linear.xml').toString();
 const inlineXml = new xmldom.DOMParser().parseFromString(stringifiedXml, 'text/xml');
 
 const VastParser = new VASTParser();
 
-const timeBefore = Date.now();
+const timeBefore = process.hrtime();
 VastParser.parseVAST(inlineXml)
   .then(() => {
-    console.log(Date.now() - timeBefore);
+    const res = process.hrtime(timeBefore);
+    console.log((res[0] * 1e3 + res[1] * 1e-6));
   })
   .catch((e) => {
     console.error(e)
