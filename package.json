@@ -22,6 +22,9 @@
   "engines": {
     "node": ">=8.9.4"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "main": "dist/vast-client-node.min.js",
   "browser": "dist/vast-client.min.js",
   "scripts": {
