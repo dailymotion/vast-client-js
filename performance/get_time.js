@@ -10,7 +10,7 @@ const timeBefore = process.hrtime();
 VastClient.get(url)
   .then(() => {
     const res = process.hrtime(timeBefore);
-    console.log((res[0] * 1e3 + res[1] * 1e-6));
+    console.log(res[0] * 1000 + res[1] * 0.000001);
   })
   .catch((e) => {
     console.error(e)
