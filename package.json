@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.12.0"
   },
   "main": "dist/vast-client-node.min.js",
   "browser": "dist/vast-client.min.js",
