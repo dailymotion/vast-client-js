@@ -10,7 +10,7 @@ function get(url, options, cb) {
   url = uri.parse(url);
   const httpModule = url.protocol === 'https:' ? https : http;
   if (url.protocol === 'file:') {
-    fs.readFile(url.pathname, 'utf8', function(err, data) {
+    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function(err, data) {
       if (err) {
         return cb(err);
       }
