@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<VAST version="2.0">
+<VAST version="4.1">
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
@@ -7,6 +7,14 @@
       <Error><![CDATA[http://example.com/wrapperB-error]]></Error>
       <Impression id="wrapper-b-impression1"><![CDATA[http://example.com/wrapperB-impression1]]></Impression>
       <Impression id="wrapper-b-impression2"><![CDATA[http://example.com/wrapperB-impression2]]></Impression>
+      <AdVerifications>
+        <Verification vendor="verification-b.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="false">
+            <![CDATA[https://verification-b.com/omid_verification.js]]>
+          </JavaScriptResource>
+          <VerificationParameters><![CDATA[parameterB1=valueB1&parameterB2=valueB2]]></VerificationParameters>
+        </Verification>
+      </AdVerifications>
       <Creatives>
         <Creative id="b:ca1">
           <CompanionAds>

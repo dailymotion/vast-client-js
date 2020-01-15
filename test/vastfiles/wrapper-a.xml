@@ -6,6 +6,17 @@
       <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
       <Error><![CDATA[http://example.com/wrapperA-error]]></Error>
       <Impression id="wrapper-a-impression"><![CDATA[http://example.com/wrapperA-impression]]></Impression>
+      <AdVerifications>
+        <Verification vendor="verification-a.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="false">
+            <![CDATA[https://verification-a.com/omid_verification.js]]>
+          </JavaScriptResource>
+          <VerificationParameters><![CDATA[parameterA1=valueA1&parameterA2=valueA2]]></VerificationParameters>
+          <TrackingEvents>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://verification-a.com/verification-A-not-executed-JS]]></Tracking>
+          </TrackingEvents>
+        </Verification>
+      </AdVerifications>
       <Creatives>
         <Creative id="a:ca1">
           <CompanionAds>
