@@ -132,43 +132,75 @@ describe('VASTParser', function() {
         ad1.extensions.should.have.length(4);
       });
 
-      it('should have 3 AdVerification URLs VAST 4.1', () => {
-        ad1.adVerifications.should.have.length(3);
+      it('should have 5 AdVerification URLs VAST 4.1', () => {
+        ad1.adVerifications.should.have.length(5);
       });
 
       it('validate second adVerification', () => {
-        ad1.adVerifications[1].resource.should.eql('http://example.com/omid2');
-        ad1.adVerifications[1].vendor.should.eql('company2.com-omid');
-        ad1.adVerifications[1].browserOptional.should.eql(false);
-        ad1.adVerifications[1].apiFramework.should.eql('omid');
-        ad1.adVerifications[1].parameters.should.eql(
-          'test-verification-parameter'
-        );
-        ad1.adVerifications[1].trackingEvents.should.have.keys(
+        const adVerification = ad1.adVerifications[1];
+        adVerification.resource.should.eql('http://example.com/omid2');
+        adVerification.vendor.should.eql('company2.com-omid');
+        adVerification.browserOptional.should.eql(false);
+        adVerification.apiFramework.should.eql('omid');
+        adVerification.parameters.should.eql('test-verification-parameter');
+        adVerification.trackingEvents.should.have.keys(
           'verificationNotExecuted'
         );
-        ad1.adVerifications[1].trackingEvents[
-          'verificationNotExecuted'
-        ].should.eql(['http://example.com/verification-not-executed-JS']);
+        adVerification.trackingEvents['verificationNotExecuted'].should.eql([
+          'http://example.com/verification-not-executed-JS'
+        ]);
       });
 
       it('validate third adVerification', () => {
-        ad1.adVerifications[2].resource.should.eql(
-          'http://example.com/omid1.exe'
-        );
-        ad1.adVerifications[2].vendor.should.eql('company.daily.com-omid');
-        ad1.adVerifications[2].browserOptional.should.eql(false);
-        ad1.adVerifications[2].apiFramework.should.eql('omid');
-        ad1.adVerifications[2].type.should.eql('executable');
-        should.equal(ad1.adVerifications[2].parameters, null);
-        ad1.adVerifications[2].trackingEvents.should.have.keys(
+        const adVerification = ad1.adVerifications[2];
+        adVerification.resource.should.eql('http://example.com/omid1.exe');
+        adVerification.vendor.should.eql('company.daily.com-omid');
+        adVerification.browserOptional.should.eql(false);
+        adVerification.apiFramework.should.eql('omid');
+        adVerification.type.should.eql('executable');
+        should.equal(adVerification.parameters, null);
+        adVerification.trackingEvents.should.have.keys(
           'verificationNotExecuted'
         );
-        ad1.adVerifications[2].trackingEvents[
-          'verificationNotExecuted'
-        ].should.eql([
+        adVerification.trackingEvents['verificationNotExecuted'].should.eql([
           'http://example.com/verification-not-executed-EXE',
           'http://sample.com/verification-not-executed-EXE'
+        ]);
+      });
+
+      it('validate wrapper-b adVerification merging', () => {
+        const adVerification = ad1.adVerifications[3];
+        adVerification.resource.should.eql(
+          'https://verification-b.com/omid_verification.js'
+        );
+        adVerification.vendor.should.eql('verification-b.com-omid');
+        adVerification.browserOptional.should.eql(false);
+        adVerification.apiFramework.should.eql('omid');
+        adVerification.parameters.should.eql(
+          'parameterB1=valueB1&parameterB2=valueB2'
+        );
+        adVerification.trackingEvents.should.not.have.keys(
+          'verificationNotExecuted'
+        );
+      });
+
+      it('validate wrapper-a adVerification merging', () => {
+        const adVerification = ad1.adVerifications[4];
+
+        adVerification.resource.should.eql(
+          'https://verification-a.com/omid_verification.js'
+        );
+        adVerification.vendor.should.eql('verification-a.com-omid');
+        adVerification.browserOptional.should.eql(false);
+        adVerification.apiFramework.should.eql('omid');
+        adVerification.parameters.should.eql(
+          'parameterA1=valueA1&parameterA2=valueA2'
+        );
+        adVerification.trackingEvents.should.have.keys(
+          'verificationNotExecuted'
+        );
+        adVerification.trackingEvents['verificationNotExecuted'].should.eql([
+          'http://verification-a.com/verification-A-not-executed-JS'
         ]);
       });
 
