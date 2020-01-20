@@ -420,12 +420,13 @@ export class VASTTracker extends EventEmitter {
   /**
    * Must be called if the player did not or was not able to execute the provided
    * verification code.The [REASON] macro must be filled with reason code
-   * Calls the verificationNotExecuted trackings URLs.
+   * Calls the verificationNotExecuted tracking URL of associated verification vendor.
    *
+   * @param {String} vendor - An identifier for the verification vendor. The recommended format is [domain]-[useCase], to avoid name collisions. For example, "company.com-omid".
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#verificationNotExecuted
    */
-  verificationNotExecuted(macros = {}) {
+  verificationNotExecuted(vendor, macros = {}) {
     if (
       !this.ad ||
       !this.ad.adVerifications ||
@@ -434,19 +435,30 @@ export class VASTTracker extends EventEmitter {
       throw new Error('No adVerifications provided');
     }
 
-    this.ad.adVerifications.forEach(verification => {
-      if (
-        verification.trackingEvents &&
-        verification.trackingEvents.verificationNotExecuted
-      ) {
-        const verifsNotExecuted =
-          verification.trackingEvents.verificationNotExecuted;
-        this.trackURLs(verifsNotExecuted, macros);
-        this.emit('verificationNotExecuted', {
-          trackingURLTemplates: verifsNotExecuted
-        });
-      }
-    });
+    if (!vendor) {
+      throw new Error(
+        'No vendor provided, unable to find associated verificationNotExecuted'
+      );
+    }
+
+    const vendorVerification = this.ad.adVerifications.find(
+      verifications => verifications.vendor === vendor
+    );
+
+    if (!vendorVerification) {
+      throw new Error(
+        `No associated verification element found for vendor: ${vendor}`
+      );
+    }
+    const vendorTracking = vendorVerification.trackingEvents;
+
+    if (vendorTracking && vendorTracking.verificationNotExecuted) {
+      const verifsNotExecuted = vendorTracking.verificationNotExecuted;
+      this.trackURLs(verifsNotExecuted, macros);
+      this.emit('verificationNotExecuted', {
+        trackingURLTemplates: verifsNotExecuted
+      });
+    }
   }
 
   /**

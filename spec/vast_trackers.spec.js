@@ -48,29 +48,40 @@ describe('VASTTracker', function() {
     });
 
     describe('#verificationNotExecuted', () => {
-      let verificationUrls;
+      let verificationUrl;
       let reasonMacro = { REASON: 3 };
+      const vendor = 'company.com-omid';
       beforeEach(() => {
-        verificationUrls =
+        verificationUrl =
           ad.adVerifications[0].trackingEvents.verificationNotExecuted;
-        vastTracker.verificationNotExecuted(reasonMacro);
+        vastTracker.verificationNotExecuted(vendor, reasonMacro);
       });
       it('should be defined', () => {
-        expect(verificationUrls).toBeDefined();
+        expect(verificationUrl).toBeDefined();
       });
       it('should have emitted verificationNotExecuted event and called trackUrl', () => {
         expect(spyTrackUrl).toHaveBeenCalledWith(
-          verificationUrls,
+          verificationUrl,
           expect.objectContaining(reasonMacro)
         );
         expect(spyEmitter).toHaveBeenCalledWith('verificationNotExecuted', {
-          trackingURLTemplates: verificationUrls
+          trackingURLTemplates: verificationUrl
         });
+      });
+      it('should throw missing AdVerification vendor error', () => {
+        const vendor = ad.adVerifications[0].vendor;
+        ad.adVerifications[0].vendor = null;
+        expect(() => {
+          vastTracker.verificationNotExecuted(vendor, reasonMacro);
+        }).toThrowError(
+          'No associated verification element found for vendor: company.com-omid'
+        );
+        ad.adVerifications[0].vendor = vendor;
       });
       it('should throw missing AdVerification error', () => {
         ad.adVerifications.length = 0;
         expect(() => {
-          vastTracker.verificationNotExecuted(reasonMacro);
+          vastTracker.verificationNotExecuted(vendor, reasonMacro);
         }).toThrowError('No adVerifications provided');
       });
     });
