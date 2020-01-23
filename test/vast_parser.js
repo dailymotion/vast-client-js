@@ -243,9 +243,19 @@ describe('VASTParser', function() {
 
       it('validate first extension', () => {
         ad1.extensions[0].attributes['type'].should.eql('WrapperExtension');
-        ad1.extensions[0].children.should.have.length(1);
+        ad1.extensions[0].children.should.have.length(2);
         ad1.extensions[0].children[0].name.should.eql('extension_tag');
         ad1.extensions[0].children[0].value.should.eql('extension_value');
+        ad1.extensions[0].children[1].name.should.eql(
+          'nested_extension_parent_tag'
+        );
+        ad1.extensions[0].children[1].value.should.eql('extension_value');
+        ad1.extensions[0].children[1].children[0].name.should.eql(
+          'nested_extension_tag'
+        );
+        ad1.extensions[0].children[1].children[0].value.should.eql(
+          'extension_value'
+        );
       });
 
       it('validate second extension', () => {
@@ -262,9 +272,7 @@ describe('VASTParser', function() {
 
       it('validate third extension', () => {
         ad1.extensions[2].attributes['type'].should.eql('Count');
-        ad1.extensions[2].children.should.have.length(1);
-        ad1.extensions[2].children[0].name.should.eql('#cdata-section');
-        ad1.extensions[2].children[0].value.should.eql('4');
+        ad1.extensions[2].children.should.have.length(0);
       });
 
       it('validate fourth extension', () => {
@@ -771,9 +779,19 @@ describe('VASTParser', function() {
 
       it('validate the extension', () => {
         ad2.extensions[0].attributes['type'].should.eql('WrapperExtension');
-        ad2.extensions[0].children.should.have.length(1);
+        ad2.extensions[0].children.should.have.length(2);
         ad2.extensions[0].children[0].name.should.eql('extension_tag');
         ad2.extensions[0].children[0].value.should.eql('extension_value');
+        ad2.extensions[0].children[1].name.should.eql(
+          'nested_extension_parent_tag'
+        );
+        ad2.extensions[0].children[1].value.should.eql('extension_value');
+        ad2.extensions[0].children[1].children[0].name.should.eql(
+          'nested_extension_tag'
+        );
+        ad2.extensions[0].children[1].children[0].value.should.eql(
+          'extension_value'
+        );
       });
 
       //Linear

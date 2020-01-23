@@ -72,6 +72,11 @@
           <extension_tag>
             <![CDATA[ extension_value ]]>
           </extension_tag>
+          <nested_extension_parent_tag>
+           <nested_extension_tag>
+            <![CDATA[ extension_value ]]>
+            </nested_extension_tag>
+          </nested_extension_parent_tag>
         </Extension>
       </Extensions>
     </Wrapper>

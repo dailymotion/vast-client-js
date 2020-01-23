@@ -1,6 +1,5 @@
 import { Ad } from '../ad';
 import { AdExtension } from '../ad_extension';
-import { AdExtensionChild } from '../ad_extension_child';
 import { parseCreativeCompanion } from './creative_companion_parser';
 import { parseCreativeLinear } from './creative_linear_parser';
 import { parseCreativeNonLinear } from './creative_non_linear_parser';
@@ -238,10 +237,13 @@ function parseWrapper(wrapperElement) {
 function parseExtensions(collection, extensions) {
   extensions.forEach(extNode => {
     const ext = new AdExtension();
-    const extNodeAttrs = extNode.attributes;
-    const childNodes = extNode.childNodes;
 
-    if (extNode.attributes) {
+    ext.name = extNode.nodeName;
+    ext.value = parserUtils.parseNodeText(extNode);
+
+    const extNodeAttrs = extNode.attributes;
+
+    if (extNodeAttrs) {
       for (const extNodeAttrKey in extNodeAttrs) {
         const extNodeAttr = extNodeAttrs[extNodeAttrKey];
 
@@ -251,29 +253,26 @@ function parseExtensions(collection, extensions) {
       }
     }
 
-    for (const childNodeKey in childNodes) {
-      const childNode = childNodes[childNodeKey];
-      const txt = parserUtils.parseNodeText(childNode);
+    const childNodes = [];
+
+    for (const childNodeKey in extNode.childNodes) {
+      const childNode = extNode.childNodes[childNodeKey];
+
+      const value = parserUtils.parseNodeText(childNode);
 
       // ignore comments / empty value
-      if (childNode.nodeName !== '#comment' && txt !== '') {
-        const extChild = new AdExtensionChild();
-        extChild.name = childNode.nodeName;
-        extChild.value = txt;
-
-        if (childNode.attributes) {
-          const childNodeAttributes = childNode.attributes;
-
-          for (const extChildNodeAttrKey in childNodeAttributes) {
-            const extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
-
-            extChild.attributes[extChildNodeAttr.nodeName] =
-              extChildNodeAttr.nodeValue;
-          }
-        }
-
-        ext.children.push(extChild);
+      if (
+        childNode &&
+        childNode.nodeName !== '#cdata-section' &&
+        childNode.nodeName !== '#comment' &&
+        value !== ''
+      ) {
+        childNodes.push(childNode);
       }
+    }
+
+    if (childNodes.length) {
+      parseExtensions(ext.children, childNodes);
     }
 
     collection.push(ext);

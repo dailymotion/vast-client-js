@@ -72,16 +72,10 @@ var Ad = function Ad() {
 var AdExtension = function AdExtension() {
   classCallCheck(this, AdExtension);
 
-  this.attributes = {};
-  this.children = [];
-};
-
-var AdExtensionChild = function AdExtensionChild() {
-  classCallCheck(this, AdExtensionChild);
-
   this.name = null;
   this.value = null;
   this.attributes = {};
+  this.children = [];
 };
 
 var CompanionAd = function CompanionAd() {
@@ -1096,10 +1090,13 @@ function parseWrapper(wrapperElement) {
 function parseExtensions(collection, extensions) {
   extensions.forEach(function (extNode) {
     var ext = new AdExtension();
-    var extNodeAttrs = extNode.attributes;
-    var childNodes = extNode.childNodes;
 
-    if (extNode.attributes) {
+    ext.name = extNode.nodeName;
+    ext.value = parserUtils.parseNodeText(extNode);
+
+    var extNodeAttrs = extNode.attributes;
+
+    if (extNodeAttrs) {
       for (var extNodeAttrKey in extNodeAttrs) {
         var extNodeAttr = extNodeAttrs[extNodeAttrKey];
 
@@ -1109,28 +1106,21 @@ function parseExtensions(collection, extensions) {
       }
     }
 
-    for (var childNodeKey in childNodes) {
-      var childNode = childNodes[childNodeKey];
-      var txt = parserUtils.parseNodeText(childNode);
+    var childNodes = [];
+
+    for (var childNodeKey in extNode.childNodes) {
+      var childNode = extNode.childNodes[childNodeKey];
+
+      var value = parserUtils.parseNodeText(childNode);
 
       // ignore comments / empty value
-      if (childNode.nodeName !== '#comment' && txt !== '') {
-        var extChild = new AdExtensionChild();
-        extChild.name = childNode.nodeName;
-        extChild.value = txt;
-
-        if (childNode.attributes) {
-          var childNodeAttributes = childNode.attributes;
-
-          for (var extChildNodeAttrKey in childNodeAttributes) {
-            var extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
-
-            extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
-          }
-        }
-
-        ext.children.push(extChild);
+      if (childNode && childNode.nodeName !== '#cdata-section' && childNode.nodeName !== '#comment' && value !== '') {
+        childNodes.push(childNode);
       }
+    }
+
+    if (childNodes.length) {
+      parseExtensions(ext.children, childNodes);
     }
 
     collection.push(ext);

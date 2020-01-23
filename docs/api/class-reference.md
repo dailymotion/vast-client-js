@@ -126,11 +126,7 @@ This class represents a generic Creative. It's used as a parent class for more s
 
 ## AdExtension<a name="ad-extension"></a>
 
-- `attributes: Object`
-- `children: Array<AdExtensionChild>` [go to class](#ad-extension-child)
-
-## AdExtensionChild<a name="ad-extension-child"></a>
-
 - `name: String|null`
-- `value: any`
 - `attributes: Object`
+- `value: String|null`
+- `children: Array<AdExtension>`
