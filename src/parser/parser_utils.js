@@ -313,10 +313,9 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   });
   // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
   if (wrapper.adVerifications) {
-    unwrappedAd.adVerifications = [
-      ...unwrappedAd.adVerifications,
-      ...wrapper.adVerifications
-    ];
+    unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(
+      wrapper.adVerifications
+    );
   }
 }
 
