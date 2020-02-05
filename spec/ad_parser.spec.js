@@ -2,6 +2,7 @@ import { parseAd, _parseViewableImpression } from '../src/parser/ad_parser';
 import { getNodesFromXml } from './utils/utils';
 import { parserUtils } from '../src/parser/parser_utils';
 import { linearAd } from './samples/linear_ads';
+import { adVerificationExtensions } from './samples/ad_verification_extentions';
 import {
   viewableImpression,
   viewableImpressionPartial
@@ -178,6 +179,39 @@ describe('AdParser', function() {
         'http://example.com/verification-not-executed-EXE',
         'http://sample.com/verification-not-executed-EXE'
       ]);
+    });
+  });
+
+  describe('adVerifications from extensions', function() {
+    let adVerificationExtensionsNode, ad;
+
+    beforeAll(() => {
+      adVerificationExtensionsNode = getNodesFromXml(adVerificationExtensions);
+      ad = parseAd(adVerificationExtensionsNode, null).ad;
+    });
+
+    it('should have 2 adVerifications', () => {
+      expect(ad.adVerifications).toHaveLength(2);
+    });
+
+    it('validate first adVerification', () => {
+      expect(ad.adVerifications[0].resource).toEqual('https://abc.com/omid.js');
+      expect(ad.adVerifications[0].vendor).toEqual('abc.com-omid');
+      expect(ad.adVerifications[0].browserOptional).toEqual(true);
+      expect(ad.adVerifications[0].apiFramework).toEqual('omid');
+      expect(ad.adVerifications[0].type).toBeUndefined;
+      expect(ad.adVerifications[0].parameters).toBeUndefined;
+    });
+
+    it('validate second adVerification', () => {
+      expect(ad.adVerifications[1].resource).toEqual(
+        'https://xyz.com/omid-verify.js'
+      );
+      expect(ad.adVerifications[1].vendor).toEqual('xyz.com-omidpub');
+      expect(ad.adVerifications[1].browserOptional).toEqual(true);
+      expect(ad.adVerifications[1].apiFramework).toEqual('omid');
+      expect(ad.adVerifications[1].type).toBeUndefined;
+      expect(ad.adVerifications[1].parameters).toBeUndefined;
     });
   });
 
