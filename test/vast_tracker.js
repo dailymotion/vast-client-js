@@ -15,7 +15,7 @@ const options = {
 };
 
 const urlfor = relpath =>
-  `file://${path
+  `file:///${path
     .resolve(path.dirname(module.filename), 'vastfiles', relpath)
     .replace(/\\/g, '/')}`;
 

@@ -9,7 +9,7 @@ import { util } from '../src/util/util';
 const vastParser = new VASTParser();
 
 const urlfor = relpath =>
-  `file://${path
+  `file:///${path
     .resolve(path.dirname(module.filename), 'vastfiles', relpath)
     .replace(/\\/g, '/')}`;
 

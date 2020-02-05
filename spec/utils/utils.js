@@ -10,7 +10,7 @@ export const urlFor = fileName => {
   const filePath = path
     .resolve(path.join('spec', 'samples', fileName))
     .replace(/\\/g, '/');
-  return `file://${filePath}`;
+  return `file:///${filePath}`;
 };
 
 export const fetchXml = (url, options = {}) => {
