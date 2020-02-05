@@ -82,12 +82,20 @@ function parseAdElement(adTypeElement, emit) {
         );
         break;
 
-      case 'Extensions':
-        ad.extensions = parseExtensions(
-          parserUtils.childrenByName(node, 'Extension')
-        );
-        break;
+      case 'Extensions': {
+        const extNodes = parserUtils.childrenByName(node, 'Extension');
+        ad.extensions = parseExtensions(extNodes);
 
+        /*
+          OMID specify adVerifications should be in extensions for VAST < 4.0
+          To avoid to put them on two different places in two different format we reparse it
+          from extensions the same way than for an AdVerifications node.
+        */
+        if (!ad.adVerifications.length) {
+          ad.adVerifications = _parseAdVerificationsFromExensions(extNodes);
+        }
+        break;
+      }
       case 'AdVerifications':
         ad.adVerifications = _parseAdVerifications(
           parserUtils.childrenByName(node, 'Verification')
@@ -286,6 +294,33 @@ export function _parseAdVerifications(verifications) {
   });
 
   return ver;
+}
+
+/**
+ * Parses the AdVerifications Element from extension for versions < 4.0
+ * @param  {Array<Node>} extensions - The array of extensions to parse.
+ * @return {Array<Object>}
+ */
+export function _parseAdVerificationsFromExensions(extensions) {
+  let adVerificationsNode = null,
+    adVerifications = [];
+
+  // Find the first (and only) AdVerifications node from extensions
+  extensions.some(extension => {
+    return (adVerificationsNode = parserUtils.childByName(
+      extension,
+      'AdVerifications'
+    ));
+  });
+
+  // Parse it if we get it
+  if (adVerificationsNode) {
+    adVerifications = _parseAdVerifications(
+      parserUtils.childrenByName(adVerificationsNode, 'Verification')
+    );
+  }
+
+  return adVerifications;
 }
 
 /**

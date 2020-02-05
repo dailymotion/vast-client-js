@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VAST version="2.1">
+<VAST version="4.1">
   <Ad id="ad_id_0001" sequence="1">
     <InLine>
-      <AdSystem version="2.0" ><![CDATA[AdServer]]></AdSystem>
+      <AdSystem version="2.0"><![CDATA[AdServer]]></AdSystem>
       <AdTitle><![CDATA[Ad title]]></AdTitle>
       <Advertiser id='advertiser-desc'><![CDATA[Advertiser name]]></Advertiser>
       <Description><![CDATA[Description text]]></Description>
-      <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
+      <Pricing model="CPM" currency="USD"><![CDATA[1.09]]></Pricing>
       <Survey><![CDATA[http://example.com/survey]]></Survey>
       <Error><![CDATA[http://example.com/error_[ERRORCODE]]]></Error>
       <Impression id="sample-impression1"><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
@@ -40,7 +40,7 @@
         </Verification>
       </AdVerifications>
       <Creatives>
-        <Creative id="id130984" adId="adId345690" sequence="1" >
+        <Creative id="id130984" adId="adId345690" sequence="1">
           <UniversalAdId idRegistry="daily-motion-L">Linear-12345</UniversalAdId>
           <CreativeExtensions>
             <CreativeExtension type="creativeExt1">
@@ -106,7 +106,7 @@
             </Icons>
           </Linear>
         </Creative>
-        <Creative id="id130985" AdID="adId345691" sequence="2" >
+        <Creative id="id130985" AdID="adId345691" sequence="2">
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
@@ -141,7 +141,7 @@
         <Creative id="id130986">
           <UniversalAdId idRegistry="daily-motion-NL">NonLinear-12345</UniversalAdId>
           <NonLinearAds>
-            <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI" >
+            <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
               <AdParameters>
                 <![CDATA[{"key":"value"}]]>
@@ -179,13 +179,13 @@
   </Ad>
   <Ad id="ad_id_0002">
     <InLine>
-      <AdSystem version="2.1" ><![CDATA[AdServer2]]></AdSystem>
+      <AdSystem version="2.1"><![CDATA[AdServer2]]></AdSystem>
       <AdTitle><![CDATA[Ad title 2]]></AdTitle>
       <Impression id="sample-ad2-impression1"><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
         <Creative id="id873421" adID="adId221144" apiFramework="VPAID">
           <UniversalAdId>Linear-id873421</UniversalAdId>
-          <Linear skipoffset="00:00:10" >
+          <Linear skipoffset="00:00:10">
             <Duration>30</Duration>
             <MediaFiles>
               <MediaFile delivery="progressive" type="application/javascript" width="512" height="288" apiFramework="VPAID"><![CDATA[http://example.com/vpaid.js]]></MediaFile>
