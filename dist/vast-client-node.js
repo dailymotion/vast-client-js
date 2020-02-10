@@ -191,10 +191,7 @@ var supportedMacros = ['CONTENTPLAYHEAD', // @deprecated VAST 4.1
 'ADPLAYHEAD', 'MEDIAPLAYHEAD', 'ADPLAYHEAD', 'ASSETURI', 'PODSEQUENCE', 'UNIVERSALADID', 'CONTENTURI', 'CONTENTID', 'VERIFICATIONVENDORS', 'EXTENSIONS', 'DEVICEIP', 'SERVERSIDE', 'CLIENTUA', 'SERVERUA', 'DEVICEUA', 'TRANSACTIONID', 'ADCOUNT', 'BREAKPOSITION', 'PLACEMENTTYPE', 'IFA', 'IFATYPE', 'LATLONG', 'DOMAIN', 'PAGEURL', 'APPBUNDLE', 'VASTVERSIONS', 'APIFRAMEWORKS', 'MEDIAMIME', 'PLAYERCAPABILITIES', 'CLICKTYPE', 'PLAYERSTATE', 'INVENTORYSTATE', 'CLICKPOS', 'PLAYERSIZE', 'LIMITADTRACKING', 'REGULATIONS', 'GDPRCONSENT', // <BlockedAdCategories> element is not parsed for now so the vastTracker
 // can't replace the macro with element value automatically.
 // The player need to pass it inside "macro" parameter when calling trackers
-'BLOCKEDADCATEGORIES', 'ADCATEGORIES', // <Category> element is also not parsed for now. Same instructions as above
-'ADTYPE', //adType attribute of <Ad> element is not parsed for now. Same instructions as above
-'ADSERVINGID' // <AdServingId> element is also not parsed for now. Same instructions as above
-];
+'BLOCKEDADCATEGORIES', 'ADCATEGORIES', 'ADTYPE', 'ADSERVINGID'];
 
 function track(URLTemplates, macros, options) {
   var URLs = resolveURLTemplates(URLTemplates, macros, options);
@@ -728,7 +725,11 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(variation.companionClickTrackingURLTemplates, wrapperCompanionClickTracking);
       });
     }
-  });
+  }); // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
+
+  if (wrapper.adVerifications) {
+    unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(wrapper.adVerifications);
+  }
 }
 
 var parserUtils = {
@@ -1799,8 +1800,21 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Extensions':
-        ad.extensions = parseExtensions(parserUtils.childrenByName(node, 'Extension'));
-        break;
+        {
+          var extNodes = parserUtils.childrenByName(node, 'Extension');
+          ad.extensions = parseExtensions(extNodes);
+          /*
+            OMID specify adVerifications should be in extensions for VAST < 4.0
+            To avoid to put them on two different places in two different format we reparse it
+            from extensions the same way than for an AdVerifications node.
+          */
+
+          if (!ad.adVerifications.length) {
+            ad.adVerifications = _parseAdVerificationsFromExensions(extNodes);
+          }
+
+          break;
+        }
 
       case 'AdVerifications':
         ad.adVerifications = _parseAdVerifications(parserUtils.childrenByName(node, 'Verification'));
@@ -2000,6 +2014,26 @@ function _parseAdVerifications(verifications) {
     ver.push(verification);
   });
   return ver;
+}
+/**
+ * Parses the AdVerifications Element from extension for versions < 4.0
+ * @param  {Array<Node>} extensions - The array of extensions to parse.
+ * @return {Array<Object>}
+ */
+
+function _parseAdVerificationsFromExensions(extensions) {
+  var adVerificationsNode = null,
+      adVerifications = []; // Find the first (and only) AdVerifications node from extensions
+
+  extensions.some(function (extension) {
+    return adVerificationsNode = parserUtils.childByName(extension, 'AdVerifications');
+  }); // Parse it if we get it
+
+  if (adVerificationsNode) {
+    adVerifications = _parseAdVerifications(parserUtils.childrenByName(adVerificationsNode, 'Verification'));
+  }
+
+  return adVerifications;
 }
 /**
  * Parses the ViewableImpression Element.
@@ -2230,7 +2264,7 @@ function get(url, options, cb) {
   var httpModule = url.protocol === 'https:' ? https : http;
 
   if (url.protocol === 'file:') {
-    fs.readFile(url.pathname, 'utf8', function (err, data) {
+    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function (err, data) {
       if (err) {
         return cb(err);
       }
@@ -3770,34 +3804,43 @@ function (_EventEmitter) {
     /**
      * Must be called if the player did not or was not able to execute the provided
      * verification code.The [REASON] macro must be filled with reason code
-     * Calls the verificationNotExecuted trackings URLs.
+     * Calls the verificationNotExecuted tracking URL of associated verification vendor.
      *
+     * @param {String} vendor - An identifier for the verification vendor. The recommended format is [domain]-[useCase], to avoid name collisions. For example, "company.com-omid".
      * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
      * @emits VASTTracker#verificationNotExecuted
      */
 
   }, {
     key: "verificationNotExecuted",
-    value: function verificationNotExecuted() {
-      var _this3 = this;
-
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    value: function verificationNotExecuted(vendor) {
+      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
       if (!this.ad || !this.ad.adVerifications || !this.ad.adVerifications.length) {
         throw new Error('No adVerifications provided');
       }
 
-      this.ad.adVerifications.forEach(function (verification) {
-        if (verification.trackingEvents && verification.trackingEvents.verificationNotExecuted) {
-          var verifsNotExecuted = verification.trackingEvents.verificationNotExecuted;
+      if (!vendor) {
+        throw new Error('No vendor provided, unable to find associated verificationNotExecuted');
+      }
 
-          _this3.trackURLs(verifsNotExecuted, macros);
-
-          _this3.emit('verificationNotExecuted', {
-            trackingURLTemplates: verifsNotExecuted
-          });
-        }
+      var vendorVerification = this.ad.adVerifications.find(function (verifications) {
+        return verifications.vendor === vendor;
       });
+
+      if (!vendorVerification) {
+        throw new Error("No associated verification element found for vendor: ".concat(vendor));
+      }
+
+      var vendorTracking = vendorVerification.trackingEvents;
+
+      if (vendorTracking && vendorTracking.verificationNotExecuted) {
+        var verifsNotExecuted = vendorTracking.verificationNotExecuted;
+        this.trackURLs(verifsNotExecuted, macros);
+        this.emit('verificationNotExecuted', {
+          trackingURLTemplates: verifsNotExecuted
+        });
+      }
     }
     /**
      * The time that the initial ad is displayed. This time is based on
@@ -3976,8 +4019,24 @@ function (_EventEmitter) {
         macros['UNIVERSALADID'] = "".concat(this.creative.universalAdId.idRegistry, " ").concat(this.creative.universalAdId.value);
       }
 
-      if (this.ad && this.ad.sequence) {
-        macros['PODSEQUENCE'] = this.ad.sequence;
+      if (this.ad) {
+        if (this.ad.sequence) {
+          macros['PODSEQUENCE'] = this.ad.sequence;
+        }
+
+        if (this.ad.adType) {
+          macros['ADTYPE'] = this.ad.adType;
+        }
+
+        if (this.ad.adServingId) {
+          macros['ADSERVINGID'] = this.ad.adServingId;
+        }
+
+        if (this.ad.categories && this.ad.categories.length) {
+          macros['ADCATEGORIES'] = this.ad.categories.map(function (categorie) {
+            return categorie.value;
+          }).join(',');
+        }
       }
 
       util.track(URLTemplates, macros, options);
