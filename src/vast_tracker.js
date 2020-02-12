@@ -552,11 +552,11 @@ export class VASTTracker extends EventEmitter {
    * Calls the tracking URLs for the given eventName and emits the event.
    *
    * @param {String} eventName - The name of the event.
-   * @param {Object} [macros ={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
+   * @param {Object} [macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
    * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
    *
    */
-  track(eventName, { macros = {}, once = false }) {
+  track(eventName, { macros = {}, once = false } = {}) {
     // closeLinear event was introduced in VAST 3.0
     // Fallback to vast 2.0 close event if necessary
     if (
