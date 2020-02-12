@@ -3950,15 +3950,16 @@ function (_EventEmitter) {
      * Calls the tracking URLs for the given eventName and emits the event.
      *
      * @param {String} eventName - The name of the event.
-     * @param {Object} [macros ={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
+     * @param {Object} [macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
      * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
      *
      */
 
   }, {
     key: "track",
-    value: function track(eventName, _ref) {
-      var _ref$macros = _ref.macros,
+    value: function track(eventName) {
+      var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+          _ref$macros = _ref.macros,
           macros = _ref$macros === void 0 ? {} : _ref$macros,
           _ref$once = _ref.once,
           once = _ref$once === void 0 ? false : _ref$once;
