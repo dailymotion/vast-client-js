@@ -638,6 +638,9 @@ export class VASTTracker extends EventEmitter {
           .map(categorie => categorie.value)
           .join(',');
       }
+      if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
+        macros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
+      }
     }
 
     util.track(URLTemplates, macros, options);
