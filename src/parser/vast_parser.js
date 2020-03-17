@@ -318,6 +318,11 @@ export class VASTParser extends EventEmitter {
           ? this.rootErrorURLTemplates.push(errorURLTemplate)
           : this.errorURLTemplates.push(errorURLTemplate);
       } else if (node.nodeName === 'Ad') {
+        // allowMultipleAds was introduced in VAST 3
+        // for retrocompatibility set it to true
+        if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
+          allowMultipleAds = true;
+        }
         const result = parseAd(node, this.emit.bind(this), {
           allowMultipleAds,
           followAdditionalWrappers
@@ -364,11 +369,16 @@ export class VASTParser extends EventEmitter {
       previousUrl = null,
       wrapperDepth = 0,
       isRootVAST = false,
-      followAdditionalWrappers = true,
-      allowMultipleAds = false
-    }
+      followAdditionalWrappers,
+      allowMultipleAds
+    } = {}
   ) {
     let ads = [];
+    // allowMultipleAds was introduced in VAST 3 as wrapper attribute
+    // for retrocompatibility set it to true for vast pre-version 3
+    if (this.vastVersion && parseFloat(this.vastVersion) < 3 && isRootVAST) {
+      allowMultipleAds = true;
+    }
     try {
       ads = this.parseVastXml(vastXml, {
         isRootVAST,
@@ -381,6 +391,16 @@ export class VASTParser extends EventEmitter {
       return Promise.reject(e);
     }
 
+    // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
+    // (with no sequence values) in the requested VAST response is allowed
+    if (
+      typeof allowMultipleAds === 'boolean' &&
+      !allowMultipleAds &&
+      ads.length > 1 &&
+      parseFloat(this.vastVersion) >= 3
+    ) {
+      ads.splice(1);
+    }
     const adsCount = ads.length;
     const lastAddedAd = ads[adsCount - 1];
     // if in child nodes we have only one ads
