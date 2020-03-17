@@ -21,22 +21,27 @@ const wrapperBVastUrl = urlFor('wrapper-b.xml');
 const inlineSampleVastUrl = urlFor('sample.xml');
 const inlineVpaidVastUrl = urlFor('vpaid.xml');
 const inlineInvalidVastUrl = urlFor('invalid-xmlfile.xml');
+const wrapperWithAttributesVastUrl = urlFor(
+  'wrapper-attributes-multiple-ads.xml'
+);
 const wrapperInvalidVastUrl = urlFor('wrapper-invalid-xmlfile.xml');
 const vastWithErrorUrl = urlFor('empty-no-ad.xml');
 
 describe('VASTParser', () => {
   let VastParser;
-  let inlineXml, invalidXml, errorXml;
+  let inlineXml, invalidXml, errorXml, wrapperXml;
 
   beforeAll(done => {
     return Promise.all([
       fetchXml(inlineInvalidVastUrl),
       fetchXml(inlineSampleVastUrl),
-      fetchXml(vastWithErrorUrl)
-    ]).then(([invalid, inline, error]) => {
+      fetchXml(vastWithErrorUrl),
+      fetchXml(wrapperWithAttributesVastUrl)
+    ]).then(([invalid, inline, error, wrapper]) => {
       invalidXml = invalid.xml;
       inlineXml = inline.xml;
       errorXml = error.xml;
+      wrapperXml = wrapper.xml;
       done();
     });
   });
@@ -426,7 +431,9 @@ describe('VASTParser', () => {
                   url: wrapperBVastUrl,
                   previousUrl: wrapperAVastUrl,
                   wrapperDepth: 1,
-                  wrapperSequence: null
+                  wrapperSequence: null,
+                  allowMultipleAds: false,
+                  followAdditionalWrappers: true
                 }
               ],
               [
@@ -435,7 +442,9 @@ describe('VASTParser', () => {
                   url: inlineSampleVastUrl,
                   previousUrl: wrapperBVastUrl,
                   wrapperDepth: 2,
-                  wrapperSequence: null
+                  wrapperSequence: null,
+                  allowMultipleAds: false,
+                  followAdditionalWrappers: true
                 }
               ],
               [
@@ -444,7 +453,9 @@ describe('VASTParser', () => {
                   url: inlineSampleVastUrl,
                   previousUrl: wrapperBVastUrl,
                   wrapperDepth: 2,
-                  wrapperSequence: null
+                  wrapperSequence: null,
+                  allowMultipleAds: false,
+                  followAdditionalWrappers: true
                 }
               ]
             ])
@@ -585,7 +596,8 @@ describe('VASTParser', () => {
       const ads = VastParser.parseVastXml(inlineXml, {
         isRootVAST: true,
         url: inlineSampleVastUrl,
-        wrapperDepth: 0
+        wrapperDepth: 0,
+        allowMultipleAds: true
       });
 
       expect(ads).toHaveLength(2);
@@ -661,10 +673,17 @@ describe('VASTParser', () => {
         resolveAll: false,
         wrapperSequence: 1,
         wrapperDepth: 0,
-        isRootVAST: true
+        isRootVAST: true,
+        allowMultipleAds: true
       }).then(ads => {
         expect(VastParser.remainingAds).toHaveLength(1);
         expect(ads).toHaveLength(1);
+      });
+    });
+
+    it('parse wrapper sub elements based on allowMultipleAds and followAdditionalWrappers values', () => {
+      return VastParser.parse(wrapperXml).then(ads => {
+        expect(ads.length).toEqual(4);
       });
     });
   });

@@ -1,6 +1,6 @@
-<VAST version="3.0">
+<VAST version="4.0">
   <Ad id="201">
-    <Wrapper allowMultipleAds="true">
+    <Wrapper>
       <AdSystem version="4.0">iabtechlab</AdSystem>
       <VASTAdTagURI><![CDATA[sample.xml]]></VASTAdTagURI>
       <Error>http://example.com/error</Error>
@@ -21,10 +21,10 @@
       </Creatives>
     </Wrapper>
   </Ad>
-  <Ad id="20011" sequence="1">
-    <Wrapper allowMultipleAds="true">
+  <Ad id="202">
+    <Wrapper allowMultipleAds="false" followAdditionalWrappers="false">
       <AdSystem version="4.0">iabtechlab</AdSystem>
-      <VASTAdTagURI><![CDATA[vpaid.xml]]></VASTAdTagURI>
+      <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
       <Error>http://example.com/error</Error>
       <Impression>http://example.com/track/impression</Impression>
       <Creatives>
@@ -43,10 +43,10 @@
       </Creatives>
     </Wrapper>
   </Ad>
-  <Ad id="20012" sequence="2">
-    <Wrapper allowMultipleAds="true">
+  <Ad id="203">
+    <Wrapper allowMultipleAds="1" followAdditionalWrappers="True">
       <AdSystem version="4.0">iabtechlab</AdSystem>
-      <VASTAdTagURI><![CDATA[inline-linear.xml]]></VASTAdTagURI>
+      <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
       <Error>http://example.com/error</Error>
       <Impression>http://example.com/track/impression</Impression>
       <Creatives>
@@ -65,10 +65,10 @@
       </Creatives>
     </Wrapper>
   </Ad>
-  <Ad id="2032">
-    <Wrapper allowMultipleAds="true">
+  <Ad id="204">
+    <Wrapper allowMultipleAds="true" followAdditionalWrappers="false">
       <AdSystem version="4.0">iabtechlab</AdSystem>
-      <VASTAdTagURI><![CDATA[vpaid2.xml]]></VASTAdTagURI>
+      <VASTAdTagURI><![CDATA[sample.xml]]></VASTAdTagURI>
       <Error>http://example.com/error</Error>
       <Impression>http://example.com/track/impression</Impression>
       <Creatives>
