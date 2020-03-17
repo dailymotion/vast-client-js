@@ -37,11 +37,9 @@ export const supportedMacros = [
   'LIMITADTRACKING',
   'REGULATIONS',
   'GDPRCONSENT',
-  // <BlockedAdCategories> element is not parsed for now so the vastTracker
-  // can't replace the macro with element value automatically.
-  // The player need to pass it inside "macro" parameter when calling trackers
   'BLOCKEDADCATEGORIES',
   'ADCATEGORIES',
   'ADTYPE',
-  'ADSERVINGID'
+  'ADSERVINGID',
+  'OMIDPARTNER'
 ];
