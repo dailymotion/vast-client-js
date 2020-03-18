@@ -878,30 +878,6 @@ describe('VASTParser', function() {
         this.response.ads[1].sequence.should.be.equal('2');
       });
     });
-
-    describe('#For the wrapper with attributes', function() {
-      this.response = null;
-      this.templateFilterCalls = [];
-
-      before(done => {
-        vastParser.addURLTemplateFilter(url => {
-          this.templateFilterCalls.push(url);
-          return url;
-        });
-        vastParser
-          .getAndParseVAST(urlfor('wrapper-with-blocks.xml'), options)
-          .then(response => {
-            this.response = response;
-            done();
-          });
-      });
-
-      it('should have good attributes value for wrapper', () => {
-        this.response.ads[0].followAdditionalWrappers.should.eql(false);
-        this.response.ads[0].allowMultipleAds.should.eql(true);
-        this.response.ads[0].fallbackOnNoAd.should.eql(true);
-      });
-    });
   });
 
   describe('#parseVAST', function() {
