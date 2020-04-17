@@ -322,7 +322,12 @@ export class VASTParser extends EventEmitter {
         // for retrocompatibility set it to true
         if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
           allowMultipleAds = true;
+        } else if (allowMultipleAds === false && ads.length > 1) {
+          // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
+          // (with no sequence values) in the requested VAST response is allowed
+          break;
         }
+
         const result = parseAd(node, this.emit.bind(this), {
           allowMultipleAds,
           followAdditionalWrappers
@@ -391,16 +396,6 @@ export class VASTParser extends EventEmitter {
       return Promise.reject(e);
     }
 
-    // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
-    // (with no sequence values) in the requested VAST response is allowed
-    if (
-      typeof allowMultipleAds === 'boolean' &&
-      !allowMultipleAds &&
-      ads.length > 1 &&
-      parseFloat(this.vastVersion) >= 3
-    ) {
-      ads.splice(1);
-    }
     const adsCount = ads.length;
     const lastAddedAd = ads[adsCount - 1];
     // if in child nodes we have only one ads

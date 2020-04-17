@@ -33,8 +33,7 @@ export function parseAd(
 
     if (
       adTypeElement.nodeName === 'Wrapper' &&
-      typeof followAdditionalWrappers === 'boolean' &&
-      !followAdditionalWrappers
+      followAdditionalWrappers === false
     ) {
       continue;
     }
@@ -65,11 +64,7 @@ function parseInLine(adElement, emit, { allowMultipleAds } = {}) {
   // if allowMultipleAds is set to false by wrapper attribute
   // only the first stand-alone Ad (with no sequence values) in the
   // requested VAST response is allowed so we won't parse ads with sequence
-  if (
-    typeof allowMultipleAds === 'boolean' &&
-    !allowMultipleAds &&
-    adElement.getAttribute('sequence')
-  ) {
+  if (allowMultipleAds === false && adElement.getAttribute('sequence')) {
     return null;
   }
 
