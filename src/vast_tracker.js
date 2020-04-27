@@ -638,12 +638,13 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
-   * Formats time progress in a readable string.
+   * Formats time in seconds to VAST timecode (e.g. 00:00:10.000)
    *
+   * @param {Number} timeInSeconds - Number in seconds
    * @return {String}
    */
-  progressFormatted() {
-    const seconds = parseInt(this.progress);
+  convertToTimecode(timeInSeconds) {
+    const seconds = parseInt(timeInSeconds);
     let h = seconds / (60 * 60);
     if (h.length < 2) {
       h = `0${h}`;
@@ -656,7 +657,16 @@ export class VASTTracker extends EventEmitter {
     if (s.length < 2) {
       s = `0${m}`;
     }
-    const ms = parseInt((this.progress - seconds) * 100);
+    const ms = parseInt((timeInSeconds - seconds) * 100);
     return `${h}:${m}:${s}.${ms}`;
+  }
+
+  /**
+   * Formats time progress in a readable string.
+   *
+   * @return {String}
+   */
+  progressFormatted() {
+    return this.convertToTimecode(this.progress);
   }
 }
