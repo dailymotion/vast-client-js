@@ -89,9 +89,8 @@ Ad servers and other entities need access to additional data from the publisher 
 
 The list of supported macros is in the file [macros.js](src/util/macros.js).
 The following macro value will be set automatically by vast-client if it exists in the tracking url:
-- CONTENTPLAYHEAD
-- ADPLAYHEAD
-- MEDIAPLAYHEAD
+- CACHEBUSTING
+- TIMESTAMP
 - ADPLAYHEAD
 - ASSETURI
 - PODSEQUENCE
@@ -105,17 +104,23 @@ For any others supported macros, they need to be passed as a parameter when call
 If a macro is not passed as param but exist in the tracking url and is supported it will be replaced with `-1` as specified by iAB.
 
 #### Example
+
 Considering having the following tracker in the VAST xml
 ```xml
-<Tracking event="skip"><![CDATA[https://example.com/tracking/skip?d=[DOMAIN]&adcount=[ADCOUNT]&podseq=[PODSEQUENCE]&playerstate=[PLAYERSTATE]]]></Tracking>
+<Tracking event="skip"><![CDATA[https://example.com/tracking/skip?d=[DOMAIN]&adcount=[ADCOUNT]&podseq=[PODSEQUENCE]&contentplayhead=[CONTENTPLAYHEAD]&mediaplayhead=[MEDIAPLAYHEAD]playerstate=[PLAYERSTATE]]]></Tracking>
 ```
 Call the vastTracker method with specified macros and values
 ```Javascript
-const macrosParam = {CONTENTURI: 'https://mycontentserver.com/video.mp4', ADCOUNT: 2}
+const macrosParam = {
+  CONTENTURI: 'https://mycontentserver.com/video.mp4',
+  ADCOUNT: 2,
+  CONTENTPLAYHEAD: vastTracker.convertToTimecode(120),
+  MEDIAPLAYHEAD: vastTracker.convertToTimecode(120)
+}
 vastTracker.skip(macrosParam);
 ```
 Macros will be replaced and the skip tracking URL will be called with the following URL:
-`https://example.com/tracking/skip?curi=https%3A%2F%2Fmycontentserver.com%2Fvideo.mp4&adcount=2&podseq=1&playerstate=-1`
+`https://example.com/tracking/skip?curi=https%3A%2F%2Fmycontentserver.com%2Fvideo.mp4&adcount=2&podseq=1&contentplayhead=00:02:00.000&mediaplayhead=00:02:00.000&playerstate=-1`
 
 ## Public Methods 💚 <a name="methods"></a>
 
@@ -593,16 +598,26 @@ vastTracker.on('minimize', () => {
 });
 ```
 
+### convertToTimecode(timeInSeconds)
+Converts given seconds into a VAST compliant timecode (Format: `HH:MM:SS.sss`). Useful for passing in a proper `duration` as timecode to `overlayViewDuration` or setting `MEDIAPLAYHEAD` or `CONTENTPLAYHEAD` as macro.
+
+#### Parameters
+ * **`timeInSeconds: Number`** - A time in seconds
+
+#### Return
+ * **`timecode: String`** - The given seconds converted to timecode
+
+
 ### overlayViewDuration(duration, macros)
 The time that the initial ad is displayed. This time is based on
 the time between the impression and either the completed length of display based
 on the agreement between transactional parties or a close, minimize, or accept
-invitation event. The macros [ADPLAYHEAD] and [MEDIAPLAYHEAD] will be replaced with duration value. [CONTENTPLAYHEAD] will also be replaced but this macro is deprecated
+invitation event. The macro [ADPLAYHEAD] will be replaced with given duration value.
 
 Calls the overlayViewDuration tracking URLs.
 
 #### Parameters
- * **`duration: String`** - The time that the initial ad is displayed
+ * **`duration: String`** - The time that the initial ad is displayed as timecode (Format: `00:00:00.000`, use `vastTracker.convertToTimecode` to convert a duration in seconds to a valid ADPLAYHEAD timecode)
  * **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
@@ -661,9 +676,8 @@ These methods documentation is provided in order to make the tracker internal lo
 ### trackURLs(URLTemplates, macros , options)
 Calls the tracking urls templates with the given macros.
 Also automatically replaces the deducted value for following macros:
-- CONTENTPLAYHEAD (deprecated for VAST 4.1)
-- ADPLAYHEAD
-- MEDIAPLAYHEAD
+- CACHEBUSTING
+- TIMESTAMP
 - ADPLAYHEAD
 - ASSETURI
 - PODSEQUENCE
