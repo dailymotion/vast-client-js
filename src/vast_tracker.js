@@ -466,7 +466,7 @@ export class VASTTracker extends EventEmitter {
    * the time between the impression and either the completed length of display based
    * on the agreement between transactional parties or a close, minimize, or accept
    * invitation event.
-   * The time will be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] macros for VAST 4.1
+   * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
    * Calls the overlayViewDuration tracking URLs.
    *
    * @param {String} duration - The time that the initial ad is displayed.
@@ -474,8 +474,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#overlayViewDuration
    */
   overlayViewDuration(duration, macros = {}) {
-    macros['CONTENTPLAYHEAD'] = duration;
-    macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+    macros['ADPLAYHEAD'] = duration;
     this.track('overlayViewDuration', { macros });
   }
 
@@ -534,10 +533,8 @@ export class VASTTracker extends EventEmitter {
       this.clickThroughURLTemplate || fallbackClickThroughURL;
 
     if (clickThroughURLTemplate) {
-      if (this.linear) {
-        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
-        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
-          macros['CONTENTPLAYHEAD'];
+      if (this.progress) {
+        macros['ADPLAYHEAD'] = this.progressFormatted();
       }
       const clickThroughURL = util.resolveURLTemplates(
         [clickThroughURLTemplate],
@@ -605,11 +602,8 @@ export class VASTTracker extends EventEmitter {
       ) {
         macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-      if (!macros['CONTENTPLAYHEAD'] && this.progress) {
-        //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
-        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
-        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
-          macros['CONTENTPLAYHEAD'];
+      if (this.progress) {
+        macros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
     if (

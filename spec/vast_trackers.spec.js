@@ -160,7 +160,10 @@ describe('VASTTracker', function() {
 
     describe('#overlayViewDuration', () => {
       beforeEach(() => {
-        vastTracker.overlayViewDuration('00:00:30');
+        vastTracker.overlayViewDuration('00:00:30', {
+          CONTENTPLAYHEAD: '00:00:40',
+          MEDIAPLAYHEAD: '00:00:40'
+        });
       });
       it('should be defined', () => {
         expect(adTrackingUrls.overlayViewDuration).toBeDefined();
@@ -174,8 +177,8 @@ describe('VASTTracker', function() {
           expect.objectContaining({
             ...expectedMacros,
             ADPLAYHEAD: '00%3A00%3A30',
-            CONTENTPLAYHEAD: '00%3A00%3A30',
-            MEDIAPLAYHEAD: '00%3A00%3A30'
+            CONTENTPLAYHEAD: '00%3A00%3A40',
+            MEDIAPLAYHEAD: '00%3A00%3A40'
           })
         );
       });
