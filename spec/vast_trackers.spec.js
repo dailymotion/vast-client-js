@@ -28,6 +28,27 @@ describe('VASTTracker', function() {
       spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
     });
 
+    describe('#click', () => {
+      beforeEach(() => {
+        vastTracker.setProgress(60 * 75 + 5.25);
+        vastTracker.click();
+      });
+      it('should have emitted click event and called trackUrl', () => {
+        expect(spyEmitter).toHaveBeenCalledWith(
+          'clickthrough',
+          'http://example.com/linear-clickthrough_adplayhead:01%3A15%3A05.250'
+        );
+
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          ad.creatives[0].videoClickTrackingURLTemplates,
+          expect.objectContaining({
+            ...expectedMacros,
+            ADPLAYHEAD: '01%3A15%3A05.250'
+          })
+        );
+      });
+    });
+
     describe('#minimize', () => {
       beforeEach(() => {
         vastTracker.minimize();

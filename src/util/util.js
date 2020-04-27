@@ -33,7 +33,8 @@ function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
 
   // Calc random/time based macros
   macros['CACHEBUSTING'] = leftpad(
-    Math.round(Math.random() * 1.0e8).toString()
+    Math.round(Math.random() * 1.0e8).toString(),
+    8
   );
   macros['TIMESTAMP'] = new Date().toISOString();
 
@@ -175,10 +176,11 @@ function encodeURIComponentRFC3986(str) {
   );
 }
 
-function leftpad(str) {
-  if (str.length < 8) {
+function leftpad(str, len) {
+  str = String(str);
+  if (str.length < len) {
     return (
-      range(0, 8 - str.length, false)
+      range(0, len - str.length, false)
         .map(() => '0')
         .join('') + str
     );

@@ -531,14 +531,16 @@ export class VASTTracker extends EventEmitter {
     // Use the provided fallbackClickThroughURL as a fallback
     const clickThroughURLTemplate =
       this.clickThroughURLTemplate || fallbackClickThroughURL;
+    // clone second usage of macros, which get mutated inside resolveURLTemplates
+    const clonedMacros = JSON.parse(JSON.stringify(macros));
 
     if (clickThroughURLTemplate) {
       if (this.progress) {
-        macros['ADPLAYHEAD'] = this.progressFormatted();
+        clonedMacros['ADPLAYHEAD'] = this.progressFormatted();
       }
       const clickThroughURL = util.resolveURLTemplates(
         [clickThroughURLTemplate],
-        macros
+        clonedMacros
       )[0];
 
       this.emit('clickthrough', clickThroughURL);
@@ -644,21 +646,15 @@ export class VASTTracker extends EventEmitter {
    * @return {String}
    */
   convertToTimecode(timeInSeconds) {
-    const seconds = parseInt(timeInSeconds);
-    let h = seconds / (60 * 60);
-    if (h.length < 2) {
-      h = `0${h}`;
-    }
-    let m = (seconds / 60) % 60;
-    if (m.length < 2) {
-      m = `0${m}`;
-    }
-    let s = seconds % 60;
-    if (s.length < 2) {
-      s = `0${m}`;
-    }
-    const ms = parseInt((timeInSeconds - seconds) * 100);
-    return `${h}:${m}:${s}.${ms}`;
+    const progress = timeInSeconds * 1000;
+    const hours = Math.floor(progress / (60 * 60 * 1000));
+    const minutes = Math.floor((progress / (60 * 1000)) % 60);
+    const seconds = Math.floor((progress / 1000) % 60);
+    const milliseconds = Math.floor(progress % 1000);
+    return `${util.leftpad(hours, 2)}:${util.leftpad(
+      minutes,
+      2
+    )}:${util.leftpad(seconds, 2)}.${util.leftpad(milliseconds, 3)}`;
   }
 
   /**

@@ -42,9 +42,9 @@
               <Tracking event="progress" offset="60%"><![CDATA[http://example.com/linear-progress-60%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking id='video-click-1'><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
+              <ClickTracking id='video-click-1'><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]]]></ClickTracking>
               <ClickTracking id='video-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
-              <ClickThrough id='click-through'><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
+              <ClickThrough id='click-through'><![CDATA[http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]]]></ClickThrough>
               <CustomClick id='custom-click-1'><![CDATA[http://example.com/linear-customclick]]></CustomClick>
             </VideoClicks>
             <MediaFiles>
