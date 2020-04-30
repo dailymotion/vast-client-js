@@ -532,7 +532,7 @@ export class VASTTracker extends EventEmitter {
     const clickThroughURLTemplate =
       this.clickThroughURLTemplate || fallbackClickThroughURL;
     // clone second usage of macros, which get mutated inside resolveURLTemplates
-    const clonedMacros = JSON.parse(JSON.stringify(macros));
+    const clonedMacros = { ...macros };
 
     if (clickThroughURLTemplate) {
       if (this.progress) {
