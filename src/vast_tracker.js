@@ -466,7 +466,7 @@ export class VASTTracker extends EventEmitter {
    * the time between the impression and either the completed length of display based
    * on the agreement between transactional parties or a close, minimize, or accept
    * invitation event.
-   * The time will be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] macros for VAST 4.1
+   * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
    * Calls the overlayViewDuration tracking URLs.
    *
    * @param {String} duration - The time that the initial ad is displayed.
@@ -474,8 +474,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#overlayViewDuration
    */
   overlayViewDuration(duration, macros = {}) {
-    macros['CONTENTPLAYHEAD'] = duration;
-    macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+    macros['ADPLAYHEAD'] = duration;
     this.track('overlayViewDuration', { macros });
   }
 
@@ -532,16 +531,16 @@ export class VASTTracker extends EventEmitter {
     // Use the provided fallbackClickThroughURL as a fallback
     const clickThroughURLTemplate =
       this.clickThroughURLTemplate || fallbackClickThroughURL;
+    // clone second usage of macros, which get mutated inside resolveURLTemplates
+    const clonedMacros = { ...macros };
 
     if (clickThroughURLTemplate) {
-      if (this.linear) {
-        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
-        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
-          macros['CONTENTPLAYHEAD'];
+      if (this.progress) {
+        clonedMacros['ADPLAYHEAD'] = this.progressFormatted();
       }
       const clickThroughURL = util.resolveURLTemplates(
         [clickThroughURLTemplate],
-        macros
+        clonedMacros
       )[0];
 
       this.emit('clickthrough', clickThroughURL);
@@ -605,11 +604,8 @@ export class VASTTracker extends EventEmitter {
       ) {
         macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-      if (!macros['CONTENTPLAYHEAD'] && this.progress) {
-        //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
-        macros['CONTENTPLAYHEAD'] = this.progressFormatted();
-        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] =
-          macros['CONTENTPLAYHEAD'];
+      if (this.progress) {
+        macros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
     if (
@@ -644,25 +640,29 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
+   * Formats time in seconds to VAST timecode (e.g. 00:00:10.000)
+   *
+   * @param {Number} timeInSeconds - Number in seconds
+   * @return {String}
+   */
+  convertToTimecode(timeInSeconds) {
+    const progress = timeInSeconds * 1000;
+    const hours = Math.floor(progress / (60 * 60 * 1000));
+    const minutes = Math.floor((progress / (60 * 1000)) % 60);
+    const seconds = Math.floor((progress / 1000) % 60);
+    const milliseconds = Math.floor(progress % 1000);
+    return `${util.leftpad(hours, 2)}:${util.leftpad(
+      minutes,
+      2
+    )}:${util.leftpad(seconds, 2)}.${util.leftpad(milliseconds, 3)}`;
+  }
+
+  /**
    * Formats time progress in a readable string.
    *
    * @return {String}
    */
   progressFormatted() {
-    const seconds = parseInt(this.progress);
-    let h = seconds / (60 * 60);
-    if (h.length < 2) {
-      h = `0${h}`;
-    }
-    let m = (seconds / 60) % 60;
-    if (m.length < 2) {
-      m = `0${m}`;
-    }
-    let s = seconds % 60;
-    if (s.length < 2) {
-      s = `0${m}`;
-    }
-    const ms = parseInt((this.progress - seconds) * 100);
-    return `${h}:${m}:${s}.${ms}`;
+    return this.convertToTimecode(this.progress);
   }
 }

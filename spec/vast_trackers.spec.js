@@ -28,6 +28,27 @@ describe('VASTTracker', function() {
       spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
     });
 
+    describe('#click', () => {
+      beforeEach(() => {
+        vastTracker.setProgress(60 * 75 + 5.25);
+        vastTracker.click();
+      });
+      it('should have emitted click event and called trackUrl', () => {
+        expect(spyEmitter).toHaveBeenCalledWith(
+          'clickthrough',
+          'http://example.com/linear-clickthrough_adplayhead:01%3A15%3A05.250'
+        );
+
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          ad.creatives[0].videoClickTrackingURLTemplates,
+          expect.objectContaining({
+            ...expectedMacros,
+            ADPLAYHEAD: '01%3A15%3A05.250'
+          })
+        );
+      });
+    });
+
     describe('#minimize', () => {
       beforeEach(() => {
         vastTracker.minimize();
@@ -160,7 +181,10 @@ describe('VASTTracker', function() {
 
     describe('#overlayViewDuration', () => {
       beforeEach(() => {
-        vastTracker.overlayViewDuration('00:00:30');
+        vastTracker.overlayViewDuration('00:00:30', {
+          CONTENTPLAYHEAD: '00:00:40',
+          MEDIAPLAYHEAD: '00:00:40'
+        });
       });
       it('should be defined', () => {
         expect(adTrackingUrls.overlayViewDuration).toBeDefined();
@@ -174,8 +198,8 @@ describe('VASTTracker', function() {
           expect.objectContaining({
             ...expectedMacros,
             ADPLAYHEAD: '00%3A00%3A30',
-            CONTENTPLAYHEAD: '00%3A00%3A30',
-            MEDIAPLAYHEAD: '00%3A00%3A30'
+            CONTENTPLAYHEAD: '00%3A00%3A40',
+            MEDIAPLAYHEAD: '00%3A00%3A40'
           })
         );
       });

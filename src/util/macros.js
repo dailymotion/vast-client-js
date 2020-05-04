@@ -2,7 +2,6 @@ export const supportedMacros = [
   'CONTENTPLAYHEAD', // @deprecated VAST 4.1
   'ADPLAYHEAD',
   'MEDIAPLAYHEAD',
-  'ADPLAYHEAD',
   'ASSETURI',
   'PODSEQUENCE',
   'UNIVERSALADID',

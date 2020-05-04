@@ -5,6 +5,7 @@ module.exports = {
     node: true
   },
   extends: 'eslint:recommended',
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 2015,
     sourceType: 'module'
@@ -42,6 +43,7 @@ module.exports = {
       'error',
       { argsIgnorePattern: '^_', ignoreRestSiblings: true, args: 'after-used' }
     ],
+    'no-prototype-builtins': ['off'],
     'no-var': ['error'],
     'object-shorthand': ['warn'],
     'prefer-const': ['error'],

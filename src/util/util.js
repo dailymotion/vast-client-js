@@ -175,10 +175,11 @@ function encodeURIComponentRFC3986(str) {
   );
 }
 
-function leftpad(str) {
-  if (str.length < 8) {
+function leftpad(input, len = 8) {
+  const str = String(input);
+  if (str.length < len) {
     return (
-      range(0, 8 - str.length, false)
+      range(0, len - str.length, false)
         .map(() => '0')
         .join('') + str
     );

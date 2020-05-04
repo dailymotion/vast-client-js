@@ -95,12 +95,14 @@ export const inlineTrackersParsed = {
           },
           videoClickThroughURLTemplate: {
             id: 'click-through',
-            url: 'http://example.com/linear-clickthrough'
+            url:
+              'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]'
           },
           videoClickTrackingURLTemplates: [
             {
               id: 'video-click-1',
-              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]'
+              url:
+                'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]'
             },
             {
               id: 'video-click-2',
