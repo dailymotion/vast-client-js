@@ -228,6 +228,11 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
+  // values from the child wrapper will be overridden
+  unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
+  unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
+  unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
+
   const wrapperCompanions = (wrapper.creatives || []).filter(
     creative => creative && creative.type === 'companion'
   );
@@ -315,6 +320,12 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   if (wrapper.adVerifications) {
     unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(
       wrapper.adVerifications
+    );
+  }
+
+  if (wrapper.blockedAdCategories) {
+    unwrappedAd.blockedAdCategories = unwrappedAd.blockedAdCategories.concat(
+      wrapper.blockedAdCategories
     );
   }
 }

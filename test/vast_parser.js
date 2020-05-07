@@ -821,6 +821,12 @@ describe('VASTParser', function() {
       it('should have carried sequence over from wrapper', () => {
         this.response.ads[0].sequence.should.eql('1');
       });
+
+      it('should have default attributes value for wrapper', () => {
+        this.response.ads[0].followAdditionalWrappers.should.eql(true);
+        this.response.ads[0].allowMultipleAds.should.eql(false);
+        should.equal(this.response.ads[0].fallbackOnNoAd, null);
+      });
     });
 
     describe('#VPAID', function() {

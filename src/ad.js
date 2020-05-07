@@ -17,6 +17,10 @@ export function createAd(adAttributes = {}) {
     impressionURLTemplates: [],
     creatives: [],
     extensions: [],
-    adVerifications: []
+    adVerifications: [],
+    blockedAdCategories: [],
+    followAdditionalWrappers: true,
+    allowMultipleAds: false,
+    fallbackOnNoAd: null
   };
 }

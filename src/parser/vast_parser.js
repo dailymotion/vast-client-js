@@ -271,7 +271,16 @@ export class VASTParser extends EventEmitter {
    * @return {Array}
    * @throws {Error} `vastXml` must be a valid VAST XMLDocument
    */
-  parseVastXml(vastXml, { isRootVAST = false, url = null, wrapperDepth = 0 }) {
+  parseVastXml(
+    vastXml,
+    {
+      isRootVAST = false,
+      url = null,
+      wrapperDepth = 0,
+      allowMultipleAds,
+      followAdditionalWrappers
+    }
+  ) {
     // check if is a valid VAST document
     if (
       !vastXml ||
@@ -309,7 +318,20 @@ export class VASTParser extends EventEmitter {
           ? this.rootErrorURLTemplates.push(errorURLTemplate)
           : this.errorURLTemplates.push(errorURLTemplate);
       } else if (node.nodeName === 'Ad') {
-        const result = parseAd(node, this.emit.bind(this));
+        // allowMultipleAds was introduced in VAST 3
+        // for retrocompatibility set it to true
+        if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
+          allowMultipleAds = true;
+        } else if (allowMultipleAds === false && ads.length > 1) {
+          // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
+          // (with no sequence values) in the requested VAST response is allowed
+          break;
+        }
+
+        const result = parseAd(node, this.emit.bind(this), {
+          allowMultipleAds,
+          followAdditionalWrappers
+        });
 
         if (result.ad) {
           ads.push(result.ad);
@@ -351,15 +373,24 @@ export class VASTParser extends EventEmitter {
       wrapperSequence = null,
       previousUrl = null,
       wrapperDepth = 0,
-      isRootVAST = false
-    }
+      isRootVAST = false,
+      followAdditionalWrappers,
+      allowMultipleAds
+    } = {}
   ) {
     let ads = [];
+    // allowMultipleAds was introduced in VAST 3 as wrapper attribute
+    // for retrocompatibility set it to true for vast pre-version 3
+    if (this.vastVersion && parseFloat(this.vastVersion) < 3 && isRootVAST) {
+      allowMultipleAds = true;
+    }
     try {
       ads = this.parseVastXml(vastXml, {
         isRootVAST,
         url,
-        wrapperDepth
+        wrapperDepth,
+        allowMultipleAds,
+        followAdditionalWrappers
       });
     } catch (e) {
       return Promise.reject(e);
@@ -475,7 +506,9 @@ export class VASTParser extends EventEmitter {
             url: ad.nextWrapperURL,
             previousUrl,
             wrapperSequence,
-            wrapperDepth
+            wrapperDepth,
+            followAdditionalWrappers: ad.followAdditionalWrappers,
+            allowMultipleAds: ad.allowMultipleAds
           }).then(unwrappedAds => {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {

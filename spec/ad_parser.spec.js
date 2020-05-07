@@ -18,7 +18,11 @@ describe('AdParser', function() {
         '<Ad id="id-123" sequence="seq-123"><InLine></InLine></Ad>'
       );
       wrapperAdNode = getNodesFromXml(
-        '<Ad><Wrapper><VASTAdTagURI>foo</VASTAdTagURI></Wrapper></Ad>'
+        `<Ad>
+          <Wrapper followAdditionalWrappers="0" allowMultipleAds="1" fallbackOnNoAd="1">
+            <VASTAdTagURI>foo</VASTAdTagURI>
+          </Wrapper>
+        </Ad>`
       );
       invalidAdNode = getNodesFromXml('<Ad><Foo></Foo></Ad>');
       adElement = getNodesFromXml(linearAd);
@@ -39,8 +43,14 @@ describe('AdParser', function() {
       });
     });
 
-    it('correctly returns wrapper', () => {
-      expect(parseAd(wrapperAdNode, emit)).toEqual({
+    it('correctly returns wrapper and attributes', () => {
+      const parsedWrapper = parseAd(wrapperAdNode, emit);
+      expect(parsedWrapper.ad).toMatchObject({
+        allowMultipleAds: true,
+        fallbackOnNoAd: true,
+        followAdditionalWrappers: false
+      });
+      expect(parsedWrapper).toEqual({
         ad: expect.any(Object),
         type: 'WRAPPER'
       });
