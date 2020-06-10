@@ -49,7 +49,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `skipDelay: Number|null`
 - `mediaFiles: Array<Object>` [go to object](#mediafile)
 - `mezzanine: Object<Object>` [go to object](#mezzanine)
-- `interactiveCreativeFile: Object  ` [go to object](#interactivecreativefile)
+- `interactiveCreativeFile: Object` [go to object](#interactivecreativefile)
 - `closedCaptionFiles: Array<Object>` [go to object](#closedcaptionfile)
 - `videoClickThroughURLTemplate: String|null`
 - `videoClickTrackingURLTemplates: Array<String>`
