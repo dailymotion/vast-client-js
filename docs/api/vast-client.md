@@ -64,16 +64,27 @@ vastClient.get(VASTUrl);
 
 ### cappingMinimumTimeInterval: Number
 
-The minimum time interval (in milliseconds) which has to pass between two consecutive calls.
+The minimum time interval (in milliseconds) which has to pass between the display of an ad and the request for the vast-client.
 
-Example: if set to `2000`, any call which will be requested less than 2 seconds after the last successful one will be ignored.
+Example: if set to `2000`, any call which will be requested less than 2 seconds after the last ad displayed will be ignored.
+
+In order for the VASTClient to detect that the ad has been displayed, you must first initialize a [VASTTracker](docs/api/vast-tracker.md)
+with the ad and the chosen creative. Then, notify the VASTTracker that the player started to play the ad with `vastTracker.track('start')`
 
 ```Javascript
-// Ignores any call made 5 minutes or less after one.
+// Ignores any call made 5 minutes or less after the last successful ad
 vastClient.cappingMinimumTimeInterval = 5 * 60 * 1000;
 
+const initVastTracker = (ad) => {
+ // Choose the creative that fit the best to player
+ vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
+}
+
 // The call is made
-vastClient.get(VASTUrl);
+vastClient.get(VASTUrl).then(initVastTracker);
+
+// Elsewhere in the code, Player start to play the ad and notify the vast-tracker
+vastTracker.track('start')
 
 // 2 minutes later: The call is ignored
 vastClient.get(VASTUrl);
