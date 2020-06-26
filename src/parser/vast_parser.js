@@ -396,19 +396,22 @@ export class VASTParser extends EventEmitter {
       return Promise.reject(e);
     }
 
-    const adsCount = ads.length;
-    const lastAddedAd = ads[adsCount - 1];
-    // if in child nodes we have only one ads
-    // and wrapperSequence is defined
-    // and this ads doesn't already have sequence
+    /* Keep wrapper sequence value to not break AdPod when wrapper contain only one Ad.
+    e.g,for a AdPod containing :
+    - Inline with sequence=1
+    - Inline with sequence=2
+    - Wrapper with sequence=3 wrapping a Inline with sequence=1
+    once parsed we will obtain :
+    - Inline sequence 1,
+    - Inline sequence 2,
+    - Inline sequence 3
+  */
     if (
-      adsCount === 1 &&
+      ads.length === 1 &&
       wrapperSequence !== undefined &&
-      wrapperSequence !== null &&
-      lastAddedAd &&
-      !lastAddedAd.sequence
+      wrapperSequence !== null
     ) {
-      lastAddedAd.sequence = wrapperSequence;
+      ads[0].sequence = wrapperSequence;
     }
 
     // Split the VAST in case we don't want to resolve everything at the first time
