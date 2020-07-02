@@ -654,7 +654,7 @@ vastTracker.on('adCollapse', () => {
 
 The user clicked or otherwise activated a control used to minimize the ad to a size smaller than a collapsed ad but
 without fully dispatching the ad from the player environment. Unlike a collapsed ad that is big enough to display it’s
-message,the minimized ad is only big enough to offer a control that enables the user to redisplay the ad if desired.
+message, the minimized ad is only big enough to offer a control that enables the user to redisplay the ad if desired.
 
 Calls the minimize tracking URLs.
 
