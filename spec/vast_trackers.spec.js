@@ -230,8 +230,10 @@ describe('VASTTracker', function() {
       beforeEach(() => {
         spyTrack = jest.spyOn(vastTracker, 'track');
         vastTracker.assetDuration = 10;
-        //  vastTracker.lastDuration = 40;
         vastTracker.setProgress(5);
+      });
+      it('should be defined', () => {
+        expect(vastTracker.setProgress).toBeDefined();
       });
       it('call track with progress-5', () => {
         expect(spyTrack).toHaveBeenCalledWith('progress-5', expect.anything());
@@ -245,6 +247,10 @@ describe('VASTTracker', function() {
       });
       it('should have a lastPercentage variable', () => {
         expect(vastTracker.lastPercentage).toBeDefined();
+      });
+      it('should make the lastPercentage variable at the value -1', () => {
+        vastTracker.lastPercentage = 1;
+        expect(spyTrack).toHaveBeenCalledWith('progress-4%', expect.anything());
       });
     });
   });
