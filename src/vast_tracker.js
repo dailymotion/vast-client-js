@@ -37,6 +37,7 @@ export class VASTTracker extends EventEmitter {
     this.impressed = false;
     this.skippable = false;
     this.trackingEvents = {};
+    this.lastPercentage = 0;
     // We need to save the already triggered quartiles, in order to not trigger them again
     this._alreadyTriggeredQuartiles = {};
     // Tracker listeners should be notified with some events
@@ -178,35 +179,39 @@ export class VASTTracker extends EventEmitter {
     }
 
     if (this.assetDuration > 0) {
-      const events = [];
-
-      if (progress > 0) {
-        const percent = Math.round((progress / this.assetDuration) * 100);
-
-        events.push('start');
-        events.push(`progress-${percent}%`);
-        events.push(`progress-${Math.round(progress)}`);
-
-        for (const quartile in this.quartiles) {
-          if (
-            this.isQuartileReached(quartile, this.quartiles[quartile], progress)
-          ) {
-            events.push(quartile);
-            this._alreadyTriggeredQuartiles[quartile] = true;
+      const percent = Math.round((progress / this.assetDuration) * 100);
+      for (let i = this.lastPercentage; i < percent; i++) {
+        const events = [];
+        if (progress > 0) {
+          events.push('start');
+          events.push(`progress-${i + 1}%`);
+          events.push(`progress-${Math.round(progress)}`);
+          for (const quartile in this.quartiles) {
+            if (
+              this.isQuartileReached(
+                quartile,
+                this.quartiles[quartile],
+                progress
+              )
+            ) {
+              events.push(quartile);
+              this._alreadyTriggeredQuartiles[quartile] = true;
+            }
           }
+          this.lastPercentage = percent;
+        }
+
+        events.forEach(eventName => {
+          this.track(eventName,  { macros, once: true });
+        });
+
+        if (progress < this.progress) {
+          this.track('rewind', { macros });
         }
       }
 
-      events.forEach(eventName => {
-        this.track(eventName, { macros, once: true });
-      });
-
-      if (progress < this.progress) {
-        this.track('rewind', { macros });
-      }
+      this.progress = progress;
     }
-
-    this.progress = progress;
   }
 
   /**
