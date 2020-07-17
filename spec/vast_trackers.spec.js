@@ -223,5 +223,29 @@ describe('VASTTracker', function() {
         expect(spyEmitter).toHaveBeenCalledTimes(1);
       });
     });
+
+    describe('setProgress', () => {
+      let spyTrack;
+      let lastMock;
+      beforeEach(() => {
+        spyTrack = jest.spyOn(vastTracker, 'track');
+        vastTracker.assetDuration = 10;
+        //  vastTracker.lastDuration = 40;
+        vastTracker.setProgress(5);
+      });
+      it('call track with progress-5', () => {
+        expect(spyTrack).toHaveBeenCalledWith('progress-5', expect.anything());
+      });
+
+      it('call track with progress-50%', () => {
+        expect(spyTrack).toHaveBeenCalledWith(
+          'progress-50%',
+          expect.anything()
+        );
+      });
+      it('should have a lastPercentage variable', () => {
+        expect(vastTracker.lastPercentage).toBeDefined();
+      });
+    });
   });
 });
