@@ -252,6 +252,14 @@ describe('VASTTracker', function() {
         vastTracker.lastPercentage = 1;
         expect(spyTrack).toHaveBeenCalledWith('progress-4%', expect.anything());
       });
+      it('should make the lastPercentage variable at the value -1', () => {
+        vastTracker.lastPercentage = 1;
+        expect(spyTrack).toHaveBeenCalledWith('progress-3%', expect.anything());
+      });
+      it('should make the lastPercentage variable at the value -1', () => {
+        vastTracker.lastPercentage = 1;
+        expect(spyTrack).toHaveBeenCalledWith('progress-2%', expect.anything());
+      });
     });
   });
 });
