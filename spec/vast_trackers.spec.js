@@ -226,7 +226,6 @@ describe('VASTTracker', function() {
 
     describe('setProgress', () => {
       let spyTrack;
-      let lastMock;
       beforeEach(() => {
         spyTrack = jest.spyOn(vastTracker, 'track');
         vastTracker.assetDuration = 10;
@@ -245,20 +244,14 @@ describe('VASTTracker', function() {
           expect.anything()
         );
       });
-      it('should have a lastPercentage variable', () => {
-        expect(vastTracker.lastPercentage).toBeDefined();
-      });
-      it('should make the lastPercentage variable at the value -1', () => {
+
+      it('should also calls track for previous missing percentages', () => {
         vastTracker.lastPercentage = 1;
-        expect(spyTrack).toHaveBeenCalledWith('progress-4%', expect.anything());
-      });
-      it('should make the lastPercentage variable at the value -1', () => {
-        vastTracker.lastPercentage = 1;
-        expect(spyTrack).toHaveBeenCalledWith('progress-3%', expect.anything());
-      });
-      it('should make the lastPercentage variable at the value -1', () => {
-        vastTracker.lastPercentage = 1;
-        expect(spyTrack).toHaveBeenCalledWith('progress-2%', expect.anything());
+        expect(spyTrack.mock.calls).toContainEqual(
+          ['progress-2%', expect.anything()],
+          ['progress-3%', expect.anything()],
+          ['progress-4%', expect.anything()]
+        );
       });
     });
   });
