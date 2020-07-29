@@ -94,7 +94,7 @@ vastTracker.on('exitFullscreen', () => {
 
 Ad servers and other entities need access to additional data from the publisher to meet client needs for a clearer view into the details of how and where their video is being shown. This is done through the use of macros.
 
-The list of supported macros is in the file [macros.js](src/util/macros.js).
+The list of supported macros is in the file [macros.js](/src/util/macros.js).
 The following macro value will be set automatically by vast-client if it exists in the tracking url:
 
 - CACHEBUSTING
