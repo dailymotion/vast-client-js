@@ -207,13 +207,15 @@ vastTracker.on('complete', () => {
 });
 ```
 
-### click(macros)
+### click(fallbackClickThroughURL, macros)
 
 Must be called when the user clicks on the creative. Calls the tracking URLs.
 
 #### Parameters
 
 - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+
+- **`fallbackClickThroughURL: String`** Optional parameter. A clickThroughURL template that could be used as a fallback
 
 #### Events emitted
 
