@@ -37,9 +37,9 @@ export class VASTTracker extends EventEmitter {
     this.impressed = false;
     this.skippable = false;
     this.trackingEvents = {};
-    this.lastPercentage = 0; //We need to keep the last percentage of the tracker in order to
-    //calculate to trigger the events when the VAST duration is short
-    // We need to save the already triggered quartiles, in order to not trigger them again
+    // We need to keep the last percentage of the tracker in order to
+    // calculate to trigger the events when the VAST duration is short
+    this.lastPercentage = 0; 
     this._alreadyTriggeredQuartiles = {};
     // Tracker listeners should be notified with some events
     // no matter if there is a tracking URL or not
