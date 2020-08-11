@@ -231,20 +231,15 @@ describe('VASTTracker', function() {
         vastTracker.assetDuration = 10;
         vastTracker.setProgress(5);
       });
-      it('should be defined', () => {
-        expect(vastTracker.setProgress).toBeDefined();
-      });
       it('call track with progress-5', () => {
         expect(spyTrack).toHaveBeenCalledWith('progress-5', expect.anything());
       });
-
       it('call track with progress-50%', () => {
         expect(spyTrack).toHaveBeenCalledWith(
           'progress-50%',
           expect.anything()
         );
       });
-
       it('should also calls track for previous missing percentages', () => {
         vastTracker.lastPercentage = 1;
         expect(spyTrack.mock.calls).toContainEqual(
