@@ -98,7 +98,8 @@ describe('VASTParser', function() {
           },
           {
             id: 'wrapper-a-impression',
-            url: 'http://example.com/wrapperA-impression'
+            url:
+              'http://example.com/wrapperA-impression?serverside=[SERVERSIDE]'
           },
           {
             id: 'wrapper-b-impression1',
@@ -680,7 +681,8 @@ describe('VASTParser', function() {
           },
           {
             id: 'wrapper-a-impression',
-            url: 'http://example.com/wrapperA-impression'
+            url:
+              'http://example.com/wrapperA-impression?serverside=[SERVERSIDE]'
           },
           {
             id: 'wrapper-b-impression1',

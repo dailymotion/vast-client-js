@@ -19,6 +19,10 @@ const urlfor = relpath =>
     .resolve(path.dirname(module.filename), 'vastfiles', relpath)
     .replace(/\\/g, '/')}`;
 
+const macros = {
+  SERVERSIDE: 0
+};
+
 describe('VASTTracker', function() {
   before(() => {
     this.clock = sinon.useFakeTimers(now.getTime());
@@ -291,7 +295,7 @@ describe('VASTTracker', function() {
           util.track = function(URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
-          this.Tracker.trackImpression();
+          this.Tracker.trackImpression(macros);
           done();
         });
 
@@ -303,13 +307,19 @@ describe('VASTTracker', function() {
           _eventsSent[0].length.should.eql(6);
         });
 
+        it('should have replaced macros on the impression trackers', () => {
+          _eventsSent[0]
+            .includes('http://example.com/wrapperA-impression?serverside=0')
+            .should.eql(true);
+        });
+
         it('should have sent creativeView event', () => {
           _eventsSent[1].should.eql('creativeView');
         });
 
         it('should only be called once', () => {
           _eventsSent = [];
-          this.Tracker.trackImpression();
+          this.Tracker.trackImpression(macros);
           _eventsSent.should.eql([]);
         });
       });
