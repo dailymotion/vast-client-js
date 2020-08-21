@@ -314,7 +314,7 @@ export class VASTTracker extends EventEmitter {
   trackImpression(macros = {}) {
     if (!this.impressed) {
       this.impressed = true;
-      this.trackURLs(this.ad.impressionURLTemplates);
+      this.trackURLs(this.ad.impressionURLTemplates, macros);
       this.track('creativeView', { macros });
     }
   }
