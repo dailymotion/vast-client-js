@@ -5,7 +5,7 @@
       <AdSystem>VAST</AdSystem>
       <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
       <Error><![CDATA[http://example.com/wrapperA-error]]></Error>
-      <Impression id="wrapper-a-impression"><![CDATA[http://example.com/wrapperA-impression?serverside=[SERVERSIDE]]]></Impression>
+      <Impression id="wrapper-a-impression"><![CDATA[http://example.com/wrapperA-impression]]></Impression>
       <AdVerifications>
         <Verification vendor="verification-a.com-omid">
           <JavaScriptResource apiFramework="omid" browserOptional="false">
