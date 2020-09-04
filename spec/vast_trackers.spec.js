@@ -10,6 +10,7 @@ describe('VASTTracker', function() {
   describe('#linear', () => {
     let spyEmitter;
     let spyTrackUrl;
+    let spyTrack;
     let adTrackingUrls;
     let ad;
     const expectedMacros = {
@@ -26,6 +27,7 @@ describe('VASTTracker', function() {
       vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
       spyEmitter = jest.spyOn(vastTracker, 'emit');
       spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
+      spyTrack = jest.spyOn(vastTracker, 'track');
     });
 
     describe('#click', () => {
@@ -225,9 +227,7 @@ describe('VASTTracker', function() {
     });
 
     describe('setProgress', () => {
-      let spyTrack;
       beforeEach(() => {
-        spyTrack = jest.spyOn(vastTracker, 'track');
         vastTracker.assetDuration = 10;
         vastTracker.setProgress(5);
       });
@@ -247,6 +247,39 @@ describe('VASTTracker', function() {
           ['progress-3%', expect.anything()],
           ['progress-4%', expect.anything()]
         );
+      });
+    });
+
+    describe('#trackImpression', () => {
+      const macros = {
+        SERVERSIDE: '0'
+      };
+
+      beforeEach(() => {
+        // Reset impressed to run trackImpression each time
+        vastTracker.impressed = false;
+        vastTracker.trackImpression(macros);
+      });
+
+      it('should have impressed set to true', () => {
+        expect(vastTracker.impressed).toEqual(true);
+      });
+
+      it('should have called impression URLs', () => {
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          ad.impressionURLTemplates,
+          macros
+        );
+      });
+
+      it('should have sent creativeView event', () => {
+        expect(spyTrack).toHaveBeenCalledWith('creativeView', { macros });
+      });
+
+      it('should only be called once', () => {
+        vastTracker.trackImpression(macros);
+        expect(spyTrackUrl).not.toHaveBeenCalledTimes(2);
+        expect(spyTrack).not.toHaveBeenCalledTimes(2);
       });
     });
   });

@@ -285,35 +285,6 @@ describe('VASTTracker', function() {
         });
       });
 
-      describe('#trackImpression', () => {
-        before(done => {
-          _eventsSent = [];
-          util.track = function(URLTemplates, variables) {
-            _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
-          };
-          this.Tracker.trackImpression();
-          done();
-        });
-
-        it('should have impressed set to true', () => {
-          this.Tracker.impressed.should.eql(true);
-        });
-
-        it('should have called impression URLs', () => {
-          _eventsSent[0].length.should.eql(6);
-        });
-
-        it('should have sent creativeView event', () => {
-          _eventsSent[1].should.eql('creativeView');
-        });
-
-        it('should only be called once', () => {
-          _eventsSent = [];
-          this.Tracker.trackImpression();
-          _eventsSent.should.eql([]);
-        });
-      });
-
       describe('#errorWithCode', () => {
         before(() => {
           util.track = function(URLTemplates, variables, options) {
