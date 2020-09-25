@@ -1,7 +1,7 @@
-import babel from 'rollup-plugin-babel';
-import { uglify } from 'rollup-plugin-uglify';
-import alias from 'rollup-plugin-alias';
-import resolve from 'rollup-plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
+import alias from '@rollup/plugin-alias';
+import resolve from '@rollup/plugin-node-resolve';
 
 const babelPlugin = babel({
   babelrc: false,
@@ -27,7 +27,7 @@ function minify(config) {
     '.min' +
     outputFile.substr(extensionIndex);
 
-  minifiedConfig.plugins.push(uglify());
+  minifiedConfig.plugins.push(terser());
 
   return minifiedConfig;
 }
