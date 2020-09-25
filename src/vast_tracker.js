@@ -519,6 +519,7 @@ export class VASTTracker extends EventEmitter {
    * clickthrough URL when done.
    *
    * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#clickthrough
    */
   click(fallbackClickThroughURL = null, macros = {}) {
