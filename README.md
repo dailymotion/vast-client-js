@@ -88,7 +88,9 @@ The API documentation is organized by components:
 
 **:warning: IMPORTANT :warning:** : the release of the `2.0` version of the library introduced many breaking changes in the API.
 
-Read the [**2.0 migration guide**](docs/api/2.0-migration.md) to update your project or follow the [**1.x API documentation**](docs/api/1.x) if you're still using the old version.
+Read the [2.0 migration guide](docs/api/2.0-migration.md) to update your project or follow the [1.x API documentation](docs/api/1.x) if you're still using the old version.
+
+**Migration guide for 3.0 version (alpha):** [here](https://github.com/dailymotion/vast-client-js/blob/3.0-version/docs/api/3.0-migration.md)
 
 ### Pre-bundled versions
 
