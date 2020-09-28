@@ -1,0 +1,90 @@
+<VAST version="3.0">
+  <Ad id="201">
+    <Wrapper allowMultipleAds="true">
+      <AdSystem version="4.0">iabtechlab</AdSystem>
+      <VASTAdTagURI><![CDATA[sample.xml]]></VASTAdTagURI>
+      <Error>http://example.com/error</Error>
+      <Impression>http://example.com/track/impression</Impression>
+      <Creatives>
+        <Creative id="5480" sequence="1">
+          <CompanionAds>
+            <Companion id="1232" width="100" height="150" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250">
+              <StaticResource creativeType="image/png">
+                <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
+              </StaticResource>
+              <CompanionClickThrough>
+                <![CDATA[https://iabtechlab.com]]>
+              </CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </Wrapper>
+  </Ad>
+  <Ad id="20011" sequence="1">
+    <Wrapper allowMultipleAds="true">
+      <AdSystem version="4.0">iabtechlab</AdSystem>
+      <VASTAdTagURI><![CDATA[vpaid.xml]]></VASTAdTagURI>
+      <Error>http://example.com/error</Error>
+      <Impression>http://example.com/track/impression</Impression>
+      <Creatives>
+        <Creative id="5480" sequence="1">
+          <CompanionAds>
+            <Companion id="1232" width="100" height="150" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250">
+              <StaticResource creativeType="image/png">
+                <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
+              </StaticResource>
+              <CompanionClickThrough>
+                <![CDATA[https://iabtechlab.com]]>
+              </CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </Wrapper>
+  </Ad>
+  <Ad id="20012" sequence="2">
+    <Wrapper allowMultipleAds="true">
+      <AdSystem version="4.0">iabtechlab</AdSystem>
+      <VASTAdTagURI><![CDATA[inline-linear.xml]]></VASTAdTagURI>
+      <Error>http://example.com/error</Error>
+      <Impression>http://example.com/track/impression</Impression>
+      <Creatives>
+        <Creative id="5480" sequence="1">
+          <CompanionAds>
+            <Companion id="1232" width="100" height="150" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250">
+              <StaticResource creativeType="image/png">
+                <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
+              </StaticResource>
+              <CompanionClickThrough>
+                <![CDATA[https://iabtechlab.com]]>
+              </CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </Wrapper>
+  </Ad>
+  <Ad id="2032">
+    <Wrapper allowMultipleAds="true">
+      <AdSystem version="4.0">iabtechlab</AdSystem>
+      <VASTAdTagURI><![CDATA[vpaid2.xml]]></VASTAdTagURI>
+      <Error>http://example.com/error</Error>
+      <Impression>http://example.com/track/impression</Impression>
+      <Creatives>
+        <Creative id="5480" sequence="1">
+          <CompanionAds>
+            <Companion id="1232" width="100" height="150" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250">
+              <StaticResource creativeType="image/png">
+                <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
+              </StaticResource>
+              <CompanionClickThrough>
+                <![CDATA[https://iabtechlab.com]]>
+              </CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </Wrapper>
+  </Ad>
+</VAST>

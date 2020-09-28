@@ -1,4 +1,3 @@
-import { flashURLHandler } from './urlhandlers/flash_url_handler';
 import { nodeURLHandler } from './urlhandlers/mock_node_url_handler';
 import { XHRURLHandler } from './urlhandlers/xhr_url_handler';
 
@@ -15,8 +14,6 @@ function get(url, options, cb) {
     return nodeURLHandler.get(url, options, cb);
   } else if (XHRURLHandler.supported()) {
     return XHRURLHandler.get(url, options, cb);
-  } else if (flashURLHandler.supported()) {
-    return flashURLHandler.get(url, options, cb);
   }
   return cb(
     new Error(

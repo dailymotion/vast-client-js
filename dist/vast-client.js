@@ -1,133 +1,202 @@
-var VAST = (function (exports) {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.VAST = {}));
+}(this, function (exports) { 'use strict';
 
-  var classCallCheck = function (instance, Constructor) {
+  function _typeof(obj) {
+    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+      _typeof = function (obj) {
+        return typeof obj;
+      };
+    } else {
+      _typeof = function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      };
+    }
+
+    return _typeof(obj);
+  }
+
+  function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
-  };
+  }
 
-  var createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
     }
+  }
 
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
 
-  var inherits = function (subClass, superClass) {
+  function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+      throw new TypeError("Super expression must either be null or a function");
     }
 
     subClass.prototype = Object.create(superClass && superClass.prototype, {
       constructor: {
         value: subClass,
-        enumerable: false,
         writable: true,
         configurable: true
       }
     });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  };
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
 
-  var possibleConstructorReturn = function (self, call) {
-    if (!self) {
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
+  }
+
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
 
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  };
+    return self;
+  }
 
-  var Ad = function Ad() {
-    classCallCheck(this, Ad);
-
-    this.id = null;
-    this.sequence = null;
-    this.system = null;
-    this.title = null;
-    this.description = null;
-    this.advertiser = null;
-    this.pricing = null;
-    this.survey = null;
-    this.errorURLTemplates = [];
-    this.impressionURLTemplates = [];
-    this.creatives = [];
-    this.extensions = [];
-  };
-
-  var AdExtension = function AdExtension() {
-    classCallCheck(this, AdExtension);
-
-    this.attributes = {};
-    this.children = [];
-  };
-
-  var AdExtensionChild = function AdExtensionChild() {
-    classCallCheck(this, AdExtensionChild);
-
-    this.name = null;
-    this.value = null;
-    this.attributes = {};
-  };
-
-  var CompanionAd = function CompanionAd() {
-    classCallCheck(this, CompanionAd);
-
-    this.id = null;
-    this.width = 0;
-    this.height = 0;
-    this.type = null;
-    this.staticResource = null;
-    this.htmlResource = null;
-    this.iframeResource = null;
-    this.altText = null;
-    this.companionClickThroughURLTemplate = null;
-    this.companionClickTrackingURLTemplates = [];
-    this.trackingEvents = {};
-  };
-
-  var Creative = function Creative() {
-    var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    classCallCheck(this, Creative);
-
-    this.id = creativeAttributes.id || null;
-    this.adId = creativeAttributes.adId || null;
-    this.sequence = creativeAttributes.sequence || null;
-    this.apiFramework = creativeAttributes.apiFramework || null;
-    this.trackingEvents = {};
-  };
-
-  var CreativeCompanion = function (_Creative) {
-    inherits(CreativeCompanion, _Creative);
-
-    function CreativeCompanion() {
-      var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      classCallCheck(this, CreativeCompanion);
-
-      var _this = possibleConstructorReturn(this, (CreativeCompanion.__proto__ || Object.getPrototypeOf(CreativeCompanion)).call(this, creativeAttributes));
-
-      _this.type = 'companion';
-      _this.variations = [];
-      return _this;
+  function _possibleConstructorReturn(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
     }
 
-    return CreativeCompanion;
-  }(Creative);
+    return _assertThisInitialized(self);
+  }
 
-  function track(URLTemplates, variables, options) {
-    var URLs = resolveURLTemplates(URLTemplates, variables, options);
+  function createAd() {
+    var adAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return {
+      id: adAttributes.id || null,
+      sequence: adAttributes.sequence || null,
+      adType: adAttributes.adType || null,
+      adServingId: null,
+      categories: [],
+      expires: null,
+      viewableImpression: {},
+      system: null,
+      title: null,
+      description: null,
+      advertiser: null,
+      pricing: null,
+      survey: null,
+      // @deprecated in VAST 4.1
+      errorURLTemplates: [],
+      impressionURLTemplates: [],
+      creatives: [],
+      extensions: [],
+      adVerifications: []
+    };
+  }
 
+  function createAdVerification() {
+    return {
+      resource: null,
+      vendor: null,
+      browserOptional: false,
+      apiFramework: null,
+      type: null,
+      parameters: null,
+      trackingEvents: {}
+    };
+  }
+
+  function createCompanionAd() {
+    var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return {
+      id: creativeAttributes.id || null,
+      adType: 'companionAd',
+      width: creativeAttributes.width || 0,
+      height: creativeAttributes.height || 0,
+      assetWidth: creativeAttributes.assetWidth || null,
+      assetHeight: creativeAttributes.assetHeight || null,
+      expandedWidth: creativeAttributes.expandedWidth || null,
+      expandedHeight: creativeAttributes.expandedHeight || null,
+      apiFramework: creativeAttributes.apiFramework || null,
+      adSlotID: creativeAttributes.adSlotID || null,
+      pxratio: creativeAttributes.pxratio || '1',
+      renderingMode: creativeAttributes.renderingMode || 'default',
+      staticResources: [],
+      htmlResources: [],
+      iframeResources: [],
+      adParameters: null,
+      xmlEncoded: null,
+      altText: null,
+      companionClickThroughURLTemplate: null,
+      companionClickTrackingURLTemplates: [],
+      trackingEvents: {}
+    };
+  }
+  function isCompanionAd(ad) {
+    return ad.adType === 'companionAd';
+  }
+
+  function createCreative() {
+    var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return {
+      id: creativeAttributes.id || null,
+      adId: creativeAttributes.adId || null,
+      sequence: creativeAttributes.sequence || null,
+      apiFramework: creativeAttributes.apiFramework || null,
+      universalAdId: {
+        value: null,
+        idRegistry: 'unknown'
+      },
+      creativeExtensions: []
+    };
+  }
+
+  function createCreativeCompanion() {
+    var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var _createCreative = createCreative(creativeAttributes),
+        id = _createCreative.id,
+        adId = _createCreative.adId,
+        sequence = _createCreative.sequence,
+        apiFramework = _createCreative.apiFramework;
+
+    return {
+      id: id,
+      adId: adId,
+      sequence: sequence,
+      apiFramework: apiFramework,
+      type: 'companion',
+      required: null,
+      variations: []
+    };
+  }
+
+  var supportedMacros = ['CONTENTPLAYHEAD', // @deprecated VAST 4.1
+  'ADPLAYHEAD', 'MEDIAPLAYHEAD', 'ADPLAYHEAD', 'ASSETURI', 'PODSEQUENCE', 'UNIVERSALADID', 'CONTENTURI', 'CONTENTID', 'VERIFICATIONVENDORS', 'EXTENSIONS', 'DEVICEIP', 'SERVERSIDE', 'CLIENTUA', 'SERVERUA', 'DEVICEUA', 'TRANSACTIONID', 'ADCOUNT', 'BREAKPOSITION', 'PLACEMENTTYPE', 'IFA', 'IFATYPE', 'LATLONG', 'DOMAIN', 'PAGEURL', 'APPBUNDLE', 'VASTVERSIONS', 'APIFRAMEWORKS', 'MEDIAMIME', 'PLAYERCAPABILITIES', 'CLICKTYPE', 'PLAYERSTATE', 'INVENTORYSTATE', 'CLICKPOS', 'PLAYERSIZE', 'LIMITADTRACKING', 'REGULATIONS', 'GDPRCONSENT', // <BlockedAdCategories> element is not parsed for now so the vastTracker
+  // can't replace the macro with element value automatically.
+  // The player need to pass it inside "macro" parameter when calling trackers
+  'BLOCKEDADCATEGORIES', 'ADCATEGORIES', 'ADTYPE', 'ADSERVINGID'];
+
+  function track(URLTemplates, macros, options) {
+    var URLs = resolveURLTemplates(URLTemplates, macros, options);
     URLs.forEach(function (URL) {
       if (typeof window !== 'undefined' && window !== null) {
         var i = new Image();
@@ -135,64 +204,168 @@ var VAST = (function (exports) {
       }
     });
   }
-
   /**
    * Replace the provided URLTemplates with the given values
    *
    * @param {Array} URLTemplates - An array of tracking url templates.
-   * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+   * @param {Object} [macros={}] - An optional Object of parameters to be used in the tracking calls.
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
+
+
   function resolveURLTemplates(URLTemplates) {
-    var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var resolvedURLs = [];
+    var URLArray = extractURLsFromTemplates(URLTemplates); // Set default value for invalid ERRORCODE
 
-    var URLs = [];
+    if (macros['ERRORCODE'] && !options.isCustomCode && !/^[0-9]{3}$/.test(macros['ERRORCODE'])) {
+      macros['ERRORCODE'] = 900;
+    } // Calc random/time based macros
 
-    // Encode String variables, when given
-    if (variables['ASSETURI']) {
-      variables['ASSETURI'] = encodeURIComponentRFC3986(variables['ASSETURI']);
+
+    macros['CACHEBUSTING'] = leftpad(Math.round(Math.random() * 1.0e8).toString());
+    macros['TIMESTAMP'] = new Date().toISOString(); // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
+
+    macros['RANDOM'] = macros['random'] = macros['CACHEBUSTING'];
+
+    for (var macro in macros) {
+      macros[macro] = encodeURIComponentRFC3986(macros[macro]);
     }
-    if (variables['CONTENTPLAYHEAD']) {
-      variables['CONTENTPLAYHEAD'] = encodeURIComponentRFC3986(variables['CONTENTPLAYHEAD']);
-    }
 
-    // Set default value for invalid ERRORCODE
-    if (variables['ERRORCODE'] && !options.isCustomCode && !/^[0-9]{3}$/.test(variables['ERRORCODE'])) {
-      variables['ERRORCODE'] = 900;
-    }
-
-    // Calc random/time based macros
-    variables['CACHEBUSTING'] = leftpad(Math.round(Math.random() * 1.0e8).toString());
-    variables['TIMESTAMP'] = encodeURIComponentRFC3986(new Date().toISOString());
-
-    // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
-    variables['RANDOM'] = variables['random'] = variables['CACHEBUSTING'];
-
-    for (var URLTemplateKey in URLTemplates) {
-      var resolveURL = URLTemplates[URLTemplateKey];
+    for (var URLTemplateKey in URLArray) {
+      var resolveURL = URLArray[URLTemplateKey];
 
       if (typeof resolveURL !== 'string') {
         continue;
       }
 
-      for (var key in variables) {
-        var value = variables[key];
-        var macro1 = '[' + key + ']';
-        var macro2 = '%%' + key + '%%';
-        resolveURL = resolveURL.replace(macro1, value);
-        resolveURL = resolveURL.replace(macro2, value);
-      }
-      URLs.push(resolveURL);
+      resolvedURLs.push(replaceUrlMacros(resolveURL, macros));
     }
 
-    return URLs;
+    return resolvedURLs;
   }
+  /**
+   * Replace the macros tracking url with their value.
+   * If no value is provided for a supported macro and it exists in the url,
+   * it will be replaced by -1 as described by the VAST 4.1 iab specifications
+   *
+   * @param {String} url - Tracking url.
+   * @param {Object} macros - Object of macros to be replaced in the tracking calls
+   */
 
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+
+  function replaceUrlMacros(url, macros) {
+    url = replaceMacrosValues(url, macros); // match any macros from the url that was not replaced
+
+    var remainingMacros = url.match(/[^[\]]+(?=])/g);
+
+    if (!remainingMacros) {
+      return url;
+    }
+
+    var supportedRemainingMacros = remainingMacros.filter(function (macro) {
+      return supportedMacros.indexOf(macro) > -1;
+    });
+
+    if (supportedRemainingMacros.length === 0) {
+      return url;
+    }
+
+    supportedRemainingMacros = supportedRemainingMacros.reduce(function (accumulator, macro) {
+      accumulator[macro] = -1;
+      return accumulator;
+    }, {});
+    return replaceMacrosValues(url, supportedRemainingMacros);
+  }
+  /**
+   * Replace the macros tracking url with their value.
+   *
+   * @param {String} url - Tracking url.
+   * @param {Object} macros - Object of macros to be replaced in the tracking calls
+   */
+
+
+  function replaceMacrosValues(url, macros) {
+    var replacedMacrosUrl = url;
+
+    for (var key in macros) {
+      var value = macros[key]; // this will match [${key}] and %%${key}%% and replace it
+
+      replacedMacrosUrl = replacedMacrosUrl.replace(new RegExp("(?:\\[|%%)(".concat(key, ")(?:\\]|%%)"), 'g'), value);
+    }
+
+    return replacedMacrosUrl;
+  }
+  /**
+   * Extract the url/s from the URLTemplates.
+   *   If the URLTemplates is an array of urls
+   *   If the URLTemplates object has a url property
+   *   If the URLTemplates is a single string
+   *
+   * @param {Array|String} URLTemplates - An array|string of url templates.
+   */
+
+
+  function extractURLsFromTemplates(URLTemplates) {
+    if (Array.isArray(URLTemplates)) {
+      return URLTemplates.map(function (URLTemplate) {
+        return URLTemplate && URLTemplate.hasOwnProperty('url') ? URLTemplate.url : URLTemplate;
+      });
+    }
+
+    return URLTemplates;
+  }
+  /**
+   * Returns a boolean after checking if the object exists in the array.
+   *   true - if the object exists, false otherwise
+   *
+   * @param {Object} obj - The object who existence is to be checked.
+   * @param {Array} list - List of objects.
+   */
+
+
+  function containsTemplateObject(obj, list) {
+    for (var i = 0; i < list.length; i++) {
+      if (isTemplateObjectEqual(list[i], obj)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+  /**
+   * Returns a boolean after comparing two Template objects.
+   *   true - if the objects are equivalent, false otherwise
+   *
+   * @param {Object} obj1
+   * @param {Object} obj2
+   */
+
+
+  function isTemplateObjectEqual(obj1, obj2) {
+    if (obj1 && obj2) {
+      var obj1Properties = Object.getOwnPropertyNames(obj1);
+      var obj2Properties = Object.getOwnPropertyNames(obj2); // If number of properties is different, objects are not equivalent
+
+      if (obj1Properties.length !== obj2Properties.length) {
+        return false;
+      }
+
+      if (obj1.id !== obj2.id || obj1.url !== obj2.url) {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  } // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+
+
   function encodeURIComponentRFC3986(str) {
     return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-      return '%' + c.charCodeAt(0).toString(16);
+      return "%".concat(c.charCodeAt(0).toString(16));
     });
   }
 
@@ -202,6 +375,7 @@ var VAST = (function (exports) {
         return '0';
       }).join('') + str;
     }
+
     return str;
   }
 
@@ -213,6 +387,7 @@ var VAST = (function (exports) {
     for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
       result.push(i);
     }
+
     return result;
   }
 
@@ -225,15 +400,44 @@ var VAST = (function (exports) {
       return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
   }
+  /**
+   * Joins two arrays of objects without duplicates
+   *
+   * @param {Array} arr1
+   * @param {Array} arr2
+   *
+   * @return {Array}
+   */
+
+
+  function joinArrayOfUniqueTemplateObjs() {
+    var arr1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var arr2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var firstArr = Array.isArray(arr1) ? arr1 : [];
+    var secondArr = Array.isArray(arr2) ? arr2 : [];
+    var arr = firstArr.concat(secondArr);
+    return arr.reduce(function (res, val) {
+      if (!containsTemplateObject(val, res)) {
+        res.push(val);
+      }
+
+      return res;
+    }, []);
+  }
 
   var util = {
     track: track,
     resolveURLTemplates: resolveURLTemplates,
+    extractURLsFromTemplates: extractURLsFromTemplates,
+    containsTemplateObject: containsTemplateObject,
+    isTemplateObjectEqual: isTemplateObjectEqual,
     encodeURIComponentRFC3986: encodeURIComponentRFC3986,
+    replaceUrlMacros: replaceUrlMacros,
     leftpad: leftpad,
     range: range,
     isNumeric: isNumeric,
-    flatten: flatten
+    flatten: flatten,
+    joinArrayOfUniqueTemplateObjs: joinArrayOfUniqueTemplateObjs
   };
 
   /**
@@ -242,10 +446,11 @@ var VAST = (function (exports) {
 
   /**
    * Returns the first element of the given node which nodeName matches the given name.
-   * @param  {Object} node - The node to use to find a match.
+   * @param  {Node} node - The node to use to find a match.
    * @param  {String} name - The name to look for.
-   * @return {Object}
+   * @return {Object|undefined}
    */
+
   function childByName(node, name) {
     var childNodes = node.childNodes;
 
@@ -257,13 +462,14 @@ var VAST = (function (exports) {
       }
     }
   }
-
   /**
    * Returns all the elements of the given node which nodeName match the given name.
-   * @param  {any} node - The node to use to find the matches.
-   * @param  {any} name - The name to look for.
+   * @param  {Node} node - The node to use to find the matches.
+   * @param  {String} name - The name to look for.
    * @return {Array}
    */
+
+
   function childrenByName(node, name) {
     var children = [];
     var childNodes = node.childNodes;
@@ -275,15 +481,17 @@ var VAST = (function (exports) {
         children.push(child);
       }
     }
+
     return children;
   }
-
   /**
    * Converts relative vastAdTagUri.
    * @param  {String} vastAdTagUrl - The url to resolve.
    * @param  {String} originalUrl - The original url.
    * @return {String}
    */
+
+
   function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
     if (!originalUrl) {
       return vastAdTagUrl;
@@ -292,73 +500,98 @@ var VAST = (function (exports) {
     if (vastAdTagUrl.indexOf('//') === 0) {
       var _location = location,
           protocol = _location.protocol;
-
-      return '' + protocol + vastAdTagUrl;
+      return "".concat(protocol).concat(vastAdTagUrl);
     }
 
     if (vastAdTagUrl.indexOf('://') === -1) {
       // Resolve relative URLs (mainly for unit testing)
       var baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
-      return baseURL + '/' + vastAdTagUrl;
+      return "".concat(baseURL, "/").concat(vastAdTagUrl);
     }
 
     return vastAdTagUrl;
   }
-
   /**
    * Converts a boolean string into a Boolean.
    * @param  {String} booleanString - The boolean string to convert.
    * @return {Boolean}
    */
-  function parseBoolean(booleanString) {
-    return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
-  }
 
+
+  function parseBoolean(booleanString) {
+    return ['true', 'TRUE', 'True', '1'].indexOf(booleanString) !== -1;
+  }
   /**
    * Parses a node text (for legacy support).
    * @param  {Object} node - The node to parse the text from.
    * @return {String}
    */
+
+
   function parseNodeText(node) {
     return node && (node.textContent || node.text || '').trim();
   }
-
   /**
    * Copies an attribute from a node to another.
    * @param  {String} attributeName - The name of the attribute to clone.
    * @param  {Object} nodeSource - The source node to copy the attribute from.
    * @param  {Object} nodeDestination - The destination node to copy the attribute at.
    */
+
+
   function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
     var attributeValue = nodeSource.getAttribute(attributeName);
+
     if (attributeValue) {
       nodeDestination.setAttribute(attributeName, attributeValue);
     }
   }
+  /**
+   * Converts element attributes into an object, where object key is attribute name
+   * and object value is attribute value
+   * @param {Element} element
+   * @returns {Object}
+   */
 
+
+  function parseAttributes(element) {
+    var nodeAttributes = element.attributes;
+    var attributes = {};
+
+    for (var i = 0; i < nodeAttributes.length; i++) {
+      attributes[nodeAttributes[i].nodeName] = nodeAttributes[i].nodeValue;
+    }
+
+    return attributes;
+  }
   /**
    * Parses a String duration into a Number.
    * @param  {String} durationString - The dureation represented as a string.
    * @return {Number}
    */
+
+
   function parseDuration(durationString) {
     if (durationString === null || typeof durationString === 'undefined') {
       return -1;
-    }
-    // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
+    } // Some VAST doesn't have an HH:MM:SS duration format but instead jus the number of seconds
+
+
     if (util.isNumeric(durationString)) {
       return parseInt(durationString);
     }
 
     var durationComponents = durationString.split(':');
+
     if (durationComponents.length !== 3) {
       return -1;
     }
 
     var secondsAndMS = durationComponents[2].split('.');
     var seconds = parseInt(secondsAndMS[0]);
+
     if (secondsAndMS.length === 2) {
-      seconds += parseFloat('0.' + secondsAndMS[1]);
+      seconds += parseFloat("0.".concat(secondsAndMS[1]));
     }
 
     var minutes = parseInt(durationComponents[1] * 60);
@@ -367,89 +600,137 @@ var VAST = (function (exports) {
     if (isNaN(hours) || isNaN(minutes) || isNaN(seconds) || minutes > 60 * 60 || seconds > 60) {
       return -1;
     }
+
     return hours + minutes + seconds;
   }
-
   /**
    * Splits an Array of ads into an Array of Arrays of ads.
    * Each subarray contains either one ad or multiple ads (an AdPod)
    * @param  {Array} ads - An Array of ads to split
    * @return {Array}
    */
+
+
   function splitVAST(ads) {
     var splittedVAST = [];
     var lastAdPod = null;
-
     ads.forEach(function (ad, i) {
       if (ad.sequence) {
         ad.sequence = parseInt(ad.sequence, 10);
-      }
-      // The current Ad may be the next Ad of an AdPod
+      } // The current Ad may be the next Ad of an AdPod
+
+
       if (ad.sequence > 1) {
-        var lastAd = ads[i - 1];
-        // check if the current Ad is exactly the next one in the AdPod
+        var lastAd = ads[i - 1]; // check if the current Ad is exactly the next one in the AdPod
+
         if (lastAd && lastAd.sequence === ad.sequence - 1) {
           lastAdPod && lastAdPod.push(ad);
           return;
-        }
-        // If the ad had a sequence attribute but it was not part of a correctly formed
+        } // If the ad had a sequence attribute but it was not part of a correctly formed
         // AdPod, let's remove the sequence attribute
+
+
         delete ad.sequence;
       }
 
       lastAdPod = [ad];
       splittedVAST.push(lastAdPod);
     });
-
     return splittedVAST;
   }
+  /**
+   * Parses the attributes and assign them to object
+   * @param  {Object} attributes attribute
+   * @param  {Object} verificationObject with properties which can be assigned
+   */
 
+
+  function assignAttributes(attributes, verificationObject) {
+    if (attributes) {
+      for (var attrKey in attributes) {
+        var attribute = attributes[attrKey];
+
+        if (attribute.nodeName && attribute.nodeValue && verificationObject.hasOwnProperty(attribute.nodeName)) {
+          var value = attribute.nodeValue;
+
+          if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+            value = parseBoolean(value);
+          }
+
+          verificationObject[attribute.nodeName] = value;
+        }
+      }
+    }
+  }
   /**
    * Merges the data between an unwrapped ad and his wrapper.
    * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
    * @param  {Ad} wrapper - The wrapper Ad.
    * @return {void}
    */
+
+
   function mergeWrapperAdData(unwrappedAd, wrapper) {
     unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
     unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
     unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
-
+    var wrapperCompanions = (wrapper.creatives || []).filter(function (creative) {
+      return creative && creative.type === 'companion';
+    });
+    var wrapperCompanionClickTracking = wrapperCompanions.reduce(function (result, creative) {
+      (creative.variations || []).forEach(function (variation) {
+        (variation.companionClickTrackingURLTemplates || []).forEach(function (companionClickTrackingURLTemplate) {
+          if (!util.containsTemplateObject(companionClickTrackingURLTemplate, result)) {
+            result.push(companionClickTrackingURLTemplate);
+          }
+        });
+      });
+      return result;
+    }, []);
+    unwrappedAd.creatives = wrapperCompanions.concat(unwrappedAd.creatives);
+    var wrapperHasVideoClickTracking = wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length;
+    var wrapperHasVideoCustomClick = wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length;
     unwrappedAd.creatives.forEach(function (creative) {
+      // merge tracking events
       if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
         for (var eventName in wrapper.trackingEvents[creative.type]) {
           var urls = wrapper.trackingEvents[creative.type][eventName];
+
           if (!Array.isArray(creative.trackingEvents[eventName])) {
             creative.trackingEvents[eventName] = [];
           }
+
           creative.trackingEvents[eventName] = creative.trackingEvents[eventName].concat(urls);
         }
       }
-    });
 
-    if (wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length) {
-      unwrappedAd.creatives.forEach(function (creative) {
-        if (creative.type === 'linear') {
+      if (creative.type === 'linear') {
+        // merge video click tracking url
+        if (wrapperHasVideoClickTracking) {
           creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(wrapper.videoClickTrackingURLTemplates);
-        }
-      });
-    }
+        } // merge video custom click url
 
-    if (wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length) {
-      unwrappedAd.creatives.forEach(function (creative) {
-        if (creative.type === 'linear') {
+
+        if (wrapperHasVideoCustomClick) {
           creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(wrapper.videoCustomClickURLTemplates);
-        }
-      });
-    }
+        } // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
 
-    // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-    if (wrapper.videoClickThroughURLTemplate) {
-      unwrappedAd.creatives.forEach(function (creative) {
-        if (creative.type === 'linear' && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
+
+        if (wrapper.videoClickThroughURLTemplate && (creative.videoClickThroughURLTemplate === null || typeof creative.videoClickThroughURLTemplate === 'undefined')) {
           creative.videoClickThroughURLTemplate = wrapper.videoClickThroughURLTemplate;
         }
-      });
+      } // pass wrapper companion trackers to all companions
+
+
+      if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
+        (creative.variations || []).forEach(function (variation) {
+          variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(variation.companionClickTrackingURLTemplates, wrapperCompanionClickTracking);
+        });
+      }
+    }); // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
+
+    if (wrapper.adVerifications) {
+      unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(wrapper.adVerifications);
     }
   }
 
@@ -460,8 +741,10 @@ var VAST = (function (exports) {
     parseBoolean: parseBoolean,
     parseNodeText: parseNodeText,
     copyNodeAttribute: copyNodeAttribute,
+    parseAttributes: parseAttributes,
     parseDuration: parseDuration,
     splitVAST: splitVAST,
+    assignAttributes: assignAttributes,
     mergeWrapperAdData: mergeWrapperAdData
   };
 
@@ -473,124 +756,173 @@ var VAST = (function (exports) {
    * Parses a CompanionAd.
    * @param  {Object} creativeElement - The VAST CompanionAd element to parse.
    * @param  {Object} creativeAttributes - The attributes of the CompanionAd (optional).
-   * @return {CreativeCompanion}
+   * @return {Object} creative - The creative object.
    */
+
   function parseCreativeCompanion(creativeElement, creativeAttributes) {
-    var creative = new CreativeCompanion(creativeAttributes);
+    var creative = createCreativeCompanion(creativeAttributes);
+    creative.required = creativeElement.getAttribute('required') || null;
+    creative.variations = parserUtils.childrenByName(creativeElement, 'Companion').map(function (companionResource) {
+      var companionAd = createCompanionAd(parserUtils.parseAttributes(companionResource));
+      companionAd.htmlResources = parserUtils.childrenByName(companionResource, 'HTMLResource').reduce(function (urls, resource) {
+        var url = parserUtils.parseNodeText(resource);
+        return url ? urls.concat(url) : urls;
+      }, []);
+      companionAd.iframeResources = parserUtils.childrenByName(companionResource, 'IFrameResource').reduce(function (urls, resource) {
+        var url = parserUtils.parseNodeText(resource);
+        return url ? urls.concat(url) : urls;
+      }, []);
+      companionAd.staticResources = parserUtils.childrenByName(companionResource, 'StaticResource').reduce(function (urls, resource) {
+        var url = parserUtils.parseNodeText(resource);
+        return url ? urls.concat({
+          url: url,
+          creativeType: resource.getAttribute('creativeType') || null
+        }) : urls;
+      }, []);
+      companionAd.altText = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'AltText')) || null;
+      var trackingEventsElement = parserUtils.childByName(companionResource, 'TrackingEvents');
 
-    parserUtils.childrenByName(creativeElement, 'Companion').forEach(function (companionResource) {
-      var companionAd = new CompanionAd();
-      companionAd.id = companionResource.getAttribute('id') || null;
-      companionAd.width = companionResource.getAttribute('width');
-      companionAd.height = companionResource.getAttribute('height');
-      companionAd.companionClickTrackingURLTemplates = [];
-
-      parserUtils.childrenByName(companionResource, 'HTMLResource').forEach(function (htmlElement) {
-        companionAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
-        companionAd.htmlResource = parserUtils.parseNodeText(htmlElement);
-      });
-
-      parserUtils.childrenByName(companionResource, 'IFrameResource').forEach(function (iframeElement) {
-        companionAd.type = iframeElement.getAttribute('creativeType') || 0;
-        companionAd.iframeResource = parserUtils.parseNodeText(iframeElement);
-      });
-
-      parserUtils.childrenByName(companionResource, 'StaticResource').forEach(function (staticElement) {
-        companionAd.type = staticElement.getAttribute('creativeType') || 0;
-
-        parserUtils.childrenByName(companionResource, 'AltText').forEach(function (child) {
-          companionAd.altText = parserUtils.parseNodeText(child);
-        });
-
-        companionAd.staticResource = parserUtils.parseNodeText(staticElement);
-      });
-
-      parserUtils.childrenByName(companionResource, 'TrackingEvents').forEach(function (trackingEventsElement) {
+      if (trackingEventsElement) {
         parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
           var eventName = trackingElement.getAttribute('event');
           var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+
           if (eventName && trackingURLTemplate) {
             if (!Array.isArray(companionAd.trackingEvents[eventName])) {
               companionAd.trackingEvents[eventName] = [];
             }
+
             companionAd.trackingEvents[eventName].push(trackingURLTemplate);
           }
         });
-      });
+      }
 
-      parserUtils.childrenByName(companionResource, 'CompanionClickTracking').forEach(function (clickTrackingElement) {
-        companionAd.companionClickTrackingURLTemplates.push(parserUtils.parseNodeText(clickTrackingElement));
+      companionAd.companionClickTrackingURLTemplates = parserUtils.childrenByName(companionResource, 'CompanionClickTracking').map(function (clickTrackingElement) {
+        return {
+          id: clickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(clickTrackingElement)
+        };
       });
+      companionAd.companionClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'CompanionClickThrough')) || null;
+      var adParametersElement = parserUtils.childByName(companionResource, 'AdParameters');
 
-      companionAd.companionClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'CompanionClickThrough'));
-      companionAd.companionClickTrackingURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'CompanionClickTracking'));
-      creative.variations.push(companionAd);
+      if (adParametersElement) {
+        companionAd.adParameters = parserUtils.parseNodeText(adParametersElement);
+        companionAd.xmlEncoded = adParametersElement.getAttribute('xmlEncoded') || null;
+      }
+
+      return companionAd;
     });
-
     return creative;
   }
 
-  var CreativeLinear = function (_Creative) {
-    inherits(CreativeLinear, _Creative);
+  function createCreativeLinear() {
+    var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    function CreativeLinear() {
-      var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      classCallCheck(this, CreativeLinear);
+    var _createCreative = createCreative(creativeAttributes),
+        id = _createCreative.id,
+        adId = _createCreative.adId,
+        sequence = _createCreative.sequence,
+        apiFramework = _createCreative.apiFramework;
 
-      var _this = possibleConstructorReturn(this, (CreativeLinear.__proto__ || Object.getPrototypeOf(CreativeLinear)).call(this, creativeAttributes));
+    return {
+      id: id,
+      adId: adId,
+      sequence: sequence,
+      apiFramework: apiFramework,
+      type: 'linear',
+      duration: 0,
+      skipDelay: null,
+      mediaFiles: [],
+      mezzanine: null,
+      interactiveCreativeFile: null,
+      closedCaptionFiles: [],
+      videoClickThroughURLTemplate: null,
+      videoClickTrackingURLTemplates: [],
+      videoCustomClickURLTemplates: [],
+      adParameters: null,
+      icons: [],
+      trackingEvents: {}
+    };
+  }
+  function isCreativeLinear(ad) {
+    return ad.type === 'linear';
+  }
 
-      _this.type = 'linear';
-      _this.duration = 0;
-      _this.skipDelay = null;
-      _this.mediaFiles = [];
-      _this.videoClickThroughURLTemplate = null;
-      _this.videoClickTrackingURLTemplates = [];
-      _this.videoCustomClickURLTemplates = [];
-      _this.adParameters = null;
-      _this.icons = [];
-      return _this;
-    }
+  function createClosedCaptionFile() {
+    var closedCaptionAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return {
+      type: closedCaptionAttributes.type || null,
+      language: closedCaptionAttributes.language || null,
+      fileURL: null
+    };
+  }
 
-    return CreativeLinear;
-  }(Creative);
+  function createIcon() {
+    return {
+      program: null,
+      height: 0,
+      width: 0,
+      xPosition: 0,
+      yPosition: 0,
+      apiFramework: null,
+      offset: null,
+      duration: 0,
+      type: null,
+      staticResource: null,
+      htmlResource: null,
+      iframeResource: null,
+      pxratio: '1',
+      iconClickThroughURLTemplate: null,
+      iconClickTrackingURLTemplates: [],
+      iconViewTrackingURLTemplate: null
+    };
+  }
 
-  var Icon = function Icon() {
-    classCallCheck(this, Icon);
+  function createInteractiveCreativeFile() {
+    var interactiveCreativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return {
+      type: interactiveCreativeAttributes.type || null,
+      apiFramework: interactiveCreativeAttributes.apiFramework || null,
+      variableDuration: parserUtils.parseBoolean(interactiveCreativeAttributes.variableDuration),
+      fileURL: null
+    };
+  }
 
-    this.program = null;
-    this.height = 0;
-    this.width = 0;
-    this.xPosition = 0;
-    this.yPosition = 0;
-    this.apiFramework = null;
-    this.offset = null;
-    this.duration = 0;
-    this.type = null;
-    this.staticResource = null;
-    this.htmlResource = null;
-    this.iframeResource = null;
-    this.iconClickThroughURLTemplate = null;
-    this.iconClickTrackingURLTemplates = [];
-    this.iconViewTrackingURLTemplate = null;
-  };
+  function createMediaFile() {
+    return {
+      id: null,
+      fileURL: null,
+      fileSize: 0,
+      deliveryType: 'progressive',
+      mimeType: null,
+      mediaType: null,
+      codec: null,
+      bitrate: 0,
+      minBitrate: 0,
+      maxBitrate: 0,
+      width: 0,
+      height: 0,
+      apiFramework: null,
+      // @deprecated in VAST 4.1. <InteractiveCreativeFile> should be used instead.
+      scalable: null,
+      maintainAspectRatio: null
+    };
+  }
 
-  var MediaFile = function MediaFile() {
-    classCallCheck(this, MediaFile);
-
-    this.id = null;
-    this.fileURL = null;
-    this.deliveryType = 'progressive';
-    this.mimeType = null;
-    this.codec = null;
-    this.bitrate = 0;
-    this.minBitrate = 0;
-    this.maxBitrate = 0;
-    this.width = 0;
-    this.height = 0;
-    this.apiFramework = null;
-    this.scalable = null;
-    this.maintainAspectRatio = null;
-  };
+  function createMezzanine() {
+    return {
+      id: null,
+      fileURL: null,
+      delivery: null,
+      codec: null,
+      type: null,
+      width: 0,
+      height: 0,
+      fileSize: 0,
+      mediaType: '2D'
+    };
+  }
 
   /**
    * This module provides methods to parse a VAST Linear Element.
@@ -600,12 +932,12 @@ var VAST = (function (exports) {
    * Parses a Linear element.
    * @param  {Object} creativeElement - The VAST Linear element to parse.
    * @param  {any} creativeAttributes - The attributes of the Linear (optional).
-   * @return {CreativeLinear}
+   * @return {Object} creative - The creativeLinear object.
    */
-  function parseCreativeLinear(creativeElement, creativeAttributes) {
-    var offset = void 0;
-    var creative = new CreativeLinear(creativeAttributes);
 
+  function parseCreativeLinear(creativeElement, creativeAttributes) {
+    var offset;
+    var creative = createCreativeLinear(creativeAttributes);
     creative.duration = parserUtils.parseDuration(parserUtils.parseNodeText(parserUtils.childByName(creativeElement, 'Duration')));
     var skipOffset = creativeElement.getAttribute('skipoffset');
 
@@ -619,19 +951,35 @@ var VAST = (function (exports) {
     }
 
     var videoClicksElement = parserUtils.childByName(creativeElement, 'VideoClicks');
+
     if (videoClicksElement) {
-      creative.videoClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(videoClicksElement, 'ClickThrough'));
+      var videoClickThroughElement = parserUtils.childByName(videoClicksElement, 'ClickThrough');
+
+      if (videoClickThroughElement) {
+        creative.videoClickThroughURLTemplate = {
+          id: videoClickThroughElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(videoClickThroughElement)
+        };
+      } else {
+        creative.videoClickThroughURLTemplate = null;
+      }
 
       parserUtils.childrenByName(videoClicksElement, 'ClickTracking').forEach(function (clickTrackingElement) {
-        creative.videoClickTrackingURLTemplates.push(parserUtils.parseNodeText(clickTrackingElement));
+        creative.videoClickTrackingURLTemplates.push({
+          id: clickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(clickTrackingElement)
+        });
       });
-
       parserUtils.childrenByName(videoClicksElement, 'CustomClick').forEach(function (customClickElement) {
-        creative.videoCustomClickURLTemplates.push(parserUtils.parseNodeText(customClickElement));
+        creative.videoCustomClickURLTemplates.push({
+          id: customClickElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(customClickElement)
+        });
       });
     }
 
     var adParamsElement = parserUtils.childByName(creativeElement, 'AdParameters');
+
     if (adParamsElement) {
       creative.adParameters = parserUtils.parseNodeText(adParamsElement);
     }
@@ -640,116 +988,176 @@ var VAST = (function (exports) {
       parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
         var eventName = trackingElement.getAttribute('event');
         var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+
         if (eventName && trackingURLTemplate) {
           if (eventName === 'progress') {
             offset = trackingElement.getAttribute('offset');
+
             if (!offset) {
               return;
             }
+
             if (offset.charAt(offset.length - 1) === '%') {
-              eventName = 'progress-' + offset;
+              eventName = "progress-".concat(offset);
             } else {
-              eventName = 'progress-' + Math.round(parserUtils.parseDuration(offset));
+              eventName = "progress-".concat(Math.round(parserUtils.parseDuration(offset)));
             }
           }
 
           if (!Array.isArray(creative.trackingEvents[eventName])) {
             creative.trackingEvents[eventName] = [];
           }
+
           creative.trackingEvents[eventName].push(trackingURLTemplate);
         }
       });
     });
-
     parserUtils.childrenByName(creativeElement, 'MediaFiles').forEach(function (mediaFilesElement) {
       parserUtils.childrenByName(mediaFilesElement, 'MediaFile').forEach(function (mediaFileElement) {
-        var mediaFile = new MediaFile();
-        mediaFile.id = mediaFileElement.getAttribute('id');
-        mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
-        mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
-        mediaFile.codec = mediaFileElement.getAttribute('codec');
-        mediaFile.mimeType = mediaFileElement.getAttribute('type');
-        mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
-        mediaFile.bitrate = parseInt(mediaFileElement.getAttribute('bitrate') || 0);
-        mediaFile.minBitrate = parseInt(mediaFileElement.getAttribute('minBitrate') || 0);
-        mediaFile.maxBitrate = parseInt(mediaFileElement.getAttribute('maxBitrate') || 0);
-        mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
-        mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
-
-        var scalable = mediaFileElement.getAttribute('scalable');
-        if (scalable && typeof scalable === 'string') {
-          scalable = scalable.toLowerCase();
-          if (scalable === 'true') {
-            mediaFile.scalable = true;
-          } else if (scalable === 'false') {
-            mediaFile.scalable = false;
-          }
-        }
-
-        var maintainAspectRatio = mediaFileElement.getAttribute('maintainAspectRatio');
-        if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
-          maintainAspectRatio = maintainAspectRatio.toLowerCase();
-          if (maintainAspectRatio === 'true') {
-            mediaFile.maintainAspectRatio = true;
-          } else if (maintainAspectRatio === 'false') {
-            mediaFile.maintainAspectRatio = false;
-          }
-        }
-
-        creative.mediaFiles.push(mediaFile);
+        creative.mediaFiles.push(parseMediaFile(mediaFileElement));
       });
-    });
+      var interactiveCreativeElement = parserUtils.childByName(mediaFilesElement, 'InteractiveCreativeFile');
 
+      if (interactiveCreativeElement) {
+        creative.interactiveCreativeFile = parseInteractiveCreativeFile(interactiveCreativeElement);
+      }
+
+      var closedCaptionElements = parserUtils.childByName(mediaFilesElement, 'ClosedCaptionFiles');
+
+      if (closedCaptionElements) {
+        parserUtils.childrenByName(closedCaptionElements, 'ClosedCaptionFile').forEach(function (closedCaptionElement) {
+          var closedCaptionFile = createClosedCaptionFile(parserUtils.parseAttributes(closedCaptionElement));
+          closedCaptionFile.fileURL = parserUtils.parseNodeText(closedCaptionElement);
+          creative.closedCaptionFiles.push(closedCaptionFile);
+        });
+      }
+
+      var mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
+      var requiredAttributes = getRequiredAttributes(mezzanineElement, ['delivery', 'type', 'width', 'height']);
+
+      if (requiredAttributes) {
+        var mezzanine = createMezzanine();
+        mezzanine.id = mezzanineElement.getAttribute('id');
+        mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
+        mezzanine.delivery = requiredAttributes.delivery;
+        mezzanine.codec = mezzanineElement.getAttribute('codec');
+        mezzanine.type = requiredAttributes.type;
+        mezzanine.width = parseInt(requiredAttributes.width, 10);
+        mezzanine.height = parseInt(requiredAttributes.height, 10);
+        mezzanine.fileSize = parseInt(mezzanineElement.getAttribute('fileSize'), 10);
+        mezzanine.mediaType = mezzanineElement.getAttribute('mediaType') || '2D';
+        creative.mezzanine = mezzanine;
+      }
+    });
     var iconsElement = parserUtils.childByName(creativeElement, 'Icons');
+
     if (iconsElement) {
       parserUtils.childrenByName(iconsElement, 'Icon').forEach(function (iconElement) {
-        var icon = new Icon();
-        icon.program = iconElement.getAttribute('program');
-        icon.height = parseInt(iconElement.getAttribute('height') || 0);
-        icon.width = parseInt(iconElement.getAttribute('width') || 0);
-        icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
-        icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
-        icon.apiFramework = iconElement.getAttribute('apiFramework');
-        icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
-        icon.duration = parserUtils.parseDuration(iconElement.getAttribute('duration'));
-
-        parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(function (htmlElement) {
-          icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
-          icon.htmlResource = parserUtils.parseNodeText(htmlElement);
-        });
-
-        parserUtils.childrenByName(iconElement, 'IFrameResource').forEach(function (iframeElement) {
-          icon.type = iframeElement.getAttribute('creativeType') || 0;
-          icon.iframeResource = parserUtils.parseNodeText(iframeElement);
-        });
-
-        parserUtils.childrenByName(iconElement, 'StaticResource').forEach(function (staticElement) {
-          icon.type = staticElement.getAttribute('creativeType') || 0;
-          icon.staticResource = parserUtils.parseNodeText(staticElement);
-        });
-
-        var iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
-        if (iconClicksElement) {
-          icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconClicksElement, 'IconClickThrough'));
-          parserUtils.childrenByName(iconClicksElement, 'IconClickTracking').forEach(function (iconClickTrackingElement) {
-            icon.iconClickTrackingURLTemplates.push(parserUtils.parseNodeText(iconClickTrackingElement));
-          });
-        }
-
-        icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconElement, 'IconViewTracking'));
-
-        creative.icons.push(icon);
+        creative.icons.push(parseIcon(iconElement));
       });
     }
 
     return creative;
   }
+  /**
+   * Parses the MediaFile element from VAST.
+   * @param  {Object} mediaFileElement - The VAST MediaFile element.
+   * @return {Object} - Parsed mediaFile object.
+   */
 
+  function parseMediaFile(mediaFileElement) {
+    var mediaFile = createMediaFile();
+    mediaFile.id = mediaFileElement.getAttribute('id');
+    mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
+    mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
+    mediaFile.codec = mediaFileElement.getAttribute('codec');
+    mediaFile.mimeType = mediaFileElement.getAttribute('type');
+    mediaFile.mediaType = mediaFileElement.getAttribute('mediaType') || '2D';
+    mediaFile.apiFramework = mediaFileElement.getAttribute('apiFramework');
+    mediaFile.fileSize = parseInt(mediaFileElement.getAttribute('fileSize') || 0);
+    mediaFile.bitrate = parseInt(mediaFileElement.getAttribute('bitrate') || 0);
+    mediaFile.minBitrate = parseInt(mediaFileElement.getAttribute('minBitrate') || 0);
+    mediaFile.maxBitrate = parseInt(mediaFileElement.getAttribute('maxBitrate') || 0);
+    mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
+    mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
+    var scalable = mediaFileElement.getAttribute('scalable');
+
+    if (scalable && typeof scalable === 'string') {
+      mediaFile.scalable = parserUtils.parseBoolean(scalable);
+    }
+
+    var maintainAspectRatio = mediaFileElement.getAttribute('maintainAspectRatio');
+
+    if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
+      mediaFile.maintainAspectRatio = parserUtils.parseBoolean(maintainAspectRatio);
+    }
+
+    return mediaFile;
+  }
+  /**
+   * Parses the InteractiveCreativeFile element from VAST MediaFiles node.
+   * @param  {Object} interactiveCreativeElement - The VAST InteractiveCreativeFile element.
+   * @return {Object} - Parsed interactiveCreativeFile object.
+   */
+
+
+  function parseInteractiveCreativeFile(interactiveCreativeElement) {
+    var interactiveCreativeFile = createInteractiveCreativeFile(parserUtils.parseAttributes(interactiveCreativeElement));
+    interactiveCreativeFile.fileURL = parserUtils.parseNodeText(interactiveCreativeElement);
+    return interactiveCreativeFile;
+  }
+  /**
+   * Parses the Icon element from VAST.
+   * @param  {Object} iconElement - The VAST Icon element.
+   * @return {Object} - Parsed icon object.
+   */
+
+
+  function parseIcon(iconElement) {
+    var icon = createIcon(iconElement);
+    icon.program = iconElement.getAttribute('program');
+    icon.height = parseInt(iconElement.getAttribute('height') || 0);
+    icon.width = parseInt(iconElement.getAttribute('width') || 0);
+    icon.xPosition = parseXPosition(iconElement.getAttribute('xPosition'));
+    icon.yPosition = parseYPosition(iconElement.getAttribute('yPosition'));
+    icon.apiFramework = iconElement.getAttribute('apiFramework');
+    icon.pxratio = iconElement.getAttribute('pxratio') || '1';
+    icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
+    icon.duration = parserUtils.parseDuration(iconElement.getAttribute('duration'));
+    parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(function (htmlElement) {
+      icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
+      icon.htmlResource = parserUtils.parseNodeText(htmlElement);
+    });
+    parserUtils.childrenByName(iconElement, 'IFrameResource').forEach(function (iframeElement) {
+      icon.type = iframeElement.getAttribute('creativeType') || 0;
+      icon.iframeResource = parserUtils.parseNodeText(iframeElement);
+    });
+    parserUtils.childrenByName(iconElement, 'StaticResource').forEach(function (staticElement) {
+      icon.type = staticElement.getAttribute('creativeType') || 0;
+      icon.staticResource = parserUtils.parseNodeText(staticElement);
+    });
+    var iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
+
+    if (iconClicksElement) {
+      icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconClicksElement, 'IconClickThrough'));
+      parserUtils.childrenByName(iconClicksElement, 'IconClickTracking').forEach(function (iconClickTrackingElement) {
+        icon.iconClickTrackingURLTemplates.push({
+          id: iconClickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(iconClickTrackingElement)
+        });
+      });
+    }
+
+    icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconElement, 'IconViewTracking'));
+    return icon;
+  }
   /**
    * Parses an horizontal position into a String ('left' or 'right') or into a Number.
    * @param  {String} xPosition - The x position to parse.
    * @return {String|Number}
    */
+
+
   function parseXPosition(xPosition) {
     if (['left', 'right'].indexOf(xPosition) !== -1) {
       return xPosition;
@@ -757,12 +1165,13 @@ var VAST = (function (exports) {
 
     return parseInt(xPosition || 0);
   }
-
   /**
    * Parses an vertical position into a String ('top' or 'bottom') or into a Number.
    * @param  {String} yPosition - The x position to parse.
    * @return {String|Number}
    */
+
+
   function parseYPosition(yPosition) {
     if (['top', 'bottom'].indexOf(yPosition) !== -1) {
       return yPosition;
@@ -770,44 +1179,71 @@ var VAST = (function (exports) {
 
     return parseInt(yPosition || 0);
   }
+  /**
+   * Getting required attributes from element
+   * @param  {Object} element - DOM element
+   * @param  {Array} attributes - list of attributes
+   * @return {Object|null} null if a least one element not present
+   */
 
-  var CreativeNonLinear = function (_Creative) {
-    inherits(CreativeNonLinear, _Creative);
 
-    function CreativeNonLinear() {
-      var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      classCallCheck(this, CreativeNonLinear);
+  function getRequiredAttributes(element, attributes) {
+    var values = {};
+    var error = false;
+    attributes.forEach(function (name) {
+      if (!element || !element.getAttribute(name)) {
+        error = true;
+      } else {
+        values[name] = element.getAttribute(name);
+      }
+    });
+    return error ? null : values;
+  }
 
-      var _this = possibleConstructorReturn(this, (CreativeNonLinear.__proto__ || Object.getPrototypeOf(CreativeNonLinear)).call(this, creativeAttributes));
+  function createCreativeNonLinear() {
+    var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-      _this.type = 'nonlinear';
-      _this.variations = [];
-      return _this;
-    }
+    var _createCreative = createCreative(creativeAttributes),
+        id = _createCreative.id,
+        adId = _createCreative.adId,
+        sequence = _createCreative.sequence,
+        apiFramework = _createCreative.apiFramework;
 
-    return CreativeNonLinear;
-  }(Creative);
+    return {
+      id: id,
+      adId: adId,
+      sequence: sequence,
+      apiFramework: apiFramework,
+      type: 'nonlinear',
+      variations: [],
+      trackingEvents: {}
+    };
+  }
 
-  var NonLinearAd = function NonLinearAd() {
-    classCallCheck(this, NonLinearAd);
-
-    this.id = null;
-    this.width = 0;
-    this.height = 0;
-    this.expandedWidth = 0;
-    this.expandedHeight = 0;
-    this.scalable = true;
-    this.maintainAspectRatio = true;
-    this.minSuggestedDuration = 0;
-    this.apiFramework = 'static';
-    this.type = null;
-    this.staticResource = null;
-    this.htmlResource = null;
-    this.iframeResource = null;
-    this.nonlinearClickThroughURLTemplate = null;
-    this.nonlinearClickTrackingURLTemplates = [];
-    this.adParameters = null;
-  };
+  function createNonLinearAd() {
+    return {
+      id: null,
+      width: 0,
+      height: 0,
+      expandedWidth: 0,
+      expandedHeight: 0,
+      scalable: true,
+      maintainAspectRatio: true,
+      minSuggestedDuration: 0,
+      apiFramework: 'static',
+      adType: 'nonLinearAd',
+      type: null,
+      staticResource: null,
+      htmlResource: null,
+      iframeResource: null,
+      nonlinearClickThroughURLTemplate: null,
+      nonlinearClickTrackingURLTemplates: [],
+      adParameters: null
+    };
+  }
+  function isNonLinearAd(ad) {
+    return ad.adType === 'nonLinearAd';
+  }
 
   /**
    * This module provides methods to parse a VAST NonLinear Element.
@@ -817,14 +1253,13 @@ var VAST = (function (exports) {
    * Parses a NonLinear element.
    * @param  {any} creativeElement - The VAST NonLinear element to parse.
    * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
-   * @return {CreativeNonLinear}
+   * @return {Object} creative - The CreativeNonLinear object.
    */
-  function parseCreativeNonLinear(creativeElement, creativeAttributes) {
-    var creative = new CreativeNonLinear(creativeAttributes);
 
+  function parseCreativeNonLinear(creativeElement, creativeAttributes) {
+    var creative = createCreativeNonLinear(creativeAttributes);
     parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
-      var eventName = void 0,
-          trackingURLTemplate = void 0;
+      var eventName, trackingURLTemplate;
       parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
         eventName = trackingElement.getAttribute('event');
         trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
@@ -833,13 +1268,13 @@ var VAST = (function (exports) {
           if (!Array.isArray(creative.trackingEvents[eventName])) {
             creative.trackingEvents[eventName] = [];
           }
+
           creative.trackingEvents[eventName].push(trackingURLTemplate);
         }
       });
     });
-
     parserUtils.childrenByName(creativeElement, 'NonLinear').forEach(function (nonlinearResource) {
-      var nonlinearAd = new NonLinearAd();
+      var nonlinearAd = createNonLinearAd();
       nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
       nonlinearAd.width = nonlinearResource.getAttribute('width');
       nonlinearAd.height = nonlinearResource.getAttribute('height');
@@ -849,37 +1284,436 @@ var VAST = (function (exports) {
       nonlinearAd.maintainAspectRatio = parserUtils.parseBoolean(nonlinearResource.getAttribute('maintainAspectRatio'));
       nonlinearAd.minSuggestedDuration = parserUtils.parseDuration(nonlinearResource.getAttribute('minSuggestedDuration'));
       nonlinearAd.apiFramework = nonlinearResource.getAttribute('apiFramework');
-
       parserUtils.childrenByName(nonlinearResource, 'HTMLResource').forEach(function (htmlElement) {
         nonlinearAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
         nonlinearAd.htmlResource = parserUtils.parseNodeText(htmlElement);
       });
-
       parserUtils.childrenByName(nonlinearResource, 'IFrameResource').forEach(function (iframeElement) {
         nonlinearAd.type = iframeElement.getAttribute('creativeType') || 0;
         nonlinearAd.iframeResource = parserUtils.parseNodeText(iframeElement);
       });
-
       parserUtils.childrenByName(nonlinearResource, 'StaticResource').forEach(function (staticElement) {
         nonlinearAd.type = staticElement.getAttribute('creativeType') || 0;
         nonlinearAd.staticResource = parserUtils.parseNodeText(staticElement);
       });
-
       var adParamsElement = parserUtils.childByName(nonlinearResource, 'AdParameters');
+
       if (adParamsElement) {
         nonlinearAd.adParameters = parserUtils.parseNodeText(adParamsElement);
       }
 
       nonlinearAd.nonlinearClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(nonlinearResource, 'NonLinearClickThrough'));
       parserUtils.childrenByName(nonlinearResource, 'NonLinearClickTracking').forEach(function (clickTrackingElement) {
-        nonlinearAd.nonlinearClickTrackingURLTemplates.push(parserUtils.parseNodeText(clickTrackingElement));
+        nonlinearAd.nonlinearClickTrackingURLTemplates.push({
+          id: clickTrackingElement.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(clickTrackingElement)
+        });
       });
-
       creative.variations.push(nonlinearAd);
     });
-
     return creative;
   }
+
+  function createExtension() {
+    return {
+      name: null,
+      value: null,
+      attributes: {},
+      children: []
+    };
+  }
+  function isEmptyExtension(extension) {
+    return extension.value === null && Object.keys(extension.attributes).length === 0 && extension.children.length === 0;
+  }
+
+  /**
+   * Parses an array of Extension elements.
+   * @param  {Node[]} extensions - The array of extensions to parse.
+   * @param  {String} type - The type of extensions to parse.(Ad|Creative)
+   * @return {AdExtension[]|CreativeExtension[]} - The nodes parsed to extensions
+   */
+
+  function parseExtensions(extensions) {
+    var exts = [];
+    extensions.forEach(function (extNode) {
+      var ext = _parseExtension(extNode);
+
+      if (ext) {
+        exts.push(ext);
+      }
+    });
+    return exts;
+  }
+  /**
+   * Parses an extension child node
+   * @param {Node} extNode - The extension node to parse
+   * @return {AdExtension|CreativeExtension|null} - The node parsed to extension
+   */
+
+  function _parseExtension(extNode) {
+    // Ignore comments
+    if (extNode.nodeName === '#comment') return null;
+    var ext = createExtension();
+    var extNodeAttrs = extNode.attributes;
+    var childNodes = extNode.childNodes;
+    ext.name = extNode.nodeName; // Parse attributes
+
+    if (extNode.attributes) {
+      for (var extNodeAttrKey in extNodeAttrs) {
+        if (extNodeAttrs.hasOwnProperty(extNodeAttrKey)) {
+          var extNodeAttr = extNodeAttrs[extNodeAttrKey];
+
+          if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
+            ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
+          }
+        }
+      }
+    } // Parse all children
+
+
+    for (var childNodeKey in childNodes) {
+      if (childNodes.hasOwnProperty(childNodeKey)) {
+        var parsedChild = _parseExtension(childNodes[childNodeKey]);
+
+        if (parsedChild) {
+          ext.children.push(parsedChild);
+        }
+      }
+    }
+    /*
+      Only parse value of Nodes with only eather no children or only a cdata or text
+      to avoid useless parsing that would result to a concatenation of all children
+    */
+
+
+    if (ext.children.length === 0 || ext.children.length === 1 && ['#cdata-section', '#text'].indexOf(ext.children[0].name) >= 0) {
+      var txt = parserUtils.parseNodeText(extNode);
+
+      if (txt !== '') {
+        ext.value = txt;
+      } // Remove the children if it's a cdata or simply text to avoid useless children
+
+
+      ext.children = [];
+    } // Only return not empty objects to not pollute extentions
+
+
+    return isEmptyExtension(ext) ? null : ext;
+  }
+
+  /**
+   * Parses the creatives from the Creatives Node.
+   * @param  {any} creativeNodes - The creative nodes to parse.
+   * @return {Array<Creative>} - An array of Creative objects.
+   */
+
+  function parseCreatives(creativeNodes) {
+    var creatives = [];
+    creativeNodes.forEach(function (creativeElement) {
+      var creativeAttributes = {
+        id: creativeElement.getAttribute('id') || null,
+        adId: parseCreativeAdIdAttribute(creativeElement),
+        sequence: creativeElement.getAttribute('sequence') || null,
+        apiFramework: creativeElement.getAttribute('apiFramework') || null
+      };
+      var universalAdId;
+      var universalAdIdElement = parserUtils.childByName(creativeElement, 'UniversalAdId');
+
+      if (universalAdIdElement) {
+        universalAdId = {
+          idRegistry: universalAdIdElement.getAttribute('idRegistry') || 'unknown',
+          value: parserUtils.parseNodeText(universalAdIdElement)
+        };
+      }
+
+      var creativeExtensions;
+      var creativeExtensionsElement = parserUtils.childByName(creativeElement, 'CreativeExtensions');
+
+      if (creativeExtensionsElement) {
+        creativeExtensions = parseExtensions(parserUtils.childrenByName(creativeExtensionsElement, 'CreativeExtension'));
+      }
+
+      for (var creativeTypeElementKey in creativeElement.childNodes) {
+        var creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
+        var parsedCreative = void 0;
+
+        switch (creativeTypeElement.nodeName) {
+          case 'Linear':
+            parsedCreative = parseCreativeLinear(creativeTypeElement, creativeAttributes);
+            break;
+
+          case 'NonLinearAds':
+            parsedCreative = parseCreativeNonLinear(creativeTypeElement, creativeAttributes);
+            break;
+
+          case 'CompanionAds':
+            parsedCreative = parseCreativeCompanion(creativeTypeElement, creativeAttributes);
+            break;
+        }
+
+        if (parsedCreative) {
+          if (universalAdId) {
+            parsedCreative.universalAdId = universalAdId;
+          }
+
+          if (creativeExtensions) {
+            parsedCreative.creativeExtensions = creativeExtensions;
+          }
+
+          creatives.push(parsedCreative);
+        }
+      }
+    });
+    return creatives;
+  }
+  /**
+   * Parses the creative adId Attribute.
+   * @param  {any} creativeElement - The creative element to retrieve the adId from.
+   * @return {String|null}
+   */
+
+  function parseCreativeAdIdAttribute(creativeElement) {
+    return creativeElement.getAttribute('AdID') || // VAST 2 spec
+    creativeElement.getAttribute('adID') || // VAST 3 spec
+    creativeElement.getAttribute('adId') || // VAST 4 spec
+    null;
+  }
+
+  var requiredValues = {
+    Wrapper: {
+      subElements: ['VASTAdTagURI', 'Impression']
+    },
+    BlockedAdCategories: {
+      attributes: ['authority']
+    },
+    InLine: {
+      subElements: ['AdSystem', 'AdTitle', 'Impression', 'AdServingId', 'Creatives']
+    },
+    Category: {
+      attributes: ['authority']
+    },
+    Pricing: {
+      attributes: ['model', 'currency']
+    },
+    Verification: {
+      oneOfinLineResources: ['JavaScriptResource', 'ExecutableResource'],
+      attributes: ['vendor']
+    },
+    UniversalAdId: {
+      attributes: ['idRegistry']
+    },
+    JavaScriptResource: {
+      attributes: ['apiFramework', 'browserOptional']
+    },
+    ExecutableResource: {
+      attributes: ['apiFramework', 'type']
+    },
+    Tracking: {
+      attributes: ['event']
+    },
+    Creatives: {
+      subElements: ['Creative']
+    },
+    Creative: {
+      subElements: ['UniversalAdId']
+    },
+    Linear: {
+      subElements: ['MediaFiles', 'Duration']
+    },
+    MediaFiles: {
+      subElements: ['MediaFile']
+    },
+    MediaFile: {
+      attributes: ['delivery', 'type', 'width', 'height']
+    },
+    Mezzanine: {
+      attributes: ['delivery', 'type', 'width', 'height']
+    },
+    NonLinear: {
+      oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
+      attributes: ['width', 'height']
+    },
+    Companion: {
+      oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
+      attributes: ['width', 'height']
+    },
+    StaticResource: {
+      attributes: ['creativeType']
+    },
+    Icons: {
+      subElements: ['Icon']
+    },
+    Icon: {
+      oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource']
+    }
+  };
+
+  /**
+   * Verify node required values and also verify recursively all his child nodes.
+   * Trigger warnings if a node required value is missing.
+   * @param  {Node} node - The node element.
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VASTParser#VAST-warning
+   * @param  {undefined|Boolean} [isAdInline] - Passed recursively to itself. True if the node is contained inside a inLine tag.
+   */
+
+  function verifyRequiredValues(node, emit, isAdInline) {
+    if (!node || !node.nodeName) {
+      return;
+    }
+
+    if (node.nodeName === 'InLine') {
+      isAdInline = true;
+    }
+
+    verifyRequiredAttributes(node, emit);
+
+    if (hasSubElements(node)) {
+      verifyRequiredSubElements(node, emit, isAdInline);
+
+      for (var i = 0; i < node.children.length; i++) {
+        verifyRequiredValues(node.children[i], emit, isAdInline);
+      }
+    } else if (parserUtils.parseNodeText(node).length === 0) {
+      emitMissingValueWarning({
+        name: node.nodeName,
+        parentName: node.parentNode.nodeName
+      }, emit);
+    }
+  }
+  /**
+   * Verify and trigger warnings if node required attributes are not set.
+   * @param  {Node} node - The node element.
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VASTParser#VAST-warning
+   */
+
+
+  function verifyRequiredAttributes(node, emit) {
+    if (!requiredValues[node.nodeName] || !requiredValues[node.nodeName].attributes) {
+      return;
+    }
+
+    var requiredAttributes = requiredValues[node.nodeName].attributes;
+    var missingAttributes = requiredAttributes.filter(function (attributeName) {
+      return !node.getAttribute(attributeName);
+    });
+
+    if (missingAttributes.length > 0) {
+      emitMissingValueWarning({
+        name: node.nodeName,
+        parentName: node.parentNode.nodeName,
+        attributes: missingAttributes
+      }, emit);
+    }
+  }
+  /**
+   * Verify and trigger warnings if node required sub element are not set.
+   * @param  {Node} node - The node element
+   * @param  {Boolean} isAdInline - True if node is contained in a inline
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VASTParser#VAST-warning
+   */
+
+
+  function verifyRequiredSubElements(node, emit, isAdInline) {
+    var required = requiredValues[node.nodeName]; // Do not verify subelement if node is a child of wrapper, but verify it if node is the Wrapper itself
+    // Wrapper child have no required subElement. (Only InLine does)
+
+    var isInWrapperButNotWrapperItself = !isAdInline && node.nodeName !== 'Wrapper';
+
+    if (!required || isInWrapperButNotWrapperItself) {
+      return;
+    }
+
+    if (required.subElements) {
+      var requiredSubElements = required.subElements;
+      var missingSubElements = requiredSubElements.filter(function (subElementName) {
+        return !parserUtils.childByName(node, subElementName);
+      });
+
+      if (missingSubElements.length > 0) {
+        emitMissingValueWarning({
+          name: node.nodeName,
+          parentName: node.parentNode.nodeName,
+          subElements: missingSubElements
+        }, emit);
+      }
+    } // When InLine format is used some nodes (i.e <NonLinear>, <Companion>, or <Icon>)
+    // require at least one of the following resources: StaticResource, IFrameResource, HTMLResource
+
+
+    if (!isAdInline || !required.oneOfinLineResources) {
+      return;
+    }
+
+    var resourceFound = required.oneOfinLineResources.some(function (resource) {
+      return parserUtils.childByName(node, resource);
+    });
+
+    if (!resourceFound) {
+      emitMissingValueWarning({
+        name: node.nodeName,
+        parentName: node.parentNode.nodeName,
+        oneOfResources: required.oneOfinLineResources
+      }, emit);
+    }
+  }
+  /**
+   * Check if a node has sub elements.
+   * @param  {Node} node - The node element.
+   * @returns {Boolean}
+   */
+
+
+  function hasSubElements(node) {
+    return node.children && node.children.length !== 0;
+  }
+  /**
+   * Trigger Warning if a element is empty or has missing attributes/subelements/resources
+   * @param  {Object} missingElement - Object containing missing elements and values
+   * @param  {String} missingElement.name - The name of element containing missing values
+   * @param  {String} missingElement.parentName - The parent name of element containing missing values
+   * @param  {Array} missingElement.attributes - The array of missing attributes
+   * @param  {Array} missingElement.subElements - The array of missing sub elements
+   * @param  {Array} missingElement.oneOfResources - The array of resources in which at least one must be provided by the element
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VastParser#VAST-warning
+   */
+
+
+  function emitMissingValueWarning(_ref, emit) {
+    var name = _ref.name,
+        parentName = _ref.parentName,
+        attributes = _ref.attributes,
+        subElements = _ref.subElements,
+        oneOfResources = _ref.oneOfResources;
+    var message = "Element '".concat(name, "'");
+
+    if (attributes) {
+      message += " missing required attribute(s) '".concat(attributes.join(', '), "' ");
+    } else if (subElements) {
+      message += " missing required sub element(s) '".concat(subElements.join(', '), "' ");
+    } else if (oneOfResources) {
+      message += " must provide one of the following '".concat(oneOfResources.join(', '), "' ");
+    } else {
+      message += " is empty";
+    }
+
+    emit('VAST-warning', {
+      message: message,
+      parentElement: parentName,
+      specVersion: 4.1
+    });
+  }
+
+  var parserVerification = {
+    verifyRequiredValues: verifyRequiredValues,
+    hasSubElements: hasSubElements,
+    emitMissingValueWarning: emitMissingValueWarning,
+    verifyRequiredAttributes: verifyRequiredAttributes,
+    verifyRequiredSubElements: verifyRequiredSubElements
+  };
 
   /**
    * This module provides methods to parse a VAST Ad Element.
@@ -888,9 +1722,12 @@ var VAST = (function (exports) {
   /**
    * Parses an Ad element (can either be a Wrapper or an InLine).
    * @param  {Object} adElement - The VAST Ad element to parse.
-   * @return {Ad}
+   * @param  {Function} emit - Emit function used to trigger Warning event
+   * @emits  VASTParser#VAST-warning
+   * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
    */
-  function parseAd(adElement) {
+
+  function parseAd(adElement, emit) {
     var childNodes = adElement.childNodes;
 
     for (var adTypeElementKey in childNodes) {
@@ -902,25 +1739,48 @@ var VAST = (function (exports) {
 
       parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
       parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
+      parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
 
       if (adTypeElement.nodeName === 'Wrapper') {
-        return parseWrapper(adTypeElement);
+        return {
+          ad: parseWrapper(adTypeElement, emit),
+          type: 'WRAPPER'
+        };
       } else if (adTypeElement.nodeName === 'InLine') {
-        return parseInLine(adTypeElement);
+        return {
+          ad: parseInLine(adTypeElement, emit),
+          type: 'INLINE'
+        };
       }
     }
   }
-
   /**
-   * Parses an Inline element.
-   * @param  {Object} inLineElement - The VAST Inline element to parse.
-   * @return {Ad}
+   * Parses an Inline
+   * @param  {Object} adElement Element - The VAST Inline element to parse.
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VASTParser#VAST-warning
+   * @return {Object} ad - The ad object.
    */
-  function parseInLine(inLineElement) {
-    var childNodes = inLineElement.childNodes;
-    var ad = new Ad();
-    ad.id = inLineElement.getAttribute('id') || null;
-    ad.sequence = inLineElement.getAttribute('sequence') || null;
+
+  function parseInLine(adElement, emit) {
+    return parseAdElement(adElement, emit);
+  }
+  /**
+   * Parses an ad type (Inline or Wrapper)
+   * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VASTParser#VAST-warning
+   * @return {Object} ad - The ad object.
+   */
+
+
+  function parseAdElement(adTypeElement, emit) {
+    if (emit) {
+      parserVerification.verifyRequiredValues(adTypeElement, emit);
+    }
+
+    var childNodes = adTypeElement.childNodes;
+    var ad = createAd(parserUtils.parseAttributes(adTypeElement));
 
     for (var nodeKey in childNodes) {
       var node = childNodes[nodeKey];
@@ -931,48 +1791,35 @@ var VAST = (function (exports) {
           break;
 
         case 'Impression':
-          ad.impressionURLTemplates.push(parserUtils.parseNodeText(node));
-          break;
-
-        case 'Creatives':
-          parserUtils.childrenByName(node, 'Creative').forEach(function (creativeElement) {
-            var creativeAttributes = {
-              id: creativeElement.getAttribute('id') || null,
-              adId: parseCreativeAdIdAttribute(creativeElement),
-              sequence: creativeElement.getAttribute('sequence') || null,
-              apiFramework: creativeElement.getAttribute('apiFramework') || null
-            };
-
-            for (var creativeTypeElementKey in creativeElement.childNodes) {
-              var creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
-              var parsedCreative = void 0;
-
-              switch (creativeTypeElement.nodeName) {
-                case 'Linear':
-                  parsedCreative = parseCreativeLinear(creativeTypeElement, creativeAttributes);
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
-                  break;
-                case 'NonLinearAds':
-                  parsedCreative = parseCreativeNonLinear(creativeTypeElement, creativeAttributes);
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
-                  break;
-                case 'CompanionAds':
-                  parsedCreative = parseCreativeCompanion(creativeTypeElement, creativeAttributes);
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
-                  break;
-              }
-            }
+          ad.impressionURLTemplates.push({
+            id: node.getAttribute('id') || null,
+            url: parserUtils.parseNodeText(node)
           });
           break;
 
+        case 'Creatives':
+          ad.creatives = parseCreatives(parserUtils.childrenByName(node, 'Creative'));
+          break;
+
         case 'Extensions':
-          parseExtensions(ad.extensions, parserUtils.childrenByName(node, 'Extension'));
+          {
+            var extNodes = parserUtils.childrenByName(node, 'Extension');
+            ad.extensions = parseExtensions(extNodes);
+            /*
+              OMID specify adVerifications should be in extensions for VAST < 4.0
+              To avoid to put them on two different places in two different format we reparse it
+              from extensions the same way than for an AdVerifications node.
+            */
+
+            if (!ad.adVerifications.length) {
+              ad.adVerifications = _parseAdVerificationsFromExensions(extNodes);
+            }
+
+            break;
+          }
+
+        case 'AdVerifications':
+          ad.adVerifications = _parseAdVerifications(parserUtils.childrenByName(node, 'Verification'));
           break;
 
         case 'AdSystem':
@@ -986,12 +1833,34 @@ var VAST = (function (exports) {
           ad.title = parserUtils.parseNodeText(node);
           break;
 
+        case 'AdServingId':
+          ad.adServingId = parserUtils.parseNodeText(node);
+          break;
+
+        case 'Category':
+          ad.categories.push({
+            authority: node.getAttribute('authority') || null,
+            value: parserUtils.parseNodeText(node)
+          });
+          break;
+
+        case 'Expires':
+          ad.expires = parseInt(parserUtils.parseNodeText(node), 10);
+          break;
+
+        case 'ViewableImpression':
+          ad.viewableImpression = _parseViewableImpression(node);
+          break;
+
         case 'Description':
           ad.description = parserUtils.parseNodeText(node);
           break;
 
         case 'Advertiser':
-          ad.advertiser = parserUtils.parseNodeText(node);
+          ad.advertiser = {
+            id: node.getAttribute('id') || null,
+            value: parserUtils.parseNodeText(node)
+          };
           break;
 
         case 'Pricing':
@@ -1010,14 +1879,17 @@ var VAST = (function (exports) {
 
     return ad;
   }
-
   /**
    * Parses a Wrapper element without resolving the wrapped urls.
    * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+   * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @emits  VASTParser#VAST-warning
    * @return {Ad}
    */
-  function parseWrapper(wrapperElement) {
-    var ad = parseInLine(wrapperElement);
+
+
+  function parseWrapper(wrapperElement, emit) {
+    var ad = parseAdElement(wrapperElement, emit);
     var wrapperURLElement = parserUtils.childByName(wrapperElement, 'VASTAdTagURI');
 
     if (wrapperURLElement) {
@@ -1037,15 +1909,18 @@ var VAST = (function (exports) {
           if (!ad.trackingEvents) {
             ad.trackingEvents = {};
           }
+
           if (!ad.trackingEvents[wrapperCreativeElement.type]) {
             ad.trackingEvents[wrapperCreativeElement.type] = {};
           }
 
           var _loop = function _loop(eventName) {
             var urls = wrapperCreativeElement.trackingEvents[eventName];
+
             if (!Array.isArray(ad.trackingEvents[wrapperCreativeElement.type][eventName])) {
               ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
             }
+
             urls.forEach(function (url) {
               ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url);
             });
@@ -1054,25 +1929,32 @@ var VAST = (function (exports) {
           for (var eventName in wrapperCreativeElement.trackingEvents) {
             _loop(eventName);
           }
-        }
-        // ClickTracking
+        } // ClickTracking
+
+
         if (wrapperCreativeElement.videoClickTrackingURLTemplates) {
           if (!Array.isArray(ad.videoClickTrackingURLTemplates)) {
             ad.videoClickTrackingURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
+
+
           wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(function (item) {
             ad.videoClickTrackingURLTemplates.push(item);
           });
-        }
-        // ClickThrough
+        } // ClickThrough
+
+
         if (wrapperCreativeElement.videoClickThroughURLTemplate) {
           ad.videoClickThroughURLTemplate = wrapperCreativeElement.videoClickThroughURLTemplate;
-        }
-        // CustomClick
+        } // CustomClick
+
+
         if (wrapperCreativeElement.videoCustomClickURLTemplates) {
           if (!Array.isArray(ad.videoCustomClickURLTemplates)) {
             ad.videoCustomClickURLTemplates = [];
           } // tmp property to save wrapper tracking URLs until they are merged
+
+
           wrapperCreativeElement.videoCustomClickURLTemplates.forEach(function (item) {
             ad.videoCustomClickURLTemplates.push(item);
           });
@@ -1084,629 +1966,369 @@ var VAST = (function (exports) {
       return ad;
     }
   }
-
   /**
-   * Parses an array of Extension elements.
-   * @param  {Array} collection - The array used to store the parsed extensions.
-   * @param  {Array} extensions - The array of extensions to parse.
+   * Parses the AdVerifications Element.
+   * @param  {Array} verifications - The array of verifications to parse.
+   * @return {Array<Object>}
    */
-  function parseExtensions(collection, extensions) {
-    extensions.forEach(function (extNode) {
-      var ext = new AdExtension();
-      var extNodeAttrs = extNode.attributes;
-      var childNodes = extNode.childNodes;
 
-      if (extNode.attributes) {
-        for (var extNodeAttrKey in extNodeAttrs) {
-          var extNodeAttr = extNodeAttrs[extNodeAttrKey];
 
-          if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
-            ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
-          }
+  function _parseAdVerifications(verifications) {
+    var ver = [];
+    verifications.forEach(function (verificationNode) {
+      var verification = createAdVerification();
+      var childNodes = verificationNode.childNodes;
+      parserUtils.assignAttributes(verificationNode.attributes, verification);
+
+      for (var nodeKey in childNodes) {
+        var node = childNodes[nodeKey];
+
+        switch (node.nodeName) {
+          case 'JavaScriptResource':
+          case 'ExecutableResource':
+            verification.resource = parserUtils.parseNodeText(node);
+            parserUtils.assignAttributes(node.attributes, verification);
+            break;
+
+          case 'VerificationParameters':
+            verification.parameters = parserUtils.parseNodeText(node);
+            break;
         }
       }
 
-      for (var childNodeKey in childNodes) {
-        var childNode = childNodes[childNodeKey];
-        var txt = parserUtils.parseNodeText(childNode);
+      var trackingEventsElement = parserUtils.childByName(verificationNode, 'TrackingEvents');
 
-        // ignore comments / empty value
-        if (childNode.nodeName !== '#comment' && txt !== '') {
-          var extChild = new AdExtensionChild();
-          extChild.name = childNode.nodeName;
-          extChild.value = txt;
+      if (trackingEventsElement) {
+        parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
+          var eventName = trackingElement.getAttribute('event');
+          var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
 
-          if (childNode.attributes) {
-            var childNodeAttributes = childNode.attributes;
-
-            for (var extChildNodeAttrKey in childNodeAttributes) {
-              var extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
-
-              extChild.attributes[extChildNodeAttr.nodeName] = extChildNodeAttr.nodeValue;
+          if (eventName && trackingURLTemplate) {
+            if (!Array.isArray(verification.trackingEvents[eventName])) {
+              verification.trackingEvents[eventName] = [];
             }
-          }
 
-          ext.children.push(extChild);
-        }
+            verification.trackingEvents[eventName].push(trackingURLTemplate);
+          }
+        });
       }
 
-      collection.push(ext);
+      ver.push(verification);
     });
+    return ver;
   }
-
   /**
-   * Parses the creative adId Attribute.
-   * @param  {any} creativeElement - The creative element to retrieve the adId from.
-   * @return {String|null}
+   * Parses the AdVerifications Element from extension for versions < 4.0
+   * @param  {Array<Node>} extensions - The array of extensions to parse.
+   * @return {Array<Object>}
    */
-  function parseCreativeAdIdAttribute(creativeElement) {
-    return creativeElement.getAttribute('AdID') || // VAST 2 spec
-    creativeElement.getAttribute('adID') || // VAST 3 spec
-    creativeElement.getAttribute('adId') || // VAST 4 spec
-    null;
-  }
 
-  var domain;
+  function _parseAdVerificationsFromExensions(extensions) {
+    var adVerificationsNode = null,
+        adVerifications = []; // Find the first (and only) AdVerifications node from extensions
 
-  // This constructor is used to store event handlers. Instantiating this is
-  // faster than explicitly calling `Object.create(null)` to get a "clean" empty
-  // object (tested with v8 v4.9).
-  function EventHandlers() {}
-  EventHandlers.prototype = Object.create(null);
+    extensions.some(function (extension) {
+      return adVerificationsNode = parserUtils.childByName(extension, 'AdVerifications');
+    }); // Parse it if we get it
 
-  function EventEmitter() {
-    EventEmitter.init.call(this);
-  }
-
-  // nodejs oddity
-  // require('events') === require('events').EventEmitter
-  EventEmitter.EventEmitter = EventEmitter;
-
-  EventEmitter.usingDomains = false;
-
-  EventEmitter.prototype.domain = undefined;
-  EventEmitter.prototype._events = undefined;
-  EventEmitter.prototype._maxListeners = undefined;
-
-  // By default EventEmitters will print a warning if more than 10 listeners are
-  // added to it. This is a useful default which helps finding memory leaks.
-  EventEmitter.defaultMaxListeners = 10;
-
-  EventEmitter.init = function() {
-    this.domain = null;
-    if (EventEmitter.usingDomains) {
-      // if there is an active domain, then attach to it.
-      if (domain.active && !(this instanceof domain.Domain)) {
-        this.domain = domain.active;
-      }
+    if (adVerificationsNode) {
+      adVerifications = _parseAdVerifications(parserUtils.childrenByName(adVerificationsNode, 'Verification'));
     }
 
-    if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
-      this._events = new EventHandlers();
-      this._eventsCount = 0;
-    }
-
-    this._maxListeners = this._maxListeners || undefined;
-  };
-
-  // Obviously not all Emitters should be limited to 10. This function allows
-  // that to be increased. Set to zero for unlimited.
-  EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
-    if (typeof n !== 'number' || n < 0 || isNaN(n))
-      throw new TypeError('"n" argument must be a positive number');
-    this._maxListeners = n;
-    return this;
-  };
-
-  function $getMaxListeners(that) {
-    if (that._maxListeners === undefined)
-      return EventEmitter.defaultMaxListeners;
-    return that._maxListeners;
+    return adVerifications;
   }
+  /**
+   * Parses the ViewableImpression Element.
+   * @param  {Object} viewableImpressionNode - The ViewableImpression node element.
+   * @return {Object} viewableImpression - The viewableImpression object
+   */
 
-  EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-    return $getMaxListeners(this);
-  };
+  function _parseViewableImpression(viewableImpressionNode) {
+    var viewableImpression = {};
+    viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
+    var viewableImpressionChildNodes = viewableImpressionNode.childNodes;
 
-  // These standalone emit* functions are used to optimize calling of event
-  // handlers for fast cases because emit() itself often has a variable number of
-  // arguments and can be deoptimized because of that. These functions always have
-  // the same number of arguments and thus do not get deoptimized, so the code
-  // inside them can execute faster.
-  function emitNone(handler, isFn, self) {
-    if (isFn)
-      handler.call(self);
-    else {
-      var len = handler.length;
-      var listeners = arrayClone(handler, len);
-      for (var i = 0; i < len; ++i)
-        listeners[i].call(self);
-    }
-  }
-  function emitOne(handler, isFn, self, arg1) {
-    if (isFn)
-      handler.call(self, arg1);
-    else {
-      var len = handler.length;
-      var listeners = arrayClone(handler, len);
-      for (var i = 0; i < len; ++i)
-        listeners[i].call(self, arg1);
-    }
-  }
-  function emitTwo(handler, isFn, self, arg1, arg2) {
-    if (isFn)
-      handler.call(self, arg1, arg2);
-    else {
-      var len = handler.length;
-      var listeners = arrayClone(handler, len);
-      for (var i = 0; i < len; ++i)
-        listeners[i].call(self, arg1, arg2);
-    }
-  }
-  function emitThree(handler, isFn, self, arg1, arg2, arg3) {
-    if (isFn)
-      handler.call(self, arg1, arg2, arg3);
-    else {
-      var len = handler.length;
-      var listeners = arrayClone(handler, len);
-      for (var i = 0; i < len; ++i)
-        listeners[i].call(self, arg1, arg2, arg3);
-    }
-  }
+    for (var viewableImpressionElementKey in viewableImpressionChildNodes) {
+      var viewableImpressionElement = viewableImpressionChildNodes[viewableImpressionElementKey];
+      var viewableImpressionNodeName = viewableImpressionElement.nodeName;
+      var viewableImpressionNodeValue = parserUtils.parseNodeText(viewableImpressionElement);
 
-  function emitMany(handler, isFn, self, args) {
-    if (isFn)
-      handler.apply(self, args);
-    else {
-      var len = handler.length;
-      var listeners = arrayClone(handler, len);
-      for (var i = 0; i < len; ++i)
-        listeners[i].apply(self, args);
-    }
-  }
-
-  EventEmitter.prototype.emit = function emit(type) {
-    var er, handler, len, args, i, events, domain;
-    var needDomainExit = false;
-    var doError = (type === 'error');
-
-    events = this._events;
-    if (events)
-      doError = (doError && events.error == null);
-    else if (!doError)
-      return false;
-
-    domain = this.domain;
-
-    // If there is no 'error' event listener then throw.
-    if (doError) {
-      er = arguments[1];
-      if (domain) {
-        if (!er)
-          er = new Error('Uncaught, unspecified "error" event');
-        er.domainEmitter = this;
-        er.domain = domain;
-        er.domainThrown = false;
-        domain.emit('error', er);
-      } else if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
+      if (viewableImpressionNodeName !== 'Viewable' && viewableImpressionNodeName !== 'NotViewable' && viewableImpressionNodeName !== 'ViewUndetermined' || !viewableImpressionNodeValue) {
+        continue;
       } else {
-        // At least give some kind of context to the user
-        var err = new Error('Uncaught, unspecified "error" event. (' + er + ')');
-        err.context = er;
-        throw err;
-      }
-      return false;
-    }
+        var viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
 
-    handler = events[type];
-
-    if (!handler)
-      return false;
-
-    var isFn = typeof handler === 'function';
-    len = arguments.length;
-    switch (len) {
-      // fast cases
-      case 1:
-        emitNone(handler, isFn, this);
-        break;
-      case 2:
-        emitOne(handler, isFn, this, arguments[1]);
-        break;
-      case 3:
-        emitTwo(handler, isFn, this, arguments[1], arguments[2]);
-        break;
-      case 4:
-        emitThree(handler, isFn, this, arguments[1], arguments[2], arguments[3]);
-        break;
-      // slower
-      default:
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
-        emitMany(handler, isFn, this, args);
-    }
-
-    if (needDomainExit)
-      domain.exit();
-
-    return true;
-  };
-
-  function _addListener(target, type, listener, prepend) {
-    var m;
-    var events;
-    var existing;
-
-    if (typeof listener !== 'function')
-      throw new TypeError('"listener" argument must be a function');
-
-    events = target._events;
-    if (!events) {
-      events = target._events = new EventHandlers();
-      target._eventsCount = 0;
-    } else {
-      // To avoid recursion in the case that type === "newListener"! Before
-      // adding it to the listeners, first emit "newListener".
-      if (events.newListener) {
-        target.emit('newListener', type,
-                    listener.listener ? listener.listener : listener);
-
-        // Re-assign `events` because a newListener handler could have caused the
-        // this._events to be assigned to a new object
-        events = target._events;
-      }
-      existing = events[type];
-    }
-
-    if (!existing) {
-      // Optimize the case of one listener. Don't need the extra array object.
-      existing = events[type] = listener;
-      ++target._eventsCount;
-    } else {
-      if (typeof existing === 'function') {
-        // Adding the second element, need to change to array.
-        existing = events[type] = prepend ? [listener, existing] :
-                                            [existing, listener];
-      } else {
-        // If we've already got an array, just append.
-        if (prepend) {
-          existing.unshift(listener);
-        } else {
-          existing.push(listener);
+        if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
+          viewableImpression[viewableImpressionNodeNameLower] = [];
         }
-      }
 
-      // Check for listener leak
-      if (!existing.warned) {
-        m = $getMaxListeners(target);
-        if (m && m > 0 && existing.length > m) {
-          existing.warned = true;
-          var w = new Error('Possible EventEmitter memory leak detected. ' +
-                              existing.length + ' ' + type + ' listeners added. ' +
-                              'Use emitter.setMaxListeners() to increase limit');
-          w.name = 'MaxListenersExceededWarning';
-          w.emitter = target;
-          w.type = type;
-          w.count = existing.length;
-          emitWarning(w);
-        }
+        viewableImpression[viewableImpressionNodeNameLower].push(viewableImpressionNodeValue);
       }
     }
 
-    return target;
-  }
-  function emitWarning(e) {
-    typeof console.warn === 'function' ? console.warn(e) : console.log(e);
-  }
-  EventEmitter.prototype.addListener = function addListener(type, listener) {
-    return _addListener(this, type, listener, false);
-  };
-
-  EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-  EventEmitter.prototype.prependListener =
-      function prependListener(type, listener) {
-        return _addListener(this, type, listener, true);
-      };
-
-  function _onceWrap(target, type, listener) {
-    var fired = false;
-    function g() {
-      target.removeListener(type, g);
-      if (!fired) {
-        fired = true;
-        listener.apply(target, arguments);
-      }
-    }
-    g.listener = listener;
-    return g;
+    return viewableImpression;
   }
 
-  EventEmitter.prototype.once = function once(type, listener) {
-    if (typeof listener !== 'function')
-      throw new TypeError('"listener" argument must be a function');
-    this.on(type, _onceWrap(this, type, listener));
-    return this;
-  };
+  var EventEmitter =
+  /*#__PURE__*/
+  function () {
+    function EventEmitter() {
+      _classCallCheck(this, EventEmitter);
 
-  EventEmitter.prototype.prependOnceListener =
-      function prependOnceListener(type, listener) {
-        if (typeof listener !== 'function')
-          throw new TypeError('"listener" argument must be a function');
-        this.prependListener(type, _onceWrap(this, type, listener));
-        return this;
-      };
+      this._handlers = [];
+    }
+    /**
+     * Adds the event name and handler function to the end of the handlers array.
+     * No checks are made to see if the handler has already been added.
+     * Multiple calls passing the same combination of event name and handler will result in the handler being added,
+     * and called, multiple times.
+     * @param {String} event
+     * @param {Function} handler
+     * @returns {EventEmitter}
+     */
 
-  // emits a 'removeListener' event iff the listener was removed
-  EventEmitter.prototype.removeListener =
-      function removeListener(type, listener) {
-        var list, events, position, i, originalListener;
 
-        if (typeof listener !== 'function')
-          throw new TypeError('"listener" argument must be a function');
-
-        events = this._events;
-        if (!events)
-          return this;
-
-        list = events[type];
-        if (!list)
-          return this;
-
-        if (list === listener || (list.listener && list.listener === listener)) {
-          if (--this._eventsCount === 0)
-            this._events = new EventHandlers();
-          else {
-            delete events[type];
-            if (events.removeListener)
-              this.emit('removeListener', type, list.listener || listener);
-          }
-        } else if (typeof list !== 'function') {
-          position = -1;
-
-          for (i = list.length; i-- > 0;) {
-            if (list[i] === listener ||
-                (list[i].listener && list[i].listener === listener)) {
-              originalListener = list[i].listener;
-              position = i;
-              break;
-            }
-          }
-
-          if (position < 0)
-            return this;
-
-          if (list.length === 1) {
-            list[0] = undefined;
-            if (--this._eventsCount === 0) {
-              this._events = new EventHandlers();
-              return this;
-            } else {
-              delete events[type];
-            }
-          } else {
-            spliceOne(list, position);
-          }
-
-          if (events.removeListener)
-            this.emit('removeListener', type, originalListener || listener);
+    _createClass(EventEmitter, [{
+      key: "on",
+      value: function on(event, handler) {
+        if (typeof handler !== 'function') {
+          throw new TypeError("The handler argument must be of type Function. Received type ".concat(_typeof(handler)));
         }
+
+        if (!event) {
+          throw new TypeError("The event argument must be of type String. Received type ".concat(_typeof(event)));
+        }
+
+        this._handlers.push({
+          event: event,
+          handler: handler
+        });
 
         return this;
-      };
-
-  EventEmitter.prototype.removeAllListeners =
-      function removeAllListeners(type) {
-        var listeners, events;
-
-        events = this._events;
-        if (!events)
-          return this;
-
-        // not listening for removeListener, no need to emit
-        if (!events.removeListener) {
-          if (arguments.length === 0) {
-            this._events = new EventHandlers();
-            this._eventsCount = 0;
-          } else if (events[type]) {
-            if (--this._eventsCount === 0)
-              this._events = new EventHandlers();
-            else
-              delete events[type];
-          }
-          return this;
-        }
-
-        // emit removeListener for all listeners on all events
-        if (arguments.length === 0) {
-          var keys = Object.keys(events);
-          for (var i = 0, key; i < keys.length; ++i) {
-            key = keys[i];
-            if (key === 'removeListener') continue;
-            this.removeAllListeners(key);
-          }
-          this.removeAllListeners('removeListener');
-          this._events = new EventHandlers();
-          this._eventsCount = 0;
-          return this;
-        }
-
-        listeners = events[type];
-
-        if (typeof listeners === 'function') {
-          this.removeListener(type, listeners);
-        } else if (listeners) {
-          // LIFO order
-          do {
-            this.removeListener(type, listeners[listeners.length - 1]);
-          } while (listeners[0]);
-        }
-
-        return this;
-      };
-
-  EventEmitter.prototype.listeners = function listeners(type) {
-    var evlistener;
-    var ret;
-    var events = this._events;
-
-    if (!events)
-      ret = [];
-    else {
-      evlistener = events[type];
-      if (!evlistener)
-        ret = [];
-      else if (typeof evlistener === 'function')
-        ret = [evlistener.listener || evlistener];
-      else
-        ret = unwrapListeners(evlistener);
-    }
-
-    return ret;
-  };
-
-  EventEmitter.listenerCount = function(emitter, type) {
-    if (typeof emitter.listenerCount === 'function') {
-      return emitter.listenerCount(type);
-    } else {
-      return listenerCount.call(emitter, type);
-    }
-  };
-
-  EventEmitter.prototype.listenerCount = listenerCount;
-  function listenerCount(type) {
-    var events = this._events;
-
-    if (events) {
-      var evlistener = events[type];
-
-      if (typeof evlistener === 'function') {
-        return 1;
-      } else if (evlistener) {
-        return evlistener.length;
       }
-    }
+      /**
+       * Adds a one-time handler function for the named event.
+       * The next time event is triggered, this handler is removed and then invoked.
+       * @param {String} event
+       * @param {Function} handler
+       * @returns {EventEmitter}
+       */
 
-    return 0;
-  }
+    }, {
+      key: "once",
+      value: function once(event, handler) {
+        return this.on(event, onceWrap(this, event, handler));
+      }
+      /**
+       * Removes all instances for the specified handler from the handler array for the named event.
+       * @param {String} event
+       * @param {Function} handler
+       * @returns {EventEmitter}
+       */
 
-  EventEmitter.prototype.eventNames = function eventNames() {
-    return this._eventsCount > 0 ? Reflect.ownKeys(this._events) : [];
-  };
+    }, {
+      key: "off",
+      value: function off(event, handler) {
+        this._handlers = this._handlers.filter(function (item) {
+          return item.event !== event || item.handler !== handler;
+        });
+        return this;
+      }
+      /**
+       * Synchronously calls each of the handlers registered for the named event,
+       * in the order they were registered, passing the supplied arguments to each.
+       * @param {String} event
+       * @param  {any[]} args
+       * @returns {Boolean} true if the event had handlers, false otherwise.
+       */
 
-  // About 1.5x faster than the two-arg version of Array#splice().
-  function spliceOne(list, index) {
-    for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1)
-      list[i] = list[k];
-    list.pop();
-  }
+    }, {
+      key: "emit",
+      value: function emit(event) {
+        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
 
-  function arrayClone(arr, i) {
-    var copy = new Array(i);
-    while (i--)
-      copy[i] = arr[i];
-    return copy;
-  }
+        var called = false;
 
-  function unwrapListeners(arr) {
-    var ret = new Array(arr.length);
-    for (var i = 0; i < ret.length; ++i) {
-      ret[i] = arr[i].listener || arr[i];
-    }
-    return ret;
-  }
+        this._handlers.forEach(function (item) {
+          if (item.event === '*') {
+            called = true;
+            item.handler.apply(item, [event].concat(args));
+          }
 
-  function xdr() {
-    var request = void 0;
-    if (window.XDomainRequest) {
-      // eslint-disable-next-line no-undef
-      request = new XDomainRequest();
-    }
-    return request;
-  }
+          if (item.event === event) {
+            called = true;
+            item.handler.apply(item, args);
+          }
+        });
 
-  function supported() {
-    return !!xdr();
-  }
+        return called;
+      }
+      /**
+       * Removes all listeners, or those of the specified named event.
+       * @param {String} event
+       * @returns {EventEmitter}
+       */
 
-  function get$1(url, options, cb) {
-    var xmlDocument = typeof window.ActiveXObject === 'function' ? new window.ActiveXObject('Microsoft.XMLDOM') : undefined;
+    }, {
+      key: "removeAllListeners",
+      value: function removeAllListeners(event) {
+        if (!event) {
+          this._handlers = [];
+          return this;
+        }
 
-    if (xmlDocument) {
-      xmlDocument.async = false;
-    } else {
-      return cb(new Error('FlashURLHandler: Microsoft.XMLDOM format not supported'));
-    }
+        this._handlers = this._handlers.filter(function (item) {
+          return item.event !== event;
+        });
+        return this;
+      }
+      /**
+       * Returns the number of listeners listening to the named event.
+       * @param {String} event
+       * @returns {Number}
+       */
 
-    var request = xdr();
-    request.open('GET', url);
-    request.timeout = options.timeout || 0;
-    request.withCredentials = options.withCredentials || false;
-    request.send();
-    request.onprogress = function () {};
+    }, {
+      key: "listenerCount",
+      value: function listenerCount(event) {
+        return this._handlers.filter(function (item) {
+          return item.event === event;
+        }).length;
+      }
+      /**
+       * Returns a copy of the array of listeners for the named event including those created by .once().
+       * @param {String} event
+       * @returns {Function[]}
+       */
 
-    request.onload = function () {
-      xmlDocument.loadXML(request.responseText);
-      cb(null, xmlDocument);
+    }, {
+      key: "listeners",
+      value: function listeners(event) {
+        return this._handlers.reduce(function (listeners, item) {
+          if (item.event === event) {
+            listeners.push(item.handler);
+          }
+
+          return listeners;
+        }, []);
+      }
+      /**
+       * Returns an array listing the events for which the emitter has registered handlers.
+       * @returns {String[]}
+       */
+
+    }, {
+      key: "eventNames",
+      value: function eventNames() {
+        return this._handlers.map(function (item) {
+          return item.event;
+        });
+      }
+    }]);
+
+    return EventEmitter;
+  }();
+
+  function onceWrap(target, event, handler) {
+    var state = {
+      fired: false,
+      wrapFn: undefined
     };
-  }
 
-  var flashURLHandler = {
-    get: get$1,
-    supported: supported
-  };
+    function onceWrapper() {
+      if (!state.fired) {
+        target.off(event, state.wrapFn);
+        state.fired = true;
+        handler.bind(target).apply(void 0, arguments);
+      }
+    }
+
+    state.wrapFn = onceWrapper;
+    return onceWrapper;
+  }
 
   // This mock module is loaded in stead of the original NodeURLHandler module
   // when bundling the library for environments which are not node.
   // This allows us to avoid bundling useless node components and have a smaller build.
-  function get$2(url, options, cb) {
+  function get(url, options, cb) {
     cb(new Error('Please bundle the library for node to use the node urlHandler'));
   }
 
   var nodeURLHandler = {
-    get: get$2
+    get: get
   };
+
+  var DEFAULT_TIMEOUT = 120000;
 
   function xhr() {
     try {
       var request = new window.XMLHttpRequest();
+
       if ('withCredentials' in request) {
         // check CORS support
         return request;
       }
+
       return null;
     } catch (err) {
       return null;
     }
   }
 
-  function supported$1() {
+  function supported() {
     return !!xhr();
   }
 
-  function get$3(url, options, cb) {
+  function handleLoad(request, cb) {
+    if (request.status === 200) {
+      cb(null, request.responseXML, {
+        byteLength: request.response.length,
+        statusCode: request.status
+      });
+    } else {
+      handleFail(request, cb, false);
+    }
+  }
+
+  function handleFail(request, cb, isTimeout) {
+    var statusCode = !isTimeout ? request.status : 408; // Request timeout
+
+    var msg = isTimeout ? "XHRURLHandler: Request timed out after ".concat(request.timeout, " ms (").concat(statusCode, ")") : "XHRURLHandler: ".concat(request.statusText, " (").concat(statusCode, ")");
+    cb(new Error(msg), null, {
+      statusCode: statusCode
+    });
+  }
+
+  function get$1(url, options, cb) {
     if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
       return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
     }
 
     try {
       var request = xhr();
-
       request.open('GET', url);
-      request.timeout = options.timeout || 0;
+      request.timeout = options.timeout || DEFAULT_TIMEOUT;
       request.withCredentials = options.withCredentials || false;
       request.overrideMimeType && request.overrideMimeType('text/xml');
-      request.onreadystatechange = function () {
-        if (request.readyState === 4) {
-          if (request.status === 200) {
-            cb(null, request.responseXML);
-          } else {
-            cb(new Error('XHRURLHandler: ' + request.statusText));
-          }
-        }
+
+      request.onload = function () {
+        return handleLoad(request, cb);
       };
+
+      request.onerror = function () {
+        return handleFail(request, cb, false);
+      };
+
+      request.onabort = function () {
+        return handleFail(request, cb, false);
+      };
+
+      request.ontimeout = function () {
+        return handleFail(request, cb, true);
+      };
+
       request.send();
     } catch (error) {
       cb(new Error('XHRURLHandler: Unexpected error'));
@@ -1714,16 +2336,17 @@ var VAST = (function (exports) {
   }
 
   var XHRURLHandler = {
-    get: get$3,
-    supported: supported$1
+    get: get$1,
+    supported: supported
   };
 
-  function get$4(url, options, cb) {
+  function get$2(url, options, cb) {
     // Allow skip of the options param
     if (!cb) {
       if (typeof options === 'function') {
         cb = options;
       }
+
       options = {};
     }
 
@@ -1731,48 +2354,53 @@ var VAST = (function (exports) {
       return nodeURLHandler.get(url, options, cb);
     } else if (XHRURLHandler.supported()) {
       return XHRURLHandler.get(url, options, cb);
-    } else if (flashURLHandler.supported()) {
-      return flashURLHandler.get(url, options, cb);
     }
+
     return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'));
   }
 
   var urlHandler = {
-    get: get$4
+    get: get$2
   };
 
-  var VASTResponse = function VASTResponse() {
-    classCallCheck(this, VASTResponse);
-
-    this.ads = [];
-    this.errorURLTemplates = [];
-    this.version = null;
-  };
+  function createVASTResponse(_ref) {
+    var ads = _ref.ads,
+        errorURLTemplates = _ref.errorURLTemplates,
+        version = _ref.version;
+    return {
+      ads: ads || [],
+      errorURLTemplates: errorURLTemplates || [],
+      version: version || null
+    };
+  }
 
   var DEFAULT_MAX_WRAPPER_DEPTH = 10;
   var DEFAULT_EVENT_DATA = {
     ERRORCODE: 900,
     extensions: []
   };
-
   /**
    * This class provides methods to fetch and parse a VAST document.
    * @export
    * @class VASTParser
    * @extends EventEmitter
    */
-  var VASTParser = function (_EventEmitter) {
-    inherits(VASTParser, _EventEmitter);
+
+  var VASTParser =
+  /*#__PURE__*/
+  function (_EventEmitter) {
+    _inherits(VASTParser, _EventEmitter);
 
     /**
      * Creates an instance of VASTParser.
      * @constructor
      */
     function VASTParser() {
-      classCallCheck(this, VASTParser);
+      var _this;
 
-      var _this = possibleConstructorReturn(this, (VASTParser.__proto__ || Object.getPrototypeOf(VASTParser)).call(this));
+      _classCallCheck(this, VASTParser);
 
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(VASTParser).call(this));
       _this.remainingAds = [];
       _this.parentURLs = [];
       _this.errorURLTemplates = [];
@@ -1782,7 +2410,6 @@ var VAST = (function (exports) {
       _this.fetchingOptions = {};
       return _this;
     }
-
     /**
      * Adds a filter function to the array of filters which are called before fetching a VAST document.
      * @param  {function} filter - The filter function to be added at the end of the array.
@@ -1790,47 +2417,43 @@ var VAST = (function (exports) {
      */
 
 
-    createClass(VASTParser, [{
-      key: 'addURLTemplateFilter',
+    _createClass(VASTParser, [{
+      key: "addURLTemplateFilter",
       value: function addURLTemplateFilter(filter) {
         if (typeof filter === 'function') {
           this.URLTemplateFilters.push(filter);
         }
       }
-
       /**
        * Removes the last element of the url templates filters array.
        * @return {void}
        */
 
     }, {
-      key: 'removeURLTemplateFilter',
+      key: "removeURLTemplateFilter",
       value: function removeURLTemplateFilter() {
         this.URLTemplateFilters.pop();
       }
-
       /**
        * Returns the number of filters of the url templates filters array.
        * @return {Number}
        */
 
     }, {
-      key: 'countURLTemplateFilters',
+      key: "countURLTemplateFilters",
       value: function countURLTemplateFilters() {
         return this.URLTemplateFilters.length;
       }
-
       /**
        * Removes all the filter functions from the url templates filters array.
        * @return {void}
        */
 
     }, {
-      key: 'clearURLTemplateFilters',
+      key: "clearURLTemplateFilters",
       value: function clearURLTemplateFilters() {
         this.URLTemplateFilters = [];
       }
-
       /**
        * Tracks the error provided in the errorCode parameter and emits a VAST-error event for the given error.
        * @param  {Array} urlTemplates - An Array of url templates to use to make the tracking call.
@@ -1841,43 +2464,43 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'trackVastError',
+      key: "trackVastError",
       value: function trackVastError(urlTemplates, errorCode) {
-        for (var _len = arguments.length, data = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        for (var _len = arguments.length, data = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
           data[_key - 2] = arguments[_key];
         }
 
         this.emit('VAST-error', Object.assign.apply(Object, [{}, DEFAULT_EVENT_DATA, errorCode].concat(data)));
         util.track(urlTemplates, errorCode);
       }
-
       /**
        * Returns an array of errorURLTemplates for the VAST being parsed.
        * @return {Array}
        */
 
     }, {
-      key: 'getErrorURLTemplates',
+      key: "getErrorURLTemplates",
       value: function getErrorURLTemplates() {
         return this.rootErrorURLTemplates.concat(this.errorURLTemplates);
       }
-
       /**
        * Fetches a VAST document for the given url.
        * Returns a Promise which resolves,rejects according to the result of the request.
        * @param  {String} url - The url to request the VAST document.
        * @param {Number} wrapperDepth - how many times the current url has been wrapped
-       * @param {String} originalUrl - url of original wrapper
+       * @param {String} previousUrl - url of the previous VAST
        * @emits  VASTParser#VAST-resolving
        * @emits  VASTParser#VAST-resolved
        * @return {Promise}
        */
 
     }, {
-      key: 'fetchVAST',
-      value: function fetchVAST(url, wrapperDepth, originalUrl) {
+      key: "fetchVAST",
+      value: function fetchVAST(url) {
         var _this2 = this;
 
+        var wrapperDepth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        var previousUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
         return new Promise(function (resolve, reject) {
           // Process url with defined filter
           _this2.URLTemplateFilters.forEach(function (filter) {
@@ -1885,30 +2508,47 @@ var VAST = (function (exports) {
           });
 
           _this2.parentURLs.push(url);
-          _this2.emit('VAST-resolving', { url: url, wrapperDepth: wrapperDepth, originalUrl: originalUrl });
 
-          _this2.urlHandler.get(url, _this2.fetchingOptions, function (err, xml) {
-            _this2.emit('VAST-resolved', { url: url, error: err });
+          var timeBeforeGet = Date.now();
 
-            if (err) {
-              reject(err);
+          _this2.emit('VAST-resolving', {
+            url: url,
+            previousUrl: previousUrl,
+            wrapperDepth: wrapperDepth,
+            maxWrapperDepth: _this2.maxWrapperDepth,
+            timeout: _this2.fetchingOptions.timeout
+          });
+
+          _this2.urlHandler.get(url, _this2.fetchingOptions, function (error, xml) {
+            var details = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+            var deltaTime = Math.round(Date.now() - timeBeforeGet);
+            var info = Object.assign({
+              url: url,
+              previousUrl: previousUrl,
+              wrapperDepth: wrapperDepth,
+              error: error,
+              duration: deltaTime
+            }, details);
+
+            _this2.emit('VAST-resolved', info);
+
+            if (error) {
+              reject(error);
             } else {
               resolve(xml);
             }
           });
         });
       }
-
       /**
        * Inits the parsing properties of the class with the custom values provided as options.
        * @param {Object} options - The options to initialize a parsing sequence
        */
 
     }, {
-      key: 'initParsingStatus',
+      key: "initParsingStatus",
       value: function initParsingStatus() {
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
         this.rootURL = '';
         this.remainingAds = [];
         this.parentURLs = [];
@@ -1916,14 +2556,12 @@ var VAST = (function (exports) {
         this.rootErrorURLTemplates = [];
         this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
         this.fetchingOptions = {
-          timeout: options.timeout,
+          timeout: options.timeout || DEFAULT_TIMEOUT,
           withCredentials: options.withCredentials
         };
-
         this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
         this.vastVersion = null;
       }
-
       /**
        * Resolves the next group of ads. If all is true resolves all the remaining ads.
        * @param  {Boolean} all - If true all the remaining ads are resolved
@@ -1931,7 +2569,7 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'getRemainingAds',
+      key: "getRemainingAds",
       value: function getRemainingAds(all) {
         var _this3 = this;
 
@@ -1942,15 +2580,13 @@ var VAST = (function (exports) {
         var ads = all ? util.flatten(this.remainingAds) : this.remainingAds.shift();
         this.errorURLTemplates = [];
         this.parentURLs = [];
-
         return this.resolveAds(ads, {
           wrapperDepth: 0,
-          originalUrl: this.rootURL
+          url: this.rootURL
         }).then(function (resolvedAds) {
           return _this3.buildVASTResponse(resolvedAds);
         });
       }
-
       /**
        * Fetches and parses a VAST for the given url.
        * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
@@ -1958,29 +2594,30 @@ var VAST = (function (exports) {
        * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
        * @emits  VASTParser#VAST-resolving
        * @emits  VASTParser#VAST-resolved
+       * @emits  VASTParser#VAST-warning
        * @return {Promise}
        */
 
     }, {
-      key: 'getAndParseVAST',
+      key: "getAndParseVAST",
       value: function getAndParseVAST(url) {
         var _this4 = this;
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
         this.initParsingStatus(options);
+        this.URLTemplateFilters.forEach(function (filter) {
+          url = filter(url);
+        });
         this.rootURL = url;
-
         return this.fetchVAST(url).then(function (xml) {
-          options.originalUrl = url;
+          options.previousUrl = url;
           options.isRootVAST = true;
-
+          options.url = url;
           return _this4.parse(xml, options).then(function (ads) {
             return _this4.buildVASTResponse(ads);
           });
         });
       }
-
       /**
        * Parses the given xml Object into a VASTResponse.
        * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
@@ -1988,90 +2625,102 @@ var VAST = (function (exports) {
        * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
        * @emits  VASTParser#VAST-resolving
        * @emits  VASTParser#VAST-resolved
+       * @emits  VASTParser#VAST-warning
        * @return {Promise}
        */
 
     }, {
-      key: 'parseVAST',
+      key: "parseVAST",
       value: function parseVAST(vastXml) {
         var _this5 = this;
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
         this.initParsingStatus(options);
-
         options.isRootVAST = true;
-
         return this.parse(vastXml, options).then(function (ads) {
           return _this5.buildVASTResponse(ads);
         });
       }
-
       /**
        * Builds a VASTResponse which can be returned.
        * @param  {Array} ads - An Array of unwrapped ads
-       * @return {VASTResponse}
+       * @return {Object}
        */
 
     }, {
-      key: 'buildVASTResponse',
+      key: "buildVASTResponse",
       value: function buildVASTResponse(ads) {
-        var response = new VASTResponse();
-        response.ads = ads;
-        response.errorURLTemplates = this.getErrorURLTemplates();
-        response.version = this.vastVersion;
+        var response = createVASTResponse({
+          ads: ads,
+          errorURLTemplates: this.getErrorURLTemplates(),
+          version: this.vastVersion
+        });
         this.completeWrapperResolving(response);
-
         return response;
       }
-
       /**
        * Parses the given xml Object into an array of ads
        * Returns the array or throws an `Error` if an invalid VAST XML is provided
        * @param  {Object} vastXml - An object representing an xml document.
        * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+       * @emits  VASTParser#VAST-warning
+       * @emits VASTParser#VAST-ad-parsed
        * @return {Array}
        * @throws {Error} `vastXml` must be a valid VAST XMLDocument
        */
 
     }, {
-      key: 'parseVastXml',
+      key: "parseVastXml",
       value: function parseVastXml(vastXml, _ref) {
         var _ref$isRootVAST = _ref.isRootVAST,
-            isRootVAST = _ref$isRootVAST === undefined ? false : _ref$isRootVAST;
+            isRootVAST = _ref$isRootVAST === void 0 ? false : _ref$isRootVAST,
+            _ref$url = _ref.url,
+            url = _ref$url === void 0 ? null : _ref$url,
+            _ref$wrapperDepth = _ref.wrapperDepth,
+            wrapperDepth = _ref$wrapperDepth === void 0 ? 0 : _ref$wrapperDepth;
 
         // check if is a valid VAST document
         if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
+          this.emit('VAST-ad-parsed', {
+            type: 'ERROR',
+            url: url,
+            wrapperDepth: wrapperDepth
+          });
           throw new Error('Invalid VAST XMLDocument');
         }
 
         var ads = [];
         var childNodes = vastXml.documentElement.childNodes;
-
         /* Only parse the version of the Root VAST for now because we don't know yet how to
-           handle some cases like multiple wrappers in the same vast
-        */
-        if (isRootVAST) {
-          var vastVersion = vastXml.documentElement.getAttribute('version');
-          if (vastVersion) this.vastVersion = vastVersion;
-        }
+         * handle some cases like multiple wrappers in the same vast
+         */
 
-        // Fill the VASTResponse object with ads and errorURLTemplates
+        var vastVersion = vastXml.documentElement.getAttribute('version');
+
+        if (isRootVAST) {
+          if (vastVersion) this.vastVersion = vastVersion;
+        } // Fill the VASTResponse object with ads and errorURLTemplates
+
+
         for (var nodeKey in childNodes) {
           var node = childNodes[nodeKey];
 
           if (node.nodeName === 'Error') {
-            var errorURLTemplate = parserUtils.parseNodeText(node);
+            var errorURLTemplate = parserUtils.parseNodeText(node); // Distinguish root VAST url templates from ad specific ones
 
-            // Distinguish root VAST url templates from ad specific ones
             isRootVAST ? this.rootErrorURLTemplates.push(errorURLTemplate) : this.errorURLTemplates.push(errorURLTemplate);
-          }
+          } else if (node.nodeName === 'Ad') {
+            var result = parseAd(node, this.emit.bind(this));
 
-          if (node.nodeName === 'Ad') {
-            var ad = parseAd(node);
-
-            if (ad) {
-              ads.push(ad);
+            if (result.ad) {
+              ads.push(result.ad);
+              this.emit('VAST-ad-parsed', {
+                type: result.type,
+                url: url,
+                wrapperDepth: wrapperDepth,
+                adIndex: ads.length - 1,
+                vastVersion: vastVersion
+              });
             } else {
               // VAST version of response not supported.
               this.trackVastError(this.getErrorURLTemplates(), {
@@ -2083,57 +2732,66 @@ var VAST = (function (exports) {
 
         return ads;
       }
-
       /**
        * Parses the given xml Object into an array of unwrapped ads.
        * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
-       * @param  {Object} vastXml - An object representing an xml document.
-       * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-       * @emits  VASTParser#VAST-resolving
-       * @emits  VASTParser#VAST-resolved
+       * @param {Object} vastXml - An object representing an xml document.
+       * @param {Object} options - An optional Object of parameters to be used in the parsing process.
+       * @emits VASTParser#VAST-resolving
+       * @emits VASTParser#VAST-resolved
+       * @emits VASTParser#VAST-warning
        * @return {Promise}
        */
 
     }, {
-      key: 'parse',
+      key: "parse",
       value: function parse(vastXml, _ref2) {
-        var _ref2$resolveAll = _ref2.resolveAll,
-            resolveAll = _ref2$resolveAll === undefined ? true : _ref2$resolveAll,
+        var _ref2$url = _ref2.url,
+            url = _ref2$url === void 0 ? null : _ref2$url,
+            _ref2$resolveAll = _ref2.resolveAll,
+            resolveAll = _ref2$resolveAll === void 0 ? true : _ref2$resolveAll,
             _ref2$wrapperSequence = _ref2.wrapperSequence,
-            wrapperSequence = _ref2$wrapperSequence === undefined ? null : _ref2$wrapperSequence,
-            _ref2$originalUrl = _ref2.originalUrl,
-            originalUrl = _ref2$originalUrl === undefined ? null : _ref2$originalUrl,
+            wrapperSequence = _ref2$wrapperSequence === void 0 ? null : _ref2$wrapperSequence,
+            _ref2$previousUrl = _ref2.previousUrl,
+            previousUrl = _ref2$previousUrl === void 0 ? null : _ref2$previousUrl,
             _ref2$wrapperDepth = _ref2.wrapperDepth,
-            wrapperDepth = _ref2$wrapperDepth === undefined ? 0 : _ref2$wrapperDepth,
+            wrapperDepth = _ref2$wrapperDepth === void 0 ? 0 : _ref2$wrapperDepth,
             _ref2$isRootVAST = _ref2.isRootVAST,
-            isRootVAST = _ref2$isRootVAST === undefined ? false : _ref2$isRootVAST;
-
+            isRootVAST = _ref2$isRootVAST === void 0 ? false : _ref2$isRootVAST;
         var ads = [];
+
         try {
-          ads = this.parseVastXml(vastXml, { isRootVAST: isRootVAST });
+          ads = this.parseVastXml(vastXml, {
+            isRootVAST: isRootVAST,
+            url: url,
+            wrapperDepth: wrapperDepth
+          });
         } catch (e) {
           return Promise.reject(e);
         }
 
         var adsCount = ads.length;
-        var lastAddedAd = ads[adsCount - 1];
-        // if in child nodes we have only one ads
+        var lastAddedAd = ads[adsCount - 1]; // if in child nodes we have only one ads
         // and wrapperSequence is defined
         // and this ads doesn't already have sequence
+
         if (adsCount === 1 && wrapperSequence !== undefined && wrapperSequence !== null && lastAddedAd && !lastAddedAd.sequence) {
           lastAddedAd.sequence = wrapperSequence;
-        }
+        } // Split the VAST in case we don't want to resolve everything at the first time
 
-        // Split the VAST in case we don't want to resolve everything at the first time
+
         if (resolveAll === false) {
-          this.remainingAds = parserUtils.splitVAST(ads);
-          // Remove the first element from the remaining ads array, since we're going to resolve that element
+          this.remainingAds = parserUtils.splitVAST(ads); // Remove the first element from the remaining ads array, since we're going to resolve that element
+
           ads = this.remainingAds.shift();
         }
 
-        return this.resolveAds(ads, { wrapperDepth: wrapperDepth, originalUrl: originalUrl });
+        return this.resolveAds(ads, {
+          wrapperDepth: wrapperDepth,
+          previousUrl: previousUrl,
+          url: url
+        });
       }
-
       /**
        * Resolves an Array of ads, recursively calling itself with the remaining ads if a no ad
        * response is returned for the given array.
@@ -2143,23 +2801,24 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'resolveAds',
+      key: "resolveAds",
       value: function resolveAds() {
         var _this6 = this;
 
         var ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-        var _ref3 = arguments[1];
-        var wrapperDepth = _ref3.wrapperDepth,
-            originalUrl = _ref3.originalUrl;
+
+        var _ref3 = arguments.length > 1 ? arguments[1] : undefined,
+            wrapperDepth = _ref3.wrapperDepth,
+            previousUrl = _ref3.previousUrl,
+            url = _ref3.url;
 
         var resolveWrappersPromises = [];
-
+        previousUrl = url;
         ads.forEach(function (ad) {
-          var resolveWrappersPromise = _this6.resolveWrappers(ad, wrapperDepth, originalUrl);
+          var resolveWrappersPromise = _this6.resolveWrappers(ad, wrapperDepth, previousUrl);
 
           resolveWrappersPromises.push(resolveWrappersPromise);
         });
-
         return Promise.all(resolveWrappersPromises).then(function (unwrappedAds) {
           var resolvedAds = util.flatten(unwrappedAds);
 
@@ -2168,32 +2827,32 @@ var VAST = (function (exports) {
 
             return _this6.resolveAds(remainingAdsToResolve, {
               wrapperDepth: wrapperDepth,
-              originalUrl: originalUrl
+              previousUrl: previousUrl,
+              url: url
             });
           }
 
           return resolvedAds;
         });
       }
-
       /**
        * Resolves the wrappers for the given ad in a recursive way.
        * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
-       * @param  {Ad} ad - An ad to be unwrapped.
-       * @param  {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
-       * @param  {String} originalUrl - The original vast url.
+       * @param {Object} ad - An ad object to be unwrapped.
+       * @param {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
+       * @param {String} previousUrl - The previous vast url.
        * @return {Promise}
        */
 
     }, {
-      key: 'resolveWrappers',
-      value: function resolveWrappers(ad, wrapperDepth, originalUrl) {
+      key: "resolveWrappers",
+      value: function resolveWrappers(ad, wrapperDepth, previousUrl) {
         var _this7 = this;
 
         return new Promise(function (resolve) {
           // Going one level deeper in the wrapper chain
-          wrapperDepth++;
-          // We already have a resolved VAST ad, no need to resolve wrapper
+          wrapperDepth++; // We already have a resolved VAST ad, no need to resolve wrapper
+
           if (!ad.nextWrapperURL) {
             delete ad.nextWrapperURL;
             return resolve(ad);
@@ -2205,22 +2864,27 @@ var VAST = (function (exports) {
             ad.errorCode = 302;
             delete ad.nextWrapperURL;
             return resolve(ad);
-          }
+          } // Get full URL
 
-          // Get full URL
-          ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(ad.nextWrapperURL, originalUrl);
 
-          // sequence doesn't carry over in wrapper element
+          ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(ad.nextWrapperURL, previousUrl);
+
+          _this7.URLTemplateFilters.forEach(function (filter) {
+            ad.nextWrapperURL = filter(ad.nextWrapperURL);
+          }); // sequence doesn't carry over in wrapper element
+
+
           var wrapperSequence = ad.sequence;
-          originalUrl = ad.nextWrapperURL;
 
-          _this7.fetchVAST(ad.nextWrapperURL, wrapperDepth, originalUrl).then(function (xml) {
+          _this7.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl).then(function (xml) {
             return _this7.parse(xml, {
-              originalUrl: originalUrl,
+              url: ad.nextWrapperURL,
+              previousUrl: previousUrl,
               wrapperSequence: wrapperSequence,
               wrapperDepth: wrapperDepth
             }).then(function (unwrappedAds) {
               delete ad.nextWrapperURL;
+
               if (unwrappedAds.length === 0) {
                 // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
                 ad.creatives = [];
@@ -2232,59 +2896,67 @@ var VAST = (function (exports) {
                   parserUtils.mergeWrapperAdData(unwrappedAd, ad);
                 }
               });
-
               resolve(unwrappedAds);
             });
-          }).catch(function (err) {
+          })["catch"](function (err) {
             // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
             // (URI was either unavailable or reached a timeout as defined by the video player.)
             ad.errorCode = 301;
             ad.errorMessage = err.message;
-
             resolve(ad);
           });
         });
       }
-
       /**
        * Takes care of handling errors when the wrappers are resolved.
-       * @param {VASTResponse} vastResponse - A resolved VASTResponse.
+       * @param {Object} vastResponse - A resolved VASTResponse.
        */
 
     }, {
-      key: 'completeWrapperResolving',
+      key: "completeWrapperResolving",
       value: function completeWrapperResolving(vastResponse) {
         // We've to wait for all <Ad> elements to be parsed before handling error so we can:
         // - Send computed extensions data
         // - Ping all <Error> URIs defined across VAST files
-
         // No Ad case - The parser never bump into an <Ad> element
         if (vastResponse.ads.length === 0) {
-          this.trackVastError(vastResponse.errorURLTemplates, { ERRORCODE: 303 });
+          this.trackVastError(vastResponse.errorURLTemplates, {
+            ERRORCODE: 303
+          });
         } else {
           for (var index = vastResponse.ads.length - 1; index >= 0; index--) {
             // - Error encountred while parsing
             // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
             // but no creative was found
             var ad = vastResponse.ads[index];
+
             if (ad.errorCode || ad.creatives.length === 0) {
-              this.trackVastError(ad.errorURLTemplates.concat(vastResponse.errorURLTemplates), { ERRORCODE: ad.errorCode || 303 }, { ERRORMESSAGE: ad.errorMessage || '' }, { extensions: ad.extensions }, { system: ad.system });
+              this.trackVastError(ad.errorURLTemplates.concat(vastResponse.errorURLTemplates), {
+                ERRORCODE: ad.errorCode || 303
+              }, {
+                ERRORMESSAGE: ad.errorMessage || ''
+              }, {
+                extensions: ad.extensions
+              }, {
+                system: ad.system
+              });
               vastResponse.ads.splice(index, 1);
             }
           }
         }
       }
     }]);
+
     return VASTParser;
   }(EventEmitter);
 
   var storage = null;
-
   /**
    * This Object represents a default storage to be used in case no other storage is available.
    * @constant
    * @type {Object}
    */
+
   var DEFAULT_STORAGE = {
     data: {},
     length: 0,
@@ -2304,32 +2976,33 @@ var VAST = (function (exports) {
       this.length = 0;
     }
   };
-
   /**
    * This class provides an wrapper interface to the a key-value storage.
    * It uses localStorage, sessionStorage or a custom storage if none of the two is available.
    * @export
    * @class Storage
    */
-  var Storage = function () {
+
+  var Storage =
+  /*#__PURE__*/
+  function () {
     /**
      * Creates an instance of Storage.
      * @constructor
      */
     function Storage() {
-      classCallCheck(this, Storage);
+      _classCallCheck(this, Storage);
 
       this.storage = this.initStorage();
     }
-
     /**
      * Provides a singleton instance of the wrapped storage.
      * @return {Object}
      */
 
 
-    createClass(Storage, [{
-      key: 'initStorage',
+    _createClass(Storage, [{
+      key: "initStorage",
       value: function initStorage() {
         if (storage) {
           return storage;
@@ -2348,7 +3021,6 @@ var VAST = (function (exports) {
 
         return storage;
       }
-
       /**
        * Check if storage is disabled (like in certain cases with private browsing).
        * In Safari (Mac + iOS) when private browsing is ON, localStorage is read only
@@ -2358,12 +3030,13 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'isStorageDisabled',
+      key: "isStorageDisabled",
       value: function isStorageDisabled(testStorage) {
         var testValue = '__VASTStorage__';
 
         try {
           testStorage.setItem(testValue, testValue);
+
           if (testStorage.getItem(testValue) !== testValue) {
             testStorage.removeItem(testValue);
             return true;
@@ -2375,7 +3048,6 @@ var VAST = (function (exports) {
         testStorage.removeItem(testValue);
         return false;
       }
-
       /**
        * Returns the value for the given key. If the key does not exist, null is returned.
        * @param  {String} key - The key to retrieve the value.
@@ -2383,11 +3055,10 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'getItem',
+      key: "getItem",
       value: function getItem(key) {
         return this.storage.getItem(key);
       }
-
       /**
        * Adds or updates the value for the given key.
        * @param  {String} key - The key to modify the value.
@@ -2396,11 +3067,10 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'setItem',
+      key: "setItem",
       value: function setItem(key, value) {
         return this.storage.setItem(key, value);
       }
-
       /**
        * Removes an item for the given key.
        * @param  {String} key - The key to remove the value.
@@ -2408,21 +3078,21 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'removeItem',
+      key: "removeItem",
       value: function removeItem(key) {
         return this.storage.removeItem(key);
       }
-
       /**
        * Removes all the items from the storage.
        */
 
     }, {
-      key: 'clear',
+      key: "clear",
       value: function clear() {
         return this.storage.clear();
       }
     }]);
+
     return Storage;
   }();
 
@@ -2432,7 +3102,10 @@ var VAST = (function (exports) {
    * @export
    * @class VASTClient
    */
-  var VASTClient = function () {
+
+  var VASTClient =
+  /*#__PURE__*/
+  function () {
     /**
      * Creates an instance of VASTClient.
      * @param  {Number} cappingFreeLunch - The number of first calls to skip.
@@ -2441,7 +3114,7 @@ var VAST = (function (exports) {
      * @constructor
      */
     function VASTClient(cappingFreeLunch, cappingMinimumTimeInterval, customStorage) {
-      classCallCheck(this, VASTClient);
+      _classCallCheck(this, VASTClient);
 
       this.cappingFreeLunch = cappingFreeLunch || 0;
       this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
@@ -2450,9 +3123,8 @@ var VAST = (function (exports) {
         timeout: 0
       };
       this.vastParser = new VASTParser();
-      this.storage = customStorage || new Storage();
+      this.storage = customStorage || new Storage(); // Init values if not already set
 
-      // Init values if not already set
       if (this.lastSuccessfulAd === undefined) {
         this.lastSuccessfulAd = 0;
       }
@@ -2460,19 +3132,19 @@ var VAST = (function (exports) {
       if (this.totalCalls === undefined) {
         this.totalCalls = 0;
       }
+
       if (this.totalCallsTimeout === undefined) {
         this.totalCallsTimeout = 0;
       }
     }
 
-    createClass(VASTClient, [{
-      key: 'getParser',
+    _createClass(VASTClient, [{
+      key: "getParser",
       value: function getParser() {
         return this.vastParser;
       }
     }, {
-      key: 'hasRemainingAds',
-
+      key: "hasRemainingAds",
 
       /**
        * Returns a boolean indicating if there are more ads to resolve for the current parsing.
@@ -2481,7 +3153,6 @@ var VAST = (function (exports) {
       value: function hasRemainingAds() {
         return this.vastParser.remainingAds.length > 0;
       }
-
       /**
        * Resolves the next group of ads. If all is true resolves all the remaining ads.
        * @param  {Boolean} all - If true all the remaining ads are resolved
@@ -2489,11 +3160,10 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'getNextAds',
+      key: "getNextAds",
       value: function getNextAds(all) {
         return this.vastParser.getRemainingAds(all);
       }
-
       /**
        * Gets a parsed VAST document for the given url, applying the skipping rules defined.
        * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
@@ -2503,23 +3173,21 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'get',
-      value: function get$$1(url) {
+      key: "get",
+      value: function get(url) {
         var _this = this;
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
         var now = Date.now();
         options = Object.assign({}, this.defaultOptions, options);
 
-        // By default the client resolves only the first Ad or AdPod
         if (!options.hasOwnProperty('resolveAll')) {
           options.resolveAll = false;
-        }
-
-        // Check totalCallsTimeout (first call + 1 hour), if older than now,
+        } // Check totalCallsTimeout (first call + 1 hour), if older than now,
         // reset totalCalls number, by this way the client will be eligible again
         // for freelunch capping
+
+
         if (this.totalCallsTimeout < now) {
           this.totalCalls = 1;
           this.totalCallsTimeout = now + 60 * 60 * 1000;
@@ -2529,51 +3197,51 @@ var VAST = (function (exports) {
 
         return new Promise(function (resolve, reject) {
           if (_this.cappingFreeLunch >= _this.totalCalls) {
-            return reject(new Error('VAST call canceled \u2013 FreeLunch capping not reached yet ' + _this.totalCalls + '/' + _this.cappingFreeLunch));
+            return reject(new Error("VAST call canceled \u2013 FreeLunch capping not reached yet ".concat(_this.totalCalls, "/").concat(_this.cappingFreeLunch)));
           }
 
-          var timeSinceLastCall = now - _this.lastSuccessfulAd;
-
-          // Check timeSinceLastCall to be a positive number. If not, this mean the
+          var timeSinceLastCall = now - _this.lastSuccessfulAd; // Check timeSinceLastCall to be a positive number. If not, this mean the
           // previous was made in the future. We reset lastSuccessfulAd value
+
           if (timeSinceLastCall < 0) {
             _this.lastSuccessfulAd = 0;
           } else if (timeSinceLastCall < _this.cappingMinimumTimeInterval) {
-            return reject(new Error('VAST call canceled \u2013 (' + _this.cappingMinimumTimeInterval + ')ms minimum interval reached'));
+            return reject(new Error("VAST call canceled \u2013 (".concat(_this.cappingMinimumTimeInterval, ")ms minimum interval reached")));
           }
 
           _this.vastParser.getAndParseVAST(url, options).then(function (response) {
             return resolve(response);
-          }).catch(function (err) {
+          })["catch"](function (err) {
             return reject(err);
           });
         });
       }
     }, {
-      key: 'lastSuccessfulAd',
-      get: function get$$1() {
+      key: "lastSuccessfulAd",
+      get: function get() {
         return this.storage.getItem('vast-client-last-successful-ad');
       },
-      set: function set$$1(value) {
+      set: function set(value) {
         this.storage.setItem('vast-client-last-successful-ad', value);
       }
     }, {
-      key: 'totalCalls',
-      get: function get$$1() {
+      key: "totalCalls",
+      get: function get() {
         return this.storage.getItem('vast-client-total-calls');
       },
-      set: function set$$1(value) {
+      set: function set(value) {
         this.storage.setItem('vast-client-total-calls', value);
       }
     }, {
-      key: 'totalCallsTimeout',
-      get: function get$$1() {
+      key: "totalCallsTimeout",
+      get: function get() {
         return this.storage.getItem('vast-client-total-calls-timeout');
       },
-      set: function set$$1(value) {
+      set: function set(value) {
         this.storage.setItem('vast-client-total-calls-timeout', value);
       }
     }]);
+
     return VASTClient;
   }();
 
@@ -2582,8 +3250,8 @@ var VAST = (function (exports) {
    * @constant
    * @type {Number}
    */
-  var DEFAULT_SKIP_DELAY = -1;
 
+  var DEFAULT_SKIP_DELAY = -1;
   /**
    * This class provides methods to track an ad execution.
    *
@@ -2591,8 +3259,11 @@ var VAST = (function (exports) {
    * @class VASTTracker
    * @extends EventEmitter
    */
-  var VASTTracker = function (_EventEmitter) {
-    inherits(VASTTracker, _EventEmitter);
+
+  var VASTTracker =
+  /*#__PURE__*/
+  function (_EventEmitter) {
+    _inherits(VASTTracker, _EventEmitter);
 
     /**
      * Creates an instance of VASTTracker.
@@ -2600,53 +3271,54 @@ var VAST = (function (exports) {
      * @param {VASTClient} client - An instance of VASTClient that can be updated by the tracker. [optional]
      * @param {Ad} ad - The ad to track.
      * @param {Creative} creative - The creative to track.
-     * @param {CompanionAd|NonLinearAd} [variation=null] - An optional variation of the creative.
+     * @param {Object} [variation=null] - An optional variation of the creative.
      * @constructor
      */
     function VASTTracker(client, ad, creative) {
+      var _this;
+
       var variation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-      classCallCheck(this, VASTTracker);
 
-      var _this = possibleConstructorReturn(this, (VASTTracker.__proto__ || Object.getPrototypeOf(VASTTracker)).call(this));
+      _classCallCheck(this, VASTTracker);
 
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(VASTTracker).call(this));
       _this.ad = ad;
       _this.creative = creative;
       _this.variation = variation;
       _this.muted = false;
       _this.impressed = false;
       _this.skippable = false;
-      _this.trackingEvents = {};
-      // We need to save the already triggered quartiles, in order to not trigger them again
-      _this._alreadyTriggeredQuartiles = {};
-      // Tracker listeners should be notified with some events
-      // no matter if there is a tracking URL or not
-      _this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'];
+      _this.trackingEvents = {}; // We need to save the already triggered quartiles, in order to not trigger them again
 
-      // Duplicate the creative's trackingEvents property so we can alter it
+      _this._alreadyTriggeredQuartiles = {}; // Tracker listeners should be notified with some events
+      // no matter if there is a tracking URL or not
+
+      _this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close']; // Duplicate the creative's trackingEvents property so we can alter it
+
       for (var eventName in _this.creative.trackingEvents) {
         var events = _this.creative.trackingEvents[eventName];
         _this.trackingEvents[eventName] = events.slice(0);
-      }
-
-      // Nonlinear and companion creatives provide some tracking information at a variation level
+      } // Nonlinear and companion creatives provide some tracking information at a variation level
       // While linear creatives provided that at a creative level. That's why we need to
       // differentiate how we retrieve some tracking information.
-      if (_this.creative instanceof CreativeLinear) {
+
+
+      if (isCreativeLinear(_this.creative)) {
         _this._initLinearTracking();
       } else {
         _this._initVariationTracking();
-      }
-
-      // If the tracker is associated with a client we add a listener to the start event
+      } // If the tracker is associated with a client we add a listener to the start event
       // to update the lastSuccessfulAd property.
+
+
       if (client) {
         _this.on('start', function () {
           client.lastSuccessfulAd = Date.now();
         });
       }
+
       return _this;
     }
-
     /**
      * Init the custom tracking options for linear creatives.
      *
@@ -2654,18 +3326,15 @@ var VAST = (function (exports) {
      */
 
 
-    createClass(VASTTracker, [{
-      key: '_initLinearTracking',
+    _createClass(VASTTracker, [{
+      key: "_initLinearTracking",
       value: function _initLinearTracking() {
         this.linear = true;
         this.skipDelay = this.creative.skipDelay;
-
         this.setDuration(this.creative.duration);
-
         this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
         this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
       }
-
       /**
        * Init the custom tracking options for nonlinear and companion creatives.
        * These options are provided in the variation Object.
@@ -2674,22 +3343,20 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: '_initVariationTracking',
+      key: "_initVariationTracking",
       value: function _initVariationTracking() {
         this.linear = false;
-        this.skipDelay = DEFAULT_SKIP_DELAY;
+        this.skipDelay = DEFAULT_SKIP_DELAY; // If no variation has been provided there's nothing else to set
 
-        // If no variation has been provided there's nothing else to set
         if (!this.variation) {
           return;
-        }
+        } // Duplicate the variation's trackingEvents property so we can alter it
 
-        // Duplicate the variation's trackingEvents property so we can alter it
+
         for (var eventName in this.variation.trackingEvents) {
-          var events = this.variation.trackingEvents[eventName];
-
-          // If for the given eventName we already had some trackingEvents provided by the creative
+          var events = this.variation.trackingEvents[eventName]; // If for the given eventName we already had some trackingEvents provided by the creative
           // we want to keep both the creative trackingEvents and the variation ones
+
           if (this.trackingEvents[eventName]) {
             this.trackingEvents[eventName] = this.trackingEvents[eventName].concat(events.slice(0));
           } else {
@@ -2697,16 +3364,15 @@ var VAST = (function (exports) {
           }
         }
 
-        if (this.variation instanceof NonLinearAd) {
+        if (isNonLinearAd(this.variation)) {
           this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
           this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
           this.setDuration(this.variation.minSuggestedDuration);
-        } else if (this.variation instanceof CompanionAd) {
+        } else if (isCompanionAd(this.variation)) {
           this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
           this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
         }
       }
-
       /**
        * Sets the duration of the ad and updates the quartiles based on that.
        *
@@ -2714,22 +3380,22 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'setDuration',
+      key: "setDuration",
       value: function setDuration(duration) {
-        this.assetDuration = duration;
-        // beware of key names, theses are also used as event names
+        this.assetDuration = duration; // beware of key names, theses are also used as event names
+
         this.quartiles = {
           firstQuartile: Math.round(25 * this.assetDuration) / 100,
           midpoint: Math.round(50 * this.assetDuration) / 100,
           thirdQuartile: Math.round(75 * this.assetDuration) / 100
         };
       }
-
       /**
        * Sets the duration of the ad and updates the quartiles based on that.
        * This is required for tracking time related events.
        *
        * @param {Number} progress - Current playback time in seconds.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#start
        * @emits VASTTracker#skip-countdown
        * @emits VASTTracker#progress-[0-100]%
@@ -2741,10 +3407,11 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'setProgress',
+      key: "setProgress",
       value: function setProgress(progress) {
         var _this2 = this;
 
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
         if (skipDelay !== -1 && !this.skippable) {
@@ -2761,10 +3428,9 @@ var VAST = (function (exports) {
 
           if (progress > 0) {
             var percent = Math.round(progress / this.assetDuration * 100);
-
             events.push('start');
-            events.push('progress-' + percent + '%');
-            events.push('progress-' + Math.round(progress));
+            events.push("progress-".concat(percent, "%"));
+            events.push("progress-".concat(Math.round(progress)));
 
             for (var quartile in this.quartiles) {
               if (this.isQuartileReached(quartile, this.quartiles[quartile], progress)) {
@@ -2775,17 +3441,21 @@ var VAST = (function (exports) {
           }
 
           events.forEach(function (eventName) {
-            _this2.track(eventName, true);
+            _this2.track(eventName, {
+              macros: macros,
+              once: true
+            });
           });
 
           if (progress < this.progress) {
-            this.track('rewind');
+            this.track('rewind', {
+              macros: macros
+            });
           }
         }
 
         this.progress = progress;
       }
-
       /**
        * Checks if a quartile has been reached without have being triggered already.
        *
@@ -2797,84 +3467,109 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'isQuartileReached',
+      key: "isQuartileReached",
       value: function isQuartileReached(quartile, time, progress) {
-        var quartileReached = false;
-        // if quartile time already reached and never triggered
+        var quartileReached = false; // if quartile time already reached and never triggered
+
         if (time <= progress && !this._alreadyTriggeredQuartiles[quartile]) {
           quartileReached = true;
         }
+
         return quartileReached;
       }
-
       /**
        * Updates the mute state and calls the mute/unmute tracking URLs.
        *
        * @param {Boolean} muted - Indicates if the video is muted or not.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#mute
        * @emits VASTTracker#unmute
        */
 
     }, {
-      key: 'setMuted',
+      key: "setMuted",
       value: function setMuted(muted) {
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
         if (this.muted !== muted) {
-          this.track(muted ? 'mute' : 'unmute');
+          this.track(muted ? 'mute' : 'unmute', {
+            macros: macros
+          });
         }
+
         this.muted = muted;
       }
-
       /**
        * Update the pause state and call the resume/pause tracking URLs.
        *
        * @param {Boolean} paused - Indicates if the video is paused or not.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#pause
        * @emits VASTTracker#resume
        */
 
     }, {
-      key: 'setPaused',
+      key: "setPaused",
       value: function setPaused(paused) {
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
         if (this.paused !== paused) {
-          this.track(paused ? 'pause' : 'resume');
+          this.track(paused ? 'pause' : 'resume', {
+            macros: macros
+          });
         }
+
         this.paused = paused;
       }
-
       /**
        * Updates the fullscreen state and calls the fullscreen tracking URLs.
        *
        * @param {Boolean} fullscreen - Indicates if the video is in fulscreen mode or not.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#fullscreen
        * @emits VASTTracker#exitFullscreen
        */
 
     }, {
-      key: 'setFullscreen',
+      key: "setFullscreen",
       value: function setFullscreen(fullscreen) {
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
         if (this.fullscreen !== fullscreen) {
-          this.track(fullscreen ? 'fullscreen' : 'exitFullscreen');
+          this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', {
+            macros: macros
+          });
         }
+
         this.fullscreen = fullscreen;
       }
-
       /**
        * Updates the expand state and calls the expand/collapse tracking URLs.
        *
        * @param {Boolean} expanded - Indicates if the video is expanded or not.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#expand
+       * @emits VASTTracker#playerExpand
        * @emits VASTTracker#collapse
+       * @emits VASTTracker#playerCollapse
        */
 
     }, {
-      key: 'setExpand',
+      key: "setExpand",
       value: function setExpand(expanded) {
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
         if (this.expanded !== expanded) {
-          this.track(expanded ? 'expand' : 'collapse');
+          this.track(expanded ? 'expand' : 'collapse', {
+            macros: macros
+          });
+          this.track(expanded ? 'playerExpand' : 'playerCollapse', {
+            macros: macros
+          });
         }
+
         this.expanded = expanded;
       }
-
       /**
        * Must be called if you want to overwrite the <Linear> Skipoffset value.
        * This will init the skip countdown duration. Then, every time setProgress() is called,
@@ -2885,29 +3580,32 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'setSkipDelay',
+      key: "setSkipDelay",
       value: function setSkipDelay(duration) {
         if (typeof duration === 'number') {
           this.skipDelay = duration;
         }
       }
-
       /**
        * Tracks an impression (can be called only once).
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        *
        * @emits VASTTracker#creativeView
        */
 
     }, {
-      key: 'trackImpression',
+      key: "trackImpression",
       value: function trackImpression() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
         if (!this.impressed) {
           this.impressed = true;
           this.trackURLs(this.ad.impressionURLTemplates);
-          this.track('creativeView');
+          this.track('creativeView', {
+            macros: macros
+          });
         }
       }
-
       /**
        * Send a request to the URI provided by the VAST <Error> element.
        * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
@@ -2917,52 +3615,247 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'errorWithCode',
+      key: "errorWithCode",
       value: function errorWithCode(errorCode) {
         var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-        this.trackURLs(this.ad.errorURLTemplates, { ERRORCODE: errorCode }, { isCustomCode: isCustomCode });
+        this.trackURLs(this.ad.errorURLTemplates, {
+          ERRORCODE: errorCode
+        }, {
+          isCustomCode: isCustomCode
+        });
       }
-
       /**
        * Must be called when the user watched the linear creative until its end.
        * Calls the complete tracking URLs.
        *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#complete
        */
 
     }, {
-      key: 'complete',
+      key: "complete",
       value: function complete() {
-        this.track('complete');
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('complete', {
+          macros: macros
+        });
       }
+      /**
+       * Must be called if the ad was not and will not be played
+       * This is a terminal event; no other tracking events should be sent when this is used.
+       * Calls the notUsed tracking URLs.
+       *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#notUsed
+       */
 
+    }, {
+      key: "notUsed",
+      value: function notUsed() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('notUsed', {
+          macros: macros
+        });
+        this.trackingEvents = [];
+      }
+      /**
+       * An optional metric that can capture all other user interactions
+       * under one metric such as hover-overs, or custom clicks. It should NOT replace
+       * clickthrough events or other existing events like mute, unmute, pause, etc.
+       * Calls the otherAdInteraction tracking URLs.
+       *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#otherAdInteraction
+       */
+
+    }, {
+      key: "otherAdInteraction",
+      value: function otherAdInteraction() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('otherAdInteraction', {
+          macros: macros
+        });
+      }
+      /**
+       * Must be called if the user clicked or otherwise activated a control used to
+       * pause streaming content,* which either expands the ad within the player’s
+       * viewable area or “takes-over” the streaming content area by launching
+       * additional portion of the ad.
+       * Calls the acceptInvitation tracking URLs.
+       *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#acceptInvitation
+       */
+
+    }, {
+      key: "acceptInvitation",
+      value: function acceptInvitation() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('acceptInvitation', {
+          macros: macros
+        });
+      }
+      /**
+       * Must be called if user activated a control to expand the creative.
+       * Calls the adExpand tracking URLs.
+       *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#adExpand
+       */
+
+    }, {
+      key: "adExpand",
+      value: function adExpand() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('adExpand', {
+          macros: macros
+        });
+      }
+      /**
+       * Must be called when the user activated a control to reduce the creative to its original dimensions.
+       * Calls the adCollapse tracking URLs.
+       *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#adCollapse
+       */
+
+    }, {
+      key: "adCollapse",
+      value: function adCollapse() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('adCollapse', {
+          macros: macros
+        });
+      }
+      /**
+       * Must be called if the user clicked or otherwise activated a control used to minimize the ad.
+       * Calls the minimize tracking URLs.
+       *
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#minimize
+       */
+
+    }, {
+      key: "minimize",
+      value: function minimize() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('minimize', {
+          macros: macros
+        });
+      }
+      /**
+       * Must be called if the player did not or was not able to execute the provided
+       * verification code.The [REASON] macro must be filled with reason code
+       * Calls the verificationNotExecuted tracking URL of associated verification vendor.
+       *
+       * @param {String} vendor - An identifier for the verification vendor. The recommended format is [domain]-[useCase], to avoid name collisions. For example, "company.com-omid".
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#verificationNotExecuted
+       */
+
+    }, {
+      key: "verificationNotExecuted",
+      value: function verificationNotExecuted(vendor) {
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (!this.ad || !this.ad.adVerifications || !this.ad.adVerifications.length) {
+          throw new Error('No adVerifications provided');
+        }
+
+        if (!vendor) {
+          throw new Error('No vendor provided, unable to find associated verificationNotExecuted');
+        }
+
+        var vendorVerification = this.ad.adVerifications.find(function (verifications) {
+          return verifications.vendor === vendor;
+        });
+
+        if (!vendorVerification) {
+          throw new Error("No associated verification element found for vendor: ".concat(vendor));
+        }
+
+        var vendorTracking = vendorVerification.trackingEvents;
+
+        if (vendorTracking && vendorTracking.verificationNotExecuted) {
+          var verifsNotExecuted = vendorTracking.verificationNotExecuted;
+          this.trackURLs(verifsNotExecuted, macros);
+          this.emit('verificationNotExecuted', {
+            trackingURLTemplates: verifsNotExecuted
+          });
+        }
+      }
+      /**
+       * The time that the initial ad is displayed. This time is based on
+       * the time between the impression and either the completed length of display based
+       * on the agreement between transactional parties or a close, minimize, or accept
+       * invitation event.
+       * The time will be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] macros for VAST 4.1
+       * Calls the overlayViewDuration tracking URLs.
+       *
+       * @param {String} duration - The time that the initial ad is displayed.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       * @emits VASTTracker#overlayViewDuration
+       */
+
+    }, {
+      key: "overlayViewDuration",
+      value: function overlayViewDuration(duration) {
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        macros['CONTENTPLAYHEAD'] = duration;
+        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+        this.track('overlayViewDuration', {
+          macros: macros
+        });
+      }
       /**
        * Must be called when the player or the window is closed during the ad.
-       * Calls the `closeLinear` (in VAST 3.0) and `close` tracking URLs.
+       * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        *
        * @emits VASTTracker#closeLinear
        * @emits VASTTracker#close
        */
 
     }, {
-      key: 'close',
+      key: "close",
       value: function close() {
-        this.track(this.linear ? 'closeLinear' : 'close');
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track(this.linear ? 'closeLinear' : 'close', {
+          macros: macros
+        });
       }
-
       /**
        * Must be called when the skip button is clicked. Calls the skip tracking URLs.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        *
        * @emits VASTTracker#skip
        */
 
     }, {
-      key: 'skip',
+      key: "skip",
       value: function skip() {
-        this.track('skip');
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('skip', {
+          macros: macros
+        });
       }
+      /**
+       * Must be called then loaded and buffered the creative’s media and assets either fully
+       * or to the extent that it is ready to play the media
+       * Calls the loaded tracking URLs.
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+       *
+       * @emits VASTTracker#loaded
+       */
 
+    }, {
+      key: "load",
+      value: function load() {
+        var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        this.track('loaded', {
+          macros: macros
+        });
+      }
       /**
        * Must be called when the user clicks on the creative.
        * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
@@ -2973,36 +3866,45 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'click',
+      key: "click",
       value: function click() {
         var fallbackClickThroughURL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         if (this.clickTrackingURLTemplates && this.clickTrackingURLTemplates.length) {
-          this.trackURLs(this.clickTrackingURLTemplates);
-        }
+          this.trackURLs(this.clickTrackingURLTemplates, macros);
+        } // Use the provided fallbackClickThroughURL as a fallback
 
-        // Use the provided fallbackClickThroughURL as a fallback
+
         var clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL;
 
         if (clickThroughURLTemplate) {
-          var variables = this.linear ? { CONTENTPLAYHEAD: this.progressFormatted() } : {};
-          var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], variables)[0];
+          if (this.linear) {
+            macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+            macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+          }
 
+          var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], macros)[0];
           this.emit('clickthrough', clickThroughURL);
         }
       }
-
       /**
        * Calls the tracking URLs for the given eventName and emits the event.
        *
        * @param {String} eventName - The name of the event.
+       * @param {Object} [macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
        * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
+       *
        */
 
     }, {
-      key: 'track',
+      key: "track",
       value: function track(eventName) {
-        var once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+        var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            _ref$macros = _ref.macros,
+            macros = _ref$macros === void 0 ? {} : _ref$macros,
+            _ref$once = _ref.once,
+            once = _ref$once === void 0 ? false : _ref$once;
 
         // closeLinear event was introduced in VAST 3.0
         // Fallback to vast 2.0 close event if necessary
@@ -3014,44 +3916,74 @@ var VAST = (function (exports) {
         var isAlwaysEmitEvent = this.emitAlwaysEvents.indexOf(eventName) > -1;
 
         if (trackingURLTemplates) {
-          this.emit(eventName, '');
-          this.trackURLs(trackingURLTemplates);
+          this.emit(eventName, {
+            trackingURLTemplates: trackingURLTemplates
+          });
+          this.trackURLs(trackingURLTemplates, macros);
         } else if (isAlwaysEmitEvent) {
-          this.emit(eventName, '');
+          this.emit(eventName, null);
         }
 
         if (once) {
           delete this.trackingEvents[eventName];
+
           if (isAlwaysEmitEvent) {
             this.emitAlwaysEvents.splice(this.emitAlwaysEvents.indexOf(eventName), 1);
           }
         }
       }
-
       /**
-       * Calls the tracking urls templates with the given variables.
+       * Calls the tracking urls templates with the given macros .
        *
        * @param {Array} URLTemplates - An array of tracking url templates.
-       * @param {Object} [variables={}] - An optional Object of parameters to be used in the tracking calls.
+       * @param {Object} [macros ={}] - An optional Object of parameters to be used in the tracking calls.
        * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
        */
 
     }, {
-      key: 'trackURLs',
+      key: "trackURLs",
       value: function trackURLs(URLTemplates) {
-        var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
         if (this.linear) {
           if (this.creative && this.creative.mediaFiles && this.creative.mediaFiles[0] && this.creative.mediaFiles[0].fileURL) {
-            variables['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
+            macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
           }
-          variables['CONTENTPLAYHEAD'] = this.progressFormatted();
+
+          if (!macros['CONTENTPLAYHEAD'] && this.progress) {
+            //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
+            macros['CONTENTPLAYHEAD'] = this.progressFormatted();
+            macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+          }
         }
 
-        util.track(URLTemplates, variables, options);
-      }
+        if (this.creative && this.creative.universalAdId && this.creative.universalAdId.idRegistry && this.creative.universalAdId.value) {
+          macros['UNIVERSALADID'] = "".concat(this.creative.universalAdId.idRegistry, " ").concat(this.creative.universalAdId.value);
+        }
 
+        if (this.ad) {
+          if (this.ad.sequence) {
+            macros['PODSEQUENCE'] = this.ad.sequence;
+          }
+
+          if (this.ad.adType) {
+            macros['ADTYPE'] = this.ad.adType;
+          }
+
+          if (this.ad.adServingId) {
+            macros['ADSERVINGID'] = this.ad.adServingId;
+          }
+
+          if (this.ad.categories && this.ad.categories.length) {
+            macros['ADCATEGORIES'] = this.ad.categories.map(function (categorie) {
+              return categorie.value;
+            }).join(',');
+          }
+        }
+
+        util.track(URLTemplates, macros, options);
+      }
       /**
        * Formats time progress in a readable string.
        *
@@ -3059,25 +3991,32 @@ var VAST = (function (exports) {
        */
 
     }, {
-      key: 'progressFormatted',
+      key: "progressFormatted",
       value: function progressFormatted() {
         var seconds = parseInt(this.progress);
         var h = seconds / (60 * 60);
+
         if (h.length < 2) {
-          h = '0' + h;
+          h = "0".concat(h);
         }
+
         var m = seconds / 60 % 60;
+
         if (m.length < 2) {
-          m = '0' + m;
+          m = "0".concat(m);
         }
+
         var s = seconds % 60;
+
         if (s.length < 2) {
-          s = '0' + m;
+          s = "0".concat(m);
         }
+
         var ms = parseInt((this.progress - seconds) * 100);
-        return h + ':' + m + ':' + s + '.' + ms;
+        return "".concat(h, ":").concat(m, ":").concat(s, ".").concat(ms);
       }
     }]);
+
     return VASTTracker;
   }(EventEmitter);
 
@@ -3085,6 +4024,6 @@ var VAST = (function (exports) {
   exports.VASTParser = VASTParser;
   exports.VASTTracker = VASTTracker;
 
-  return exports;
+  Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
+}));

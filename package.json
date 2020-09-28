@@ -1,10 +1,7 @@
 {
   "name": "vast-client",
-  "author": "Olivier Poitrey <rs@dailymotion.com>",
-  "contributors": [
-    "Elia Maino <eliamaino@gmail.com>"
-  ],
-  "version": "2.5.1",
+  "author": "Dailymotion <vast-client@dailymotion.com> (https://developer.dailymotion.com/)",
+  "version": "3.0.0-alpha.10",
   "description": "JavaScript VAST Client",
   "keywords": [
     "vast",
@@ -20,42 +17,49 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.12.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "main": "dist/vast-client-node.min.js",
-  "module": "src/index.js",
-  "browser": {
-    "dist/vast-client.min.js": "dist/vast-client.min.js"
-  },
+  "browser": "dist/vast-client.min.js",
   "scripts": {
+    "performance": "node performance/performance_test.js",
+    "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
     "build": "rollup -c",
+    "postbuild": "node bundle_size.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
-    "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js"
+    "test": "mocha --require @babel/register && jest",
+    "jest": "jest"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-es2015": "^6.24.1",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/register": "^7.11.5",
+    "@rollup/plugin-alias": "^3.1.1",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^15.1.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "babel-eslint": "^10.1.0",
+    "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
-    "eslint": "^5.13.0",
-    "eslint-plugin-import": "^2.15.0",
-    "husky": "^0.14.3",
-    "mocha": "^5.1.1",
+    "canvas": "^2.6.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint": "^7.9.0",
+    "husky": "^4.3.0",
+    "jest": "^26.4.2",
+    "mocha": "^8.1.3",
     "path": "^0.12.7",
-    "prettier": "^1.11.1",
-    "pretty-quick": "^1.4.1",
-    "rollup": "^0.58.2",
-    "rollup-plugin-alias": "^1.4.0",
-    "rollup-plugin-babel": "^3.0.4",
-    "rollup-plugin-commonjs": "^9.1.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-uglify": "^3.0.0",
-    "should": "^11.2.1",
-    "sinon": "^2.3.6"
+    "prettier": "^2.1.2",
+    "pretty-quick": "^3.0.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup": "^2.28.1",
+    "should": "^13.2.3",
+    "sinon": "^2.4.1"
   },
   "dependencies": {
-    "xmldom": "^0.1.27"
+    "xmldom": "^0.3.0"
   }
 }

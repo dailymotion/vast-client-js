@@ -1,19 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VAST version="2.1">
+<VAST version="4.1">
   <Ad id="ad_id_0001" sequence="1">
     <InLine>
-      <AdSystem version="2.0" ><![CDATA[AdServer]]></AdSystem>
+      <AdSystem version="2.0"><![CDATA[AdServer]]></AdSystem>
       <AdTitle><![CDATA[Ad title]]></AdTitle>
-      <Advertiser><![CDATA[Advertiser name]]></Advertiser>
+      <Advertiser id='advertiser-desc'><![CDATA[Advertiser name]]></Advertiser>
       <Description><![CDATA[Description text]]></Description>
-      <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
+      <Pricing model="CPM" currency="USD"><![CDATA[1.09]]></Pricing>
       <Survey><![CDATA[http://example.com/survey]]></Survey>
       <Error><![CDATA[http://example.com/error_[ERRORCODE]]]></Error>
-      <Impression><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
-      <Impression><![CDATA[http://example.com/impression2_[random]]]></Impression>
-      <Impression><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
+      <Impression id="sample-impression1"><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
+      <Impression id="sample-impression2"><![CDATA[http://example.com/impression2_[random]]]></Impression>
+      <Impression id="sample-impression3"><![CDATA[http://example.com/impression3_[RANDOM]]]></Impression>
+      <AdVerifications>
+        <Verification vendor="company.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="true">
+            <![CDATA[http://example.com/omid1]]>
+          </JavaScriptResource>
+        </Verification>
+        <Verification vendor="company2.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="false">
+            <![CDATA[http://example.com/omid2]]>
+          </JavaScriptResource>
+          <VerificationParameters>
+            <![CDATA[test-verification-parameter]]>
+          </VerificationParameters>
+          <TrackingEvents>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://example.com/verification-not-executed-JS]]></Tracking>
+          </TrackingEvents>
+        </Verification>
+        <Verification vendor="company.daily.com-omid">
+          <ExecutableResource apiFramework="omid" type="executable">
+            <![CDATA[http://example.com/omid1.exe]]>
+          </ExecutableResource>
+          <TrackingEvents>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://example.com/verification-not-executed-EXE]]></Tracking>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://sample.com/verification-not-executed-EXE]]></Tracking>
+          </TrackingEvents>
+        </Verification>
+      </AdVerifications>
       <Creatives>
-        <Creative id="id130984" adId="adId345690" sequence="1" >
+        <Creative id="id130984" adId="adId345690" sequence="1">
+          <UniversalAdId idRegistry="daily-motion-L">Linear-12345</UniversalAdId>
+          <CreativeExtensions>
+            <CreativeExtension type="creativeExt1">
+              <CreativeExecution model="CPM" currency="USD" source="someone">
+                <![CDATA[ 10.0 ]]>
+              </CreativeExecution>
+            </CreativeExtension>
+            <CreativeExtension type="Count">
+              <![CDATA[ 10 ]]>
+            </CreativeExtension>
+            <CreativeExtension>
+                { key: value }
+            </CreativeExtension>
+          </CreativeExtensions>
           <Linear>
             <Duration>00:01:30.123</Duration>
             <TrackingEvents>
@@ -27,29 +68,45 @@
               <Tracking event="progress" offset="60%"><![CDATA[http://example.com/linear-progress-60%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
-              <ClickTracking><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
-              <ClickThrough><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
-              <CustomClick><![CDATA[http://example.com/linear-customclick]]></CustomClick>
+              <ClickTracking id='video-click-1'><![CDATA[http://example.com/linear-clicktracking1_ts:[TIMESTAMP]]]></ClickTracking>
+              <ClickTracking id='video-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></ClickTracking>
+              <ClickThrough id='click-through'><![CDATA[http://example.com/linear-clickthrough]]></ClickThrough>
+              <CustomClick id='custom-click-1'><![CDATA[http://example.com/linear-customclick]]></CustomClick>
             </VideoClicks>
             <MediaFiles>
-              <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true"><![CDATA[http://example.com/linear-asset.mp4]]></MediaFile>
-              <MediaFile apiFramework="VPAID" type="application/javascript" width="512" height="288" delivery="progressive"><![CDATA[parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D]]></MediaFile>
+              <MediaFile delivery="progressive" type="video/mp4" bitrate="849" width="512" height="288" scalable="true" fileSize="345670"><![CDATA[http://example.com/linear-asset.mp4]]></MediaFile>
+              <MediaFile apiFramework="VPAID" type="application/javascript" width="512" height="288" delivery="progressive" mediaType="3D"><![CDATA[parser.js?adData=http%3A%2F%2Fad.com%2F%3Fcb%3D%5Btime%5D]]></MediaFile>
+              <Mezzanine id="mezzanine-id-165468451" type="video/mp4" width="1080" height="720" delivery="progressive" codec="h264" fileSize="700"><![CDATA[http://example.com/linear-mezzanine.mp4]]></Mezzanine>
+              <InteractiveCreativeFile type="application/javascript" apiFramework="simpleApp" variableDuration="false"><![CDATA[http://example.com/linear-interactive-creative.js]]></InteractiveCreativeFile>
+              <ClosedCaptionFiles>
+                <ClosedCaptionFile type="text/srt" language="en">
+                  <![CDATA[https://mycdn.example.com/creatives/creative001.srt]]>
+                </ClosedCaptionFile>
+                <ClosedCaptionFile type="text/srt" language="fr">
+                  <![CDATA[https://mycdn.example.com/creatives/creative001-1.srt]]>
+                </ClosedCaptionFile>
+                <ClosedCaptionFile type="text/vtt" language="zh-TW">
+                  <![CDATA[https://mycdn.example.com/creatives/creative001.vtt]]>
+                </ClosedCaptionFile>
+                <ClosedCaptionFile type="application/ttml+xml" language="zh-CH">
+                  <![CDATA[https://mycdn.example.com/creatives/creative001.ttml]]>
+                </ClosedCaptionFile>
+              </ClosedCaptionFiles>
             </MediaFiles>
             <Icons>
-              <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID">
+              <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID" pxratio="2">
                 <StaticResource creativeType="image/gif"><![CDATA[http://example.com/linear-icon.gif]]></StaticResource>
                 <IconViewTracking><![CDATA[http://example.com/linear-viewtracking]]></IconViewTracking>
                 <IconClicks>
                   <IconClickThrough><![CDATA[http://example.com/linear-clickthrough]]></IconClickThrough>
-                  <IconClickTracking><![CDATA[http://example.com/linear-clicktracking1]]></IconClickTracking>
-                  <IconClickTracking><![CDATA[http://example.com/linear-clicktracking2]]></IconClickTracking>
+                  <IconClickTracking id='icon-click-1'><![CDATA[http://example.com/linear-clicktracking1]]></IconClickTracking>
+                  <IconClickTracking id='icon-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></IconClickTracking>
                 </IconClicks>
               </Icon>
             </Icons>
           </Linear>
         </Creative>
-        <Creative id="id130985" AdID="adId345691" sequence="2" >
+        <Creative id="id130985" AdID="adId345691" sequence="2">
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
@@ -58,7 +115,7 @@
                 <Tracking event="creativeView"><![CDATA[http://example.com/companion1-creativeview]]></Tracking>
               </TrackingEvents>
               <CompanionClickThrough><![CDATA[http://example.com/companion1-clickthrough]]></CompanionClickThrough>
-              <CompanionClickTracking><![CDATA[http://example.com/companion1-clicktracking-first]]></CompanionClickTracking>
+              <CompanionClickTracking id="123"><![CDATA[http://example.com/companion1-clicktracking-first]]></CompanionClickTracking>
               <CompanionClickTracking><![CDATA[http://example.com/companion1-clicktracking-second]]></CompanionClickTracking>
             </Companion>
             <Companion width="300" height="60">
@@ -81,15 +138,16 @@
             </Companion>
           </CompanionAds>
         </Creative>
-        <Creative>
+        <Creative id="id130986">
+          <UniversalAdId idRegistry="daily-motion-NL">NonLinear-12345</UniversalAdId>
           <NonLinearAds>
-            <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI" >
+            <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
               <AdParameters>
                 <![CDATA[{"key":"value"}]]>
               </AdParameters>
               <NonLinearClickThrough><![CDATA[http://example.com/nonlinear-clickthrough]]></NonLinearClickThrough>
-              <NonLinearClickTracking><![CDATA[http://example.com/nonlinear-clicktracking-1]]></NonLinearClickTracking>
+              <NonLinearClickTracking id='nonlinear-click-1'><![CDATA[http://example.com/nonlinear-clicktracking-1]]></NonLinearClickTracking>
               <NonLinearClickTracking><![CDATA[http://example.com/nonlinear-clicktracking-2]]></NonLinearClickTracking>
             </NonLinear>
             <TrackingEvents>
@@ -121,12 +179,13 @@
   </Ad>
   <Ad id="ad_id_0002">
     <InLine>
-      <AdSystem version="2.1" ><![CDATA[AdServer2]]></AdSystem>
+      <AdSystem version="2.1"><![CDATA[AdServer2]]></AdSystem>
       <AdTitle><![CDATA[Ad title 2]]></AdTitle>
-      <Impression><![CDATA[http://example.com/impression1]]></Impression>
+      <Impression id="sample-ad2-impression1"><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
         <Creative id="id873421" adID="adId221144" apiFramework="VPAID">
-          <Linear skipoffset="00:00:10" >
+          <UniversalAdId>Linear-id873421</UniversalAdId>
+          <Linear skipoffset="00:00:10">
             <Duration>30</Duration>
             <MediaFiles>
               <MediaFile delivery="progressive" type="application/javascript" width="512" height="288" apiFramework="VPAID"><![CDATA[http://example.com/vpaid.js]]></MediaFile>

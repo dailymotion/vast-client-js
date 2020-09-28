@@ -5,7 +5,7 @@ import { VASTParser } from '../src/parser/vast_parser';
 import { VASTTracker } from '../src/vast_tracker';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { util } from '../src/util/util';
-import { CreativeLinear } from '../src/creative/creative_linear';
+import { createCreativeLinear } from '../src/creative/creative_linear';
 
 const now = new Date();
 const vastParser = new VASTParser();
@@ -15,7 +15,7 @@ const options = {
 };
 
 const urlfor = relpath =>
-  `file://${path
+  `file:///${path
     .resolve(path.dirname(module.filename), 'vastfiles', relpath)
     .replace(/\\/g, '/')}`;
 
@@ -56,7 +56,9 @@ describe('VASTTracker', function() {
       before(() => {
         // Init tracker
         const ad = this.response.ads[0];
-        const creative = this.response.ads[0].creatives[0];
+        const creative = ad.creatives.filter(
+          creative => creative.id === 'id130984'
+        )[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative);
         // Mock emit
         this.Tracker.emit = event => {
@@ -234,8 +236,14 @@ describe('VASTTracker', function() {
         before(done => {
           _eventsSent = [];
           this.Tracker.trackingEvents['expand'] = 'http://example.com/expand';
+          this.Tracker.trackingEvents[
+            'playerExpand'
+          ] = this.Tracker.trackingEvents['expand'];
           this.Tracker.trackingEvents['collapse'] =
             'http://example.com/collapse';
+          this.Tracker.trackingEvents[
+            'playerCollapse'
+          ] = this.Tracker.trackingEvents['collapse'];
           this.Tracker.setExpand(true);
           done();
         });
@@ -245,7 +253,7 @@ describe('VASTTracker', function() {
         });
 
         it('should send expand event', () => {
-          _eventsSent.should.eql(['expand']);
+          _eventsSent.should.eql(['expand', 'playerExpand']);
         });
 
         it('should be in collapsed mode', () => {
@@ -255,7 +263,7 @@ describe('VASTTracker', function() {
         });
 
         it('should send collapse event', () => {
-          _eventsSent.should.eql(['collapse']);
+          _eventsSent.should.eql(['collapse', 'playerCollapse']);
         });
 
         it('should send no event', () => {
@@ -274,35 +282,6 @@ describe('VASTTracker', function() {
         it('should have skipDelay still set to 3', () => {
           this.Tracker.setSkipDelay('blabla');
           this.Tracker.skipDelay.should.eql(3);
-        });
-      });
-
-      describe('#trackImpression', () => {
-        before(done => {
-          _eventsSent = [];
-          util.track = function(URLTemplates, variables) {
-            _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
-          };
-          this.Tracker.trackImpression();
-          done();
-        });
-
-        it('should have impressed set to true', () => {
-          this.Tracker.impressed.should.eql(true);
-        });
-
-        it('should have called impression URLs', () => {
-          _eventsSent[0].length.should.eql(6);
-        });
-
-        it('should have sent creativeView event', () => {
-          _eventsSent[1].should.eql('creativeView');
-        });
-
-        it('should only be called once', () => {
-          _eventsSent = [];
-          this.Tracker.trackImpression();
-          _eventsSent.should.eql([]);
         });
       });
 
@@ -418,6 +397,15 @@ describe('VASTTracker', function() {
         });
       });
 
+      describe('#load', () => {
+        it('should have sent load event', () => {
+          _eventsSent = [];
+          this.Tracker.trackingEvents['loaded'] = ['http://example.com/loaded'];
+          this.Tracker.load();
+          _eventsSent.should.eql(['loaded', ['http://example.com/loaded']]);
+        });
+      });
+
       describe('#click', () => {
         before(done => {
           _eventsSent = [];
@@ -452,7 +440,9 @@ describe('VASTTracker', function() {
       before(() => {
         // Init tracker
         const ad = this.response.ads[0];
-        const creative = this.response.ads[0].creatives[0];
+        const creative = ad.creatives.filter(
+          creative => creative.id === 'id130984'
+        )[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative);
         // Mock emit
         this.Tracker.emit = event => {
@@ -480,7 +470,9 @@ describe('VASTTracker', function() {
       before(() => {
         // Init tracker
         const ad = this.response.ads[0];
-        const creative = ad.creatives[1];
+        const creative = ad.creatives.filter(
+          creative => creative.id === 'id130985'
+        )[0];
         const variation = creative.variations[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative, variation);
         // Mock emit
@@ -505,7 +497,9 @@ describe('VASTTracker', function() {
           );
           _eventsSent[0].should.eql([
             'http://example.com/companion1-clicktracking-first',
-            'http://example.com/companion1-clicktracking-second'
+            'http://example.com/companion1-clicktracking-second',
+            'http://example.com/wrapperB-companion1-click-tracking',
+            'http://example.com/wrapperA-companion1-click-tracking'
           ]);
         });
 
@@ -522,7 +516,9 @@ describe('VASTTracker', function() {
       before(() => {
         // Init tracker
         const ad = this.response.ads[0];
-        const creative = ad.creatives[2];
+        const creative = ad.creatives.filter(
+          creative => creative.id === 'id130986'
+        )[0];
         const variation = creative.variations[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative, variation);
         // Mock emit
@@ -573,7 +569,7 @@ describe('VASTTracker', function() {
       const eventsSent = [];
       before(() => {
         // Init tracker
-        const creative = new CreativeLinear();
+        const creative = createCreativeLinear();
         creative.videoClickThroughURLTemplate = clickThroughURL;
         const tracker = new VASTTracker(vastClient, {}, creative);
         // Mock emit
@@ -592,7 +588,7 @@ describe('VASTTracker', function() {
       const eventsSent = [];
       before(() => {
         // Init tracker
-        const creative = new CreativeLinear();
+        const creative = createCreativeLinear();
         creative.videoClickThroughURLTemplate = clickThroughURL;
         const tracker = new VASTTracker(vastClient, {}, creative);
         // Mock emit
@@ -638,6 +634,30 @@ describe('VASTTracker', function() {
         eventsSent[0].event.should.eql('clickthrough');
         eventsSent[0].args.should.eql([fallbackClickThroughURL]);
       });
+    });
+  });
+
+  describe('#Tracked pixels events', () => {
+    const eventsSent = [];
+    const creativeTrackingUrls = ['http://creativeView'];
+
+    before(() => {
+      // Init tracker
+      const creative = createCreativeLinear();
+      creative.trackingEvents.creativeView = creativeTrackingUrls;
+
+      const tracker = new VASTTracker(null, {}, creative);
+      // Mock emit
+      tracker.emit = (event, ...args) => {
+        eventsSent.push({ event, args });
+      };
+      tracker.trackImpression();
+    });
+
+    it('should contain trackingUrls info in the event payload', () => {
+      eventsSent[0].args[0].trackingURLTemplates.should.eql(
+        creativeTrackingUrls
+      );
     });
   });
 });

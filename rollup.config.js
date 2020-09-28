@@ -1,21 +1,11 @@
-import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
-import externalHelpers from 'babel-plugin-external-helpers';
-import builtins from 'rollup-plugin-node-builtins';
-import alias from 'rollup-plugin-alias';
-import resolve from 'rollup-plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
+import alias from '@rollup/plugin-alias';
+import resolve from '@rollup/plugin-node-resolve';
 
 const babelPlugin = babel({
   babelrc: false,
-  presets: [
-    [
-      'es2015',
-      {
-        modules: false
-      }
-    ]
-  ],
-  plugins: [externalHelpers],
+  presets: [['@babel/preset-env', { modules: false }]],
   exclude: ['node_modules/**']
 });
 
@@ -37,7 +27,7 @@ function minify(config) {
     '.min' +
     outputFile.substr(extensionIndex);
 
-  minifiedConfig.plugins.push(uglify());
+  minifiedConfig.plugins.push(terser());
 
   return minifiedConfig;
 }
@@ -46,13 +36,20 @@ const browserConfig = {
   input: 'src/index.js',
   output: {
     name: 'VAST',
-    format: 'iife',
+    format: 'umd',
     file: 'dist/vast-client.js'
   },
-  plugins: [
-    builtins(), // Needed for node EventEmitter class
-    babelPlugin
-  ]
+  plugins: [babelPlugin]
+};
+
+const browserScriptConfig = {
+  input: 'src/index.js',
+  output: {
+    name: 'VAST',
+    format: 'iife',
+    file: 'dist/vast-client-browser.js'
+  },
+  plugins: [babelPlugin]
 };
 
 const nodeConfig = {
@@ -80,5 +77,7 @@ export default [
 
   // CommonJS build for Node usage [package.json "main"]
   nodeConfig,
-  minify(nodeConfig)
+  minify(nodeConfig),
+
+  minify(browserScriptConfig)
 ];

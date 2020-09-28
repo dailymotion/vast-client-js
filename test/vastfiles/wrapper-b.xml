@@ -1,14 +1,22 @@
 <?xml version="1.0"?>
-<VAST version="2.0">
+<VAST version="4.1">
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
-      <VASTAdTagURI>sample.xml</VASTAdTagURI>
-      <Error>http://example.com/wrapperB-error</Error>
-      <Impression>http://example.com/wrapperB-impression1</Impression>
-      <Impression>http://example.com/wrapperB-impression2</Impression>
+      <VASTAdTagURI><![CDATA[sample.xml]]></VASTAdTagURI>
+      <Error><![CDATA[http://example.com/wrapperB-error]]></Error>
+      <Impression id="wrapper-b-impression1"><![CDATA[http://example.com/wrapperB-impression1]]></Impression>
+      <Impression id="wrapper-b-impression2"><![CDATA[http://example.com/wrapperB-impression2]]></Impression>
+      <AdVerifications>
+        <Verification vendor="verification-b.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="false">
+            <![CDATA[https://verification-b.com/omid_verification.js]]>
+          </JavaScriptResource>
+          <VerificationParameters><![CDATA[parameterB1=valueB1&parameterB2=valueB2]]></VerificationParameters>
+        </Verification>
+      </AdVerifications>
       <Creatives>
-        <Creative>
+        <Creative id="b:ca1">
           <CompanionAds>
             <Companion id="urn:a2:287461:103" width="0" height="0">
               <CompanionClickThrough><![CDATA[http://example.com/wrapperB-companion1-click-thru]]></CompanionClickThrough>
@@ -25,7 +33,7 @@
             </Companion>
           </CompanionAds>
         </Creative>
-        <Creative>
+        <Creative id="b:na1">
           <NonLinearAds>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperB-nonlinear-start]]></Tracking>
@@ -41,7 +49,7 @@
             </NonLinear>
           </NonLinearAds>
         </Creative>
-        <Creative>
+        <Creative id="b:la1">
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperB-linear-start]]></Tracking>

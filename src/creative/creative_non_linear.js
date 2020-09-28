@@ -1,10 +1,16 @@
-import { Creative } from './creative';
+import { createCreative } from './creative';
 
-export class CreativeNonLinear extends Creative {
-  constructor(creativeAttributes = {}) {
-    super(creativeAttributes);
-
-    this.type = 'nonlinear';
-    this.variations = [];
-  }
+export function createCreativeNonLinear(creativeAttributes = {}) {
+  const { id, adId, sequence, apiFramework } = createCreative(
+    creativeAttributes
+  );
+  return {
+    id,
+    adId,
+    sequence,
+    apiFramework,
+    type: 'nonlinear',
+    variations: [],
+    trackingEvents: {}
+  };
 }

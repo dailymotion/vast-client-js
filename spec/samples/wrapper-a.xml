@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<VAST version="2.0">
+  <Ad id="4321">
+    <Wrapper>
+      <AdSystem>VAST</AdSystem>
+      <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
+      <Error><![CDATA[http://example.com/wrapperA-error]]></Error>
+      <Impression id="wrapper-a-impression"><![CDATA[http://example.com/wrapperA-impression]]></Impression>
+      <Creatives>
+        <Creative id="a:ca1">
+          <CompanionAds>
+            <Companion id="urn:a2:287461:103" width="0" height="0">
+              <CompanionClickThrough><![CDATA[http://example.com/wrapperA-companion1-click-thru]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[http://example.com/wrapperA-companion1-click-tracking]]></CompanionClickTracking>
+              <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
+            </Companion>
+            <Companion width="300" height="60">
+              <IFrameResource>
+                <![CDATA[http://www.example.com/wrapperA-companion2-example.php]]>
+              </IFrameResource>
+              <CompanionClickThrough>
+                http://example.com/wrapperA-companion2-click-thru
+              </CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+        <Creative id="a:na1">
+          <NonLinearAds>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapperA-nonlinear-start]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapperA-nonlinear-complete]]></Tracking>
+            </TrackingEvents>
+            <NonLinearClickThrough>
+              http://www.example.com/wrapperA-nonlinear-click-thru
+            </NonLinearClickThrough>
+            <NonLinear>
+              <StaticResource>
+                <![CDATA[http://www.example.com/wrapperA-nonlinear-example.gif]]>
+              </StaticResource>
+            </NonLinear>
+          </NonLinearAds>
+        </Creative>
+        <Creative id="a:la1">
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start1]]></Tracking>
+              <Tracking event="progress" offset="00:00:30"><![CDATA[http://example.com/wrapperA-linear-progress-30sec]]></Tracking>
+              <Tracking event="progress" offset="60%"><![CDATA[http://example.com/wrapperA-linear-progress-60%]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapperA-linear-complete]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking id='wrapper-video-click-1'><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
+              <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking2]]></ClickTracking>
+              <CustomClick id='123'><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
+            </VideoClicks>
+          </Linear>
+        </Creative>
+        <Creative id="a:la2">
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start2]]></Tracking>
+              <Tracking event="progress" offset="90%"><![CDATA[http://example.com/wrapperA-linear-progress-90%]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking id='wrapper-video-click-3'><![CDATA[http://example.com/wrapperA-linear-clicktracking3]]></ClickTracking>
+            </VideoClicks>
+          </Linear>
+        </Creative>
+      </Creatives>
+      <Extensions>
+        <Extension type="WrapperExtension">
+          <extension_tag>
+            <![CDATA[ extension_value ]]>
+          </extension_tag>
+        </Extension>
+      </Extensions>
+    </Wrapper>
+  </Ad>
+  <Ad id="2032">
+    <Wrapper>
+      <AdSystem version="4.0">iabtechlab</AdSystem>
+      <VASTAdTagURI><![CDATA[vpaid.xml]]></VASTAdTagURI>
+
+      <Error>http://example.com/error</Error>
+
+      <Impression>http://example.com/track/impression</Impression>
+      <Creatives>
+        <Creative id="5480" sequence="1">
+          <CompanionAds>
+            <Companion id="1232" width="100" height="150" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250">
+              <StaticResource creativeType="image/png">
+                      <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
+              </StaticResource>
+              <CompanionClickThrough>
+                  <![CDATA[https://iabtechlab.com]]>
+              </CompanionClickThrough>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </Wrapper>
+  </Ad>
+</VAST>

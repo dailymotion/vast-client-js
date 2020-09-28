@@ -1,5 +1,5 @@
-import { CreativeNonLinear } from '../creative/creative_non_linear';
-import { NonLinearAd } from '../non_linear_ad';
+import { createCreativeNonLinear } from '../creative/creative_non_linear';
+import { createNonLinearAd } from '../non_linear_ad';
 import { parserUtils } from './parser_utils';
 
 /**
@@ -10,11 +10,10 @@ import { parserUtils } from './parser_utils';
  * Parses a NonLinear element.
  * @param  {any} creativeElement - The VAST NonLinear element to parse.
  * @param  {any} creativeAttributes - The attributes of the NonLinear (optional).
- * @return {CreativeNonLinear}
+ * @return {Object} creative - The CreativeNonLinear object.
  */
 export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
-  const creative = new CreativeNonLinear(creativeAttributes);
-
+  const creative = createCreativeNonLinear(creativeAttributes);
   parserUtils
     .childrenByName(creativeElement, 'TrackingEvents')
     .forEach(trackingEventsElement => {
@@ -37,7 +36,7 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
   parserUtils
     .childrenByName(creativeElement, 'NonLinear')
     .forEach(nonlinearResource => {
-      const nonlinearAd = new NonLinearAd();
+      const nonlinearAd = createNonLinearAd();
       nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
       nonlinearAd.width = nonlinearResource.getAttribute('width');
       nonlinearAd.height = nonlinearResource.getAttribute('height');
@@ -94,9 +93,10 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
       parserUtils
         .childrenByName(nonlinearResource, 'NonLinearClickTracking')
         .forEach(clickTrackingElement => {
-          nonlinearAd.nonlinearClickTrackingURLTemplates.push(
-            parserUtils.parseNodeText(clickTrackingElement)
-          );
+          nonlinearAd.nonlinearClickTrackingURLTemplates.push({
+            id: clickTrackingElement.getAttribute('id') || null,
+            url: parserUtils.parseNodeText(clickTrackingElement)
+          });
         });
 
       creative.variations.push(nonlinearAd);

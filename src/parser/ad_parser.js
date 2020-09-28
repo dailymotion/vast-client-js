@@ -1,10 +1,9 @@
-import { Ad } from '../ad';
-import { AdExtension } from '../ad_extension';
-import { AdExtensionChild } from '../ad_extension_child';
-import { parseCreativeCompanion } from './creative_companion_parser';
-import { parseCreativeLinear } from './creative_linear_parser';
-import { parseCreativeNonLinear } from './creative_non_linear_parser';
+import { createAd } from '../ad';
+import { createAdVerification } from '../ad_verification';
+import { parseCreatives } from './creatives_parser';
+import { parseExtensions } from './extensions_parser';
 import { parserUtils } from './parser_utils';
+import { parserVerification } from './parser_verification';
 
 /**
  * This module provides methods to parse a VAST Ad Element.
@@ -13,9 +12,16 @@ import { parserUtils } from './parser_utils';
 /**
  * Parses an Ad element (can either be a Wrapper or an InLine).
  * @param  {Object} adElement - The VAST Ad element to parse.
- * @return {Ad}
+ * @param  {Function} emit - Emit function used to trigger Warning event
+ * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+ * @emits  VASTParser#VAST-warning
+ * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
  */
-export function parseAd(adElement) {
+export function parseAd(
+  adElement,
+  emit,
+  { allowMultipleAds, followAdditionalWrappers } = {}
+) {
   const childNodes = adElement.childNodes;
 
   for (const adTypeElementKey in childNodes) {
@@ -25,93 +31,98 @@ export function parseAd(adElement) {
       continue;
     }
 
+    if (
+      adTypeElement.nodeName === 'Wrapper' &&
+      followAdditionalWrappers === false
+    ) {
+      continue;
+    }
+
     parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
     parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-
+    parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
     if (adTypeElement.nodeName === 'Wrapper') {
-      return parseWrapper(adTypeElement);
+      return { ad: parseWrapper(adTypeElement, emit), type: 'WRAPPER' };
     } else if (adTypeElement.nodeName === 'InLine') {
-      return parseInLine(adTypeElement);
+      return {
+        ad: parseInLine(adTypeElement, emit, { allowMultipleAds }),
+        type: 'INLINE'
+      };
     }
   }
 }
 
 /**
- * Parses an Inline element.
- * @param  {Object} inLineElement - The VAST Inline element to parse.
- * @return {Ad}
+ * Parses an Inline
+ * @param  {Object} adElement Element - The VAST Inline element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+ * @emits  VASTParser#VAST-warning
+ * @return {Object} ad - The ad object.
  */
-function parseInLine(inLineElement) {
-  const childNodes = inLineElement.childNodes;
-  const ad = new Ad();
-  ad.id = inLineElement.getAttribute('id') || null;
-  ad.sequence = inLineElement.getAttribute('sequence') || null;
+function parseInLine(adElement, emit, { allowMultipleAds } = {}) {
+  // if allowMultipleAds is set to false by wrapper attribute
+  // only the first stand-alone Ad (with no sequence values) in the
+  // requested VAST response is allowed so we won't parse ads with sequence
+  if (allowMultipleAds === false && adElement.getAttribute('sequence')) {
+    return null;
+  }
+
+  return parseAdElement(adElement, emit);
+}
+
+/**
+ * Parses an ad type (Inline or Wrapper)
+ * @param  {Object} adTypeElement - The VAST Inline or Wrapper element to parse.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
+ * @return {Object} ad - The ad object.
+ */
+function parseAdElement(adTypeElement, emit) {
+  if (emit) {
+    parserVerification.verifyRequiredValues(adTypeElement, emit);
+  }
+
+  const childNodes = adTypeElement.childNodes;
+  const ad = createAd(parserUtils.parseAttributes(adTypeElement));
 
   for (const nodeKey in childNodes) {
     const node = childNodes[nodeKey];
-
     switch (node.nodeName) {
       case 'Error':
         ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
         break;
 
       case 'Impression':
-        ad.impressionURLTemplates.push(parserUtils.parseNodeText(node));
+        ad.impressionURLTemplates.push({
+          id: node.getAttribute('id') || null,
+          url: parserUtils.parseNodeText(node)
+        });
         break;
 
       case 'Creatives':
-        parserUtils
-          .childrenByName(node, 'Creative')
-          .forEach(creativeElement => {
-            const creativeAttributes = {
-              id: creativeElement.getAttribute('id') || null,
-              adId: parseCreativeAdIdAttribute(creativeElement),
-              sequence: creativeElement.getAttribute('sequence') || null,
-              apiFramework: creativeElement.getAttribute('apiFramework') || null
-            };
-
-            for (const creativeTypeElementKey in creativeElement.childNodes) {
-              const creativeTypeElement =
-                creativeElement.childNodes[creativeTypeElementKey];
-              let parsedCreative;
-
-              switch (creativeTypeElement.nodeName) {
-                case 'Linear':
-                  parsedCreative = parseCreativeLinear(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
-                  break;
-                case 'NonLinearAds':
-                  parsedCreative = parseCreativeNonLinear(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
-                  break;
-                case 'CompanionAds':
-                  parsedCreative = parseCreativeCompanion(
-                    creativeTypeElement,
-                    creativeAttributes
-                  );
-                  if (parsedCreative) {
-                    ad.creatives.push(parsedCreative);
-                  }
-                  break;
-              }
-            }
-          });
+        ad.creatives = parseCreatives(
+          parserUtils.childrenByName(node, 'Creative')
+        );
         break;
 
-      case 'Extensions':
-        parseExtensions(
-          ad.extensions,
-          parserUtils.childrenByName(node, 'Extension')
+      case 'Extensions': {
+        const extNodes = parserUtils.childrenByName(node, 'Extension');
+        ad.extensions = parseExtensions(extNodes);
+
+        /*
+          OMID specify adVerifications should be in extensions for VAST < 4.0
+          To avoid to put them on two different places in two different format we reparse it
+          from extensions the same way than for an AdVerifications node.
+        */
+        if (!ad.adVerifications.length) {
+          ad.adVerifications = _parseAdVerificationsFromExensions(extNodes);
+        }
+        break;
+      }
+      case 'AdVerifications':
+        ad.adVerifications = _parseAdVerifications(
+          parserUtils.childrenByName(node, 'Verification')
         );
         break;
 
@@ -126,12 +137,34 @@ function parseInLine(inLineElement) {
         ad.title = parserUtils.parseNodeText(node);
         break;
 
+      case 'AdServingId':
+        ad.adServingId = parserUtils.parseNodeText(node);
+        break;
+
+      case 'Category':
+        ad.categories.push({
+          authority: node.getAttribute('authority') || null,
+          value: parserUtils.parseNodeText(node)
+        });
+        break;
+
+      case 'Expires':
+        ad.expires = parseInt(parserUtils.parseNodeText(node), 10);
+        break;
+
+      case 'ViewableImpression':
+        ad.viewableImpression = _parseViewableImpression(node);
+        break;
+
       case 'Description':
         ad.description = parserUtils.parseNodeText(node);
         break;
 
       case 'Advertiser':
-        ad.advertiser = parserUtils.parseNodeText(node);
+        ad.advertiser = {
+          id: node.getAttribute('id') || null,
+          value: parserUtils.parseNodeText(node)
+        };
         break;
 
       case 'Pricing':
@@ -145,6 +178,13 @@ function parseInLine(inLineElement) {
       case 'Survey':
         ad.survey = parserUtils.parseNodeText(node);
         break;
+
+      case 'BlockedAdCategories':
+        ad.blockedAdCategories.push({
+          authority: node.getAttribute('authority') || null,
+          value: parserUtils.parseNodeText(node)
+        });
+        break;
     }
   }
 
@@ -154,10 +194,30 @@ function parseInLine(inLineElement) {
 /**
  * Parses a Wrapper element without resolving the wrapped urls.
  * @param  {Object} wrapperElement - The VAST Wrapper element to be parsed.
+ * @param  {Function} emit - Emit function used to trigger Warning event.
+ * @emits  VASTParser#VAST-warning
  * @return {Ad}
  */
-function parseWrapper(wrapperElement) {
-  const ad = parseInLine(wrapperElement);
+function parseWrapper(wrapperElement, emit) {
+  const ad = parseAdElement(wrapperElement, emit);
+
+  const followAdditionalWrappersValue = wrapperElement.getAttribute(
+    'followAdditionalWrappers'
+  );
+  const allowMultipleAdsValue = wrapperElement.getAttribute('allowMultipleAds');
+  const fallbackOnNoAdValue = wrapperElement.getAttribute('fallbackOnNoAd');
+  ad.followAdditionalWrappers = followAdditionalWrappersValue
+    ? parserUtils.parseBoolean(followAdditionalWrappersValue)
+    : true;
+
+  ad.allowMultipleAds = allowMultipleAdsValue
+    ? parserUtils.parseBoolean(allowMultipleAdsValue)
+    : false;
+
+  ad.fallbackOnNoAd = fallbackOnNoAdValue
+    ? parserUtils.parseBoolean(fallbackOnNoAdValue)
+    : null;
+
   let wrapperURLElement = parserUtils.childByName(
     wrapperElement,
     'VASTAdTagURI'
@@ -231,65 +291,121 @@ function parseWrapper(wrapperElement) {
 }
 
 /**
- * Parses an array of Extension elements.
- * @param  {Array} collection - The array used to store the parsed extensions.
- * @param  {Array} extensions - The array of extensions to parse.
+ * Parses the AdVerifications Element.
+ * @param  {Array} verifications - The array of verifications to parse.
+ * @return {Array<Object>}
  */
-function parseExtensions(collection, extensions) {
-  extensions.forEach(extNode => {
-    const ext = new AdExtension();
-    const extNodeAttrs = extNode.attributes;
-    const childNodes = extNode.childNodes;
+export function _parseAdVerifications(verifications) {
+  const ver = [];
 
-    if (extNode.attributes) {
-      for (const extNodeAttrKey in extNodeAttrs) {
-        const extNodeAttr = extNodeAttrs[extNodeAttrKey];
+  verifications.forEach(verificationNode => {
+    const verification = createAdVerification();
+    const childNodes = verificationNode.childNodes;
 
-        if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
-          ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
-        }
+    parserUtils.assignAttributes(verificationNode.attributes, verification);
+    for (const nodeKey in childNodes) {
+      const node = childNodes[nodeKey];
+
+      switch (node.nodeName) {
+        case 'JavaScriptResource':
+        case 'ExecutableResource':
+          verification.resource = parserUtils.parseNodeText(node);
+          parserUtils.assignAttributes(node.attributes, verification);
+          break;
+        case 'VerificationParameters':
+          verification.parameters = parserUtils.parseNodeText(node);
+          break;
       }
     }
 
-    for (const childNodeKey in childNodes) {
-      const childNode = childNodes[childNodeKey];
-      const txt = parserUtils.parseNodeText(childNode);
-
-      // ignore comments / empty value
-      if (childNode.nodeName !== '#comment' && txt !== '') {
-        const extChild = new AdExtensionChild();
-        extChild.name = childNode.nodeName;
-        extChild.value = txt;
-
-        if (childNode.attributes) {
-          const childNodeAttributes = childNode.attributes;
-
-          for (const extChildNodeAttrKey in childNodeAttributes) {
-            const extChildNodeAttr = childNodeAttributes[extChildNodeAttrKey];
-
-            extChild.attributes[extChildNodeAttr.nodeName] =
-              extChildNodeAttr.nodeValue;
+    const trackingEventsElement = parserUtils.childByName(
+      verificationNode,
+      'TrackingEvents'
+    );
+    if (trackingEventsElement) {
+      parserUtils
+        .childrenByName(trackingEventsElement, 'Tracking')
+        .forEach(trackingElement => {
+          const eventName = trackingElement.getAttribute('event');
+          const trackingURLTemplate = parserUtils.parseNodeText(
+            trackingElement
+          );
+          if (eventName && trackingURLTemplate) {
+            if (!Array.isArray(verification.trackingEvents[eventName])) {
+              verification.trackingEvents[eventName] = [];
+            }
+            verification.trackingEvents[eventName].push(trackingURLTemplate);
           }
-        }
-
-        ext.children.push(extChild);
-      }
+        });
     }
 
-    collection.push(ext);
+    ver.push(verification);
   });
+
+  return ver;
 }
 
 /**
- * Parses the creative adId Attribute.
- * @param  {any} creativeElement - The creative element to retrieve the adId from.
- * @return {String|null}
+ * Parses the AdVerifications Element from extension for versions < 4.0
+ * @param  {Array<Node>} extensions - The array of extensions to parse.
+ * @return {Array<Object>}
  */
-function parseCreativeAdIdAttribute(creativeElement) {
-  return (
-    creativeElement.getAttribute('AdID') || // VAST 2 spec
-    creativeElement.getAttribute('adID') || // VAST 3 spec
-    creativeElement.getAttribute('adId') || // VAST 4 spec
-    null
-  );
+export function _parseAdVerificationsFromExensions(extensions) {
+  let adVerificationsNode = null,
+    adVerifications = [];
+
+  // Find the first (and only) AdVerifications node from extensions
+  extensions.some(extension => {
+    return (adVerificationsNode = parserUtils.childByName(
+      extension,
+      'AdVerifications'
+    ));
+  });
+
+  // Parse it if we get it
+  if (adVerificationsNode) {
+    adVerifications = _parseAdVerifications(
+      parserUtils.childrenByName(adVerificationsNode, 'Verification')
+    );
+  }
+
+  return adVerifications;
+}
+
+/**
+ * Parses the ViewableImpression Element.
+ * @param  {Object} viewableImpressionNode - The ViewableImpression node element.
+ * @return {Object} viewableImpression - The viewableImpression object
+ */
+export function _parseViewableImpression(viewableImpressionNode) {
+  const viewableImpression = {};
+  viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
+  const viewableImpressionChildNodes = viewableImpressionNode.childNodes;
+  for (const viewableImpressionElementKey in viewableImpressionChildNodes) {
+    const viewableImpressionElement =
+      viewableImpressionChildNodes[viewableImpressionElementKey];
+    const viewableImpressionNodeName = viewableImpressionElement.nodeName;
+    const viewableImpressionNodeValue = parserUtils.parseNodeText(
+      viewableImpressionElement
+    );
+
+    if (
+      (viewableImpressionNodeName !== 'Viewable' &&
+        viewableImpressionNodeName !== 'NotViewable' &&
+        viewableImpressionNodeName !== 'ViewUndetermined') ||
+      !viewableImpressionNodeValue
+    ) {
+      continue;
+    } else {
+      const viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
+      if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
+        viewableImpression[viewableImpressionNodeNameLower] = [];
+      }
+      viewableImpression[viewableImpressionNodeNameLower].push(
+        viewableImpressionNodeValue
+      );
+    }
+  }
+
+  return viewableImpression;
 }

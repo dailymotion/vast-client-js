@@ -6,9 +6,9 @@ import { util } from '../util/util';
 
 /**
  * Returns the first element of the given node which nodeName matches the given name.
- * @param  {Object} node - The node to use to find a match.
+ * @param  {Node} node - The node to use to find a match.
  * @param  {String} name - The name to look for.
- * @return {Object}
+ * @return {Object|undefined}
  */
 function childByName(node, name) {
   const childNodes = node.childNodes;
@@ -24,8 +24,8 @@ function childByName(node, name) {
 
 /**
  * Returns all the elements of the given node which nodeName match the given name.
- * @param  {any} node - The node to use to find the matches.
- * @param  {any} name - The name to look for.
+ * @param  {Node} node - The node to use to find the matches.
+ * @param  {String} name - The name to look for.
  * @return {Array}
  */
 function childrenByName(node, name) {
@@ -73,7 +73,7 @@ function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
  * @return {Boolean}
  */
 function parseBoolean(booleanString) {
-  return ['true', 'TRUE', '1'].indexOf(booleanString) !== -1;
+  return ['true', 'TRUE', 'True', '1'].indexOf(booleanString) !== -1;
 }
 
 /**
@@ -96,6 +96,21 @@ function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
   if (attributeValue) {
     nodeDestination.setAttribute(attributeName, attributeValue);
   }
+}
+
+/**
+ * Converts element attributes into an object, where object key is attribute name
+ * and object value is attribute value
+ * @param {Element} element
+ * @returns {Object}
+ */
+function parseAttributes(element) {
+  const nodeAttributes = element.attributes;
+  const attributes = {};
+  for (let i = 0; i < nodeAttributes.length; i++) {
+    attributes[nodeAttributes[i].nodeName] = nodeAttributes[i].nodeValue;
+  }
+  return attributes;
 }
 
 /**
@@ -173,6 +188,32 @@ function splitVAST(ads) {
 }
 
 /**
+ * Parses the attributes and assign them to object
+ * @param  {Object} attributes attribute
+ * @param  {Object} verificationObject with properties which can be assigned
+ */
+function assignAttributes(attributes, verificationObject) {
+  if (attributes) {
+    for (const attrKey in attributes) {
+      const attribute = attributes[attrKey];
+
+      if (
+        attribute.nodeName &&
+        attribute.nodeValue &&
+        verificationObject.hasOwnProperty(attribute.nodeName)
+      ) {
+        let value = attribute.nodeValue;
+
+        if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+          value = parseBoolean(value);
+        }
+        verificationObject[attribute.nodeName] = value;
+      }
+    }
+  }
+}
+
+/**
  * Merges the data between an unwrapped ad and his wrapper.
  * @param  {Ad} unwrappedAd - The 'unwrapped' Ad.
  * @param  {Ad} wrapper - The wrapper Ad.
@@ -187,7 +228,46 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
+  // values from the child wrapper will be overridden
+  unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
+  unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
+  unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
+
+  const wrapperCompanions = (wrapper.creatives || []).filter(
+    creative => creative && creative.type === 'companion'
+  );
+  const wrapperCompanionClickTracking = wrapperCompanions.reduce(
+    (result, creative) => {
+      (creative.variations || []).forEach(variation => {
+        (variation.companionClickTrackingURLTemplates || []).forEach(
+          companionClickTrackingURLTemplate => {
+            if (
+              !util.containsTemplateObject(
+                companionClickTrackingURLTemplate,
+                result
+              )
+            ) {
+              result.push(companionClickTrackingURLTemplate);
+            }
+          }
+        );
+      });
+      return result;
+    },
+    []
+  );
+  unwrappedAd.creatives = wrapperCompanions.concat(unwrappedAd.creatives);
+
+  const wrapperHasVideoClickTracking =
+    wrapper.videoClickTrackingURLTemplates &&
+    wrapper.videoClickTrackingURLTemplates.length;
+
+  const wrapperHasVideoCustomClick =
+    wrapper.videoCustomClickURLTemplates &&
+    wrapper.videoCustomClickURLTemplates.length;
+
   unwrappedAd.creatives.forEach(creative => {
+    // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (const eventName in wrapper.trackingEvents[creative.type]) {
         const urls = wrapper.trackingEvents[creative.type][eventName];
@@ -199,46 +279,54 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         ].concat(urls);
       }
     }
-  });
 
-  if (
-    wrapper.videoClickTrackingURLTemplates &&
-    wrapper.videoClickTrackingURLTemplates.length
-  ) {
-    unwrappedAd.creatives.forEach(creative => {
-      if (creative.type === 'linear') {
+    if (creative.type === 'linear') {
+      // merge video click tracking url
+      if (wrapperHasVideoClickTracking) {
         creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(
           wrapper.videoClickTrackingURLTemplates
         );
       }
-    });
-  }
 
-  if (
-    wrapper.videoCustomClickURLTemplates &&
-    wrapper.videoCustomClickURLTemplates.length
-  ) {
-    unwrappedAd.creatives.forEach(creative => {
-      if (creative.type === 'linear') {
+      // merge video custom click url
+      if (wrapperHasVideoCustomClick) {
         creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(
           wrapper.videoCustomClickURLTemplates
         );
       }
-    });
-  }
 
-  // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
-  if (wrapper.videoClickThroughURLTemplate) {
-    unwrappedAd.creatives.forEach(creative => {
+      // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
       if (
-        creative.type === 'linear' &&
+        wrapper.videoClickThroughURLTemplate &&
         (creative.videoClickThroughURLTemplate === null ||
           typeof creative.videoClickThroughURLTemplate === 'undefined')
       ) {
         creative.videoClickThroughURLTemplate =
           wrapper.videoClickThroughURLTemplate;
       }
-    });
+    }
+
+    // pass wrapper companion trackers to all companions
+    if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
+      (creative.variations || []).forEach(variation => {
+        variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(
+          variation.companionClickTrackingURLTemplates,
+          wrapperCompanionClickTracking
+        );
+      });
+    }
+  });
+  // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
+  if (wrapper.adVerifications) {
+    unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(
+      wrapper.adVerifications
+    );
+  }
+
+  if (wrapper.blockedAdCategories) {
+    unwrappedAd.blockedAdCategories = unwrappedAd.blockedAdCategories.concat(
+      wrapper.blockedAdCategories
+    );
   }
 }
 
@@ -249,7 +337,9 @@ export const parserUtils = {
   parseBoolean,
   parseNodeText,
   copyNodeAttribute,
+  parseAttributes,
   parseDuration,
   splitVAST,
+  assignAttributes,
   mergeWrapperAdData
 };

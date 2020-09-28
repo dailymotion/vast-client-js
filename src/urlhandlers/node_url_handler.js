@@ -1,3 +1,5 @@
+import { DEFAULT_TIMEOUT } from './consts';
+
 const uri = require('url');
 const fs = require('fs');
 const http = require('http');
@@ -8,39 +10,54 @@ function get(url, options, cb) {
   url = uri.parse(url);
   const httpModule = url.protocol === 'https:' ? https : http;
   if (url.protocol === 'file:') {
-    fs.readFile(url.pathname, 'utf8', function(err, data) {
+    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function(err, data) {
       if (err) {
         return cb(err);
       }
       const xml = new DOMParser().parseFromString(data);
-      cb(null, xml);
+      cb(null, xml, { byteLength: Buffer.from(data).byteLength });
     });
   } else {
-    let timing;
+    let timeoutId;
     let data = '';
-
-    const timeoutWrapper = req => () => req.abort();
+    const timeout = options.timeout || DEFAULT_TIMEOUT;
 
     const req = httpModule.get(url.href, function(res) {
       res.on('data', function(chunk) {
         data += chunk;
-        clearTimeout(timing);
-        timing = setTimeout(fn, options.timeout || 120000);
+        clearTimeout(timeoutId);
+        timeoutId = startTimeout();
       });
       res.on('end', function() {
-        clearTimeout(timing);
+        clearTimeout(timeoutId);
         const xml = new DOMParser().parseFromString(data);
-        cb(null, xml);
+        cb(null, xml, {
+          byteLength: Buffer.from(data).byteLength,
+          statusCode: res.statusCode
+        });
       });
     });
 
     req.on('error', function(err) {
-      clearTimeout(timing);
-      cb(err);
+      clearTimeout(timeoutId);
+
+      if (req.aborted) {
+        cb(
+          new Error(`NodeURLHandler: Request timed out after ${timeout} ms.`),
+          null,
+          {
+            statusCode: 408 // Request timeout
+          }
+        );
+      } else {
+        cb(err);
+      }
     });
 
-    const fn = timeoutWrapper(req);
-    timing = setTimeout(fn, options.timeout || 120000);
+    const startTimeout = () => {
+      return setTimeout(() => req.abort(), timeout);
+    };
+    timeoutId = startTimeout();
   }
 }
 

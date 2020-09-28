@@ -3,11 +3,22 @@
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
-      <VASTAdTagURI>wrapper-b.xml</VASTAdTagURI>
-      <Error>http://example.com/wrapperA-error</Error>
-      <Impression>http://example.com/wrapperA-impression</Impression>
+      <VASTAdTagURI><![CDATA[wrapper-b.xml]]></VASTAdTagURI>
+      <Error><![CDATA[http://example.com/wrapperA-error]]></Error>
+      <Impression id="wrapper-a-impression"><![CDATA[http://example.com/wrapperA-impression]]></Impression>
+      <AdVerifications>
+        <Verification vendor="verification-a.com-omid">
+          <JavaScriptResource apiFramework="omid" browserOptional="false">
+            <![CDATA[https://verification-a.com/omid_verification.js]]>
+          </JavaScriptResource>
+          <VerificationParameters><![CDATA[parameterA1=valueA1&parameterA2=valueA2]]></VerificationParameters>
+          <TrackingEvents>
+            <Tracking event="verificationNotExecuted"><![CDATA[http://verification-a.com/verification-A-not-executed-JS]]></Tracking>
+          </TrackingEvents>
+        </Verification>
+      </AdVerifications>
       <Creatives>
-        <Creative>
+        <Creative id="a:ca1">
           <CompanionAds>
             <Companion id="urn:a2:287461:103" width="0" height="0">
               <CompanionClickThrough><![CDATA[http://example.com/wrapperA-companion1-click-thru]]></CompanionClickThrough>
@@ -24,7 +35,7 @@
             </Companion>
           </CompanionAds>
         </Creative>
-        <Creative>
+        <Creative id="a:na1">
           <NonLinearAds>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperA-nonlinear-start]]></Tracking>
@@ -40,7 +51,7 @@
             </NonLinear>
           </NonLinearAds>
         </Creative>
-        <Creative>
+        <Creative id="a:la1">
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start1]]></Tracking>
@@ -49,20 +60,20 @@
               <Tracking event="complete"><![CDATA[http://example.com/wrapperA-linear-complete]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
+              <ClickTracking id='wrapper-video-click-1'><![CDATA[http://example.com/wrapperA-linear-clicktracking1]]></ClickTracking>
               <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking2]]></ClickTracking>
-              <CustomClick><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
+              <CustomClick id='123'><![CDATA[http://example.com/wrapperA-linear-customclick]]></CustomClick>
             </VideoClicks>
           </Linear>
         </Creative>
-        <Creative>
+        <Creative id="a:la2">
           <Linear>
             <TrackingEvents>
               <Tracking event="start"><![CDATA[http://example.com/wrapperA-linear-start2]]></Tracking>
               <Tracking event="progress" offset="90%"><![CDATA[http://example.com/wrapperA-linear-progress-90%]]></Tracking>
             </TrackingEvents>
             <VideoClicks>
-              <ClickTracking><![CDATA[http://example.com/wrapperA-linear-clicktracking3]]></ClickTracking>
+              <ClickTracking id='wrapper-video-click-3'><![CDATA[http://example.com/wrapperA-linear-clicktracking3]]></ClickTracking>
             </VideoClicks>
           </Linear>
         </Creative>

@@ -1,5 +1,9 @@
 dist/
+dist_old/
 !.eslintrc.js
 rollup.config.js
 node_modules/
 test/
+spec/
+jest.config.js
+performance/
