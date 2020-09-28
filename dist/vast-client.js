@@ -1,10 +1,12 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global.VAST = {}));
-}(this, function (exports) { 'use strict';
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.VAST = {}));
+}(this, (function (exports) { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -40,6 +42,55 @@
     return Constructor;
   }
 
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
+
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function");
@@ -71,6 +122,19 @@
     return _setPrototypeOf(o, p);
   }
 
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+
+    try {
+      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -85,6 +149,25 @@
     }
 
     return _assertThisInitialized(self);
+  }
+
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+
+    return function _createSuperInternal() {
+      var Super = _getPrototypeOf(Derived),
+          result;
+
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+
+      return _possibleConstructorReturn(this, result);
+    };
   }
 
   function createAd() {
@@ -108,7 +191,11 @@
       impressionURLTemplates: [],
       creatives: [],
       extensions: [],
-      adVerifications: []
+      adVerifications: [],
+      blockedAdCategories: [],
+      followAdditionalWrappers: true,
+      allowMultipleAds: false,
+      fallbackOnNoAd: null
     };
   }
 
@@ -189,11 +276,8 @@
     };
   }
 
-  var supportedMacros = ['CONTENTPLAYHEAD', // @deprecated VAST 4.1
-  'ADPLAYHEAD', 'MEDIAPLAYHEAD', 'ADPLAYHEAD', 'ASSETURI', 'PODSEQUENCE', 'UNIVERSALADID', 'CONTENTURI', 'CONTENTID', 'VERIFICATIONVENDORS', 'EXTENSIONS', 'DEVICEIP', 'SERVERSIDE', 'CLIENTUA', 'SERVERUA', 'DEVICEUA', 'TRANSACTIONID', 'ADCOUNT', 'BREAKPOSITION', 'PLACEMENTTYPE', 'IFA', 'IFATYPE', 'LATLONG', 'DOMAIN', 'PAGEURL', 'APPBUNDLE', 'VASTVERSIONS', 'APIFRAMEWORKS', 'MEDIAMIME', 'PLAYERCAPABILITIES', 'CLICKTYPE', 'PLAYERSTATE', 'INVENTORYSTATE', 'CLICKPOS', 'PLAYERSIZE', 'LIMITADTRACKING', 'REGULATIONS', 'GDPRCONSENT', // <BlockedAdCategories> element is not parsed for now so the vastTracker
-  // can't replace the macro with element value automatically.
-  // The player need to pass it inside "macro" parameter when calling trackers
-  'BLOCKEDADCATEGORIES', 'ADCATEGORIES', 'ADTYPE', 'ADSERVINGID'];
+  var supportedMacros = ['ADCATEGORIES', 'ADCOUNT', 'ADPLAYHEAD', 'ADSERVINGID', 'ADTYPE', 'APIFRAMEWORKS', 'APPBUNDLE', 'ASSETURI', 'BLOCKEDADCATEGORIES', 'BREAKMAXADLENGTH', 'BREAKMAXADS', 'BREAKMAXDURATION', 'BREAKMINADLENGTH', 'BREAKMINDURATION', 'BREAKPOSITION', 'CLICKPOS', 'CLICKTYPE', 'CLIENTUA', 'CONTENTID', 'CONTENTPLAYHEAD', // @deprecated VAST 4.1
+  'CONTENTURI', 'DEVICEIP', 'DEVICEUA', 'DOMAIN', 'EXTENSIONS', 'GDPRCONSENT', 'IFA', 'IFATYPE', 'INVENTORYSTATE', 'LATLONG', 'LIMITADTRACKING', 'MEDIAMIME', 'MEDIAPLAYHEAD', 'OMIDPARTNER', 'PAGEURL', 'PLACEMENTTYPE', 'PLAYERCAPABILITIES', 'PLAYERSIZE', 'PLAYERSTATE', 'PODSEQUENCE', 'REGULATIONS', 'SERVERSIDE', 'SERVERUA', 'TRANSACTIONID', 'UNIVERSALADID', 'VASTVERSIONS', 'VERIFICATIONVENDORS'];
 
   function track(URLTemplates, macros, options) {
     var URLs = resolveURLTemplates(URLTemplates, macros, options);
@@ -369,9 +453,12 @@
     });
   }
 
-  function leftpad(str) {
-    if (str.length < 8) {
-      return range(0, 8 - str.length, false).map(function () {
+  function leftpad(input) {
+    var len = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
+    var str = String(input);
+
+    if (str.length < len) {
+      return range(0, len - str.length, false).map(function () {
         return '0';
       }).join('') + str;
     }
@@ -673,7 +760,11 @@
   function mergeWrapperAdData(unwrappedAd, wrapper) {
     unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
     unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
-    unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
+    unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions); // values from the child wrapper will be overridden
+
+    unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
+    unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
+    unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
     var wrapperCompanions = (wrapper.creatives || []).filter(function (creative) {
       return creative && creative.type === 'companion';
     });
@@ -731,6 +822,10 @@
 
     if (wrapper.adVerifications) {
       unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(wrapper.adVerifications);
+    }
+
+    if (wrapper.blockedAdCategories) {
+      unwrappedAd.blockedAdCategories = unwrappedAd.blockedAdCategories.concat(wrapper.blockedAdCategories);
     }
   }
 
@@ -1114,7 +1209,7 @@
 
 
   function parseIcon(iconElement) {
-    var icon = createIcon(iconElement);
+    var icon = createIcon();
     icon.program = iconElement.getAttribute('program');
     icon.height = parseInt(iconElement.getAttribute('height') || 0);
     icon.width = parseInt(iconElement.getAttribute('width') || 0);
@@ -1723,17 +1818,26 @@
    * Parses an Ad element (can either be a Wrapper or an InLine).
    * @param  {Object} adElement - The VAST Ad element to parse.
    * @param  {Function} emit - Emit function used to trigger Warning event
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
    * @emits  VASTParser#VAST-warning
    * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
    */
 
   function parseAd(adElement, emit) {
+    var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+        allowMultipleAds = _ref.allowMultipleAds,
+        followAdditionalWrappers = _ref.followAdditionalWrappers;
+
     var childNodes = adElement.childNodes;
 
     for (var adTypeElementKey in childNodes) {
       var adTypeElement = childNodes[adTypeElementKey];
 
       if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
+        continue;
+      }
+
+      if (adTypeElement.nodeName === 'Wrapper' && followAdditionalWrappers === false) {
         continue;
       }
 
@@ -1748,7 +1852,9 @@
         };
       } else if (adTypeElement.nodeName === 'InLine') {
         return {
-          ad: parseInLine(adTypeElement, emit),
+          ad: parseInLine(adTypeElement, emit, {
+            allowMultipleAds: allowMultipleAds
+          }),
           type: 'INLINE'
         };
       }
@@ -1758,11 +1864,22 @@
    * Parses an Inline
    * @param  {Object} adElement Element - The VAST Inline element to parse.
    * @param  {Function} emit - Emit function used to trigger Warning event.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
    * @emits  VASTParser#VAST-warning
    * @return {Object} ad - The ad object.
    */
 
   function parseInLine(adElement, emit) {
+    var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+        allowMultipleAds = _ref2.allowMultipleAds;
+
+    // if allowMultipleAds is set to false by wrapper attribute
+    // only the first stand-alone Ad (with no sequence values) in the
+    // requested VAST response is allowed so we won't parse ads with sequence
+    if (allowMultipleAds === false && adElement.getAttribute('sequence')) {
+      return null;
+    }
+
     return parseAdElement(adElement, emit);
   }
   /**
@@ -1874,6 +1991,13 @@
         case 'Survey':
           ad.survey = parserUtils.parseNodeText(node);
           break;
+
+        case 'BlockedAdCategories':
+          ad.blockedAdCategories.push({
+            authority: node.getAttribute('authority') || null,
+            value: parserUtils.parseNodeText(node)
+          });
+          break;
       }
     }
 
@@ -1890,6 +2014,12 @@
 
   function parseWrapper(wrapperElement, emit) {
     var ad = parseAdElement(wrapperElement, emit);
+    var followAdditionalWrappersValue = wrapperElement.getAttribute('followAdditionalWrappers');
+    var allowMultipleAdsValue = wrapperElement.getAttribute('allowMultipleAds');
+    var fallbackOnNoAdValue = wrapperElement.getAttribute('fallbackOnNoAd');
+    ad.followAdditionalWrappers = followAdditionalWrappersValue ? parserUtils.parseBoolean(followAdditionalWrappersValue) : true;
+    ad.allowMultipleAds = allowMultipleAdsValue ? parserUtils.parseBoolean(allowMultipleAdsValue) : false;
+    ad.fallbackOnNoAd = fallbackOnNoAdValue ? parserUtils.parseBoolean(fallbackOnNoAdValue) : null;
     var wrapperURLElement = parserUtils.childByName(wrapperElement, 'VASTAdTagURI');
 
     if (wrapperURLElement) {
@@ -2069,9 +2199,7 @@
     return viewableImpression;
   }
 
-  var EventEmitter =
-  /*#__PURE__*/
-  function () {
+  var EventEmitter = /*#__PURE__*/function () {
     function EventEmitter() {
       _classCallCheck(this, EventEmitter);
 
@@ -2386,10 +2514,10 @@
    * @extends EventEmitter
    */
 
-  var VASTParser =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var VASTParser = /*#__PURE__*/function (_EventEmitter) {
     _inherits(VASTParser, _EventEmitter);
+
+    var _super = _createSuper(VASTParser);
 
     /**
      * Creates an instance of VASTParser.
@@ -2400,7 +2528,7 @@
 
       _classCallCheck(this, VASTParser);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(VASTParser).call(this));
+      _this = _super.call(this);
       _this.remainingAds = [];
       _this.parentURLs = [];
       _this.errorURLTemplates = [];
@@ -2677,7 +2805,9 @@
             _ref$url = _ref.url,
             url = _ref$url === void 0 ? null : _ref$url,
             _ref$wrapperDepth = _ref.wrapperDepth,
-            wrapperDepth = _ref$wrapperDepth === void 0 ? 0 : _ref$wrapperDepth;
+            wrapperDepth = _ref$wrapperDepth === void 0 ? 0 : _ref$wrapperDepth,
+            allowMultipleAds = _ref.allowMultipleAds,
+            followAdditionalWrappers = _ref.followAdditionalWrappers;
 
         // check if is a valid VAST document
         if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
@@ -2710,7 +2840,20 @@
 
             isRootVAST ? this.rootErrorURLTemplates.push(errorURLTemplate) : this.errorURLTemplates.push(errorURLTemplate);
           } else if (node.nodeName === 'Ad') {
-            var result = parseAd(node, this.emit.bind(this));
+            // allowMultipleAds was introduced in VAST 3
+            // for retrocompatibility set it to true
+            if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
+              allowMultipleAds = true;
+            } else if (allowMultipleAds === false && ads.length > 1) {
+              // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
+              // (with no sequence values) in the requested VAST response is allowed
+              break;
+            }
+
+            var result = parseAd(node, this.emit.bind(this), {
+              allowMultipleAds: allowMultipleAds,
+              followAdditionalWrappers: followAdditionalWrappers
+            });
 
             if (result.ad) {
               ads.push(result.ad);
@@ -2745,8 +2888,9 @@
 
     }, {
       key: "parse",
-      value: function parse(vastXml, _ref2) {
-        var _ref2$url = _ref2.url,
+      value: function parse(vastXml) {
+        var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+            _ref2$url = _ref2.url,
             url = _ref2$url === void 0 ? null : _ref2$url,
             _ref2$resolveAll = _ref2.resolveAll,
             resolveAll = _ref2$resolveAll === void 0 ? true : _ref2$resolveAll,
@@ -2757,26 +2901,42 @@
             _ref2$wrapperDepth = _ref2.wrapperDepth,
             wrapperDepth = _ref2$wrapperDepth === void 0 ? 0 : _ref2$wrapperDepth,
             _ref2$isRootVAST = _ref2.isRootVAST,
-            isRootVAST = _ref2$isRootVAST === void 0 ? false : _ref2$isRootVAST;
-        var ads = [];
+            isRootVAST = _ref2$isRootVAST === void 0 ? false : _ref2$isRootVAST,
+            followAdditionalWrappers = _ref2.followAdditionalWrappers,
+            allowMultipleAds = _ref2.allowMultipleAds;
+
+        var ads = []; // allowMultipleAds was introduced in VAST 3 as wrapper attribute
+        // for retrocompatibility set it to true for vast pre-version 3
+
+        if (this.vastVersion && parseFloat(this.vastVersion) < 3 && isRootVAST) {
+          allowMultipleAds = true;
+        }
 
         try {
           ads = this.parseVastXml(vastXml, {
             isRootVAST: isRootVAST,
             url: url,
-            wrapperDepth: wrapperDepth
+            wrapperDepth: wrapperDepth,
+            allowMultipleAds: allowMultipleAds,
+            followAdditionalWrappers: followAdditionalWrappers
           });
         } catch (e) {
           return Promise.reject(e);
         }
+        /* Keep wrapper sequence value to not break AdPod when wrapper contain only one Ad.
+        e.g,for a AdPod containing :
+        - Inline with sequence=1
+        - Inline with sequence=2
+        - Wrapper with sequence=3 wrapping a Inline with sequence=1
+        once parsed we will obtain :
+        - Inline sequence 1,
+        - Inline sequence 2,
+        - Inline sequence 3
+        */
 
-        var adsCount = ads.length;
-        var lastAddedAd = ads[adsCount - 1]; // if in child nodes we have only one ads
-        // and wrapperSequence is defined
-        // and this ads doesn't already have sequence
 
-        if (adsCount === 1 && wrapperSequence !== undefined && wrapperSequence !== null && lastAddedAd && !lastAddedAd.sequence) {
-          lastAddedAd.sequence = wrapperSequence;
+        if (ads.length === 1 && wrapperSequence !== undefined && wrapperSequence !== null) {
+          ads[0].sequence = wrapperSequence;
         } // Split the VAST in case we don't want to resolve everything at the first time
 
 
@@ -2881,7 +3041,9 @@
               url: ad.nextWrapperURL,
               previousUrl: previousUrl,
               wrapperSequence: wrapperSequence,
-              wrapperDepth: wrapperDepth
+              wrapperDepth: wrapperDepth,
+              followAdditionalWrappers: ad.followAdditionalWrappers,
+              allowMultipleAds: ad.allowMultipleAds
             }).then(function (unwrappedAds) {
               delete ad.nextWrapperURL;
 
@@ -2983,9 +3145,7 @@
    * @class Storage
    */
 
-  var Storage =
-  /*#__PURE__*/
-  function () {
+  var Storage = /*#__PURE__*/function () {
     /**
      * Creates an instance of Storage.
      * @constructor
@@ -3103,9 +3263,7 @@
    * @class VASTClient
    */
 
-  var VASTClient =
-  /*#__PURE__*/
-  function () {
+  var VASTClient = /*#__PURE__*/function () {
     /**
      * Creates an instance of VASTClient.
      * @param  {Number} cappingFreeLunch - The number of first calls to skip.
@@ -3179,7 +3337,7 @@
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var now = Date.now();
-        options = Object.assign({}, this.defaultOptions, options);
+        options = Object.assign({}, this.defaultOptions, options); // By default the client resolves only the first Ad or AdPod
 
         if (!options.hasOwnProperty('resolveAll')) {
           options.resolveAll = false;
@@ -3260,10 +3418,10 @@
    * @extends EventEmitter
    */
 
-  var VASTTracker =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
     _inherits(VASTTracker, _EventEmitter);
+
+    var _super = _createSuper(VASTTracker);
 
     /**
      * Creates an instance of VASTTracker.
@@ -3281,15 +3439,17 @@
 
       _classCallCheck(this, VASTTracker);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(VASTTracker).call(this));
+      _this = _super.call(this);
       _this.ad = ad;
       _this.creative = creative;
       _this.variation = variation;
       _this.muted = false;
       _this.impressed = false;
       _this.skippable = false;
-      _this.trackingEvents = {}; // We need to save the already triggered quartiles, in order to not trigger them again
+      _this.trackingEvents = {}; // We need to keep the last percentage of the tracker in order to
+      // calculate to trigger the events when the VAST duration is short
 
+      _this.lastPercentage = 0;
       _this._alreadyTriggeredQuartiles = {}; // Tracker listeners should be notified with some events
       // no matter if there is a tracking URL or not
 
@@ -3424,12 +3584,16 @@
         }
 
         if (this.assetDuration > 0) {
+          var percent = Math.round(progress / this.assetDuration * 100);
           var events = [];
 
           if (progress > 0) {
-            var percent = Math.round(progress / this.assetDuration * 100);
             events.push('start');
-            events.push("progress-".concat(percent, "%"));
+
+            for (var i = this.lastPercentage; i < percent; i++) {
+              events.push("progress-".concat(i + 1, "%"));
+            }
+
             events.push("progress-".concat(Math.round(progress)));
 
             for (var quartile in this.quartiles) {
@@ -3438,6 +3602,8 @@
                 this._alreadyTriggeredQuartiles[quartile] = true;
               }
             }
+
+            this.lastPercentage = percent;
           }
 
           events.forEach(function (eventName) {
@@ -3600,7 +3766,7 @@
 
         if (!this.impressed) {
           this.impressed = true;
-          this.trackURLs(this.ad.impressionURLTemplates);
+          this.trackURLs(this.ad.impressionURLTemplates, macros);
           this.track('creativeView', {
             macros: macros
           });
@@ -3789,7 +3955,7 @@
        * the time between the impression and either the completed length of display based
        * on the agreement between transactional parties or a close, minimize, or accept
        * invitation event.
-       * The time will be passed using [ADPLAYHEAD] and [MEDIAPLAYHEAD] macros for VAST 4.1
+       * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
        * Calls the overlayViewDuration tracking URLs.
        *
        * @param {String} duration - The time that the initial ad is displayed.
@@ -3801,8 +3967,7 @@
       key: "overlayViewDuration",
       value: function overlayViewDuration(duration) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        macros['CONTENTPLAYHEAD'] = duration;
-        macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+        macros['ADPLAYHEAD'] = duration;
         this.track('overlayViewDuration', {
           macros: macros
         });
@@ -3862,6 +4027,7 @@
        * clickthrough URL when done.
        *
        * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
+       * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#clickthrough
        */
 
@@ -3876,15 +4042,16 @@
         } // Use the provided fallbackClickThroughURL as a fallback
 
 
-        var clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL;
+        var clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL; // clone second usage of macros, which get mutated inside resolveURLTemplates
+
+        var clonedMacros = _objectSpread2({}, macros);
 
         if (clickThroughURLTemplate) {
-          if (this.linear) {
-            macros['CONTENTPLAYHEAD'] = this.progressFormatted();
-            macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+          if (this.progress) {
+            clonedMacros['ADPLAYHEAD'] = this.progressFormatted();
           }
 
-          var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], macros)[0];
+          var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], clonedMacros)[0];
           this.emit('clickthrough', clickThroughURL);
         }
       }
@@ -3951,10 +4118,8 @@
             macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
           }
 
-          if (!macros['CONTENTPLAYHEAD'] && this.progress) {
-            //CONTENTPLAYHEAD @deprecated in VAST 4.1 replaced by ADPLAYHEAD & CONTENTPLAYHEAD
-            macros['CONTENTPLAYHEAD'] = this.progressFormatted();
-            macros['MEDIAPLAYHEAD'] = macros['ADPLAYHEAD'] = macros['CONTENTPLAYHEAD'];
+          if (this.progress) {
+            macros['ADPLAYHEAD'] = this.progressFormatted();
           }
         }
 
@@ -3980,9 +4145,30 @@
               return categorie.value;
             }).join(',');
           }
+
+          if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
+            macros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
+          }
         }
 
         util.track(URLTemplates, macros, options);
+      }
+      /**
+       * Formats time in seconds to VAST timecode (e.g. 00:00:10.000)
+       *
+       * @param {Number} timeInSeconds - Number in seconds
+       * @return {String}
+       */
+
+    }, {
+      key: "convertToTimecode",
+      value: function convertToTimecode(timeInSeconds) {
+        var progress = timeInSeconds * 1000;
+        var hours = Math.floor(progress / (60 * 60 * 1000));
+        var minutes = Math.floor(progress / (60 * 1000) % 60);
+        var seconds = Math.floor(progress / 1000 % 60);
+        var milliseconds = Math.floor(progress % 1000);
+        return "".concat(util.leftpad(hours, 2), ":").concat(util.leftpad(minutes, 2), ":").concat(util.leftpad(seconds, 2), ".").concat(util.leftpad(milliseconds, 3));
       }
       /**
        * Formats time progress in a readable string.
@@ -3993,27 +4179,7 @@
     }, {
       key: "progressFormatted",
       value: function progressFormatted() {
-        var seconds = parseInt(this.progress);
-        var h = seconds / (60 * 60);
-
-        if (h.length < 2) {
-          h = "0".concat(h);
-        }
-
-        var m = seconds / 60 % 60;
-
-        if (m.length < 2) {
-          m = "0".concat(m);
-        }
-
-        var s = seconds % 60;
-
-        if (s.length < 2) {
-          s = "0".concat(m);
-        }
-
-        var ms = parseInt((this.progress - seconds) * 100);
-        return "".concat(h, ":").concat(m, ":").concat(s, ".").concat(ms);
+        return this.convertToTimecode(this.progress);
       }
     }]);
 
@@ -4026,4 +4192,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
