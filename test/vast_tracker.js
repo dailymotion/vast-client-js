@@ -285,13 +285,42 @@ describe('VASTTracker', function() {
         });
       });
 
-      describe('#errorWithCode', () => {
+      describe('#error', () => {
         before(() => {
-          util.track = function(URLTemplates, variables, options) {
+          util.track = function(URLTemplates, macros, options) {
             _eventsSent.push(
-              this.resolveURLTemplates(URLTemplates, variables, options)
+              this.resolveURLTemplates(URLTemplates, macros, options)
             );
           };
+        });
+        beforeEach(() => {
+          _eventsSent = [];
+        });
+
+        it('should have called error urls with right code', () => {
+          this.Tracker.error(405);
+          _eventsSent[0].should.eql([
+            'http://example.com/wrapperA-error',
+            'http://example.com/wrapperB-error',
+            'http://example.com/error_405'
+          ]);
+        });
+
+        it('should have called error urls with 900 if unknown code', () => {
+          this.Tracker.error(10001);
+          _eventsSent[0].should.eql([
+            'http://example.com/wrapperA-error',
+            'http://example.com/wrapperB-error',
+            'http://example.com/error_900'
+          ]);
+        });
+
+      describe('#errorWithCode', () => {
+        before(() => {
+          this.Tracker.error(
+            _eventsSent.push(
+              this.resolveURLTemplates(URLTemplates, macros, options)
+            ));;
         });
         beforeEach(() => {
           _eventsSent = [];
