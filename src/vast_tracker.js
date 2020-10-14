@@ -333,7 +333,9 @@ export class VASTTracker extends EventEmitter {
       { isCustomCode }
     );
   }
-
+  error(macros = {}) {
+    this.trackURLs(this.ad.errorURLTemplates, { macros });
+  }
   /**
    * Must be called when the user watched the linear creative until its end.
    * Calls the complete tracking URLs.
