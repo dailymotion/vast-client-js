@@ -55,7 +55,7 @@ export class VASTTracker extends EventEmitter {
       'rewind',
       'skip',
       'closeLinear',
-      'close'
+      'close',
     ];
 
     // Duplicate the creative's trackingEvents property so we can alter it
@@ -148,7 +148,7 @@ export class VASTTracker extends EventEmitter {
     this.quartiles = {
       firstQuartile: Math.round(25 * this.assetDuration) / 100,
       midpoint: Math.round(50 * this.assetDuration) / 100,
-      thirdQuartile: Math.round(75 * this.assetDuration) / 100
+      thirdQuartile: Math.round(75 * this.assetDuration) / 100,
     };
   }
 
@@ -198,7 +198,7 @@ export class VASTTracker extends EventEmitter {
         }
         this.lastPercentage = percent;
       }
-      events.forEach(eventName => {
+      events.forEach((eventName) => {
         this.track(eventName, { macros, once: true });
       });
 
@@ -321,21 +321,29 @@ export class VASTTracker extends EventEmitter {
 
   /**
    * Send a request to the URI provided by the VAST <Error> element.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   *
+   * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
+   */
+
+  error(macros = {}, isCustomCode = false) {
+    this.trackURLs(this.ad.errorURLTemplates, macros, { isCustomCode });
+  }
+
+  /**
+   * Send a request to the URI provided by the VAST <Error> element.
    * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
+   * This method is deprecated
    *
    * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
+
   errorWithCode(errorCode, isCustomCode = false) {
-    this.trackURLs(
-      this.ad.errorURLTemplates,
-      { ERRORCODE: errorCode },
-      { isCustomCode }
-    );
+    this.error({ ERRORCODE: errorCode }, isCustomCode);
+    console.log('errorWithCode : this method is deprecated');
   }
-  error(macros = {}) {
-    this.trackURLs(this.ad.errorURLTemplates, { macros });
-  }
+
   /**
    * Must be called when the user watched the linear creative until its end.
    * Calls the complete tracking URLs.
@@ -445,7 +453,7 @@ export class VASTTracker extends EventEmitter {
     }
 
     const vendorVerification = this.ad.adVerifications.find(
-      verifications => verifications.vendor === vendor
+      (verifications) => verifications.vendor === vendor
     );
 
     if (!vendorVerification) {
@@ -459,7 +467,7 @@ export class VASTTracker extends EventEmitter {
       const verifsNotExecuted = vendorTracking.verificationNotExecuted;
       this.trackURLs(verifsNotExecuted, macros);
       this.emit('verificationNotExecuted', {
-        trackingURLTemplates: verifsNotExecuted
+        trackingURLTemplates: verifsNotExecuted,
       });
     }
   }
@@ -618,9 +626,9 @@ export class VASTTracker extends EventEmitter {
       this.creative.universalAdId.idRegistry &&
       this.creative.universalAdId.value
     ) {
-      macros['UNIVERSALADID'] = `${this.creative.universalAdId.idRegistry} ${
-        this.creative.universalAdId.value
-      }`;
+      macros[
+        'UNIVERSALADID'
+      ] = `${this.creative.universalAdId.idRegistry} ${this.creative.universalAdId.value}`;
     }
 
     if (this.ad) {
@@ -635,7 +643,7 @@ export class VASTTracker extends EventEmitter {
       }
       if (this.ad.categories && this.ad.categories.length) {
         macros['ADCATEGORIES'] = this.ad.categories
-          .map(categorie => categorie.value)
+          .map((categorie) => categorie.value)
           .join(',');
       }
       if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
