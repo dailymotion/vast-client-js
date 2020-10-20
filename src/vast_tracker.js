@@ -341,6 +341,7 @@ export class VASTTracker extends EventEmitter {
 
   errorWithCode(errorCode, isCustomCode = false) {
     this.error({ ERRORCODE: errorCode }, isCustomCode);
+    //eslint-disable-next-line
     console.log('errorWithCode : this method is deprecated');
   }
 
