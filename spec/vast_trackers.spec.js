@@ -303,7 +303,6 @@ describe('VASTTracker', function () {
       });
     });
     describe('#errorWithCode', () => {
-      let errorCode = 404;
       beforeEach(() => {
         vastTracker.errorWithCode();
       });
@@ -313,7 +312,7 @@ describe('VASTTracker', function () {
       it('should hava called the error method', () => {
         expect(spyAdError).toHaveBeenCalledTimes(1);
       });
-      it('should have emitted adErrpr, called trackUrl and not emitted any other event', () => {
+      it('should have emitted an ad error, called trackUrl and not emitted any other event', () => {
         expect(spyTrackUrl).toHaveBeenCalledWith(
           ['http://example.com/error_[ERRORCODE]'],
           expect.objectContaining(expectedMacros),

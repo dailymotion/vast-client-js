@@ -287,11 +287,11 @@ describe('VASTTracker', function () {
 
       describe('#errorWithCode', () => {
         before(() => {
-          this.Tracker.error(
+          util.track = function (URLTemplates, variables, options) {
             _eventsSent.push(
-              this.resolveURLTemplates(URLTemplates, macros, options)
-            )
-          );
+              this.resolveURLTemplates(URLTemplates, variables, options)
+            );
+          };
         });
         beforeEach(() => {
           _eventsSent = [];
