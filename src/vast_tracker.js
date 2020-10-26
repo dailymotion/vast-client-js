@@ -308,7 +308,6 @@ export class VASTTracker extends EventEmitter {
   /**
    * Tracks an impression (can be called only once).
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-   *
    * @emits VASTTracker#creativeView
    */
   trackImpression(macros = {}) {
@@ -322,7 +321,6 @@ export class VASTTracker extends EventEmitter {
   /**
    * Send a request to the URI provided by the VAST <Error> element.
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-   *
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
 
@@ -333,8 +331,7 @@ export class VASTTracker extends EventEmitter {
   /**
    * Send a request to the URI provided by the VAST <Error> element.
    * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
-   * This method is deprecated
-   *
+   * @deprecated
    * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
@@ -342,7 +339,9 @@ export class VASTTracker extends EventEmitter {
   errorWithCode(errorCode, isCustomCode = false) {
     this.error({ ERRORCODE: errorCode }, isCustomCode);
     //eslint-disable-next-line
-    console.log('errorWithCode : this method is deprecated');
+    console.log(
+      'The method errorWithCode is deprecated, please use vast tracker error method instead'
+    );
   }
 
   /**

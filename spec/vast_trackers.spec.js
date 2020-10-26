@@ -13,8 +13,8 @@ describe('VASTTracker', function () {
     let spyTrack;
     let adTrackingUrls;
     let ad;
-    let isCustomCode = false;
     let spyAdError;
+    let isCustomCode;
     const expectedMacros = {
       ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
       UNIVERSALADID: 'sample-registry%20000123',
@@ -286,12 +286,9 @@ describe('VASTTracker', function () {
       });
     });
     describe('#error', () => {
-      let isCustomCode = false;
+      isCustomCode = false;
       beforeEach(() => {
         vastTracker.error();
-      });
-      it('should be defined', () => {
-        expect(ad.errorURLTemplates).toBeDefined();
       });
       it('should have emitted an ad Error and called trackUrl ', () => {
         expect(spyTrackUrl).toHaveBeenCalledWith(
@@ -306,19 +303,15 @@ describe('VASTTracker', function () {
       beforeEach(() => {
         vastTracker.errorWithCode();
       });
-      it('should be defined', () => {
-        expect(ad.errorURLTemplates).toBeDefined();
-      });
-      it('should hava called the error method', () => {
+      isCustomCode = false;
+      it('should have called the error method', () => {
         expect(spyAdError).toHaveBeenCalledTimes(1);
       });
-      it('should have emitted an ad error, called trackUrl and not emitted any other event', () => {
-        expect(spyTrackUrl).toHaveBeenCalledWith(
-          ['http://example.com/error_[ERRORCODE]'],
-          expect.objectContaining(expectedMacros),
-          expect.objectContaining({ isCustomCode })
+      it('called the error method with the right arguments', () => {
+        expect(spyAdError).toHaveBeenCalledWith(
+          expect.objectContaining({ ...expectedMacros }),
+          isCustomCode
         );
-        expect(spyTrackUrl).toHaveBeenCalledTimes(1);
       });
     });
   });
