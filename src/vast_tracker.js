@@ -323,7 +323,6 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
-
   error(macros = {}, isCustomCode = false) {
     this.trackURLs(this.ad.errorURLTemplates, macros, { isCustomCode });
   }
@@ -335,7 +334,6 @@ export class VASTTracker extends EventEmitter {
    * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
-
   errorWithCode(errorCode, isCustomCode = false) {
     this.error({ ERRORCODE: errorCode }, isCustomCode);
     //eslint-disable-next-line
