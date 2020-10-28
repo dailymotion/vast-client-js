@@ -13,8 +13,6 @@ describe('VASTTracker', function () {
     let spyTrack;
     let adTrackingUrls;
     let ad;
-    let spyAdError;
-    let isCustomCode;
     const expectedMacros = {
       ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
       UNIVERSALADID: 'sample-registry%20000123',
@@ -30,7 +28,6 @@ describe('VASTTracker', function () {
       spyEmitter = jest.spyOn(vastTracker, 'emit');
       spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
       spyTrack = jest.spyOn(vastTracker, 'track');
-      spyAdError = jest.spyOn(vastTracker, 'error');
     });
 
     describe('#click', () => {
@@ -286,31 +283,24 @@ describe('VASTTracker', function () {
       });
     });
     describe('#error', () => {
-      isCustomCode = false;
-      beforeEach(() => {
+      let isCustomCode = false;
+      it('should be called with the right arguments', () => {
         vastTracker.error();
-      });
-      it('should have emitted an ad Error and called trackUrl ', () => {
         expect(spyTrackUrl).toHaveBeenCalledWith(
           ['http://example.com/error_[ERRORCODE]'],
           expect.objectContaining(expectedMacros),
-          expect.objectContaining({ isCustomCode })
+          { isCustomCode: false }
         );
-        expect(spyTrackUrl).toHaveBeenCalledTimes(1);
       });
     });
+
     describe('#errorWithCode', () => {
-      beforeEach(() => {
+      it('should be called with the right arguments', () => {
         vastTracker.errorWithCode();
-      });
-      isCustomCode = false;
-      it('should have called the error method', () => {
-        expect(spyAdError).toHaveBeenCalledTimes(1);
-      });
-      it('called the error method with the right arguments', () => {
-        expect(spyAdError).toHaveBeenCalledWith(
-          expect.objectContaining({ ...expectedMacros }),
-          isCustomCode
+        expect(spyTrackUrl).toHaveBeenCalledWith(
+          ['http://example.com/error_[ERRORCODE]'],
+          expect.objectContaining(expectedMacros),
+          { isCustomCode: false }
         );
       });
     });
