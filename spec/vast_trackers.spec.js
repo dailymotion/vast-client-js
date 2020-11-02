@@ -282,8 +282,8 @@ describe('VASTTracker', function () {
         expect(spyTrack).not.toHaveBeenCalledTimes(2);
       });
     });
+
     describe('#error', () => {
-      let isCustomCode = false;
       it('should be called with the right arguments', () => {
         vastTracker.error();
         expect(spyTrackUrl).toHaveBeenCalledWith(
@@ -294,14 +294,12 @@ describe('VASTTracker', function () {
       });
     });
 
-    describe('#errorWithCode', () => {
+    fdescribe('#errorWithCode', () => {
       it('should be called with the right arguments', () => {
-        vastTracker.errorWithCode();
-        expect(spyTrackUrl).toHaveBeenCalledWith(
-          ['http://example.com/error_[ERRORCODE]'],
-          expect.objectContaining(expectedMacros),
-          { isCustomCode: false }
-        );
+        const spyError = jest.fn();
+        vastTracker.error = spyError;
+        vastTracker.errorWithCode('1234', true);
+        expect(spyError).toHaveBeenCalledWith({ ERRORCODE: '1234' }, true);
       });
     });
   });

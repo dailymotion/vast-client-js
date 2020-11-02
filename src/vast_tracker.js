@@ -605,6 +605,8 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
   trackURLs(URLTemplates, macros = {}, options = {}) {
+    //Avoid mutating the object received in parameters.
+    const givenMacros = { ...macros };
     if (this.linear) {
       if (
         this.creative &&
@@ -612,10 +614,10 @@ export class VASTTracker extends EventEmitter {
         this.creative.mediaFiles[0] &&
         this.creative.mediaFiles[0].fileURL
       ) {
-        macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
+        givenMacros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
       if (this.progress) {
-        macros['ADPLAYHEAD'] = this.progressFormatted();
+        givenMacros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
     if (
@@ -624,32 +626,32 @@ export class VASTTracker extends EventEmitter {
       this.creative.universalAdId.idRegistry &&
       this.creative.universalAdId.value
     ) {
-      macros[
+      givenMacros[
         'UNIVERSALADID'
       ] = `${this.creative.universalAdId.idRegistry} ${this.creative.universalAdId.value}`;
     }
 
     if (this.ad) {
       if (this.ad.sequence) {
-        macros['PODSEQUENCE'] = this.ad.sequence;
+        givenMacros['PODSEQUENCE'] = this.ad.sequence;
       }
       if (this.ad.adType) {
-        macros['ADTYPE'] = this.ad.adType;
+        givenMacros['ADTYPE'] = this.ad.adType;
       }
       if (this.ad.adServingId) {
-        macros['ADSERVINGID'] = this.ad.adServingId;
+        givenMacros['ADSERVINGID'] = this.ad.adServingId;
       }
       if (this.ad.categories && this.ad.categories.length) {
-        macros['ADCATEGORIES'] = this.ad.categories
+        givenMacros['ADCATEGORIES'] = this.ad.categories
           .map((categorie) => categorie.value)
           .join(',');
       }
       if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
-        macros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
+        givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
       }
     }
 
-    util.track(URLTemplates, macros, options);
+    util.track(URLTemplates, givenMacros, options);
   }
 
   /**
