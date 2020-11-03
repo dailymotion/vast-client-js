@@ -20,20 +20,24 @@ describe('VASTTracker', function () {
       ADSERVINGID: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
       ADTYPE: 'video',
       ADCATEGORIES: 'Category-A%2CCategory-B%2CCategory-C',
+      ADPLAYHEAD: '01%3A15%3A05.250',
     };
+
     beforeEach(() => {
       ad = inlineTrackersParsed.ads[0];
       adTrackingUrls = ad.creatives[0].trackingEvents;
       vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
       spyEmitter = jest.spyOn(vastTracker, 'emit');
       spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
+      // spyTrackUrl = jest.fn();
+      // vastTracker.trackURLs = spyTrackUrl;
       spyTrack = jest.spyOn(vastTracker, 'track');
     });
 
     describe('#click', () => {
       beforeEach(() => {
         vastTracker.setProgress(60 * 75 + 5.25);
-        vastTracker.click();
+        vastTracker.click(null, expectedMacros);
       });
       it('should have emitted click event and called trackUrl', () => {
         expect(spyEmitter).toHaveBeenCalledWith(
@@ -53,7 +57,7 @@ describe('VASTTracker', function () {
 
     describe('#minimize', () => {
       beforeEach(() => {
-        vastTracker.minimize();
+        vastTracker.minimize(expectedMacros);
       });
       it('should be defined', () => {
         expect(adTrackingUrls.minimize).toBeDefined();
@@ -111,7 +115,7 @@ describe('VASTTracker', function () {
 
     describe('#otherAdInteraction', () => {
       beforeEach(() => {
-        vastTracker.otherAdInteraction();
+        vastTracker.otherAdInteraction(expectedMacros);
       });
       it('should be defined', () => {
         expect(adTrackingUrls.otherAdInteraction).toBeDefined();
@@ -129,7 +133,7 @@ describe('VASTTracker', function () {
 
     describe('#acceptInvitation', () => {
       beforeEach(() => {
-        vastTracker.acceptInvitation();
+        vastTracker.acceptInvitation(expectedMacros);
       });
       it('should be defined', () => {
         expect(adTrackingUrls.acceptInvitation).toBeDefined();
@@ -147,7 +151,7 @@ describe('VASTTracker', function () {
 
     describe('#adExpand', () => {
       beforeEach(() => {
-        vastTracker.adExpand();
+        vastTracker.adExpand(expectedMacros);
       });
       it('should be defined', () => {
         expect(adTrackingUrls.adExpand).toBeDefined();
@@ -165,7 +169,7 @@ describe('VASTTracker', function () {
 
     describe('#adCollapse', () => {
       beforeEach(() => {
-        vastTracker.adCollapse();
+        vastTracker.adCollapse(expectedMacros);
       });
       it('should be defined', () => {
         expect(adTrackingUrls.adCollapse).toBeDefined();
@@ -182,11 +186,14 @@ describe('VASTTracker', function () {
     });
 
     describe('#overlayViewDuration', () => {
+      const overlayViewMacros = {
+        ADPLAYHEAD: '00:00:40',
+        CONTENTPLAYHEAD: '00:00:40',
+        MEDIAPLAYHEAD: '00:00:40',
+        ...expectedMacros,
+      };
       beforeEach(() => {
-        vastTracker.overlayViewDuration('00:00:30', {
-          CONTENTPLAYHEAD: '00:00:40',
-          MEDIAPLAYHEAD: '00:00:40',
-        });
+        vastTracker.overlayViewDuration('00:00:30', overlayViewMacros);
       });
       it('should be defined', () => {
         expect(adTrackingUrls.overlayViewDuration).toBeDefined();
@@ -197,12 +204,10 @@ describe('VASTTracker', function () {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.overlayViewDuration,
-          expect.objectContaining({
-            ...expectedMacros,
-            ADPLAYHEAD: '00%3A00%3A30',
-            CONTENTPLAYHEAD: '00%3A00%3A40',
-            MEDIAPLAYHEAD: '00%3A00%3A40',
-          })
+          {
+            ...overlayViewMacros,
+            ADPLAYHEAD: '00:00:30',
+          }
         );
       });
     });
@@ -212,8 +217,8 @@ describe('VASTTracker', function () {
         expect(adTrackingUrls.notUsed).toBeDefined();
       });
       it('should have emitted adExpand event, called trackUrl and not emitted any other event', () => {
-        vastTracker.notUsed();
-        vastTracker.adCollapse();
+        vastTracker.notUsed(expectedMacros);
+        vastTracker.adCollapse(expectedMacros);
 
         expect(spyEmitter).toHaveBeenCalledWith('notUsed', {
           trackingURLTemplates: adTrackingUrls.notUsed,
@@ -285,16 +290,16 @@ describe('VASTTracker', function () {
 
     describe('#error', () => {
       it('should be called with the right arguments', () => {
-        vastTracker.error();
+        vastTracker.error(expectedMacros);
         expect(spyTrackUrl).toHaveBeenCalledWith(
           ['http://example.com/error_[ERRORCODE]'],
-          expect.objectContaining(expectedMacros),
+          expectedMacros,
           { isCustomCode: false }
         );
       });
     });
 
-    fdescribe('#errorWithCode', () => {
+    describe('#errorWithCode', () => {
       it('should be called with the right arguments', () => {
         const spyError = jest.fn();
         vastTracker.error = spyError;
