@@ -29,8 +29,6 @@ describe('VASTTracker', function () {
       vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
       spyEmitter = jest.spyOn(vastTracker, 'emit');
       spyTrackUrl = jest.spyOn(vastTracker, 'trackURLs');
-      // spyTrackUrl = jest.fn();
-      // vastTracker.trackURLs = spyTrackUrl;
       spyTrack = jest.spyOn(vastTracker, 'track');
     });
 

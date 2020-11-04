@@ -650,6 +650,7 @@ export class VASTTracker extends EventEmitter {
         givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
       }
     }
+
     util.track(URLTemplates, givenMacros, options);
   }
 
