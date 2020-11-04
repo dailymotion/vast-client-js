@@ -822,5 +822,50 @@ describe('VASTParser', () => {
         }
       );
     });
+
+    it('will take the allowMultipleAds value from the option', () => {
+      jest
+        .spyOn(VastParser, 'fetchVAST')
+        .mockReturnValue(Promise.resolve('<xml></xml>'));
+      jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
+
+      const adWithWrapper = {
+        ...ad,
+        nextWrapperURL: wrapperBVastUrl,
+        allowMultipleAds: false,
+      };
+
+      const expectedValue = { allowMultipleAds: true };
+      VastParser.initParsingStatus(expectedValue);
+
+      return VastParser.resolveWrappers(adWithWrapper, 0).then(() => {
+        expect(VastParser.parse).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining(expectedValue)
+        );
+      });
+    });
+
+    it('will take the allowMultipleAds value from the ad if does not set in the option', () => {
+      jest
+        .spyOn(VastParser, 'fetchVAST')
+        .mockReturnValue(Promise.resolve('<xml></xml>'));
+      jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
+
+      const expectedValue = { allowMultipleAds: true };
+      const adWithWrapper = {
+        ...ad,
+        nextWrapperURL: wrapperBVastUrl,
+        ...expectedValue,
+      };
+      VastParser.initParsingStatus();
+
+      return VastParser.resolveWrappers(adWithWrapper, 0).then(() => {
+        expect(VastParser.parse).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining(expectedValue)
+        );
+      });
+    });
   });
 });
