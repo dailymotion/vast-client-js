@@ -33,6 +33,7 @@ export class VASTParser extends EventEmitter {
     this.maxWrapperDepth = null;
     this.URLTemplateFilters = [];
     this.fetchingOptions = {};
+    this.parsingOptions = {};
   }
 
   /**
@@ -154,17 +155,17 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - The options to initialize a parsing sequence
    */
   initParsingStatus(options = {}) {
-    this.rootURL = '';
-    this.remainingAds = [];
-    this.parentURLs = [];
     this.errorURLTemplates = [];
-    this.rootErrorURLTemplates = [];
-    this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.fetchingOptions = {
       timeout: options.timeout || DEFAULT_TIMEOUT,
       withCredentials: options.withCredentials,
     };
-
+    this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
+    this.parentURLs = [];
+    this.parsingOptions = { allowMultipleAds: options.allowMultipleAds };
+    this.remainingAds = [];
+    this.rootErrorURLTemplates = [];
+    this.rootURL = '';
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.vastVersion = null;
   }
@@ -501,6 +502,15 @@ export class VASTParser extends EventEmitter {
         ad.nextWrapperURL = filter(ad.nextWrapperURL);
       });
 
+      // If allowMultipleAds is set inside the parameter 'option' of public method
+      // override the vast value by the one provided
+      let allowMultipleAds;
+      if (this.parsingOptions.allowMultipleAds) {
+        allowMultipleAds = this.parsingOptions.allowMultipleAds;
+      } else {
+        allowMultipleAds = ad.allowMultipleAds;
+      }
+
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
       this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl)
@@ -511,7 +521,7 @@ export class VASTParser extends EventEmitter {
             wrapperSequence,
             wrapperDepth,
             followAdditionalWrappers: ad.followAdditionalWrappers,
-            allowMultipleAds: ad.allowMultipleAds,
+            allowMultipleAds,
           }).then((unwrappedAds) => {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {
