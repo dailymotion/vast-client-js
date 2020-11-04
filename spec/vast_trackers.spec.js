@@ -20,7 +20,6 @@ describe('VASTTracker', function () {
       ADSERVINGID: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
       ADTYPE: 'video',
       ADCATEGORIES: 'Category-A%2CCategory-B%2CCategory-C',
-      ADPLAYHEAD: '01%3A15%3A05.250',
     };
 
     beforeEach(() => {
@@ -45,10 +44,7 @@ describe('VASTTracker', function () {
 
         expect(spyTrackUrl).toHaveBeenCalledWith(
           ad.creatives[0].videoClickTrackingURLTemplates,
-          expect.objectContaining({
-            ...expectedMacros,
-            ADPLAYHEAD: '01%3A15%3A05.250',
-          })
+          expectedMacros
         );
       });
     });
@@ -67,7 +63,7 @@ describe('VASTTracker', function () {
 
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.minimize,
-          expect.objectContaining(expectedMacros)
+          expectedMacros
         );
       });
     });
