@@ -170,6 +170,7 @@ describe('VASTParser', () => {
         timeout: 1000,
         withCredentials: true,
         urlHandler,
+        allowMultipleAds: true,
       });
 
       expect(VastParser.rootURL).toBe('');
@@ -184,6 +185,7 @@ describe('VASTParser', () => {
       });
       expect(VastParser.urlHandler).toEqual(urlHandler);
       expect(VastParser.vastVersion).toBeNull();
+      expect(VastParser.parsingOptions).toEqual({ allowMultipleAds: true });
     });
 
     it('uses default values if no options are passed', () => {
@@ -200,6 +202,9 @@ describe('VASTParser', () => {
         withCredentials: undefined,
       });
       expect(VastParser.vastVersion).toBeNull();
+      expect(VastParser.parsingOptions).toEqual({
+        allowMultipleAds: undefined,
+      });
     });
   });
 
