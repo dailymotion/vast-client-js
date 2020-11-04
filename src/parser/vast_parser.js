@@ -9,7 +9,7 @@ import { DEFAULT_TIMEOUT } from '../urlhandlers/consts';
 const DEFAULT_MAX_WRAPPER_DEPTH = 10;
 const DEFAULT_EVENT_DATA = {
   ERRORCODE: 900,
-  extensions: []
+  extensions: [],
 };
 
 /**
@@ -107,7 +107,7 @@ export class VASTParser extends EventEmitter {
   fetchVAST(url, wrapperDepth = 0, previousUrl = null) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
-      this.URLTemplateFilters.forEach(filter => {
+      this.URLTemplateFilters.forEach((filter) => {
         url = filter(url);
       });
 
@@ -118,7 +118,7 @@ export class VASTParser extends EventEmitter {
         previousUrl,
         wrapperDepth,
         maxWrapperDepth: this.maxWrapperDepth,
-        timeout: this.fetchingOptions.timeout
+        timeout: this.fetchingOptions.timeout,
       });
 
       this.urlHandler.get(
@@ -132,7 +132,7 @@ export class VASTParser extends EventEmitter {
               previousUrl,
               wrapperDepth,
               error,
-              duration: deltaTime
+              duration: deltaTime,
             },
             details
           );
@@ -162,7 +162,7 @@ export class VASTParser extends EventEmitter {
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.fetchingOptions = {
       timeout: options.timeout || DEFAULT_TIMEOUT,
-      withCredentials: options.withCredentials
+      withCredentials: options.withCredentials,
     };
 
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
@@ -189,8 +189,8 @@ export class VASTParser extends EventEmitter {
 
     return this.resolveAds(ads, {
       wrapperDepth: 0,
-      url: this.rootURL
-    }).then(resolvedAds => {
+      url: this.rootURL,
+    }).then((resolvedAds) => {
       return this.buildVASTResponse(resolvedAds);
     });
   }
@@ -208,18 +208,18 @@ export class VASTParser extends EventEmitter {
   getAndParseVAST(url, options = {}) {
     this.initParsingStatus(options);
 
-    this.URLTemplateFilters.forEach(filter => {
+    this.URLTemplateFilters.forEach((filter) => {
       url = filter(url);
     });
 
     this.rootURL = url;
 
-    return this.fetchVAST(url).then(xml => {
+    return this.fetchVAST(url).then((xml) => {
       options.previousUrl = url;
       options.isRootVAST = true;
       options.url = url;
 
-      return this.parse(xml, options).then(ads => {
+      return this.parse(xml, options).then((ads) => {
         return this.buildVASTResponse(ads);
       });
     });
@@ -240,7 +240,7 @@ export class VASTParser extends EventEmitter {
 
     options.isRootVAST = true;
 
-    return this.parse(vastXml, options).then(ads => {
+    return this.parse(vastXml, options).then((ads) => {
       return this.buildVASTResponse(ads);
     });
   }
@@ -254,7 +254,7 @@ export class VASTParser extends EventEmitter {
     const response = createVASTResponse({
       ads,
       errorURLTemplates: this.getErrorURLTemplates(),
-      version: this.vastVersion
+      version: this.vastVersion,
     });
     this.completeWrapperResolving(response);
 
@@ -278,7 +278,7 @@ export class VASTParser extends EventEmitter {
       url = null,
       wrapperDepth = 0,
       allowMultipleAds,
-      followAdditionalWrappers
+      followAdditionalWrappers,
     }
   ) {
     // check if is a valid VAST document
@@ -290,7 +290,7 @@ export class VASTParser extends EventEmitter {
       this.emit('VAST-ad-parsed', {
         type: 'ERROR',
         url,
-        wrapperDepth
+        wrapperDepth,
       });
       throw new Error('Invalid VAST XMLDocument');
     }
@@ -330,7 +330,7 @@ export class VASTParser extends EventEmitter {
 
         const result = parseAd(node, this.emit.bind(this), {
           allowMultipleAds,
-          followAdditionalWrappers
+          followAdditionalWrappers,
         });
 
         if (result.ad) {
@@ -341,12 +341,12 @@ export class VASTParser extends EventEmitter {
             url,
             wrapperDepth,
             adIndex: ads.length - 1,
-            vastVersion
+            vastVersion,
           });
         } else {
           // VAST version of response not supported.
           this.trackVastError(this.getErrorURLTemplates(), {
-            ERRORCODE: 101
+            ERRORCODE: 101,
           });
         }
       }
@@ -375,7 +375,7 @@ export class VASTParser extends EventEmitter {
       wrapperDepth = 0,
       isRootVAST = false,
       followAdditionalWrappers,
-      allowMultipleAds
+      allowMultipleAds,
     } = {}
   ) {
     let ads = [];
@@ -390,7 +390,7 @@ export class VASTParser extends EventEmitter {
         url,
         wrapperDepth,
         allowMultipleAds,
-        followAdditionalWrappers
+        followAdditionalWrappers,
       });
     } catch (e) {
       return Promise.reject(e);
@@ -435,7 +435,7 @@ export class VASTParser extends EventEmitter {
     const resolveWrappersPromises = [];
     previousUrl = url;
 
-    ads.forEach(ad => {
+    ads.forEach((ad) => {
       const resolveWrappersPromise = this.resolveWrappers(
         ad,
         wrapperDepth,
@@ -445,7 +445,7 @@ export class VASTParser extends EventEmitter {
       resolveWrappersPromises.push(resolveWrappersPromise);
     });
 
-    return Promise.all(resolveWrappersPromises).then(unwrappedAds => {
+    return Promise.all(resolveWrappersPromises).then((unwrappedAds) => {
       const resolvedAds = util.flatten(unwrappedAds);
 
       if (!resolvedAds && this.remainingAds.length > 0) {
@@ -454,7 +454,7 @@ export class VASTParser extends EventEmitter {
         return this.resolveAds(remainingAdsToResolve, {
           wrapperDepth,
           previousUrl,
-          url
+          url,
         });
       }
 
@@ -471,7 +471,7 @@ export class VASTParser extends EventEmitter {
    * @return {Promise}
    */
   resolveWrappers(ad, wrapperDepth, previousUrl) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
       // We already have a resolved VAST ad, no need to resolve wrapper
@@ -497,22 +497,22 @@ export class VASTParser extends EventEmitter {
         previousUrl
       );
 
-      this.URLTemplateFilters.forEach(filter => {
+      this.URLTemplateFilters.forEach((filter) => {
         ad.nextWrapperURL = filter(ad.nextWrapperURL);
       });
 
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
       this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl)
-        .then(xml => {
+        .then((xml) => {
           return this.parse(xml, {
             url: ad.nextWrapperURL,
             previousUrl,
             wrapperSequence,
             wrapperDepth,
             followAdditionalWrappers: ad.followAdditionalWrappers,
-            allowMultipleAds: ad.allowMultipleAds
-          }).then(unwrappedAds => {
+            allowMultipleAds: ad.allowMultipleAds,
+          }).then((unwrappedAds) => {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {
               // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
@@ -520,7 +520,7 @@ export class VASTParser extends EventEmitter {
               return resolve(ad);
             }
 
-            unwrappedAds.forEach(unwrappedAd => {
+            unwrappedAds.forEach((unwrappedAd) => {
               if (unwrappedAd) {
                 parserUtils.mergeWrapperAdData(unwrappedAd, ad);
               }
@@ -529,7 +529,7 @@ export class VASTParser extends EventEmitter {
             resolve(unwrappedAds);
           });
         })
-        .catch(err => {
+        .catch((err) => {
           // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
           // (URI was either unavailable or reached a timeout as defined by the video player.)
           ad.errorCode = 301;
