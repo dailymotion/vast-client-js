@@ -504,13 +504,8 @@ export class VASTParser extends EventEmitter {
 
       // If allowMultipleAds is set inside the parameter 'option' of public method
       // override the vast value by the one provided
-      let allowMultipleAds;
-      if (this.parsingOptions.allowMultipleAds) {
-        allowMultipleAds = this.parsingOptions.allowMultipleAds;
-      } else {
-        allowMultipleAds = ad.allowMultipleAds;
-      }
-
+      const allowMultipleAds =
+        this.parsingOptions.allowMultipleAds ?? ad.allowMultipleAds;
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
       this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl)
