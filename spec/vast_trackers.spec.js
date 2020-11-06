@@ -120,7 +120,7 @@ describe('VASTTracker', function () {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.otherAdInteraction,
-          expect.objectContaining(expectedMacros)
+          expectedMacros
         );
       });
     });
@@ -138,7 +138,7 @@ describe('VASTTracker', function () {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.acceptInvitation,
-          expect.objectContaining(expectedMacros)
+          expectedMacros
         );
       });
     });
@@ -156,7 +156,7 @@ describe('VASTTracker', function () {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.adExpand,
-          expect.objectContaining(expectedMacros)
+          expectedMacros
         );
       });
     });
@@ -174,7 +174,7 @@ describe('VASTTracker', function () {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.adCollapse,
-          expect.objectContaining(expectedMacros)
+          expectedMacros
         );
       });
     });
@@ -219,7 +219,7 @@ describe('VASTTracker', function () {
         });
         expect(spyTrackUrl).toHaveBeenCalledWith(
           adTrackingUrls.notUsed,
-          expect.objectContaining(expectedMacros)
+          expectedMacros
         );
         expect(spyEmitter).toHaveBeenCalledTimes(1);
       });
