@@ -23,8 +23,10 @@ describe('CreativesParser', function() {
       const creative = parsedCreatives[0];
       expect(creative.id).toEqual('id130984');
       expect(creative.adId).toEqual('adId345690');
-      expect(creative.universalAdIds[0].idRegistry).toEqual('daily-motion-L');
+      expect(creative.universalAdIds[0].idRegistry).toEqual('daily-motion-L1');
       expect(creative.universalAdIds[0].value).toEqual('Linear-12345');
+      expect(creative.universalAdIds[1].idRegistry).toEqual('daily-motion-L2');
+      expect(creative.universalAdIds[1].value).toEqual('Linear-5678');
       expect(creative.type).toEqual('linear');
       expect(creative.mediaFiles.length).toEqual(2);
     });
