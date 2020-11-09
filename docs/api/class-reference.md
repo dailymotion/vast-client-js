@@ -39,7 +39,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `adId: String|null`
 - `sequence: Number|null`
 - `apiFramework: String|null`
-- `universalAdId: Object|null`
+- `universalAdIds: Array<Object>` [go to object](#universaladid)
 - `creativeExtensions: Array<Object>` [go to object](#extension)
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
@@ -180,6 +180,11 @@ This object represents a generic Creative. It's used as a parent object for more
 - `value: any`
 - `attributes: Object`
 - `children: Array<Extension>`
+
+## UniversalAdId<a name="universaladid"></a>
+
+- `idRegistry: String|unknown`
+- `value: any`
 
 ## AdVerification<a name="ad-verification"></a>
 

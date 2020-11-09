@@ -4,7 +4,7 @@ export function createCreative(creativeAttributes = {}) {
     adId: creativeAttributes.adId || null,
     sequence: creativeAttributes.sequence || null,
     apiFramework: creativeAttributes.apiFramework || null,
-    universalAdId: { value: null, idRegistry: 'unknown' },
+    universalAdIds: [],
     creativeExtensions: [],
   };
 }
