@@ -1,6 +1,7 @@
 export const creatives = `<Creatives>
   <Creative id="id130984" adId="adId345690" sequence="1" >
-    <UniversalAdId idRegistry="daily-motion-L">Linear-12345</UniversalAdId>
+    <UniversalAdId idRegistry="daily-motion-L1">Linear-12345</UniversalAdId>
+    <UniversalAdId idRegistry="daily-motion-L2">Linear-5678</UniversalAdId>
     <CreativeExtensions>
       <CreativeExtension type="creativeExt1">
         <CreativeExecution model="CPM" currency="USD" source="someone">

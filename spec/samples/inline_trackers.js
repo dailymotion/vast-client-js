@@ -170,10 +170,16 @@ export const inlineTrackersParsed = {
             ],
             notUsed: ['http://example.com/linear-notUsed&assetURI=[ASSETURI]']
           },
-          universalAdId: {
-            idRegistry: 'sample-registry',
-            value: '000123'
-          }
+          universalAdIds: [
+            {
+              idRegistry: 'sample-registry',
+              value: '000123'
+            },
+            {
+              idRegistry: 'sample-registry-2',
+              value: '000456'
+            }
+          ]
         }
       ],
       extensions: [
