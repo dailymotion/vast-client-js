@@ -95,14 +95,12 @@ export const inlineTrackersParsed = {
           },
           videoClickThroughURLTemplate: {
             id: 'click-through',
-            url:
-              'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]',
+            url: 'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]',
           },
           videoClickTrackingURLTemplates: [
             {
               id: 'video-click-1',
-              url:
-                'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
+              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
             },
             {
               id: 'video-click-2',
@@ -170,10 +168,16 @@ export const inlineTrackersParsed = {
             ],
             notUsed: ['http://example.com/linear-notUsed&assetURI=[ASSETURI]'],
           },
-          universalAdId: {
-            idRegistry: 'sample-registry',
-            value: '000123',
-          },
+          universalAdIds: [
+            {
+              idRegistry: 'sample-registry',
+              value: '000123',
+            },
+            {
+              idRegistry: 'sample-registry-2',
+              value: '000456',
+            },
+          ],
         },
       ],
       extensions: [
