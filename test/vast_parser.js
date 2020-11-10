@@ -259,8 +259,8 @@ describe('VASTParser', function() {
         });
 
         it('should have a universal ad id', () => {
-          linear.universalAdId.idRegistry.should.equal('daily-motion-L');
-          linear.universalAdId.value.should.equal('Linear-12345');
+          linear.universalAdIds[0].idRegistry.should.equal('daily-motion-L1');
+          linear.universalAdIds[0].value.should.equal('Linear-12345');
         });
 
         it('should have creativeExtensions of length 3', () => {
@@ -547,8 +547,8 @@ describe('VASTParser', function() {
         });
 
         it('should have a UniversalAdId', () => {
-          should.equal(nonlinears.universalAdId.idRegistry, 'daily-motion-NL');
-          should.equal(nonlinears.universalAdId.value, 'NonLinear-12345');
+          should.equal(nonlinears.universalAdIds[0].idRegistry, 'daily-motion-NL');
+          should.equal(nonlinears.universalAdIds[0].value, 'NonLinear-12345');
         });
 
         it('should have 1 variation', () => {
@@ -743,9 +743,9 @@ describe('VASTParser', function() {
           linear.duration.should.equal(30);
         });
 
-        it('should have a UniversalAdId with value=unknown and idRegistry=null', () => {
-          should.equal(linear.universalAdId.value, 'Linear-id873421');
-          should.equal(linear.universalAdId.idRegistry, 'unknown');
+        it('should have a UniversalAdIds[0] with value=unknown and idRegistry=null', () => {
+          should.equal(linear.universalAdIds[0].value, 'Linear-id873421');
+          should.equal(linear.universalAdIds[0].idRegistry, 'unknown');
         });
 
         it('should have wrapper clickthrough URL', () => {
