@@ -183,7 +183,7 @@ This object represents a generic Creative. It's used as a parent object for more
 
 ## UniversalAdId<a name="universaladid"></a>
 
-- `idRegistry: String|unknown`
+- `idRegistry: String|'unknown'` A string used to identify the URL for the registry website where the unique creative ID is cataloged. Default value is “unknown”.
 - `value: any`
 
 ## AdVerification<a name="ad-verification"></a>
