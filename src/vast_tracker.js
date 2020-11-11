@@ -610,11 +610,7 @@ export class VASTTracker extends EventEmitter {
         macros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
-    if (
-      this.creative &&
-      this.creative.universalAdIds &&
-      this.creative.universalAdIds.length
-    ) {
+    if (this.creative?.universalAdIds?.length) {
       macros['UNIVERSALADID'] = this.creative.universalAdIds
         .map(universalAdId => universalAdId.idRegistry.concat(' ', universalAdId.value))
         .join(',');
