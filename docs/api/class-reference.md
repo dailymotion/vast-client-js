@@ -17,16 +17,17 @@ This object represents a single parsed Ad
 - `adType: 'video'` An optional string that identifies the type of ad. Default value = video
 - `adServingId: String`
 - `categories: Array<Object>` [go to object](#category)
+- `blockedAdCategories: Array<Object>` [go to object](#category)
 - `expires: Number|null`
 - `viewableImpression: Object` [go to object](#viewable-impression)
-- `system: String|null`
+- `system: { value: string, version: string }|null`
 - `title: String|null`
 - `description: String|null`
-- `advertiser: Object|null`
-- `pricing: String|null`
+- `advertiser: { id: string, value: string }|null`
+- `pricing: { value: number, model: string, currency: string }|null`
 - `survey: String|null`
 - `errorURLTemplates: Array<String>`
-- `impressionURLTemplates: Array<Object>`
+- `impressionURLTemplates: Array<{id: string, url: string}>`
 - `creatives: Array<Object>` [go to object](#creative)
 - `extensions: Array<Object>` [go to object](#extension)
 - `adVerifications: Array<Object>` [go to object](#ad-verification)
@@ -39,7 +40,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `adId: String|null`
 - `sequence: Number|null`
 - `apiFramework: String|null`
-- `universalAdId: Object|null`
+- `universalAdId: { value: string, idRegistry: string }|null`
 - `creativeExtensions: Array<Object>` [go to object](#extension)
 
 ## CreativeLinear *extends* Creative<a name="creative-linear"></a>
@@ -48,7 +49,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `duration: Number`
 - `skipDelay: Number|null`
 - `mediaFiles: Array<Object>` [go to object](#mediafile)
-- `mezzanine: Object<Object>` [go to object](#mezzanine)
+- `mezzanine: Array<Object>` [go to object](#mezzanine)
 - `interactiveCreativeFile: Object` [go to object](#interactivecreativefile)
 - `closedCaptionFiles: Array<Object>` [go to object](#closedcaptionfile)
 - `videoClickThroughURLTemplate: String|null`
@@ -129,7 +130,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `nonlinearClickThroughURLTemplate: String|null`
-- `nonlinearClickTrackingURLTemplates: Array<Object>`
+- `nonlinearClickTrackingURLTemplates: Array<{ id: String|null, url: String }>`
 - `adParameters: String|null`
 
 ## CompanionAd<a name="companion-ad"></a>
@@ -171,7 +172,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `htmlResource: String|null`
 - `iframeResource: String|null`
 - `iconClickThroughURLTemplate: String|null`
-- `iconClickTrackingURLTemplates: Array<Object>`
+- `iconClickTrackingURLTemplates: Array<{ id: String|null, url: String }>`
 - `iconViewTrackingURLTemplate: String|null`
 
 ## Extension<a name="extension"></a>
