@@ -62,8 +62,8 @@ const nodeConfig = {
     alias({
       entries: [
         {
-          './urlhandlers/mock_node_url_handler':
-            './urlhandlers/node_url_handler',
+          find: './urlhandlers/mock_node_url_handler',
+          replacement: './urlhandlers/node_url_handler',
         },
       ],
     }),
