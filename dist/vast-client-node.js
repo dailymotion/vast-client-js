@@ -2534,6 +2534,7 @@ var VASTParser = /*#__PURE__*/function (_EventEmitter) {
     _this.maxWrapperDepth = null;
     _this.URLTemplateFilters = [];
     _this.fetchingOptions = {};
+    _this.parsingOptions = {};
     return _this;
   }
   /**
@@ -2675,16 +2676,19 @@ var VASTParser = /*#__PURE__*/function (_EventEmitter) {
     key: "initParsingStatus",
     value: function initParsingStatus() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      this.rootURL = '';
-      this.remainingAds = [];
-      this.parentURLs = [];
       this.errorURLTemplates = [];
-      this.rootErrorURLTemplates = [];
-      this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
       this.fetchingOptions = {
         timeout: options.timeout || DEFAULT_TIMEOUT,
         withCredentials: options.withCredentials
       };
+      this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
+      this.parentURLs = [];
+      this.parsingOptions = {
+        allowMultipleAds: options.allowMultipleAds
+      };
+      this.remainingAds = [];
+      this.rootErrorURLTemplates = [];
+      this.rootURL = '';
       this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
       this.vastVersion = null;
     }
@@ -3008,6 +3012,8 @@ var VASTParser = /*#__PURE__*/function (_EventEmitter) {
       var _this7 = this;
 
       return new Promise(function (resolve) {
+        var _this7$parsingOptions;
+
         // Going one level deeper in the wrapper chain
         wrapperDepth++; // We already have a resolved VAST ad, no need to resolve wrapper
 
@@ -3029,8 +3035,11 @@ var VASTParser = /*#__PURE__*/function (_EventEmitter) {
 
         _this7.URLTemplateFilters.forEach(function (filter) {
           ad.nextWrapperURL = filter(ad.nextWrapperURL);
-        }); // sequence doesn't carry over in wrapper element
+        }); // If allowMultipleAds is set inside the parameter 'option' of public method
+        // override the vast value by the one provided
 
+
+        var allowMultipleAds = (_this7$parsingOptions = _this7.parsingOptions.allowMultipleAds) !== null && _this7$parsingOptions !== void 0 ? _this7$parsingOptions : ad.allowMultipleAds; // sequence doesn't carry over in wrapper element
 
         var wrapperSequence = ad.sequence;
 
@@ -3041,7 +3050,7 @@ var VASTParser = /*#__PURE__*/function (_EventEmitter) {
             wrapperSequence: wrapperSequence,
             wrapperDepth: wrapperDepth,
             followAdditionalWrappers: ad.followAdditionalWrappers,
-            allowMultipleAds: ad.allowMultipleAds
+            allowMultipleAds: allowMultipleAds
           }).then(function (unwrappedAds) {
             delete ad.nextWrapperURL;
 
@@ -3753,7 +3762,6 @@ var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
     /**
      * Tracks an impression (can be called only once).
      * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     *
      * @emits VASTTracker#creativeView
      */
 
@@ -3772,8 +3780,23 @@ var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
     }
     /**
      * Send a request to the URI provided by the VAST <Error> element.
+     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+     * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
+     */
+
+  }, {
+    key: "error",
+    value: function error() {
+      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      this.trackURLs(this.ad.errorURLTemplates, macros, {
+        isCustomCode: isCustomCode
+      });
+    }
+    /**
+     * Send a request to the URI provided by the VAST <Error> element.
      * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
-     *
+     * @deprecated
      * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
      * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
      */
@@ -3782,11 +3805,11 @@ var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
     key: "errorWithCode",
     value: function errorWithCode(errorCode) {
       var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      this.trackURLs(this.ad.errorURLTemplates, {
+      this.error({
         ERRORCODE: errorCode
-      }, {
-        isCustomCode: isCustomCode
-      });
+      }, isCustomCode); //eslint-disable-next-line
+
+      console.log('The method errorWithCode is deprecated, please use vast tracker error method instead');
     }
     /**
      * Must be called when the user watched the linear creative until its end.
@@ -4111,45 +4134,48 @@ var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
       var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
+      //Avoid mutating the object received in parameters.
+      var givenMacros = _objectSpread2({}, macros);
+
       if (this.linear) {
         if (this.creative && this.creative.mediaFiles && this.creative.mediaFiles[0] && this.creative.mediaFiles[0].fileURL) {
-          macros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
+          givenMacros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
         }
 
         if (this.progress) {
-          macros['ADPLAYHEAD'] = this.progressFormatted();
+          givenMacros['ADPLAYHEAD'] = this.progressFormatted();
         }
       }
 
       if (this.creative && this.creative.universalAdId && this.creative.universalAdId.idRegistry && this.creative.universalAdId.value) {
-        macros['UNIVERSALADID'] = "".concat(this.creative.universalAdId.idRegistry, " ").concat(this.creative.universalAdId.value);
+        givenMacros['UNIVERSALADID'] = "".concat(this.creative.universalAdId.idRegistry, " ").concat(this.creative.universalAdId.value);
       }
 
       if (this.ad) {
         if (this.ad.sequence) {
-          macros['PODSEQUENCE'] = this.ad.sequence;
+          givenMacros['PODSEQUENCE'] = this.ad.sequence;
         }
 
         if (this.ad.adType) {
-          macros['ADTYPE'] = this.ad.adType;
+          givenMacros['ADTYPE'] = this.ad.adType;
         }
 
         if (this.ad.adServingId) {
-          macros['ADSERVINGID'] = this.ad.adServingId;
+          givenMacros['ADSERVINGID'] = this.ad.adServingId;
         }
 
         if (this.ad.categories && this.ad.categories.length) {
-          macros['ADCATEGORIES'] = this.ad.categories.map(function (categorie) {
+          givenMacros['ADCATEGORIES'] = this.ad.categories.map(function (categorie) {
             return categorie.value;
           }).join(',');
         }
 
         if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
-          macros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
+          givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
         }
       }
 
-      util.track(URLTemplates, macros, options);
+      util.track(URLTemplates, givenMacros, options);
     }
     /**
      * Formats time in seconds to VAST timecode (e.g. 00:00:10.000)
