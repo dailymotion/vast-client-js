@@ -6,7 +6,7 @@ import resolve from '@rollup/plugin-node-resolve';
 const babelPlugin = babel({
   babelrc: false,
   presets: [['@babel/preset-env', { modules: false }]],
-  exclude: ['node_modules/**']
+  exclude: ['node_modules/**'],
 });
 
 function onwarn(warning) {
@@ -37,9 +37,9 @@ const browserConfig = {
   output: {
     name: 'VAST',
     format: 'umd',
-    file: 'dist/vast-client.js'
+    file: 'dist/vast-client.js',
   },
-  plugins: [babelPlugin]
+  plugins: [babelPlugin],
 };
 
 const browserScriptConfig = {
@@ -47,27 +47,32 @@ const browserScriptConfig = {
   output: {
     name: 'VAST',
     format: 'iife',
-    file: 'dist/vast-client-browser.js'
+    file: 'dist/vast-client-browser.js',
   },
-  plugins: [babelPlugin]
+  plugins: [babelPlugin],
 };
 
 const nodeConfig = {
   input: 'src/index.js',
   output: {
     format: 'cjs',
-    file: 'dist/vast-client-node.js'
+    file: 'dist/vast-client-node.js',
   },
   plugins: [
     alias({
-      './urlhandlers/mock_node_url_handler': './urlhandlers/node_url_handler'
+      entries: [
+        {
+          find: './urlhandlers/mock_node_url_handler',
+          replacement: './urlhandlers/node_url_handler',
+        },
+      ],
     }),
     resolve({
-      preferBuiltins: true
+      preferBuiltins: true,
     }),
-    babelPlugin
+    babelPlugin,
   ],
-  onwarn
+  onwarn,
 };
 
 export default [
@@ -79,5 +84,5 @@ export default [
   nodeConfig,
   minify(nodeConfig),
 
-  minify(browserScriptConfig)
+  minify(browserScriptConfig),
 ];
