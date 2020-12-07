@@ -2375,18 +2375,78 @@ function onceWrap(target, event, handler) {
   return onceWrapper;
 }
 
-// This mock module is loaded in stead of the original NodeURLHandler module
-// when bundling the library for environments which are not node.
-// This allows us to avoid bundling useless node components and have a smaller build.
+var DEFAULT_TIMEOUT = 120000;
+
+var uri = require('url');
+
+var fs = require('fs');
+
+var http = require('http');
+
+var https = require('https');
+
+var DOMParser = require('xmldom').DOMParser;
+
 function get(url, options, cb) {
-  cb(new Error('Please bundle the library for node to use the node urlHandler'));
+  url = uri.parse(url);
+  var httpModule = url.protocol === 'https:' ? https : http;
+
+  if (url.protocol === 'file:') {
+    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function (err, data) {
+      if (err) {
+        return cb(err);
+      }
+
+      var xml = new DOMParser().parseFromString(data);
+      cb(null, xml, {
+        byteLength: Buffer.from(data).byteLength
+      });
+    });
+  } else {
+    var timeoutId;
+    var data = '';
+    var timeout = options.timeout || DEFAULT_TIMEOUT;
+    var req = httpModule.get(url.href, function (res) {
+      res.on('data', function (chunk) {
+        data += chunk;
+        clearTimeout(timeoutId);
+        timeoutId = startTimeout();
+      });
+      res.on('end', function () {
+        clearTimeout(timeoutId);
+        var xml = new DOMParser().parseFromString(data);
+        cb(null, xml, {
+          byteLength: Buffer.from(data).byteLength,
+          statusCode: res.statusCode
+        });
+      });
+    });
+    req.on('error', function (err) {
+      clearTimeout(timeoutId);
+
+      if (req.aborted) {
+        cb(new Error("NodeURLHandler: Request timed out after ".concat(timeout, " ms.")), null, {
+          statusCode: 408 // Request timeout
+
+        });
+      } else {
+        cb(err);
+      }
+    });
+
+    var startTimeout = function startTimeout() {
+      return setTimeout(function () {
+        return req.abort();
+      }, timeout);
+    };
+
+    timeoutId = startTimeout();
+  }
 }
 
 var nodeURLHandler = {
   get: get
 };
-
-var DEFAULT_TIMEOUT = 120000;
 
 function xhr() {
   try {
