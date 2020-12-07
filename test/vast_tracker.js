@@ -11,15 +11,15 @@ const now = new Date();
 const vastParser = new VASTParser();
 const vastClient = new VASTClient();
 const options = {
-  urlhandler: nodeURLHandler
+  urlhandler: nodeURLHandler,
 };
 
-const urlfor = relpath =>
+const urlfor = (relpath) =>
   `file:///${path
     .resolve(path.dirname(module.filename), 'vastfiles', relpath)
     .replace(/\\/g, '/')}`;
 
-describe('VASTTracker', function() {
+describe('VASTTracker', function () {
   before(() => {
     this.clock = sinon.useFakeTimers(now.getTime());
   });
@@ -28,21 +28,21 @@ describe('VASTTracker', function() {
     this.clock.restore();
   });
 
-  describe('#constructor', function() {
+  describe('#constructor', function () {
     this.Tracker = null;
     let _eventsSent = [];
     this.templateFilterCalls = [];
     this.response = {};
 
-    before(done => {
-      vastParser.addURLTemplateFilter(url => {
+    before((done) => {
+      vastParser.addURLTemplateFilter((url) => {
         this.templateFilterCalls.push(url);
         return url;
       });
 
       vastParser
         .getAndParseVAST(urlfor('wrapper-a.xml'), options)
-        .then(response => {
+        .then((response) => {
           this.response = response;
           done();
         });
@@ -57,11 +57,11 @@ describe('VASTTracker', function() {
         // Init tracker
         const ad = this.response.ads[0];
         const creative = ad.creatives.filter(
-          creative => creative.id === 'id130984'
+          (creative) => creative.id === 'id130984'
         )[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative);
         // Mock emit
-        this.Tracker.emit = event => {
+        this.Tracker.emit = (event) => {
           _eventsSent.push(event);
         };
       });
@@ -83,7 +83,7 @@ describe('VASTTracker', function() {
       });
 
       describe('#setProgress', () => {
-        beforeEach(done => {
+        beforeEach((done) => {
           _eventsSent = [];
           done();
         });
@@ -131,7 +131,7 @@ describe('VASTTracker', function() {
       });
 
       describe('#setMuted', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.trackingEvents['mute'] = 'http://example.com/muted';
           this.Tracker.trackingEvents['unmute'] = 'http://example.com/muted';
@@ -165,7 +165,7 @@ describe('VASTTracker', function() {
       });
 
       describe('#setPaused', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.setPaused(true);
           done();
@@ -197,7 +197,7 @@ describe('VASTTracker', function() {
       });
 
       describe('#setFullscreen', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.trackingEvents['fullscreen'] =
             'http://example.com/fullscreen';
@@ -233,7 +233,7 @@ describe('VASTTracker', function() {
       });
 
       describe('#setExpand', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.trackingEvents['expand'] = 'http://example.com/expand';
           this.Tracker.trackingEvents[
@@ -287,7 +287,7 @@ describe('VASTTracker', function() {
 
       describe('#errorWithCode', () => {
         before(() => {
-          util.track = function(URLTemplates, variables, options) {
+          util.track = function (URLTemplates, variables, options) {
             _eventsSent.push(
               this.resolveURLTemplates(URLTemplates, variables, options)
             );
@@ -302,7 +302,7 @@ describe('VASTTracker', function() {
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',
-            'http://example.com/error_405'
+            'http://example.com/error_405',
           ]);
         });
 
@@ -311,7 +311,7 @@ describe('VASTTracker', function() {
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',
-            'http://example.com/error_900'
+            'http://example.com/error_900',
           ]);
         });
 
@@ -320,13 +320,13 @@ describe('VASTTracker', function() {
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',
-            'http://example.com/error_10001'
+            'http://example.com/error_10001',
           ]);
         });
       });
 
       describe('#complete', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.complete();
           done();
@@ -338,8 +338,8 @@ describe('VASTTracker', function() {
             [
               'http://example.com/linear-complete',
               'http://example.com/wrapperB-linear-complete',
-              'http://example.com/wrapperA-linear-complete'
-            ]
+              'http://example.com/wrapperA-linear-complete',
+            ],
           ]);
         });
 
@@ -351,14 +351,14 @@ describe('VASTTracker', function() {
             [
               'http://example.com/linear-complete',
               'http://example.com/wrapperB-linear-complete',
-              'http://example.com/wrapperA-linear-complete'
-            ]
+              'http://example.com/wrapperA-linear-complete',
+            ],
           ]);
         });
       });
 
       describe('#close', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.close();
           done();
@@ -367,26 +367,26 @@ describe('VASTTracker', function() {
         it('should have sent close event and urls VAST 2.0', () => {
           _eventsSent.should.eql([
             'close',
-            ['http://example.com/linear-close']
+            ['http://example.com/linear-close'],
           ]);
         });
 
         it('should have sent closeLinear event and urls VAST 3.0', () => {
           _eventsSent = [];
           this.Tracker.trackingEvents['closeLinear'] = [
-            'http://example.com/closelinear'
+            'http://example.com/closelinear',
           ];
           delete this.Tracker.trackingEvents['close'];
           this.Tracker.close();
           _eventsSent.should.eql([
             'closeLinear',
-            ['http://example.com/closelinear']
+            ['http://example.com/closelinear'],
           ]);
         });
       });
 
       describe('#skip', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
           this.Tracker.skip();
           done();
@@ -407,9 +407,9 @@ describe('VASTTracker', function() {
       });
 
       describe('#click', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
-          util.track = function(URLTemplates, variables) {
+          util.track = function (URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.click();
@@ -426,7 +426,7 @@ describe('VASTTracker', function() {
             'http://example.com/wrapperB-linear-clicktracking',
             'http://example.com/wrapperA-linear-clicktracking1',
             'http://example.com/wrapperA-linear-clicktracking2',
-            'http://example.com/wrapperA-linear-clicktracking3'
+            'http://example.com/wrapperA-linear-clicktracking3',
           ]);
         });
 
@@ -441,17 +441,17 @@ describe('VASTTracker', function() {
         // Init tracker
         const ad = this.response.ads[0];
         const creative = ad.creatives.filter(
-          creative => creative.id === 'id130984'
+          (creative) => creative.id === 'id130984'
         )[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative);
         // Mock emit
-        this.Tracker.emit = event => {
+        this.Tracker.emit = (event) => {
           _eventsSent.push(event);
         };
       });
 
       describe('#setProgress seek ads IOS', () => {
-        beforeEach(done => {
+        beforeEach((done) => {
           _eventsSent = [];
           done();
         });
@@ -471,7 +471,7 @@ describe('VASTTracker', function() {
         // Init tracker
         const ad = this.response.ads[0];
         const creative = ad.creatives.filter(
-          creative => creative.id === 'id130985'
+          (creative) => creative.id === 'id130985'
         )[0];
         const variation = creative.variations[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative, variation);
@@ -482,9 +482,9 @@ describe('VASTTracker', function() {
       });
 
       describe('#click', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
-          util.track = function(URLTemplates, variables) {
+          util.track = function (URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.click();
@@ -499,14 +499,14 @@ describe('VASTTracker', function() {
             'http://example.com/companion1-clicktracking-first',
             'http://example.com/companion1-clicktracking-second',
             'http://example.com/wrapperB-companion1-click-tracking',
-            'http://example.com/wrapperA-companion1-click-tracking'
+            'http://example.com/wrapperA-companion1-click-tracking',
           ]);
         });
 
         it('should have sent clickthrough event with clickThrough url', () => {
           _eventsSent[1].event.should.eql('clickthrough');
           _eventsSent[1].args.should.eql([
-            'http://example.com/companion1-clickthrough'
+            'http://example.com/companion1-clickthrough',
           ]);
         });
       });
@@ -517,7 +517,7 @@ describe('VASTTracker', function() {
         // Init tracker
         const ad = this.response.ads[0];
         const creative = ad.creatives.filter(
-          creative => creative.id === 'id130986'
+          (creative) => creative.id === 'id130986'
         )[0];
         const variation = creative.variations[0];
         this.Tracker = new VASTTracker(vastClient, ad, creative, variation);
@@ -532,9 +532,9 @@ describe('VASTTracker', function() {
       });
 
       describe('#click', () => {
-        before(done => {
+        before((done) => {
           _eventsSent = [];
-          util.track = function(URLTemplates, variables) {
+          util.track = function (URLTemplates, variables) {
             _eventsSent.push(this.resolveURLTemplates(URLTemplates, variables));
           };
           this.Tracker.click();
@@ -547,14 +547,14 @@ describe('VASTTracker', function() {
           );
           _eventsSent[0].should.eql([
             'http://example.com/nonlinear-clicktracking-1',
-            'http://example.com/nonlinear-clicktracking-2'
+            'http://example.com/nonlinear-clicktracking-2',
           ]);
         });
 
         it('should have sent clickthrough event with clickThrough url', () => {
           _eventsSent[1].event.should.eql('clickthrough');
           _eventsSent[1].args.should.eql([
-            'http://example.com/nonlinear-clickthrough'
+            'http://example.com/nonlinear-clickthrough',
           ]);
         });
       });
