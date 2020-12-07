@@ -24,11 +24,12 @@
   },
   "main": "dist/vast-client-node.min.js",
   "browser": "dist/vast-client.min.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "performance": "node performance/performance_test.js",
     "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
     "build": "rollup -c",
-    "postbuild": "node bundle_size.js",
+    "postbuild": "bash copyTypes.sh && node bundle_size.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
     "test": "mocha --require @babel/register && jest",
