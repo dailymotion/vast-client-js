@@ -117,6 +117,8 @@ By default the fully parsed `VASTResponse` contains all the Ads contained in the
   - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
   - `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse them ad by ad or adPod by adPod (default `true`)
+  - `allowMultipleAds: Boolean` - A Boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
+  - `followAdditionalWrappers: Boolean` - a Boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
 
 #### Example
 
@@ -289,9 +291,11 @@ vastClient.getNextAds(true)
   });
 ```
 
-#### getParser()
+### getParser()
 
 Returns the instance of `VASTParser` used by the client to parse the VAST. Use it to directly call a method provided by the `VASTParser` class.
+
+#### Example
 
 ```Javascript
 const vastClient = new VASTClient();
