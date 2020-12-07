@@ -15,7 +15,7 @@ describe('VASTTracker', function() {
     let ad;
     const expectedMacros = {
       ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset.mp4',
-      UNIVERSALADID: 'sample-registry%20000123',
+      UNIVERSALADID: 'sample-registry%20000123%2Csample-registry-2%20000456',
       PODSEQUENCE: '1',
       ADSERVINGID: 'z292x16y-3d7f-6440-bd29-2ec0f153fc89',
       ADTYPE: 'video',

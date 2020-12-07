@@ -610,15 +610,10 @@ export class VASTTracker extends EventEmitter {
         macros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
-    if (
-      this.creative &&
-      this.creative.universalAdId &&
-      this.creative.universalAdId.idRegistry &&
-      this.creative.universalAdId.value
-    ) {
-      macros['UNIVERSALADID'] = `${this.creative.universalAdId.idRegistry} ${
-        this.creative.universalAdId.value
-      }`;
+    if (this.creative?.universalAdIds?.length) {
+      macros['UNIVERSALADID'] = this.creative.universalAdIds
+        .map(universalAdId => universalAdId.idRegistry.concat(' ', universalAdId.value))
+        .join(',');
     }
 
     if (this.ad) {
@@ -633,7 +628,7 @@ export class VASTTracker extends EventEmitter {
       }
       if (this.ad.categories && this.ad.categories.length) {
         macros['ADCATEGORIES'] = this.ad.categories
-          .map(categorie => categorie.value)
+          .map(category => category.value)
           .join(',');
       }
       if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
