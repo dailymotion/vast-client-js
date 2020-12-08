@@ -157,7 +157,7 @@ player.on('error', () => {
 });
 ```
 
-### errorWithCode(errorCode, isCustomCode)
+### errorWithCode(errorCode, isCustomCode) : this method is deprecated in favor of the error method
 
 Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substituted with `errorCode`.
 Pass `isCustomCode` as true in order to use any value. If false or no value is passed, the macro will be replaced using `errorCode` only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
