@@ -149,18 +149,22 @@ Pass `isCustomCode` as true in order to use any value. If false or no value is p
 #### Example
 
 ```Javascript
-const MEDIAFILE_PLAYBACK_ERROR = '405';
+const customCode = '405';
+
+const macrosParam = {
+  CONTENTURI: 'https://mycontentserver.com/video.mp4',
+  ERRORCODE : customCode 
+}
 
 // Bind error listener to the player
 player.on('error', () => {
-  vastTracker.error(MEDIAFILE_PLAYBACK_ERROR);
+  vastTracker.error(macrosParam);
 });
 ```
 
-### errorWithCode(errorCode, isCustomCode) : this method is deprecated in favor of the error method
+### errorWithCode(errorCode, isCustomCode) : ⚠️ This method is deprecated in favor of the [error method](https://github.com/dailymotion/vast-client-js/blob/2137a42572da69b1b10b4bbbc30a05dbcceb9083/docs/api/vast-tracker.md#errormacros-iscustomcode)
 
-Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substituted with `errorCode`.
-Pass `isCustomCode` as true in order to use any value. If false or no value is passed, the macro will be replaced using `errorCode` only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
+Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substituted with `errorCode`. `isCustomCode` and its value are related to `[ERRORCODE]`. Pass `isCustomCode` as true in order to use any value. If false or no value is passed, the macro will be replaced using `errorCode` only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
 
 #### Parameters
 
