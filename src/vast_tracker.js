@@ -627,6 +627,7 @@ export class VASTTracker extends EventEmitter {
         .map((universalAdId) =>
           universalAdId.idRegistry.concat(' ', universalAdId.value)
         )
+        .join(',');
     }
 
     if (this.ad) {
