@@ -139,7 +139,7 @@ Macros will be replaced and the skip tracking URL will be called with the follow
 ### error(macros, isCustomCode)
 
 Send a request to the URI provided by the VAST <Error> element. `macros` is an optional Object containing macros and their values to be used and replaced in the tracking calls.
-Pass `isCustomCode` as true in order to use any value. If false or no value is passed, the macro will be replaced using `errorCode` only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
+Pass `isCustomCode` as true in order to use any value, `isCustomCode` and its value are related to the[ERRORCODE] macro. If no [ERRORCODE] macro is provided, `isCustomCode`, has no purpose. If false or no value is passed, the macro will be replaced using `errorCode` only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
 
 #### Parameters
 
