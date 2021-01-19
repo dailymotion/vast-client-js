@@ -1,7 +1,7 @@
 {
   "name": "vast-client",
   "author": "Dailymotion <vast-client@dailymotion.com> (https://developer.dailymotion.com/)",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "description": "JavaScript VAST Client",
   "keywords": [
     "vast",
