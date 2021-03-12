@@ -60,6 +60,6 @@
     "sinon": "^2.4.1"
   },
   "dependencies": {
-    "xmldom": "^0.3.0"
+    "xmldom": "^0.5.0"
   }
 }
