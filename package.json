@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=10.12.0"
+    "node": ">=12.22.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
