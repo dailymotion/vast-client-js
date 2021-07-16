@@ -232,6 +232,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
   unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
   unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
+  unwrappedAd.viewableImpression = wrapper.viewableImpression;
 
   const wrapperCompanions = (wrapper.creatives || []).filter(
     (creative) => creative && creative.type === 'companion'

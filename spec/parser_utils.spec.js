@@ -219,6 +219,18 @@ describe('ParserUtils', function () {
       pricing: null,
       survey: null,
       errorURLTemplates: ['unwrappedAd1', 'unwrappedAd2'],
+      ViewableImpression: {
+        id: '1543',
+        notviewable: [
+          'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+        ],
+        viewable: [
+          'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+        ],
+        viewundetermined: [
+          'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+        ],
+      },
       impressionURLTemplates: [
         {
           id: 'unwrappedAd',
@@ -239,13 +251,11 @@ describe('ParserUtils', function () {
               companionClickTrackingURLTemplates: [
                 {
                   id: '1',
-                  url:
-                    'http://example.com/companion1-unwrappedAd-clicktracking-first',
+                  url: 'http://example.com/companion1-unwrappedAd-clicktracking-first',
                 },
                 {
                   id: '2',
-                  url:
-                    'http://example.com/companion1-unwrappedAd-clicktracking-second',
+                  url: 'http://example.com/companion1-unwrappedAd-clicktracking-second',
                 },
               ],
             },
@@ -255,8 +265,7 @@ describe('ParserUtils', function () {
               videoClickTrackingURLTemplates: [
                 {
                   id: 'video-click-1',
-                  url:
-                    'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
+                  url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
                 },
               ],
               videoCustomClickURLTemplates: [
@@ -310,6 +319,18 @@ describe('ParserUtils', function () {
       pricing: null,
       survey: null,
       errorURLTemplates: ['wrapper1', 'wrapper2'],
+      ViewableImpression: {
+        id: '1543',
+        notviewable: [
+          'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+        ],
+        viewable: [
+          'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+        ],
+        viewundetermined: [
+          'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+        ],
+      },
       impressionURLTemplates: [
         {
           id: 'wrapper1',
@@ -333,13 +354,11 @@ describe('ParserUtils', function () {
               companionClickTrackingURLTemplates: [
                 {
                   id: '1',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-first',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-first',
                 },
                 {
                   id: '2',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-second',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-second',
                 },
               ],
             },
@@ -349,14 +368,12 @@ describe('ParserUtils', function () {
           type: 'linear',
           videoClickThroughURLTemplate: {
             id: 'click-through',
-            url:
-              'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]',
+            url: 'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]',
           },
           videoClickTrackingURLTemplates: [
             {
               id: 'video-click-1',
-              url:
-                'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
+              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
             },
             {
               id: 'video-click-2',
@@ -494,7 +511,11 @@ describe('ParserUtils', function () {
     it('override unwrapped fallbackOnNoAd with wrapper one', function () {
       expect(unwrappedAd.fallbackOnNoAd).toEqual(wrapper.fallbackOnNoAd);
     });
-
+    it('override unwrapped ViewableImpression with wrapper one', function () {
+      expect(unwrappedAd.ViewableImpression).toEqual(
+        wrapper.ViewableImpression
+      );
+    });
     it('merge the wrapper and unwrappedAd creatives together', function () {
       expect(unwrappedAd.creatives).toEqual([
         {
@@ -509,13 +530,11 @@ describe('ParserUtils', function () {
               companionClickTrackingURLTemplates: [
                 {
                   id: '1',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-first',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-first',
                 },
                 {
                   id: '2',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-second',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-second',
                 },
               ],
             },
@@ -534,23 +553,19 @@ describe('ParserUtils', function () {
               companionClickTrackingURLTemplates: [
                 {
                   id: '1',
-                  url:
-                    'http://example.com/companion1-unwrappedAd-clicktracking-first',
+                  url: 'http://example.com/companion1-unwrappedAd-clicktracking-first',
                 },
                 {
                   id: '2',
-                  url:
-                    'http://example.com/companion1-unwrappedAd-clicktracking-second',
+                  url: 'http://example.com/companion1-unwrappedAd-clicktracking-second',
                 },
                 {
                   id: '1',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-first',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-first',
                 },
                 {
                   id: '2',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-second',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-second',
                 },
               ],
             },
@@ -558,13 +573,11 @@ describe('ParserUtils', function () {
               companionClickTrackingURLTemplates: [
                 {
                   id: '1',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-first',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-first',
                 },
                 {
                   id: '2',
-                  url:
-                    'http://example.com/companion1-wrapper-clicktracking-second',
+                  url: 'http://example.com/companion1-wrapper-clicktracking-second',
                 },
               ],
               type: 'linear',
@@ -572,8 +585,7 @@ describe('ParserUtils', function () {
               videoClickTrackingURLTemplates: [
                 {
                   id: 'video-click-1',
-                  url:
-                    'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
+                  url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
                 },
               ],
               videoCustomClickURLTemplates: [
