@@ -219,7 +219,7 @@ describe('ParserUtils', function () {
       pricing: null,
       survey: null,
       errorURLTemplates: ['unwrappedAd1', 'unwrappedAd2'],
-      ViewableImpression: {
+      viewableImpression: {
         id: '1543',
         notviewable: [
           'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
@@ -322,7 +322,7 @@ describe('ParserUtils', function () {
       pricing: null,
       survey: null,
       errorURLTemplates: ['wrapper1', 'wrapper2'],
-      ViewableImpression: {
+      viewableImpression: {
         id: '1543',
         notviewable: [
           'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
@@ -333,6 +333,13 @@ describe('ParserUtils', function () {
         viewundetermined: [
           'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
         ],
+      },
+      viewableImpression: {
+        id: '1234',
+        notviewable: ['http://search.iabtechlab.com/1234'],
+        viewable: ['http://search.iabtechlab.com/1234'],
+        viewundetermined: ['http://search.iabtechlab.com/1234'],
+        id: 'eokfef',
       },
       impressionURLTemplates: [
         {
@@ -504,7 +511,28 @@ describe('ParserUtils', function () {
         },
       ]);
     });
-
+    it('merged unwrapped ViewableImpression with wrapper one', function () {
+      expect(unwrappedAd.viewableImpression).toEqual(
+        {
+          id: '1543',
+          notviewable: [
+            'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+          ],
+          viewable: [
+            'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+          ],
+          viewundetermined: [
+            'http://search.iabtechlab.com/error?errcode=102&imprid=s5-ea2f7f298e28c0c98374491aec3dfeb1&ts=1243',
+          ],
+        },
+        {
+          id: '1234',
+          notviewable: ['http://search.iabtechlab.com/1234'],
+          viewable: ['http://search.iabtechlab.com/1234'],
+          viewundetermined: ['http://search.iabtechlab.com/1234'],
+        }
+      );
+    });
     it('override unwrapped followAdditionalWrappers with wrapper one', function () {
       expect(unwrappedAd.followAdditionalWrappers).toEqual(
         wrapper.followAdditionalWrappers
@@ -518,11 +546,7 @@ describe('ParserUtils', function () {
     it('override unwrapped fallbackOnNoAd with wrapper one', function () {
       expect(unwrappedAd.fallbackOnNoAd).toEqual(wrapper.fallbackOnNoAd);
     });
-    it('override unwrapped ViewableImpression with wrapper one', function () {
-      expect(unwrappedAd.ViewableImpression).toEqual(
-        wrapper.ViewableImpression
-      );
-    });
+
     it('merge the wrapper and unwrappedAd creatives together', function () {
       expect(unwrappedAd.creatives).toEqual([
         {

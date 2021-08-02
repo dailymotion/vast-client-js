@@ -8,23 +8,23 @@ import { util } from '../src/util/util';
 
 const vastParser = new VASTParser();
 
-const urlfor = relpath =>
+const urlfor = (relpath) =>
   `file:///${path
     .resolve(path.dirname(module.filename), 'vastfiles', relpath)
     .replace(/\\/g, '/')}`;
 
-describe('VASTParser', function() {
-  describe('#getAndParseVAST', function() {
+describe('VASTParser', function () {
+  describe('#getAndParseVAST', function () {
     this.response = null;
     let _response = null;
     const options = {
-      urlhandler: nodeURLHandler
+      urlhandler: nodeURLHandler,
     };
 
-    before(done => {
+    before((done) => {
       vastParser
         .getAndParseVAST(urlfor('wrapper-notracking.xml'), options)
-        .then(response => {
+        .then((response) => {
           this.response = response;
           _response = this.response;
           done();
@@ -52,7 +52,7 @@ describe('VASTParser', function() {
       this.response.version.should.eql('2.0');
     });
 
-    describe('#For the 1st ad', function() {
+    describe('#For the 1st ad', function () {
       let ad1 = null;
 
       before(() => {
@@ -86,7 +86,7 @@ describe('VASTParser', function() {
           'http://example.com/wrapperNoTracking-error',
           'http://example.com/wrapperA-error',
           'http://example.com/wrapperB-error',
-          'http://example.com/error_[ERRORCODE]'
+          'http://example.com/error_[ERRORCODE]',
         ]);
       });
 
@@ -94,33 +94,33 @@ describe('VASTParser', function() {
         ad1.impressionURLTemplates.should.eql([
           {
             id: null,
-            url: 'http://example.com/wrapperNoTracking-impression'
+            url: 'http://example.com/wrapperNoTracking-impression',
           },
           {
             id: 'wrapper-a-impression',
-            url: 'http://example.com/wrapperA-impression'
+            url: 'http://example.com/wrapperA-impression',
           },
           {
             id: 'wrapper-b-impression1',
-            url: 'http://example.com/wrapperB-impression1'
+            url: 'http://example.com/wrapperB-impression1',
           },
           {
             id: 'wrapper-b-impression2',
-            url: 'http://example.com/wrapperB-impression2'
+            url: 'http://example.com/wrapperB-impression2',
           },
           {
             id: 'sample-impression1',
             url:
-              'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]'
+              'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
           },
           {
             id: 'sample-impression2',
-            url: 'http://example.com/impression2_[random]'
+            url: 'http://example.com/impression2_[random]',
           },
           {
             id: 'sample-impression3',
-            url: 'http://example.com/impression3_[RANDOM]'
-          }
+            url: 'http://example.com/impression3_[RANDOM]',
+          },
         ]);
       });
 
@@ -147,7 +147,7 @@ describe('VASTParser', function() {
           'verificationNotExecuted'
         );
         adVerification.trackingEvents['verificationNotExecuted'].should.eql([
-          'http://example.com/verification-not-executed-JS'
+          'http://example.com/verification-not-executed-JS',
         ]);
       });
 
@@ -164,7 +164,7 @@ describe('VASTParser', function() {
         );
         adVerification.trackingEvents['verificationNotExecuted'].should.eql([
           'http://example.com/verification-not-executed-EXE',
-          'http://sample.com/verification-not-executed-EXE'
+          'http://sample.com/verification-not-executed-EXE',
         ]);
       });
 
@@ -200,7 +200,7 @@ describe('VASTParser', function() {
           'verificationNotExecuted'
         );
         adVerification.trackingEvents['verificationNotExecuted'].should.eql([
-          'http://verification-a.com/verification-A-not-executed-JS'
+          'http://verification-a.com/verification-A-not-executed-JS',
         ]);
       });
 
@@ -221,12 +221,12 @@ describe('VASTParser', function() {
       });
 
       //Linear
-      describe('1st creative (Linear)', function() {
+      describe('1st creative (Linear)', function () {
         let linear = null;
 
         before(() => {
           linear = _response.ads[0].creatives.filter(
-            creative => creative.id === 'id130984'
+            (creative) => creative.id === 'id130984'
           )[0];
         });
 
@@ -380,7 +380,7 @@ describe('VASTParser', function() {
         it('should have 1 clickthrough URL template', () => {
           linear.videoClickThroughURLTemplate.should.eql({
             id: 'click-through',
-            url: 'http://example.com/linear-clickthrough'
+            url: 'http://example.com/linear-clickthrough',
           });
         });
 
@@ -388,28 +388,28 @@ describe('VASTParser', function() {
           linear.videoClickTrackingURLTemplates.should.eql([
             {
               id: 'video-click-1',
-              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]'
+              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]',
             },
             {
               id: 'video-click-2',
-              url: 'http://example.com/linear-clicktracking2'
+              url: 'http://example.com/linear-clicktracking2',
             },
             {
               id: 'WRAP',
-              url: 'http://example.com/wrapperB-linear-clicktracking'
+              url: 'http://example.com/wrapperB-linear-clicktracking',
             },
             {
               id: 'wrapper-video-click-1',
-              url: 'http://example.com/wrapperA-linear-clicktracking1'
+              url: 'http://example.com/wrapperA-linear-clicktracking1',
             },
             {
               id: null,
-              url: 'http://example.com/wrapperA-linear-clicktracking2'
+              url: 'http://example.com/wrapperA-linear-clicktracking2',
             },
             {
               id: 'wrapper-video-click-3',
-              url: 'http://example.com/wrapperA-linear-clicktracking3'
-            }
+              url: 'http://example.com/wrapperA-linear-clicktracking3',
+            },
           ]);
         });
 
@@ -417,12 +417,12 @@ describe('VASTParser', function() {
           linear.videoCustomClickURLTemplates.should.eql([
             {
               id: 'custom-click-1',
-              url: 'http://example.com/linear-customclick'
+              url: 'http://example.com/linear-customclick',
             },
             {
               id: '123',
-              url: 'http://example.com/wrapperA-linear-customclick'
-            }
+              url: 'http://example.com/wrapperA-linear-customclick',
+            },
           ]);
         });
 
@@ -444,7 +444,7 @@ describe('VASTParser', function() {
             'http://example.com/linear-start',
             'http://example.com/wrapperB-linear-start',
             'http://example.com/wrapperA-linear-start1',
-            'http://example.com/wrapperA-linear-start2'
+            'http://example.com/wrapperA-linear-start2',
           ]);
         });
 
@@ -452,7 +452,7 @@ describe('VASTParser', function() {
           linear.trackingEvents['complete'].should.eql([
             'http://example.com/linear-complete',
             'http://example.com/wrapperB-linear-complete',
-            'http://example.com/wrapperA-linear-complete'
+            'http://example.com/wrapperA-linear-complete',
           ]);
         });
 
@@ -460,7 +460,7 @@ describe('VASTParser', function() {
           linear.trackingEvents['progress-30'].should.eql([
             'http://example.com/linear-progress-30sec',
             'http://example.com/wrapperB-linear-progress-30sec',
-            'http://example.com/wrapperA-linear-progress-30sec'
+            'http://example.com/wrapperA-linear-progress-30sec',
           ]);
         });
 
@@ -468,13 +468,13 @@ describe('VASTParser', function() {
           linear.trackingEvents['progress-60%'].should.eql([
             'http://example.com/linear-progress-60%',
             'http://example.com/wrapperB-linear-progress-60%',
-            'http://example.com/wrapperA-linear-progress-60%'
+            'http://example.com/wrapperA-linear-progress-60%',
           ]);
         });
 
         it('should have 3 URLs for progress-90% event VAST 3.0', () => {
           linear.trackingEvents['progress-90%'].should.eql([
-            'http://example.com/wrapperA-linear-progress-90%'
+            'http://example.com/wrapperA-linear-progress-90%',
           ]);
         });
 
@@ -499,12 +499,12 @@ describe('VASTParser', function() {
           icon.iconClickTrackingURLTemplates.should.eql([
             {
               id: 'icon-click-1',
-              url: 'http://example.com/linear-clicktracking1'
+              url: 'http://example.com/linear-clicktracking1',
             },
             {
               id: 'icon-click-2',
-              url: 'http://example.com/linear-clicktracking2'
-            }
+              url: 'http://example.com/linear-clicktracking2',
+            },
           ]);
           icon.iconViewTrackingURLTemplate.should.equal(
             'http://example.com/linear-viewtracking'
@@ -513,12 +513,12 @@ describe('VASTParser', function() {
       });
 
       //Nonlinear
-      describe('3rd creative (Nonlinears)', function() {
+      describe('3rd creative (Nonlinears)', function () {
         let nonlinears = null;
 
         before(() => {
           nonlinears = _response.ads[0].creatives.filter(
-            creative => creative.id === 'id130986'
+            (creative) => creative.id === 'id130986'
           )[0];
         });
 
@@ -556,10 +556,10 @@ describe('VASTParser', function() {
         });
 
         //NonLinear
-        describe('#NonLinear', function() {
+        describe('#NonLinear', function () {
           let nonlinear = null;
 
-          describe('trackingEvents', function() {
+          describe('trackingEvents', function () {
             it('should have 6 tracking events', () => {
               nonlinears.trackingEvents.should.have.keys(
                 'start',
@@ -575,7 +575,7 @@ describe('VASTParser', function() {
               nonlinears.trackingEvents['start'].should.eql([
                 'http://example.com/nonlinear-start',
                 'http://example.com/wrapperB-nonlinear-start',
-                'http://example.com/wrapperA-nonlinear-start'
+                'http://example.com/wrapperA-nonlinear-start',
               ]);
             });
 
@@ -583,12 +583,12 @@ describe('VASTParser', function() {
               nonlinears.trackingEvents['complete'].should.eql([
                 'http://example.com/nonlinear-complete',
                 'http://example.com/wrapperB-nonlinear-complete',
-                'http://example.com/wrapperA-nonlinear-complete'
+                'http://example.com/wrapperA-nonlinear-complete',
               ]);
             });
           });
 
-          describe('as image/jpeg', function() {
+          describe('as image/jpeg', function () {
             before(() => {
               nonlinear = nonlinears.variations[0];
             });
@@ -619,12 +619,12 @@ describe('VASTParser', function() {
               nonlinear.nonlinearClickTrackingURLTemplates.should.eql([
                 {
                   id: 'nonlinear-click-1',
-                  url: 'http://example.com/nonlinear-clicktracking-1'
+                  url: 'http://example.com/nonlinear-clicktracking-1',
                 },
                 {
                   id: null,
-                  url: 'http://example.com/nonlinear-clicktracking-2'
-                }
+                  url: 'http://example.com/nonlinear-clicktracking-2',
+                },
               ]);
             });
 
@@ -636,7 +636,7 @@ describe('VASTParser', function() {
       });
     });
 
-    describe('#For the 2nd ad', function() {
+    describe('#For the 2nd ad', function () {
       let ad2 = null;
 
       before(() => {
@@ -668,7 +668,7 @@ describe('VASTParser', function() {
         ad2.errorURLTemplates.should.eql([
           'http://example.com/wrapperNoTracking-error',
           'http://example.com/wrapperA-error',
-          'http://example.com/wrapperB-error'
+          'http://example.com/wrapperB-error',
         ]);
       });
 
@@ -676,24 +676,24 @@ describe('VASTParser', function() {
         ad2.impressionURLTemplates.should.eql([
           {
             id: null,
-            url: 'http://example.com/wrapperNoTracking-impression'
+            url: 'http://example.com/wrapperNoTracking-impression',
           },
           {
             id: 'wrapper-a-impression',
-            url: 'http://example.com/wrapperA-impression'
+            url: 'http://example.com/wrapperA-impression',
           },
           {
             id: 'wrapper-b-impression1',
-            url: 'http://example.com/wrapperB-impression1'
+            url: 'http://example.com/wrapperB-impression1',
           },
           {
             id: 'wrapper-b-impression2',
-            url: 'http://example.com/wrapperB-impression2'
+            url: 'http://example.com/wrapperB-impression2',
           },
           {
             id: 'sample-ad2-impression1',
-            url: 'http://example.com/impression1'
-          }
+            url: 'http://example.com/impression1',
+          },
         ]);
       });
 
@@ -706,12 +706,12 @@ describe('VASTParser', function() {
       });
 
       //Linear
-      describe('1st creative (Linear)', function() {
+      describe('1st creative (Linear)', function () {
         let linear = null;
 
         before(() => {
           linear = ad2.creatives.filter(
-            creative => creative.id === 'id873421'
+            (creative) => creative.id === 'id873421'
           )[0];
         });
 
@@ -751,7 +751,7 @@ describe('VASTParser', function() {
         it('should have wrapper clickthrough URL', () => {
           linear.videoClickThroughURLTemplate.should.eql({
             id: null,
-            url: 'http://example.com/wrapperB-linear-clickthrough'
+            url: 'http://example.com/wrapperB-linear-clickthrough',
           });
         });
 
@@ -759,8 +759,8 @@ describe('VASTParser', function() {
           linear.videoCustomClickURLTemplates.should.eql([
             {
               id: '123',
-              url: 'http://example.com/wrapperA-linear-customclick'
-            }
+              url: 'http://example.com/wrapperA-linear-customclick',
+            },
           ]);
         });
 
@@ -768,41 +768,41 @@ describe('VASTParser', function() {
           linear.videoClickTrackingURLTemplates.should.eql([
             {
               id: null,
-              url: 'http://example.com/linear-clicktracking'
+              url: 'http://example.com/linear-clicktracking',
             },
             {
               id: 'WRAP',
-              url: 'http://example.com/wrapperB-linear-clicktracking'
+              url: 'http://example.com/wrapperB-linear-clicktracking',
             },
             {
               id: 'wrapper-video-click-1',
-              url: 'http://example.com/wrapperA-linear-clicktracking1'
+              url: 'http://example.com/wrapperA-linear-clicktracking1',
             },
             {
               id: null,
-              url: 'http://example.com/wrapperA-linear-clicktracking2'
+              url: 'http://example.com/wrapperA-linear-clicktracking2',
             },
             {
               id: 'wrapper-video-click-3',
-              url: 'http://example.com/wrapperA-linear-clicktracking3'
-            }
+              url: 'http://example.com/wrapperA-linear-clicktracking3',
+            },
           ]);
         });
       });
     });
 
-    describe('#For the wrapper-1 ad', function() {
+    describe('#For the wrapper-1 ad', function () {
       this.response = null;
       this.templateFilterCalls = [];
 
-      before(done => {
-        vastParser.addURLTemplateFilter(url => {
+      before((done) => {
+        vastParser.addURLTemplateFilter((url) => {
           this.templateFilterCalls.push(url);
           return url;
         });
         vastParser
           .getAndParseVAST(urlfor('wrapper-sequence.xml'), options)
-          .then(response => {
+          .then((response) => {
             this.response = response;
             done();
           });
@@ -814,7 +814,7 @@ describe('VASTParser', function() {
           urlfor('wrapper-sequence.xml'),
           urlfor('wrapper-sequence.xml'),
           urlfor('sample-wrapped.xml'),
-          urlfor('sample-wrapped.xml')
+          urlfor('sample-wrapped.xml'),
         ]);
       });
 
@@ -829,14 +829,14 @@ describe('VASTParser', function() {
       });
     });
 
-    describe('#VPAID', function() {
+    describe('#VPAID', function () {
       this.response = null;
 
-      before(done => {
+      before((done) => {
         this.wrapperSpy = sinon.spy(parserUtils, 'resolveVastAdTagURI');
         vastParser
           .getAndParseVAST(urlfor('vpaid.xml'), options)
-          .then(response => {
+          .then((response) => {
             this.response = response;
             done();
           });
@@ -857,13 +857,13 @@ describe('VASTParser', function() {
       });
     });
 
-    describe('#Ad Pod', function() {
+    describe('#Ad Pod', function () {
       this.response = null;
 
-      before(done => {
+      before((done) => {
         vastParser
           .getAndParseVAST(urlfor('wrapper-ad-pod.xml'), options)
-          .then(response => {
+          .then((response) => {
             this.response = response;
             done();
           });
@@ -880,15 +880,15 @@ describe('VASTParser', function() {
     });
   });
 
-  describe('#parseVAST', function() {
+  describe('#parseVAST', function () {
     const options = {
-      urlhandler: nodeURLHandler
+      urlhandler: nodeURLHandler,
     };
     this.response = null;
     this.templateFilterCalls = [];
 
-    before(done => {
-      vastParser.addURLTemplateFilter(url => {
+    before((done) => {
+      vastParser.addURLTemplateFilter((url) => {
         this.templateFilterCalls.push(url);
         return url;
       });
@@ -918,7 +918,7 @@ describe('VASTParser', function() {
           }
         }
 
-        vastParser.parseVAST(xml, options).then(response => {
+        vastParser.parseVAST(xml, options).then((response) => {
           this.response = response;
           done();
         });
@@ -941,7 +941,7 @@ describe('VASTParser', function() {
         urlfor('wrapper-b.xml'),
         urlfor('wrapper-b.xml'),
         urlfor('sample.xml'),
-        urlfor('sample.xml')
+        urlfor('sample.xml'),
       ]);
     });
 
@@ -958,11 +958,11 @@ describe('VASTParser', function() {
     });
   });
 
-  describe('#Tracking', function() {
+  describe('#Tracking', function () {
     let trackCalls = null;
     let dataTriggered = null;
     const options = {
-      urlhandler: nodeURLHandler
+      urlhandler: nodeURLHandler,
     };
 
     beforeEach(() => {
@@ -970,21 +970,21 @@ describe('VASTParser', function() {
       dataTriggered = [];
       trackCalls = [];
 
-      vastParser.on('VAST-error', variables => dataTriggered.push(variables));
+      vastParser.on('VAST-error', (variables) => dataTriggered.push(variables));
 
       util.track = (templates, variables) => {
         trackCalls.push({
           templates,
-          variables
+          variables,
         });
       };
     });
 
-    describe('#No-Ad', function() {
-      it('emits a VAST-error & track', done => {
+    describe('#No-Ad', function () {
+      it('emits a VAST-error & track', (done) => {
         vastParser
           .getAndParseVAST(urlfor('empty-no-ad.xml'), options)
-          .then(response => {
+          .then((response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // Error has been triggered
@@ -994,17 +994,17 @@ describe('VASTParser', function() {
             // Tracking has been done
             trackCalls.length.should.eql(1);
             trackCalls[0].templates.should.eql([
-              'http://example.com/empty-no-ad'
+              'http://example.com/empty-no-ad',
             ]);
             trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
             done();
           });
       });
 
-      it('when wrapped, emits a VAST-error & track', done => {
+      it('when wrapped, emits a VAST-error & track', (done) => {
         vastParser
           .getAndParseVAST(urlfor('wrapper-empty.xml'), options)
-          .then(response => {
+          .then((response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // Error has been triggered
@@ -1020,7 +1020,7 @@ describe('VASTParser', function() {
             trackCalls.length.should.eql(1);
             trackCalls[0].templates.should.eql([
               'http://example.com/wrapper-empty_wrapper-error',
-              'http://example.com/empty-no-ad'
+              'http://example.com/empty-no-ad',
             ]);
             trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
             done();
@@ -1028,11 +1028,11 @@ describe('VASTParser', function() {
       });
     });
 
-    describe('#Ad with no creatives', function() {
-      it('emits a VAST-error & track', done => {
+    describe('#Ad with no creatives', function () {
+      it('emits a VAST-error & track', (done) => {
         vastParser
           .getAndParseVAST(urlfor('empty-no-creative.xml'), options)
-          .then(response => {
+          .then((response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // Error has been triggered
@@ -1047,17 +1047,17 @@ describe('VASTParser', function() {
             // Tracking has been done
             trackCalls.length.should.eql(1);
             trackCalls[0].templates.should.eql([
-              'http://example.com/empty-no-creative_inline-error'
+              'http://example.com/empty-no-creative_inline-error',
             ]);
             trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
             done();
           });
       });
 
-      it('when wrapped, emits a VAST-error & track', done => {
+      it('when wrapped, emits a VAST-error & track', (done) => {
         vastParser
           .getAndParseVAST(urlfor('wrapper-empty-no-creative.xml'), options)
-          .then(response => {
+          .then((response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // Error has been triggered
@@ -1079,7 +1079,7 @@ describe('VASTParser', function() {
             trackCalls.length.should.eql(1);
             trackCalls[0].templates.should.eql([
               'http://example.com/wrapper-no-creative_wrapper-error',
-              'http://example.com/empty-no-creative_inline-error'
+              'http://example.com/empty-no-creative_inline-error',
             ]);
             trackCalls[0].variables.should.eql({ ERRORCODE: 303 });
             done();
@@ -1088,10 +1088,10 @@ describe('VASTParser', function() {
     });
 
     describe('#Wrapper URL unavailable/timeout', () => {
-      it('emits a VAST-error & track', done => {
+      it('emits a VAST-error & track', (done) => {
         vastParser
           .getAndParseVAST(urlfor('wrapper-unavailable-url.xml'), options)
-          .then(response => {
+          .then((response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // Error has been triggered
@@ -1106,7 +1106,7 @@ describe('VASTParser', function() {
             // Tracking has been done
             trackCalls.length.should.eql(1);
             trackCalls[0].templates.should.eql([
-              'http://example.com/wrapper-invalid-xmlfile_wrapper-error'
+              'http://example.com/wrapper-invalid-xmlfile_wrapper-error',
             ]);
             trackCalls[0].variables.should.eql({ ERRORCODE: 301 });
             done();
@@ -1115,13 +1115,13 @@ describe('VASTParser', function() {
     });
 
     describe('#Wrapper limit reached', () => {
-      it('emits a VAST-error & track', done => {
+      it('emits a VAST-error & track', (done) => {
         vastParser
           .getAndParseVAST(urlfor('wrapper-a.xml'), {
             wrapperLimit: 1,
-            urlhandler: nodeURLHandler
+            urlhandler: nodeURLHandler,
           })
-          .then(response => {
+          .then((response) => {
             // Response doesn't have any ads
             response.ads.should.eql([]);
             // Error has been triggered
@@ -1136,7 +1136,7 @@ describe('VASTParser', function() {
             // Tracking has been done
             trackCalls.length.should.eql(1);
             trackCalls[0].templates.should.eql([
-              'http://example.com/wrapperA-error'
+              'http://example.com/wrapperA-error',
             ]);
             trackCalls[0].variables.should.eql({ ERRORCODE: 302 });
             done();
@@ -1145,19 +1145,19 @@ describe('VASTParser', function() {
     });
   });
 
-  describe('#legacy', function() {
+  describe('#legacy', function () {
     const options = {
-      urlhandler: nodeURLHandler
+      urlhandler: nodeURLHandler,
     };
 
     beforeEach(() => {
       vastParser.removeAllListeners();
     });
 
-    it('correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', done => {
+    it('correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', (done) => {
       vastParser
         .getAndParseVAST(urlfor('wrapper-legacy.xml'), options)
-        .then(response => {
+        .then((response) => {
           it('should have found 1 ad', () => {
             response.ads.should.have.length(1);
           });

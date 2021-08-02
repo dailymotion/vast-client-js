@@ -5,11 +5,11 @@ import { linearAd } from './samples/linear_ads';
 import { adVerificationExtensions } from './samples/ad_verification_extentions';
 import {
   viewableImpression,
-  viewableImpressionPartial
+  viewableImpressionPartial,
 } from './samples/viewable_impression';
 
-describe('AdParser', function() {
-  describe('parseAd', function() {
+describe('AdParser', function () {
+  describe('parseAd', function () {
     let inlineAdNode, wrapperAdNode, invalidAdNode, adElement, ad;
     const emit = () => {};
 
@@ -37,9 +37,9 @@ describe('AdParser', function() {
         ad: expect.objectContaining({
           id: 'id-123',
           sequence: 'seq-123',
-          adType: null
+          adType: null,
         }),
-        type: 'INLINE'
+        type: 'INLINE',
       });
     });
 
@@ -48,11 +48,11 @@ describe('AdParser', function() {
       expect(parsedWrapper.ad).toMatchObject({
         allowMultipleAds: true,
         fallbackOnNoAd: true,
-        followAdditionalWrappers: false
+        followAdditionalWrappers: false,
       });
       expect(parsedWrapper).toEqual({
         ad: expect.any(Object),
-        type: 'WRAPPER'
+        type: 'WRAPPER',
       });
     });
 
@@ -95,28 +95,28 @@ describe('AdParser', function() {
     });
 
     it('gets viewableImpression values', () => {
-      expect(ad.viewableImpression.id).toBe('viewable_impression_id');
-      expect(ad.viewableImpression.viewable).toHaveLength(2);
-      expect(ad.viewableImpression.viewable).toEqual([
+      expect(ad.viewableImpression[0].id).toEqual('viewable_impression_id');
+      expect(ad.viewableImpression[0].viewable).toHaveLength(2);
+      expect(ad.viewableImpression[0].viewable).toEqual([
         'http://www.example.com/viewable_impression_1',
-        'http://www.sample.com/viewable_impression_2'
+        'http://www.sample.com/viewable_impression_2',
       ]);
-      expect(ad.viewableImpression.notviewable).toHaveLength(3);
-      expect(ad.viewableImpression.notviewable).toEqual([
+      expect(ad.viewableImpression[0].notviewable).toHaveLength(3);
+      expect(ad.viewableImpression[0].notviewable).toEqual([
         'http://www.example.com/not_viewable_1',
         'http://www.sample.com/not_viewable_2',
-        'http://www.sample.com/not_viewable_3'
+        'http://www.sample.com/not_viewable_3',
       ]);
-      expect(ad.viewableImpression.viewundetermined).toHaveLength(1);
-      expect(ad.viewableImpression.viewundetermined).toEqual([
-        'http://www.example.com/view_undetermined_1'
+      expect(ad.viewableImpression[0].viewundetermined).toHaveLength(1);
+      expect(ad.viewableImpression[0].viewundetermined).toEqual([
+        'http://www.example.com/view_undetermined_1',
       ]);
     });
 
     it('returns 1 errorURLTemplate', () => {
       expect(ad.errorURLTemplates).toHaveLength(1);
       expect(ad.errorURLTemplates).toEqual([
-        'http://example.com/error_[ERRORCODE]'
+        'http://example.com/error_[ERRORCODE]',
       ]);
     });
 
@@ -125,16 +125,16 @@ describe('AdParser', function() {
       expect(ad.impressionURLTemplates).toEqual([
         {
           id: 'sample-impression1',
-          url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]'
+          url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
         },
         {
           id: 'sample-impression2',
-          url: 'http://example.com/impression2_[random]'
+          url: 'http://example.com/impression2_[random]',
         },
         {
           id: 'sample-impression3',
-          url: 'http://example.com/impression3_[RANDOM]'
-        }
+          url: 'http://example.com/impression3_[RANDOM]',
+        },
       ]);
     });
 
@@ -187,12 +187,12 @@ describe('AdParser', function() {
         ad.adVerifications[2].trackingEvents.verificationNotExecuted
       ).toEqual([
         'http://example.com/verification-not-executed-EXE',
-        'http://sample.com/verification-not-executed-EXE'
+        'http://sample.com/verification-not-executed-EXE',
       ]);
     });
   });
 
-  describe('adVerifications from extensions', function() {
+  describe('adVerifications from extensions', function () {
     let adVerificationExtensionsNode, ad;
 
     beforeAll(() => {
@@ -225,7 +225,7 @@ describe('AdParser', function() {
     });
   });
 
-  describe('parseViewableImpression', function() {
+  describe('parseViewableImpression', function () {
     const viewableImpressionNode = parserUtils.childByName(
       getNodesFromXml(viewableImpression),
       'ViewableImpression'
@@ -253,7 +253,7 @@ describe('AdParser', function() {
       expect(parsedViewableImpression.viewable.length).toEqual(2);
       expect(parsedViewableImpression.viewable).toEqual([
         'http://www.example.com/viewable_impression_1',
-        'http://www.sample.com/viewable_impression_2'
+        'http://www.sample.com/viewable_impression_2',
       ]);
     });
 
@@ -262,14 +262,14 @@ describe('AdParser', function() {
       expect(parsedViewableImpression.notviewable).toEqual([
         'http://www.example.com/not_viewable_1',
         'http://www.sample.com/not_viewable_2',
-        'http://www.sample.com/not_viewable_3'
+        'http://www.sample.com/not_viewable_3',
       ]);
     });
 
     it('validate viewableImpression viewundetermined array', () => {
       expect(parsedViewableImpression.viewundetermined.length).toEqual(1);
       expect(parsedViewableImpression.viewundetermined).toEqual([
-        'http://www.example.com/view_undetermined_1'
+        'http://www.example.com/view_undetermined_1',
       ]);
     });
 
@@ -280,7 +280,7 @@ describe('AdParser', function() {
     it('validate viewableImpressionPartial viewable array', () => {
       expect(parsedViewableImpressionPartial.viewable.length).toEqual(1);
       expect(parsedViewableImpressionPartial.viewable).toEqual([
-        'http://www.example.com/viewable_impression_1'
+        'http://www.example.com/viewable_impression_1',
       ]);
     });
 

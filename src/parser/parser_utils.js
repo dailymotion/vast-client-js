@@ -228,11 +228,17 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
+  if (wrapper.viewableImpression.length > 0) {
+    unwrappedAd.viewableImpression = [
+      ...unwrappedAd.viewableImpression,
+      ...wrapper.viewableImpression,
+    ];
+  }
+
   // values from the child wrapper will be overridden
   unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
   unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
   unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
-  unwrappedAd.viewableImpression = wrapper.viewableImpression;
 
   const wrapperCompanions = (wrapper.creatives || []).filter(
     (creative) => creative && creative.type === 'companion'
@@ -317,8 +323,9 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
       });
     }
   });
-  // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
+
   if (wrapper.adVerifications) {
+    // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
     unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(
       wrapper.adVerifications
     );
