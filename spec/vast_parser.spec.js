@@ -769,6 +769,7 @@ describe('VASTParser', () => {
       trackingEvents: { nonlinear: [], linear: [] },
       videoClickTrackingURLTemplates: [],
       videoCustomClickURLTemplates: [],
+      viewableImpression: [],
     };
 
     beforeEach(() => {

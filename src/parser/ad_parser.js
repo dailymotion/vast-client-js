@@ -154,9 +154,9 @@ function parseAdElement(adTypeElement, emit) {
       case 'Expires':
         ad.expires = parseInt(parserUtils.parseNodeText(node), 10);
         break;
-
+      //AJOUTER COMMENTAIRE
       case 'ViewableImpression':
-        ad.viewableImpression = _parseViewableImpression(node);
+        ad.viewableImpression = [_parseViewableImpression(node)];
         break;
 
       case 'Description':
