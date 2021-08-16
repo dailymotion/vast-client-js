@@ -154,8 +154,7 @@ function parseAdElement(adTypeElement, emit) {
       case 'Expires':
         ad.expires = parseInt(parserUtils.parseNodeText(node), 10);
         break;
-      //viewable impression is now a table because we are parsing
-      //from inline and wrapper
+
       case 'ViewableImpression':
         ad.viewableImpression = [_parseViewableImpression(node)];
         break;
