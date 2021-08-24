@@ -295,6 +295,8 @@ Returns a `Promise` which either resolves with the fully parsed `VASTResponse` o
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
   - `allowMultipleAds: Boolean` - A boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
   - `followAdditionalWrappers: Boolean` - A boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
+  - `requestDuration: Number` - The fetching time of the XML. Provide it with byteLength to have a more accurate estimated bitrate.
+  - `byteLength: Number`- The size of the request. Provide it with requestDuration to have a more accurate estimated bitrate.
 
 #### Events emitted
 
@@ -324,6 +326,27 @@ const options = {
 vastParser.parseVAST(vastXml, options)
   .then(res => {
     // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  });
+```
+
+### getEstimatedBitrate()
+
+Returns the average of the estimated bitrates in bits by secondes.
+
+#### Example
+
+```Javascript
+const options = {
+  requestDuration: 200,
+  byteLength 1000,
+}
+vastParser.parseVAST(vastXml, options)
+  .then(res => {
+    vastParser.getEstimatedBitrate()
+    // returns 40 000
   })
   .catch(err => {
     // Deal with the error
@@ -391,3 +414,12 @@ Merges the data between an unwrapped ad and his wrapper.
 
 - **`unwrappedAd: Ad`** - The 'unwrapped' Ad.
 - **`wrapper: Ad`** - The wrapper Ad.
+
+### updateEstimatedBitrate(byteLength, duration) {
+
+Calculate and add the estimated bitrate to the bitrates array.
+
+#### Parameters
+
+- **`byteLength: Number`** - The request response size, in bytes.
+- **`duration: Number`** - The request duration, in ms.
