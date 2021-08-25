@@ -334,7 +334,7 @@ vastParser.parseVAST(vastXml, options)
 
 ### getEstimatedBitrate()
 
-Returns the average of the estimated bitrates in bits by secondes.
+Returns the average of the estimated bitrates in kilo bit per secondes.
 
 #### Example
 
@@ -346,7 +346,7 @@ const options = {
 vastParser.parseVAST(vastXml, options)
   .then(res => {
     vastParser.getEstimatedBitrate()
-    // returns 40 000
+    // returns 40
   })
   .catch(err => {
     // Deal with the error
