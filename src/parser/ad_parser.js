@@ -153,7 +153,7 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'ViewableImpression':
-        ad.viewableImpression = [_parseViewableImpression(node)];
+        ad.viewableImpression.push(_parseViewableImpression(node));
         break;
 
       case 'Description':
