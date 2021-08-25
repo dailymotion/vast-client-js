@@ -3,6 +3,7 @@ import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { urlFor, fetchXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
+import * as Bitrate from '../src/parser/bitrate';
 
 const xml = new DOMParser().parseFromString('<VAST></VAST>', 'text/xml');
 const urlHandlerSuccess = {
@@ -95,10 +96,10 @@ describe('VASTParser', () => {
       });
 
       it('updates the estimated bitrate', () => {
-        jest.spyOn(VastParser, 'updateEstimatedBitrate');
+        jest.spyOn(Bitrate, 'updateEstimatedBitrate');
 
         return VastParser.fetchVAST('www.foo.foo').finally(() => {
-          expect(VastParser.updateEstimatedBitrate).toHaveBeenCalledWith(1234, expect.any(Number));
+          expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(1234, expect.any(Number));
         });
       })
 
@@ -173,7 +174,7 @@ describe('VASTParser', () => {
   describe('initParsingStatus', () => {
     it('assigns options to properties', () => {
       const urlHandler = jest.fn();
-      jest.spyOn(VastParser, 'updateEstimatedBitrate');
+      jest.spyOn(Bitrate, 'updateEstimatedBitrate');
 
       VastParser.initParsingStatus({
         wrapperLimit: 5,
@@ -198,7 +199,7 @@ describe('VASTParser', () => {
       expect(VastParser.urlHandler).toEqual(urlHandler);
       expect(VastParser.vastVersion).toBeNull();
       expect(VastParser.parsingOptions).toEqual({ allowMultipleAds: true });
-      expect(VastParser.updateEstimatedBitrate).toBeCalledWith(1000, 200);
+      expect(Bitrate.updateEstimatedBitrate).toBeCalledWith(1000, 200);
     });
 
     it('uses default values if no options are passed', () => {
@@ -887,47 +888,10 @@ describe('VASTParser', () => {
     });
   });
 
-  describe('updateEstimatedBitrate', () => {
-    beforeEach(() => {
-      VastParser.estimatedBitrates = [];
-    });
-
-    it('doesn\'t update estimated bitrate if one value is missing', () => {
-      VastParser.updateEstimatedBitrate(1000, null);
-      expect(VastParser.estimatedBitrates).toEqual([]);
-      VastParser.updateEstimatedBitrate(null, 1234);
-      expect(VastParser.estimatedBitrates).toEqual([]);
-    });
-
-    it('doesn\'t update estimated bitrate if one value is negative', () => {
-      VastParser.updateEstimatedBitrate(1000, -12);
-      expect(VastParser.estimatedBitrates).toEqual([]);
-      VastParser.updateEstimatedBitrate(-243, 1234);
-      expect(VastParser.estimatedBitrates).toEqual([]);
-    });
-
-    it('updates estimated bitrate if values are both positive and cumulates', () => {
-      VastParser.updateEstimatedBitrate(1000, 200);
-      expect(VastParser.estimatedBitrates).toEqual([40000]);
-      VastParser.updateEstimatedBitrate(100, 200);
-      expect(VastParser.estimatedBitrates).toEqual([40000, 4000]);
-    });
-  });
-
   describe('getEstimatedBitrate', () => {
-    beforeEach(() => {
-      VastParser.estimatedBitrates = [];
-    });
-
-    it('returns 0 when the array is empty', () => {
-      expect(VastParser.getEstimatedBitrate()).toEqual(0);
-    });
-
-    it('returns the average otherwise', () => {
-      VastParser.estimatedBitrates = [42];
+    it('should return value from imported estimatedBitrate', () => {
+      Bitrate.estimatedBitrate = 42;
       expect(VastParser.getEstimatedBitrate()).toEqual(42);
-      VastParser.estimatedBitrates = [42, 4000];
-      expect(VastParser.getEstimatedBitrate()).toEqual(2021);
-    });
-  });
+    })
+  })
 });

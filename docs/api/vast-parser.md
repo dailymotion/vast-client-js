@@ -414,12 +414,3 @@ Merges the data between an unwrapped ad and his wrapper.
 
 - **`unwrappedAd: Ad`** - The 'unwrapped' Ad.
 - **`wrapper: Ad`** - The wrapper Ad.
-
-### updateEstimatedBitrate(byteLength, duration) {
-
-Calculate and add the estimated bitrate to the bitrates array.
-
-#### Parameters
-
-- **`byteLength: Number`** - The request response size, in bytes.
-- **`duration: Number`** - The request duration, in ms.

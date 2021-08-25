@@ -5,6 +5,7 @@ import { urlHandler } from '../url_handler';
 import { util } from '../util/util';
 import { createVASTResponse } from '../vast_response';
 import { DEFAULT_TIMEOUT } from '../urlhandlers/consts';
+import { updateEstimatedBitrate, estimatedBitrate } from './bitrate';
 
 const DEFAULT_MAX_WRAPPER_DEPTH = 10;
 const DEFAULT_EVENT_DATA = {
@@ -34,7 +35,6 @@ export class VASTParser extends EventEmitter {
     this.URLTemplateFilters = [];
     this.fetchingOptions = {};
     this.parsingOptions = {};
-    this.estimatedBitrates = [];
   }
 
   /**
@@ -97,6 +97,14 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
+   * Returns the estimated bitrate calculated from all previous requests
+   * @returns The average of all estimated bitrates.
+   */
+  getEstimatedBitrate() {
+    return estimatedBitrate
+  }
+
+  /**
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
@@ -141,7 +149,7 @@ export class VASTParser extends EventEmitter {
 
           this.emit('VAST-resolved', info);
 
-          this.updateEstimatedBitrate(details.byteLength, deltaTime);
+          updateEstimatedBitrate(details.byteLength, deltaTime);
 
           if (error) {
             reject(error);
@@ -171,7 +179,7 @@ export class VASTParser extends EventEmitter {
     this.rootURL = '';
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.vastVersion = null;
-    this.updateEstimatedBitrate(options.byteLength, options.requestDuration);
+    updateEstimatedBitrate(options.byteLength, options.requestDuration);
   }
 
   /**
@@ -579,33 +587,5 @@ export class VASTParser extends EventEmitter {
         }
       }
     }
-  }
-
-  /**
-   * Calculate the estimated bitrate and add it to the bitrates list
-   * @param {Number} byteLength - The length of the response in bytes.
-   * @param {Number} duration - The duration of the request in ms.
-   */
-  updateEstimatedBitrate(byteLength, duration) {
-    if (!byteLength || !duration || byteLength <= 0 || duration <= 0) {
-      return;
-    }
-
-    // We want the bitrate in bit by seconds, byteLength are in bytes and duration in ms, we need to convert them
-    const bitrate = (byteLength * 8) / duration * 1000;
-    this.estimatedBitrates.push(bitrate);
-  }
-
-  /**
-   * Returns the estimated bitrate calculated from all previous requests
-   * @returns The average of all estimated bitrates.
-   */
-  getEstimatedBitrate() {
-    if (!this.estimatedBitrates.length) {
-      return 0;
-    }
-
-    const sum = this.estimatedBitrates.reduce((acc, val) => acc + val, 0);
-    return sum / this.estimatedBitrates.length;
   }
 }
