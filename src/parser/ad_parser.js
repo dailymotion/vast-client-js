@@ -117,9 +117,8 @@ function parseAdElement(adTypeElement, emit) {
           from extensions the same way than for an AdVerifications node.
         */
         if (!ad.adVerifications.length) {
-          adVerificationsFromExtensions = _parseAdVerificationsFromExtensions(
-            extNodes
-          );
+          adVerificationsFromExtensions =
+            _parseAdVerificationsFromExtensions(extNodes);
         }
         break;
       }
@@ -337,9 +336,8 @@ export function _parseAdVerifications(verifications) {
         .childrenByName(trackingEventsElement, 'Tracking')
         .forEach((trackingElement) => {
           const eventName = trackingElement.getAttribute('event');
-          const trackingURLTemplate = parserUtils.parseNodeText(
-            trackingElement
-          );
+          const trackingURLTemplate =
+            parserUtils.parseNodeText(trackingElement);
           if (eventName && trackingURLTemplate) {
             if (!Array.isArray(verification.trackingEvents[eventName])) {
               verification.trackingEvents[eventName] = [];
@@ -406,7 +404,8 @@ export function _parseViewableImpression(viewableImpressionNode) {
     ) {
       continue;
     } else {
-      const viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
+      const viewableImpressionNodeNameLower =
+        viewableImpressionNodeName.toLowerCase();
       if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
         viewableImpression[viewableImpressionNodeNameLower] = [];
       }
