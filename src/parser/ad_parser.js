@@ -79,7 +79,7 @@ function parseInLine(adElement, emit, { allowMultipleAds } = {}) {
  * @return {Object} ad - The ad object.
  */
 function parseAdElement(adTypeElement, emit) {
-  let adVerificationFromExtensions = [];
+  let adVerificationsFromExtensions = [];
   if (emit) {
     parserVerification.verifyRequiredValues(adTypeElement, emit);
   }
@@ -117,7 +117,7 @@ function parseAdElement(adTypeElement, emit) {
           from extensions the same way than for an AdVerifications node.
         */
         if (!ad.adVerifications.length) {
-          adVerificationFromExtensions = _parseAdVerificationsFromExensions(
+          adVerificationsFromExtensions = _parseAdVerificationsFromExtensions(
             extNodes
           );
         }
@@ -191,9 +191,9 @@ function parseAdElement(adTypeElement, emit) {
     }
   }
 
-  if (adVerificationFromExtensions.length && ad.system.version < 4.1) {
+  if (adVerificationsFromExtensions.length && ad.system.version < 4.1) {
     ad.adVerifications = ad.adVerifications.concat(
-      adVerificationFromExtensions
+      adVerificationsFromExtensions
     );
   }
   return ad;
@@ -360,7 +360,7 @@ export function _parseAdVerifications(verifications) {
  * @param  {Array<Node>} extensions - The array of extensions to parse.
  * @return {Array<Object>}
  */
-export function _parseAdVerificationsFromExensions(extensions) {
+export function _parseAdVerificationsFromExtensions(extensions) {
   let adVerificationsNode = null,
     adVerifications = [];
 
