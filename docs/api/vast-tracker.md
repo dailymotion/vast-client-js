@@ -136,10 +136,9 @@ Macros will be replaced and the skip tracking URL will be called with the follow
 
 ## Public Methods 💚 <a name="methods"></a>
 
-### error(macros, isCustomCode)
-
+### error(macros, isCustomCode) <a name="error"></a>
 Send a request to the URI provided by the VAST <Error> element. `macros` is an optional Object containing macros and their values to be used and replaced in the tracking calls.
-Pass `isCustomCode` as true in order to use any value, `isCustomCode` and its value are related to the[ERRORCODE] macro. If no [ERRORCODE] macro is provided, `isCustomCode`, has no purpose. If false or no value is passed, the macro will be replaced using `errorCode` only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
+Pass `isCustomCode` as true only if you want to use a custom code for the `[ERRORCODE]` macro. If false, and a value is provided for `[ERRORCODE]` macro the macro will be replaced in the tracking call only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
 
 #### Parameters
 
@@ -162,7 +161,7 @@ player.on('error', () => {
 });
 ```
 
-### errorWithCode(errorCode, isCustomCode) : ⚠️ This method is deprecated in favor of the [error method](https://github.com/dailymotion/vast-client-js/blob/2137a42572da69b1b10b4bbbc30a05dbcceb9083/docs/api/vast-tracker.md#errormacros-iscustomcode)
+### errorWithCode(errorCode, isCustomCode) : ⚠️ This method is deprecated in favor of the [error method](#error)
 
 Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERRORCODE]` macro is included, it will be substituted with `errorCode`. `isCustomCode` and its value are related to `[ERRORCODE]`. Pass `isCustomCode` as true only if you want to use a custom code for the `[ERRORCODE]` macro. If false, and a value is provided for `[ERRORCODE]` macro the macro will be replaced in the tracking call only if the code is a number between 100 and 999 (see <https://gist.github.com/rhumlover/5747417>). Otherwise 900 will be used.
 
