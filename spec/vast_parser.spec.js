@@ -3,6 +3,7 @@ import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { urlFor, fetchXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
+import * as Bitrate from '../src/parser/bitrate';
 
 const xml = new DOMParser().parseFromString('<VAST></VAST>', 'text/xml');
 const urlHandlerSuccess = {
@@ -94,6 +95,14 @@ describe('VASTParser', () => {
         });
       });
 
+      it('updates the estimated bitrate', () => {
+        jest.spyOn(Bitrate, 'updateEstimatedBitrate');
+
+        return VastParser.fetchVAST('www.foo.foo').finally(() => {
+          expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(1234, expect.any(Number));
+        });
+      })
+
       it('resolves with xml', () => {
         return expect(
           VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo')
@@ -165,12 +174,16 @@ describe('VASTParser', () => {
   describe('initParsingStatus', () => {
     it('assigns options to properties', () => {
       const urlHandler = jest.fn();
+      jest.spyOn(Bitrate, 'updateEstimatedBitrate');
+
       VastParser.initParsingStatus({
         wrapperLimit: 5,
         timeout: 1000,
         withCredentials: true,
         urlHandler,
         allowMultipleAds: true,
+        byteLength: 1000,
+        requestDuration: 200,
       });
 
       expect(VastParser.rootURL).toBe('');
@@ -186,6 +199,7 @@ describe('VASTParser', () => {
       expect(VastParser.urlHandler).toEqual(urlHandler);
       expect(VastParser.vastVersion).toBeNull();
       expect(VastParser.parsingOptions).toEqual({ allowMultipleAds: true });
+      expect(Bitrate.updateEstimatedBitrate).toBeCalledWith(1000, 200);
     });
 
     it('uses default values if no options are passed', () => {
@@ -873,4 +887,11 @@ describe('VASTParser', () => {
       });
     });
   });
+
+  describe('getEstimatedBitrate', () => {
+    it('should return value from imported estimatedBitrate', () => {
+      Bitrate.estimatedBitrate = 42;
+      expect(VastParser.getEstimatedBitrate()).toEqual(42);
+    })
+  })
 });
