@@ -228,19 +228,26 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   );
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
 
+  if (wrapper.viewableImpression.length > 0) {
+    unwrappedAd.viewableImpression = [
+      ...unwrappedAd.viewableImpression,
+      ...wrapper.viewableImpression,
+    ];
+  }
+
   // values from the child wrapper will be overridden
   unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
   unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
   unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
 
   const wrapperCompanions = (wrapper.creatives || []).filter(
-    creative => creative && creative.type === 'companion'
+    (creative) => creative && creative.type === 'companion'
   );
   const wrapperCompanionClickTracking = wrapperCompanions.reduce(
     (result, creative) => {
-      (creative.variations || []).forEach(variation => {
+      (creative.variations || []).forEach((variation) => {
         (variation.companionClickTrackingURLTemplates || []).forEach(
-          companionClickTrackingURLTemplate => {
+          (companionClickTrackingURLTemplate) => {
             if (
               !util.containsTemplateObject(
                 companionClickTrackingURLTemplate,
@@ -266,7 +273,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     wrapper.videoCustomClickURLTemplates &&
     wrapper.videoCustomClickURLTemplates.length;
 
-  unwrappedAd.creatives.forEach(creative => {
+  unwrappedAd.creatives.forEach((creative) => {
     // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (const eventName in wrapper.trackingEvents[creative.type]) {
@@ -308,7 +315,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
 
     // pass wrapper companion trackers to all companions
     if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
-      (creative.variations || []).forEach(variation => {
+      (creative.variations || []).forEach((variation) => {
         variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(
           variation.companionClickTrackingURLTemplates,
           wrapperCompanionClickTracking
@@ -316,8 +323,9 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
       });
     }
   });
-  // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
+
   if (wrapper.adVerifications) {
+    // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
     unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(
       wrapper.adVerifications
     );
@@ -341,5 +349,5 @@ export const parserUtils = {
   parseDuration,
   splitVAST,
   assignAttributes,
-  mergeWrapperAdData
+  mergeWrapperAdData,
 };

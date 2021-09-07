@@ -266,7 +266,7 @@ vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml')
 
 // With some options
 const options = {
-  timoeut: 5000,
+  timeout: 5000,
   withCredentials: true,
   wrapperLimit: 7
 }

@@ -46,7 +46,7 @@ export function parseAd(
     } else if (adTypeElement.nodeName === 'InLine') {
       return {
         ad: parseInLine(adTypeElement, emit, { allowMultipleAds }),
-        type: 'INLINE'
+        type: 'INLINE',
       };
     }
   }
@@ -96,7 +96,7 @@ function parseAdElement(adTypeElement, emit) {
       case 'Impression':
         ad.impressionURLTemplates.push({
           id: node.getAttribute('id') || null,
-          url: parserUtils.parseNodeText(node)
+          url: parserUtils.parseNodeText(node),
         });
         break;
 
@@ -129,7 +129,7 @@ function parseAdElement(adTypeElement, emit) {
       case 'AdSystem':
         ad.system = {
           value: parserUtils.parseNodeText(node),
-          version: node.getAttribute('version') || null
+          version: node.getAttribute('version') || null,
         };
         break;
 
@@ -144,7 +144,7 @@ function parseAdElement(adTypeElement, emit) {
       case 'Category':
         ad.categories.push({
           authority: node.getAttribute('authority') || null,
-          value: parserUtils.parseNodeText(node)
+          value: parserUtils.parseNodeText(node),
         });
         break;
 
@@ -153,7 +153,7 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'ViewableImpression':
-        ad.viewableImpression = _parseViewableImpression(node);
+        ad.viewableImpression.push(_parseViewableImpression(node));
         break;
 
       case 'Description':
@@ -163,7 +163,7 @@ function parseAdElement(adTypeElement, emit) {
       case 'Advertiser':
         ad.advertiser = {
           id: node.getAttribute('id') || null,
-          value: parserUtils.parseNodeText(node)
+          value: parserUtils.parseNodeText(node),
         };
         break;
 
@@ -171,7 +171,7 @@ function parseAdElement(adTypeElement, emit) {
         ad.pricing = {
           value: parserUtils.parseNodeText(node),
           model: node.getAttribute('model') || null,
-          currency: node.getAttribute('currency') || null
+          currency: node.getAttribute('currency') || null,
         };
         break;
 
@@ -182,7 +182,7 @@ function parseAdElement(adTypeElement, emit) {
       case 'BlockedAdCategories':
         ad.blockedAdCategories.push({
           authority: node.getAttribute('authority') || null,
-          value: parserUtils.parseNodeText(node)
+          value: parserUtils.parseNodeText(node),
         });
         break;
     }
@@ -235,7 +235,7 @@ function parseWrapper(wrapperElement, emit) {
     }
   }
 
-  ad.creatives.forEach(wrapperCreativeElement => {
+  ad.creatives.forEach((wrapperCreativeElement) => {
     if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
       // TrackingEvents Linear / NonLinear
       if (wrapperCreativeElement.trackingEvents) {
@@ -254,7 +254,7 @@ function parseWrapper(wrapperElement, emit) {
           ) {
             ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
           }
-          urls.forEach(url => {
+          urls.forEach((url) => {
             ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url);
           });
         }
@@ -264,9 +264,11 @@ function parseWrapper(wrapperElement, emit) {
         if (!Array.isArray(ad.videoClickTrackingURLTemplates)) {
           ad.videoClickTrackingURLTemplates = [];
         } // tmp property to save wrapper tracking URLs until they are merged
-        wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(item => {
-          ad.videoClickTrackingURLTemplates.push(item);
-        });
+        wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(
+          (item) => {
+            ad.videoClickTrackingURLTemplates.push(item);
+          }
+        );
       }
       // ClickThrough
       if (wrapperCreativeElement.videoClickThroughURLTemplate) {
@@ -278,7 +280,7 @@ function parseWrapper(wrapperElement, emit) {
         if (!Array.isArray(ad.videoCustomClickURLTemplates)) {
           ad.videoCustomClickURLTemplates = [];
         } // tmp property to save wrapper tracking URLs until they are merged
-        wrapperCreativeElement.videoCustomClickURLTemplates.forEach(item => {
+        wrapperCreativeElement.videoCustomClickURLTemplates.forEach((item) => {
           ad.videoCustomClickURLTemplates.push(item);
         });
       }
@@ -298,7 +300,7 @@ function parseWrapper(wrapperElement, emit) {
 export function _parseAdVerifications(verifications) {
   const ver = [];
 
-  verifications.forEach(verificationNode => {
+  verifications.forEach((verificationNode) => {
     const verification = createAdVerification();
     const childNodes = verificationNode.childNodes;
 
@@ -325,7 +327,7 @@ export function _parseAdVerifications(verifications) {
     if (trackingEventsElement) {
       parserUtils
         .childrenByName(trackingEventsElement, 'Tracking')
-        .forEach(trackingElement => {
+        .forEach((trackingElement) => {
           const eventName = trackingElement.getAttribute('event');
           const trackingURLTemplate = parserUtils.parseNodeText(
             trackingElement
@@ -355,7 +357,7 @@ export function _parseAdVerificationsFromExensions(extensions) {
     adVerifications = [];
 
   // Find the first (and only) AdVerifications node from extensions
-  extensions.some(extension => {
+  extensions.some((extension) => {
     return (adVerificationsNode = parserUtils.childByName(
       extension,
       'AdVerifications'

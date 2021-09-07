@@ -6,7 +6,7 @@ export function createAd(adAttributes = {}) {
     adServingId: null,
     categories: [],
     expires: null,
-    viewableImpression: {},
+    viewableImpression: [],
     system: null,
     title: null,
     description: null,
@@ -21,6 +21,6 @@ export function createAd(adAttributes = {}) {
     blockedAdCategories: [],
     followAdditionalWrappers: true,
     allowMultipleAds: false,
-    fallbackOnNoAd: null
+    fallbackOnNoAd: null,
   };
 }

@@ -18,7 +18,7 @@ This object represents a single parsed Ad
 - `adServingId: String`
 - `categories: Array<Object>` [go to object](#category)
 - `expires: Number|null`
-- `viewableImpression: Object` [go to object](#viewable-impression)
+- `viewableImpression: Array<Object>` [go to object](#viewable-impression)
 - `system: String|null`
 - `title: String|null`
 - `description: String|null`
