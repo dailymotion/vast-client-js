@@ -191,7 +191,7 @@ function parseAdElement(adTypeElement, emit) {
     }
   }
 
-  if (adVerificationsFromExtensions.length && ad.system.version < 4.1) {
+  if (adVerificationsFromExtensions.length) {
     ad.adVerifications = ad.adVerifications.concat(
       adVerificationsFromExtensions
     );
