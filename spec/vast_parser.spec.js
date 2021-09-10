@@ -99,9 +99,12 @@ describe('VASTParser', () => {
         jest.spyOn(Bitrate, 'updateEstimatedBitrate');
 
         return VastParser.fetchVAST('www.foo.foo').finally(() => {
-          expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(1234, expect.any(Number));
+          expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
+            1234,
+            expect.any(Number)
+          );
         });
-      })
+      });
 
       it('resolves with xml', () => {
         return expect(
@@ -892,6 +895,6 @@ describe('VASTParser', () => {
     it('should return value from imported estimatedBitrate', () => {
       Bitrate.estimatedBitrate = 42;
       expect(VastParser.getEstimatedBitrate()).toEqual(42);
-    })
-  })
+    });
+  });
 });

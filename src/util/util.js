@@ -3,7 +3,7 @@ import { supportedMacros } from './macros';
 function track(URLTemplates, macros, options) {
   const URLs = resolveURLTemplates(URLTemplates, macros, options);
 
-  URLs.forEach(URL => {
+  URLs.forEach((URL) => {
     if (typeof window !== 'undefined' && window !== null) {
       const i = new Image();
       i.src = URL;
@@ -72,7 +72,7 @@ function replaceUrlMacros(url, macros) {
   }
 
   let supportedRemainingMacros = remainingMacros.filter(
-    macro => supportedMacros.indexOf(macro) > -1
+    (macro) => supportedMacros.indexOf(macro) > -1
   );
   if (supportedRemainingMacros.length === 0) {
     return url;
@@ -117,7 +117,7 @@ function replaceMacrosValues(url, macros) {
  */
 function extractURLsFromTemplates(URLTemplates) {
   if (Array.isArray(URLTemplates)) {
-    return URLTemplates.map(URLTemplate => {
+    return URLTemplates.map((URLTemplate) => {
       return URLTemplate && URLTemplate.hasOwnProperty('url')
         ? URLTemplate.url
         : URLTemplate;
@@ -171,7 +171,7 @@ function isTemplateObjectEqual(obj1, obj2) {
 function encodeURIComponentRFC3986(str) {
   return encodeURIComponent(str).replace(
     /[!'()*]/g,
-    c => `%${c.charCodeAt(0).toString(16)}`
+    (c) => `%${c.charCodeAt(0).toString(16)}`
   );
 }
 
@@ -243,5 +243,5 @@ export const util = {
   range,
   isNumeric,
   flatten,
-  joinArrayOfUniqueTemplateObjs
+  joinArrayOfUniqueTemplateObjs,
 };

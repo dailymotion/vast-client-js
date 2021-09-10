@@ -18,7 +18,7 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
 
   creative.variations = parserUtils
     .childrenByName(creativeElement, 'Companion')
-    .map(companionResource => {
+    .map((companionResource) => {
       const companionAd = createCompanionAd(
         parserUtils.parseAttributes(companionResource)
       );
@@ -44,7 +44,7 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
           return url
             ? urls.concat({
                 url,
-                creativeType: resource.getAttribute('creativeType') || null
+                creativeType: resource.getAttribute('creativeType') || null,
               })
             : urls;
         }, []);
@@ -61,7 +61,7 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
       if (trackingEventsElement) {
         parserUtils
           .childrenByName(trackingEventsElement, 'Tracking')
-          .forEach(trackingElement => {
+          .forEach((trackingElement) => {
             const eventName = trackingElement.getAttribute('event');
             const trackingURLTemplate = parserUtils.parseNodeText(
               trackingElement
@@ -77,10 +77,10 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
 
       companionAd.companionClickTrackingURLTemplates = parserUtils
         .childrenByName(companionResource, 'CompanionClickTracking')
-        .map(clickTrackingElement => {
+        .map((clickTrackingElement) => {
           return {
             id: clickTrackingElement.getAttribute('id') || null,
-            url: parserUtils.parseNodeText(clickTrackingElement)
+            url: parserUtils.parseNodeText(clickTrackingElement),
           };
         });
 

@@ -9,6 +9,6 @@ export function createInteractiveCreativeFile(
     variableDuration: parserUtils.parseBoolean(
       interactiveCreativeAttributes.variableDuration
     ),
-    fileURL: null
+    fileURL: null,
   };
 }

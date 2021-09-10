@@ -25,7 +25,7 @@ export class EventEmitter {
     }
     this._handlers.push({
       event,
-      handler
+      handler,
     });
 
     return this;
@@ -49,7 +49,7 @@ export class EventEmitter {
    * @returns {EventEmitter}
    */
   off(event, handler) {
-    this._handlers = this._handlers.filter(item => {
+    this._handlers = this._handlers.filter((item) => {
       return item.event !== event || item.handler !== handler;
     });
 
@@ -65,7 +65,7 @@ export class EventEmitter {
    */
   emit(event, ...args) {
     let called = false;
-    this._handlers.forEach(item => {
+    this._handlers.forEach((item) => {
       if (item.event === '*') {
         called = true;
         item.handler(event, ...args);
@@ -89,7 +89,7 @@ export class EventEmitter {
       return this;
     }
 
-    this._handlers = this._handlers.filter(item => item.event !== event);
+    this._handlers = this._handlers.filter((item) => item.event !== event);
     return this;
   }
 
@@ -99,7 +99,7 @@ export class EventEmitter {
    * @returns {Number}
    */
   listenerCount(event) {
-    return this._handlers.filter(item => item.event === event).length;
+    return this._handlers.filter((item) => item.event === event).length;
   }
 
   /**
@@ -121,14 +121,14 @@ export class EventEmitter {
    * @returns {String[]}
    */
   eventNames() {
-    return this._handlers.map(item => item.event);
+    return this._handlers.map((item) => item.event);
   }
 }
 
 function onceWrap(target, event, handler) {
   const state = {
     fired: false,
-    wrapFn: undefined
+    wrapFn: undefined,
   };
 
   function onceWrapper(...args) {

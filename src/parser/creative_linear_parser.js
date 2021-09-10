@@ -51,7 +51,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
     if (videoClickThroughElement) {
       creative.videoClickThroughURLTemplate = {
         id: videoClickThroughElement.getAttribute('id') || null,
-        url: parserUtils.parseNodeText(videoClickThroughElement)
+        url: parserUtils.parseNodeText(videoClickThroughElement),
       };
     } else {
       creative.videoClickThroughURLTemplate = null;
@@ -59,19 +59,19 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
     parserUtils
       .childrenByName(videoClicksElement, 'ClickTracking')
-      .forEach(clickTrackingElement => {
+      .forEach((clickTrackingElement) => {
         creative.videoClickTrackingURLTemplates.push({
           id: clickTrackingElement.getAttribute('id') || null,
-          url: parserUtils.parseNodeText(clickTrackingElement)
+          url: parserUtils.parseNodeText(clickTrackingElement),
         });
       });
 
     parserUtils
       .childrenByName(videoClicksElement, 'CustomClick')
-      .forEach(customClickElement => {
+      .forEach((customClickElement) => {
         creative.videoCustomClickURLTemplates.push({
           id: customClickElement.getAttribute('id') || null,
-          url: parserUtils.parseNodeText(customClickElement)
+          url: parserUtils.parseNodeText(customClickElement),
         });
       });
   }
@@ -86,10 +86,10 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
   parserUtils
     .childrenByName(creativeElement, 'TrackingEvents')
-    .forEach(trackingEventsElement => {
+    .forEach((trackingEventsElement) => {
       parserUtils
         .childrenByName(trackingEventsElement, 'Tracking')
-        .forEach(trackingElement => {
+        .forEach((trackingElement) => {
           let eventName = trackingElement.getAttribute('event');
           const trackingURLTemplate = parserUtils.parseNodeText(
             trackingElement
@@ -119,10 +119,10 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
   parserUtils
     .childrenByName(creativeElement, 'MediaFiles')
-    .forEach(mediaFilesElement => {
+    .forEach((mediaFilesElement) => {
       parserUtils
         .childrenByName(mediaFilesElement, 'MediaFile')
-        .forEach(mediaFileElement => {
+        .forEach((mediaFileElement) => {
           creative.mediaFiles.push(parseMediaFile(mediaFileElement));
         });
 
@@ -143,7 +143,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
       if (closedCaptionElements) {
         parserUtils
           .childrenByName(closedCaptionElements, 'ClosedCaptionFile')
-          .forEach(closedCaptionElement => {
+          .forEach((closedCaptionElement) => {
             const closedCaptionFile = createClosedCaptionFile(
               parserUtils.parseAttributes(closedCaptionElement)
             );
@@ -163,7 +163,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         'delivery',
         'type',
         'width',
-        'height'
+        'height',
       ]);
 
       if (requiredAttributes) {
@@ -189,7 +189,7 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
 
   const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
   if (iconsElement) {
-    parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
+    parserUtils.childrenByName(iconsElement, 'Icon').forEach((iconElement) => {
       creative.icons.push(parseIcon(iconElement));
     });
   }
@@ -274,21 +274,21 @@ function parseIcon(iconElement) {
 
   parserUtils
     .childrenByName(iconElement, 'HTMLResource')
-    .forEach(htmlElement => {
+    .forEach((htmlElement) => {
       icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
       icon.htmlResource = parserUtils.parseNodeText(htmlElement);
     });
 
   parserUtils
     .childrenByName(iconElement, 'IFrameResource')
-    .forEach(iframeElement => {
+    .forEach((iframeElement) => {
       icon.type = iframeElement.getAttribute('creativeType') || 0;
       icon.iframeResource = parserUtils.parseNodeText(iframeElement);
     });
 
   parserUtils
     .childrenByName(iconElement, 'StaticResource')
-    .forEach(staticElement => {
+    .forEach((staticElement) => {
       icon.type = staticElement.getAttribute('creativeType') || 0;
       icon.staticResource = parserUtils.parseNodeText(staticElement);
     });
@@ -300,10 +300,10 @@ function parseIcon(iconElement) {
     );
     parserUtils
       .childrenByName(iconClicksElement, 'IconClickTracking')
-      .forEach(iconClickTrackingElement => {
+      .forEach((iconClickTrackingElement) => {
         icon.iconClickTrackingURLTemplates.push({
           id: iconClickTrackingElement.getAttribute('id') || null,
-          url: parserUtils.parseNodeText(iconClickTrackingElement)
+          url: parserUtils.parseNodeText(iconClickTrackingElement),
         });
       });
   }
@@ -350,7 +350,7 @@ function getRequiredAttributes(element, attributes) {
   const values = {};
   let error = false;
 
-  attributes.forEach(name => {
+  attributes.forEach((name) => {
     if (!element || !element.getAttribute(name)) {
       error = true;
     } else {

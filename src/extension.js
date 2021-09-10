@@ -3,7 +3,7 @@ export function createExtension() {
     name: null,
     value: null,
     attributes: {},
-    children: []
+    children: [],
   };
 }
 

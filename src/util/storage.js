@@ -22,7 +22,7 @@ const DEFAULT_STORAGE = {
   clear() {
     this.data = {};
     this.length = 0;
-  }
+  },
 };
 
 /**

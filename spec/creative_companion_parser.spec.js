@@ -2,13 +2,13 @@ import { parseCreativeCompanion } from '../src/parser/creative_companion_parser'
 import { getNodesFromXml } from './utils/utils';
 import { companionAds } from './samples/companion_ads';
 
-describe('parseCreativeCompanion', function() {
+describe('parseCreativeCompanion', function () {
   const creativeElement = getNodesFromXml(companionAds);
   const creativeAttributes = {
     id: '1',
     adId: '1234',
     sequence: '1',
-    apiFramework: null
+    apiFramework: null,
   };
   let creative = null;
 
@@ -25,7 +25,7 @@ describe('parseCreativeCompanion', function() {
       id: '1',
       adId: '1234',
       sequence: '1',
-      apiFramework: null
+      apiFramework: null,
     });
   });
 
@@ -55,7 +55,7 @@ describe('parseCreativeCompanion', function() {
         apiFramework: 'VPAID',
         adSlotID: '1',
         pxratio: '2',
-        renderingMode: 'end-card'
+        renderingMode: 'end-card',
       });
     });
 
@@ -63,12 +63,12 @@ describe('parseCreativeCompanion', function() {
       expect(companion.staticResources).toEqual([
         {
           url: 'http://example.com/companion1-static-resource1',
-          creativeType: 'image/jpeg'
+          creativeType: 'image/jpeg',
         },
         {
           url: 'http://example.com/companion1-static-resource2',
-          creativeType: 'image/jpeg'
-        }
+          creativeType: 'image/jpeg',
+        },
       ]);
       expect(companion.iframeResources).toEqual([]);
       expect(companion.htmlResources).toEqual([]);
@@ -80,7 +80,7 @@ describe('parseCreativeCompanion', function() {
 
     it('gets tracking events', () => {
       expect(companion.trackingEvents).toEqual({
-        creativeView: ['http://example.com/companion1-creativeview']
+        creativeView: ['http://example.com/companion1-creativeview'],
       });
     });
 
@@ -94,12 +94,12 @@ describe('parseCreativeCompanion', function() {
       expect(companion.companionClickTrackingURLTemplates).toEqual([
         {
           id: '1',
-          url: 'http://example.com/companion1-clicktracking-first'
+          url: 'http://example.com/companion1-clicktracking-first',
         },
         {
           id: '2',
-          url: 'http://example.com/companion1-clicktracking-second'
-        }
+          url: 'http://example.com/companion1-clicktracking-second',
+        },
       ]);
     });
 
@@ -132,14 +132,14 @@ describe('parseCreativeCompanion', function() {
         apiFramework: 'VPAID',
         adSlotID: '2',
         pxratio: '1',
-        renderingMode: 'concurrent'
+        renderingMode: 'concurrent',
       });
     });
 
     it('gets the iframe resources', () => {
       expect(companion.staticResources).toEqual([]);
       expect(companion.iframeResources).toEqual([
-        'http://www.example.com/companion2-example.php'
+        'http://www.example.com/companion2-example.php',
       ]);
       expect(companion.htmlResources).toEqual([]);
     });
@@ -150,7 +150,7 @@ describe('parseCreativeCompanion', function() {
 
     it('gets tracking events', () => {
       expect(companion.trackingEvents).toEqual({
-        creativeView: ['http://example.com/companion2-creativeview']
+        creativeView: ['http://example.com/companion2-creativeview'],
       });
     });
 
@@ -193,7 +193,7 @@ describe('parseCreativeCompanion', function() {
         apiFramework: 'VPAID',
         adSlotID: '3',
         pxratio: '1',
-        renderingMode: 'default'
+        renderingMode: 'default',
       });
     });
 
@@ -201,7 +201,7 @@ describe('parseCreativeCompanion', function() {
       expect(companion.staticResources).toEqual([]);
       expect(companion.iframeResources).toEqual([]);
       expect(companion.htmlResources).toEqual([
-        '<a href="http://www.example.com" target="_blank">Some call to action HTML!</a>'
+        '<a href="http://www.example.com" target="_blank">Some call to action HTML!</a>',
       ]);
     });
 
@@ -211,7 +211,7 @@ describe('parseCreativeCompanion', function() {
 
     it('gets tracking events', () => {
       expect(companion.trackingEvents).toEqual({
-        creativeView: ['http://example.com/companion3-creativeview']
+        creativeView: ['http://example.com/companion3-creativeview'],
       });
     });
 
