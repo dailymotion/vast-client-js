@@ -495,6 +495,7 @@ describe('ParserUtils', function () {
         },
       ]);
     });
+
     it('merged unwrapped ViewableImpression with wrapper one', function () {
       expect(unwrappedAd.viewableImpression).toEqual([
         {
@@ -517,6 +518,7 @@ describe('ParserUtils', function () {
         },
       ]);
     });
+
     it('override unwrapped followAdditionalWrappers with wrapper one', function () {
       expect(unwrappedAd.followAdditionalWrappers).toEqual(
         wrapper.followAdditionalWrappers
