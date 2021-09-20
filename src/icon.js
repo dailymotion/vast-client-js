@@ -15,6 +15,6 @@ export function createIcon() {
     pxratio: '1',
     iconClickThroughURLTemplate: null,
     iconClickTrackingURLTemplates: [],
-    iconViewTrackingURLTemplate: null
+    iconViewTrackingURLTemplate: null,
   };
 }

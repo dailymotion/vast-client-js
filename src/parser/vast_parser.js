@@ -101,7 +101,7 @@ export class VASTParser extends EventEmitter {
    * @returns The average of all estimated bitrates in kb/s.
    */
   getEstimatedBitrate() {
-    return estimatedBitrate
+    return estimatedBitrate;
   }
 
   /**

@@ -8,6 +8,6 @@ export function createMezzanine() {
     width: 0,
     height: 0,
     fileSize: 0,
-    mediaType: '2D'
+    mediaType: '2D',
   };
 }

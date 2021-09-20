@@ -23,5 +23,5 @@ function get(url, options, cb) {
 }
 
 export const urlHandler = {
-  get
+  get,
 };

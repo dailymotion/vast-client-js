@@ -20,7 +20,7 @@ export function createCompanionAd(creativeAttributes = {}) {
     altText: null,
     companionClickThroughURLTemplate: null,
     companionClickTrackingURLTemplates: [],
-    trackingEvents: {}
+    trackingEvents: {},
   };
 }
 

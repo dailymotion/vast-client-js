@@ -16,11 +16,11 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
   const creative = createCreativeNonLinear(creativeAttributes);
   parserUtils
     .childrenByName(creativeElement, 'TrackingEvents')
-    .forEach(trackingEventsElement => {
+    .forEach((trackingEventsElement) => {
       let eventName, trackingURLTemplate;
       parserUtils
         .childrenByName(trackingEventsElement, 'Tracking')
-        .forEach(trackingElement => {
+        .forEach((trackingElement) => {
           eventName = trackingElement.getAttribute('event');
           trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
 
@@ -35,7 +35,7 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
 
   parserUtils
     .childrenByName(creativeElement, 'NonLinear')
-    .forEach(nonlinearResource => {
+    .forEach((nonlinearResource) => {
       const nonlinearAd = createNonLinearAd();
       nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
       nonlinearAd.width = nonlinearResource.getAttribute('width');
@@ -59,7 +59,7 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
 
       parserUtils
         .childrenByName(nonlinearResource, 'HTMLResource')
-        .forEach(htmlElement => {
+        .forEach((htmlElement) => {
           nonlinearAd.type =
             htmlElement.getAttribute('creativeType') || 'text/html';
           nonlinearAd.htmlResource = parserUtils.parseNodeText(htmlElement);
@@ -67,14 +67,14 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
 
       parserUtils
         .childrenByName(nonlinearResource, 'IFrameResource')
-        .forEach(iframeElement => {
+        .forEach((iframeElement) => {
           nonlinearAd.type = iframeElement.getAttribute('creativeType') || 0;
           nonlinearAd.iframeResource = parserUtils.parseNodeText(iframeElement);
         });
 
       parserUtils
         .childrenByName(nonlinearResource, 'StaticResource')
-        .forEach(staticElement => {
+        .forEach((staticElement) => {
           nonlinearAd.type = staticElement.getAttribute('creativeType') || 0;
           nonlinearAd.staticResource = parserUtils.parseNodeText(staticElement);
         });
@@ -92,10 +92,10 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
       );
       parserUtils
         .childrenByName(nonlinearResource, 'NonLinearClickTracking')
-        .forEach(clickTrackingElement => {
+        .forEach((clickTrackingElement) => {
           nonlinearAd.nonlinearClickTrackingURLTemplates.push({
             id: clickTrackingElement.getAttribute('id') || null,
-            url: parserUtils.parseNodeText(clickTrackingElement)
+            url: parserUtils.parseNodeText(clickTrackingElement),
           });
         });
 

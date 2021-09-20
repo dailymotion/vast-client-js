@@ -17,5 +17,7 @@ export const updateEstimatedBitrate = (byteLength, duration) => {
 
   // We want the bitrate in kb/s, byteLength are in bytes and duration in ms, just need to convert the byteLength because kb/s = b/ms
   const bitrate = (byteLength * 8) / duration;
-  estimatedBitrate = (estimatedBitrate * estimatedBitrateCount + bitrate) / ++estimatedBitrateCount
-}
+  estimatedBitrate =
+    (estimatedBitrate * estimatedBitrateCount + bitrate) /
+    ++estimatedBitrateCount;
+};

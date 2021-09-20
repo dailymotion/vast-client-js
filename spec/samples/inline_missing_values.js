@@ -223,5 +223,5 @@ export const vastInLine = {
   missingRequiredSubElements,
   childMissingRequiredSubElements,
   missingRequiredAttributes,
-  emptyRequiredValues
+  emptyRequiredValues,
 };

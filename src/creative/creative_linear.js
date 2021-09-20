@@ -21,7 +21,7 @@ export function createCreativeLinear(creativeAttributes = {}) {
     videoCustomClickURLTemplates: [],
     adParameters: null,
     icons: [],
-    trackingEvents: {}
+    trackingEvents: {},
   };
 }
 
