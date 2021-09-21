@@ -10,7 +10,7 @@ function get(url, options, cb) {
   url = uri.parse(url);
   const httpModule = url.protocol === 'https:' ? https : http;
   if (url.protocol === 'file:') {
-    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function(err, data) {
+    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function (err, data) {
       if (err) {
         return cb(err);
       }
@@ -22,23 +22,23 @@ function get(url, options, cb) {
     let data = '';
     const timeout = options.timeout || DEFAULT_TIMEOUT;
 
-    const req = httpModule.get(url.href, function(res) {
-      res.on('data', function(chunk) {
+    const req = httpModule.get(url.href, function (res) {
+      res.on('data', function (chunk) {
         data += chunk;
         clearTimeout(timeoutId);
         timeoutId = startTimeout();
       });
-      res.on('end', function() {
+      res.on('end', function () {
         clearTimeout(timeoutId);
         const xml = new DOMParser().parseFromString(data);
         cb(null, xml, {
           byteLength: Buffer.from(data).byteLength,
-          statusCode: res.statusCode
+          statusCode: res.statusCode,
         });
       });
     });
 
-    req.on('error', function(err) {
+    req.on('error', function (err) {
       clearTimeout(timeoutId);
 
       if (req.aborted) {
@@ -46,7 +46,7 @@ function get(url, options, cb) {
           new Error(`NodeURLHandler: Request timed out after ${timeout} ms.`),
           null,
           {
-            statusCode: 408 // Request timeout
+            statusCode: 408, // Request timeout
           }
         );
       } else {
@@ -62,5 +62,5 @@ function get(url, options, cb) {
 }
 
 export const nodeURLHandler = {
-  get
+  get,
 };

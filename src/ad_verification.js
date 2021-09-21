@@ -6,6 +6,6 @@ export function createAdVerification() {
     apiFramework: null,
     type: null,
     parameters: null,
-    trackingEvents: {}
+    trackingEvents: {},
   };
 }

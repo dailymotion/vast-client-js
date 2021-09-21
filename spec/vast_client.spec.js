@@ -7,7 +7,7 @@ const emptyVastUrl = urlFor('empty-no-ad.xml');
 
 const options = {
   urlhandler: nodeURLHandler,
-  withCredentials: true
+  withCredentials: true,
 };
 
 describe('VASTClient', () => {
@@ -23,11 +23,11 @@ describe('VASTClient', () => {
     });
 
     it('succeeds with the second call and updates total calls', () => {
-      return VastClient.get(wrapperMultipleAdsVastUrl, options).then(res => {
+      return VastClient.get(wrapperMultipleAdsVastUrl, options).then((res) => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0'
+          version: '3.0',
         });
         expect(VastClient.totalCalls).toBe('2');
       });
@@ -38,11 +38,11 @@ describe('VASTClient', () => {
     const VastClient = new VASTClient(0, 30000, undefined);
 
     it('succeeds with the first call and updates total calls', () => {
-      return VastClient.get(wrapperMultipleAdsVastUrl, options).then(res => {
+      return VastClient.get(wrapperMultipleAdsVastUrl, options).then((res) => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0'
+          version: '3.0',
         });
         expect(VastClient.totalCalls).toBe('3');
       });
@@ -55,7 +55,7 @@ describe('VASTClient', () => {
           .then(() => {
             expect(true).toBeFalsy();
           })
-          .catch(e => {
+          .catch((e) => {
             expect(e).toEqual(
               new Error(
                 'VAST call canceled – (30000)ms minimum interval reached'
@@ -75,7 +75,7 @@ describe('VASTClient', () => {
       },
       setItem() {
         setCount++;
-      }
+      },
     };
     const VastClient = new VASTClient(0, 0, customStorage);
 
@@ -110,7 +110,7 @@ describe('VASTClient', () => {
             urlhandler: nodeURLHandler,
             resolveAll: false,
             withCredentials: true,
-            timeout: 0
+            timeout: 0,
           }
         );
       });
@@ -119,9 +119,9 @@ describe('VASTClient', () => {
     describe('with resolveAll set to false', () => {
       const optionsWithNoResolveAll = { ...options, resolveAll: false };
       let res;
-      beforeEach(done => {
+      beforeEach((done) => {
         VastClient.get(wrapperMultipleAdsVastUrl, optionsWithNoResolveAll).then(
-          results => {
+          (results) => {
             res = results;
             done();
           }
@@ -131,7 +131,7 @@ describe('VASTClient', () => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0'
+          version: '3.0',
         });
         expect(res.ads).toHaveLength(2);
       });
@@ -139,17 +139,17 @@ describe('VASTClient', () => {
       it('should return only the errorURLs for the first ad', () => {
         expect(res.ads[0].errorURLTemplates).toEqual([
           'http://example.com/error',
-          'http://example.com/error_[ERRORCODE]'
+          'http://example.com/error_[ERRORCODE]',
         ]);
       });
 
       it('handles empty ads correctly', () => {
         return VastClient.get(emptyVastUrl, optionsWithNoResolveAll).then(
-          result => {
+          (result) => {
             expect(result).toEqual({
               ads: [],
               errorURLTemplates: ['http://example.com/empty-no-ad'],
-              version: '2.0'
+              version: '2.0',
             });
           }
         );
@@ -161,21 +161,21 @@ describe('VASTClient', () => {
 
       describe('getNextAds', () => {
         it('resolves all next ads if requested', () => {
-          return VastClient.getNextAds(true).then(res => {
+          return VastClient.getNextAds(true).then((res) => {
             expect(res).toEqual({
               ads: expect.any(Array),
               errorURLTemplates: [],
-              version: '3.0'
+              version: '3.0',
             });
             expect(res.ads).toHaveLength(3);
           });
         });
         it('resolves only next ad if requested', () => {
-          return VastClient.getNextAds(false).then(res => {
+          return VastClient.getNextAds(false).then((res) => {
             expect(res).toEqual({
               ads: expect.any(Array),
               errorURLTemplates: [],
-              version: '3.0'
+              version: '3.0',
             });
             expect(res.ads).toHaveLength(2);
           });
@@ -186,9 +186,9 @@ describe('VASTClient', () => {
     describe('with resolveAll set to true', () => {
       const optionsWithResolveAll = { ...options, resolveAll: true };
       let res;
-      beforeEach(done => {
+      beforeEach((done) => {
         VastClient.get(wrapperMultipleAdsVastUrl, optionsWithResolveAll).then(
-          results => {
+          (results) => {
             res = results;
             done();
           }
@@ -198,7 +198,7 @@ describe('VASTClient', () => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0'
+          version: '3.0',
         });
         expect(res.ads).toHaveLength(5);
       });

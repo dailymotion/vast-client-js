@@ -11,6 +11,6 @@ export function createCreativeNonLinear(creativeAttributes = {}) {
     apiFramework,
     type: 'nonlinear',
     variations: [],
-    trackingEvents: {}
+    trackingEvents: {},
   };
 }

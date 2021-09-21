@@ -9,7 +9,7 @@ import { parserUtils } from './parser_utils';
  */
 export function parseExtensions(extensions) {
   const exts = [];
-  extensions.forEach(extNode => {
+  extensions.forEach((extNode) => {
     const ext = _parseExtension(extNode);
 
     if (ext) {

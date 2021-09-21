@@ -11,6 +11,6 @@ export function createCreativeCompanion(creativeAttributes = {}) {
     apiFramework,
     type: 'companion',
     required: null,
-    variations: []
+    variations: [],
   };
 }

@@ -21,7 +21,7 @@ function handleLoad(request, cb) {
   if (request.status === 200) {
     cb(null, request.responseXML, {
       byteLength: request.response.length,
-      statusCode: request.status
+      statusCode: request.status,
     });
   } else {
     handleFail(request, cb, false);
@@ -31,9 +31,7 @@ function handleLoad(request, cb) {
 function handleFail(request, cb, isTimeout) {
   const statusCode = !isTimeout ? request.status : 408; // Request timeout
   const msg = isTimeout
-    ? `XHRURLHandler: Request timed out after ${
-        request.timeout
-      } ms (${statusCode})`
+    ? `XHRURLHandler: Request timed out after ${request.timeout} ms (${statusCode})`
     : `XHRURLHandler: ${request.statusText} (${statusCode})`;
 
   cb(new Error(msg), null, { statusCode });
@@ -65,5 +63,5 @@ function get(url, options, cb) {
 
 export const XHRURLHandler = {
   get,
-  supported
+  supported,
 };

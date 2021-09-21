@@ -234,13 +234,13 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
 
   const wrapperCompanions = (wrapper.creatives || []).filter(
-    creative => creative && creative.type === 'companion'
+    (creative) => creative && creative.type === 'companion'
   );
   const wrapperCompanionClickTracking = wrapperCompanions.reduce(
     (result, creative) => {
-      (creative.variations || []).forEach(variation => {
+      (creative.variations || []).forEach((variation) => {
         (variation.companionClickTrackingURLTemplates || []).forEach(
-          companionClickTrackingURLTemplate => {
+          (companionClickTrackingURLTemplate) => {
             if (
               !util.containsTemplateObject(
                 companionClickTrackingURLTemplate,
@@ -266,7 +266,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     wrapper.videoCustomClickURLTemplates &&
     wrapper.videoCustomClickURLTemplates.length;
 
-  unwrappedAd.creatives.forEach(creative => {
+  unwrappedAd.creatives.forEach((creative) => {
     // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
       for (const eventName in wrapper.trackingEvents[creative.type]) {
@@ -308,7 +308,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
 
     // pass wrapper companion trackers to all companions
     if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
-      (creative.variations || []).forEach(variation => {
+      (creative.variations || []).forEach((variation) => {
         variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(
           variation.companionClickTrackingURLTemplates,
           wrapperCompanionClickTracking
@@ -341,5 +341,5 @@ export const parserUtils = {
   parseDuration,
   splitVAST,
   assignAttributes,
-  mergeWrapperAdData
+  mergeWrapperAdData,
 };

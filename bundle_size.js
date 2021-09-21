@@ -4,7 +4,7 @@ const path = require('path');
 const newDistPath = './dist';
 const oldDistPath = './dist_old';
 
-const getFileSizes = folderPath => {
+const getFileSizes = (folderPath) => {
   return fs.readdirSync(folderPath).reduce((res, fileName) => {
     res[fileName] = fs.readFileSync(path.join(folderPath, fileName)).byteLength;
     return res;

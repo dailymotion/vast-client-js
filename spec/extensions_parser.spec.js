@@ -3,8 +3,8 @@ import { parserUtils } from '../src/parser/parser_utils';
 import { getNodesFromXml } from './utils/utils';
 import { adExtensions, creativeExtensions } from './samples/extensions';
 
-describe('ExtensionsParser', function() {
-  describe('AdExtensions', function() {
+describe('ExtensionsParser', function () {
+  describe('AdExtensions', function () {
     let parsedAdExts;
 
     beforeAll(() => {
@@ -86,7 +86,7 @@ describe('ExtensionsParser', function() {
     });
   });
 
-  describe('CreativeExtensions', function() {
+  describe('CreativeExtensions', function () {
     let parsedCreativeExts;
 
     beforeAll(() => {

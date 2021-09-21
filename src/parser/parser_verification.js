@@ -46,14 +46,14 @@ function verifyRequiredAttributes(node, emit) {
   }
   const requiredAttributes = requiredValues[node.nodeName].attributes;
   const missingAttributes = requiredAttributes.filter(
-    attributeName => !node.getAttribute(attributeName)
+    (attributeName) => !node.getAttribute(attributeName)
   );
   if (missingAttributes.length > 0) {
     emitMissingValueWarning(
       {
         name: node.nodeName,
         parentName: node.parentNode.nodeName,
-        attributes: missingAttributes
+        attributes: missingAttributes,
       },
       emit
     );
@@ -80,7 +80,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
   if (required.subElements) {
     const requiredSubElements = required.subElements;
     const missingSubElements = requiredSubElements.filter(
-      subElementName => !parserUtils.childByName(node, subElementName)
+      (subElementName) => !parserUtils.childByName(node, subElementName)
     );
 
     if (missingSubElements.length > 0) {
@@ -88,7 +88,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
         {
           name: node.nodeName,
           parentName: node.parentNode.nodeName,
-          subElements: missingSubElements
+          subElements: missingSubElements,
         },
         emit
       );
@@ -101,7 +101,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
     return;
   }
 
-  const resourceFound = required.oneOfinLineResources.some(resource => {
+  const resourceFound = required.oneOfinLineResources.some((resource) => {
     return parserUtils.childByName(node, resource);
   });
   if (!resourceFound) {
@@ -109,7 +109,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
       {
         name: node.nodeName,
         parentName: node.parentNode.nodeName,
-        oneOfResources: required.oneOfinLineResources
+        oneOfResources: required.oneOfinLineResources,
       },
       emit
     );
@@ -156,7 +156,7 @@ function emitMissingValueWarning(
   emit('VAST-warning', {
     message,
     parentElement: parentName,
-    specVersion: 4.1
+    specVersion: 4.1,
   });
 }
 
@@ -165,5 +165,5 @@ export const parserVerification = {
   hasSubElements,
   emitMissingValueWarning,
   verifyRequiredAttributes,
-  verifyRequiredSubElements
+  verifyRequiredSubElements,
 };

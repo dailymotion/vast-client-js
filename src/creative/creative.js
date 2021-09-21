@@ -5,6 +5,6 @@ export function createCreative(creativeAttributes = {}) {
     sequence: creativeAttributes.sequence || null,
     apiFramework: creativeAttributes.apiFramework || null,
     universalAdId: { value: null, idRegistry: 'unknown' },
-    creativeExtensions: []
+    creativeExtensions: [],
   };
 }

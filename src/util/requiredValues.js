@@ -1,9 +1,9 @@
 export const requiredValues = {
   Wrapper: {
-    subElements: ['VASTAdTagURI', 'Impression']
+    subElements: ['VASTAdTagURI', 'Impression'],
   },
   BlockedAdCategories: {
-    attributes: ['authority']
+    attributes: ['authority'],
   },
   InLine: {
     subElements: [
@@ -11,64 +11,64 @@ export const requiredValues = {
       'AdTitle',
       'Impression',
       'AdServingId',
-      'Creatives'
-    ]
+      'Creatives',
+    ],
   },
   Category: {
-    attributes: ['authority']
+    attributes: ['authority'],
   },
   Pricing: {
-    attributes: ['model', 'currency']
+    attributes: ['model', 'currency'],
   },
   Verification: {
     oneOfinLineResources: ['JavaScriptResource', 'ExecutableResource'],
-    attributes: ['vendor']
+    attributes: ['vendor'],
   },
   UniversalAdId: {
-    attributes: ['idRegistry']
+    attributes: ['idRegistry'],
   },
   JavaScriptResource: {
-    attributes: ['apiFramework', 'browserOptional']
+    attributes: ['apiFramework', 'browserOptional'],
   },
   ExecutableResource: {
-    attributes: ['apiFramework', 'type']
+    attributes: ['apiFramework', 'type'],
   },
   Tracking: {
-    attributes: ['event']
+    attributes: ['event'],
   },
   Creatives: {
-    subElements: ['Creative']
+    subElements: ['Creative'],
   },
   Creative: {
-    subElements: ['UniversalAdId']
+    subElements: ['UniversalAdId'],
   },
   Linear: {
-    subElements: ['MediaFiles', 'Duration']
+    subElements: ['MediaFiles', 'Duration'],
   },
   MediaFiles: {
-    subElements: ['MediaFile']
+    subElements: ['MediaFile'],
   },
   MediaFile: {
-    attributes: ['delivery', 'type', 'width', 'height']
+    attributes: ['delivery', 'type', 'width', 'height'],
   },
   Mezzanine: {
-    attributes: ['delivery', 'type', 'width', 'height']
+    attributes: ['delivery', 'type', 'width', 'height'],
   },
   NonLinear: {
     oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
-    attributes: ['width', 'height']
+    attributes: ['width', 'height'],
   },
   Companion: {
     oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
-    attributes: ['width', 'height']
+    attributes: ['width', 'height'],
   },
   StaticResource: {
-    attributes: ['creativeType']
+    attributes: ['creativeType'],
   },
   Icons: {
-    subElements: ['Icon']
+    subElements: ['Icon'],
   },
   Icon: {
-    oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource']
-  }
+    oneOfinLineResources: ['StaticResource', 'IFrameResource', 'HTMLResource'],
+  },
 };
