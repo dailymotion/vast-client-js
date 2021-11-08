@@ -2391,7 +2391,7 @@ var http = require('http');
 
 var https = require('https');
 
-var DOMParser = require('xmldom').DOMParser;
+var DOMParser = require('@xmldom/xmldom').DOMParser;
 
 function get(url, options, cb) {
   url = uri.parse(url);

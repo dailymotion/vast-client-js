@@ -1,4 +1,4 @@
-const xmldom = require('xmldom');
+const xmldom = require('@xmldom/xmldom');
 const fs = require('fs');
 const process = require('process');
 const { VASTParser } = require('../dist/vast-client-node.min.js');
