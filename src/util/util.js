@@ -98,9 +98,9 @@ function replaceMacrosValues(url, macros) {
   let replacedMacrosUrl = url;
   for (const key in macros) {
     const value = macros[key];
-    // this will match [${key}] and %%${key}%% and replace it
+    // this will match [${key}] and %%${key}%% and %5B{key}%5D and replace it
     replacedMacrosUrl = replacedMacrosUrl.replace(
-      new RegExp(`(?:\\[|%%)(${key})(?:\\]|%%)`, 'g'),
+      new RegExp(`(?:\\[|%{2}|%5B)(${key})(?:\\]|%{2}|%5D)`, 'g'),
       value
     );
   }

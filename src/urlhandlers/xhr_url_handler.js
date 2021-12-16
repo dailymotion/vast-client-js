@@ -1,61 +1,71 @@
 import { DEFAULT_TIMEOUT } from './consts';
 
-function xhr() {
-  try {
-    const request = new window.XMLHttpRequest();
-    if ('withCredentials' in request) {
-      // check CORS support
-      return request;
-    }
-    return null;
-  } catch (err) {
-    return null;
-  }
-}
-
 function supported() {
-  return !!xhr();
+  return true;
 }
 
-function handleLoad(request, cb) {
-  if (request.status === 200) {
-    cb(null, request.responseXML, {
-      byteLength: request.response.length,
-      statusCode: request.status,
-    });
-  } else {
-    handleFail(request, cb, false);
+function handleLoad(xml, cb, responseLength) {
+  cb(null, xml, {
+    byteLength: responseLength,
+    statusCode: 200,
+  });
+}
+
+/**
+ *  Timeout promise create
+ */
+class Timeout {
+  constructor(config = {}) {
+    this.timeout = config.seconds || DEFAULT_TIMEOUT;
+    this.timeoutID = undefined;
   }
-}
 
-function handleFail(request, cb, isTimeout) {
-  const statusCode = !isTimeout ? request.status : 408; // Request timeout
-  const msg = isTimeout
-    ? `XHRURLHandler: Request timed out after ${request.timeout} ms (${statusCode})`
-    : `XHRURLHandler: ${request.statusText} (${statusCode})`;
+  get start() {
+    return new Promise((_, reject) => {
+      this.timeoutID = setTimeout(() => {
+        const message = `XHRURLHandler: Request timed out after ${this.timeout} ms (408)`;
+        reject(new Error(message));
+      }, this.timeout);
+    });
+  }
 
-  cb(new Error(msg), null, { statusCode });
+  clear() {
+    this.timeoutID && clearTimeout(this.timeoutID);
+  }
 }
 
 function get(url, options, cb) {
   if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
     return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
   }
+  const optCredentialValue = options.withCredentials ? 'include' : 'omit';
+  const corsMode = options.withCredentials ? 'cors' : 'no-cors';
+  const timeOutPromise = new Timeout({ seconds: options.timeout });
 
+  let responseLength;
   try {
-    const request = xhr();
-
-    request.open('GET', url);
-    request.timeout = options.timeout || DEFAULT_TIMEOUT;
-    request.withCredentials = options.withCredentials || false;
-    request.overrideMimeType && request.overrideMimeType('text/xml');
-
-    request.onload = () => handleLoad(request, cb);
-    request.onerror = () => handleFail(request, cb, false);
-    request.onabort = () => handleFail(request, cb, false);
-    request.ontimeout = () => handleFail(request, cb, true);
-
-    request.send();
+    Promise.race([
+      fetch(url, {
+        mode: corsMode,
+        credentials: optCredentialValue,
+      }),
+      timeOutPromise.start,
+    ])
+      .then((response) => {
+        if (response.status === 200) {
+          responseLength = Number(response.headers.get('content-length'));
+          return response.text();
+        } else {
+          const errorMessage = `XHRURLHandler: ${response.statusText} (${response.status})`;
+          reject(new Error(errorMessage));
+        }
+      })
+      .then((str) => new window.DOMParser().parseFromString(str, 'text/xml'))
+      .then((xml) => {
+        handleLoad(xml, cb, responseLength);
+        resolve();
+      })
+      .catch((error) => cb(new Error(error.message)));
   } catch (error) {
     cb(new Error('XHRURLHandler: Unexpected error'));
   }
