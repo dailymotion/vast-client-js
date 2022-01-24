@@ -236,14 +236,12 @@ describe('VASTTracker', function () {
         before((done) => {
           _eventsSent = [];
           this.Tracker.trackingEvents['expand'] = 'http://example.com/expand';
-          this.Tracker.trackingEvents[
-            'playerExpand'
-          ] = this.Tracker.trackingEvents['expand'];
+          this.Tracker.trackingEvents['playerExpand'] =
+            this.Tracker.trackingEvents['expand'];
           this.Tracker.trackingEvents['collapse'] =
             'http://example.com/collapse';
-          this.Tracker.trackingEvents[
-            'playerCollapse'
-          ] = this.Tracker.trackingEvents['collapse'];
+          this.Tracker.trackingEvents['playerCollapse'] =
+            this.Tracker.trackingEvents['collapse'];
           this.Tracker.setExpand(true);
           done();
         });

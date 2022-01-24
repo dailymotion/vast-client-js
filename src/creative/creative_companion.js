@@ -1,9 +1,8 @@
 import { createCreative } from './creative';
 
 export function createCreativeCompanion(creativeAttributes = {}) {
-  const { id, adId, sequence, apiFramework } = createCreative(
-    creativeAttributes
-  );
+  const { id, adId, sequence, apiFramework } =
+    createCreative(creativeAttributes);
   return {
     id,
     adId,

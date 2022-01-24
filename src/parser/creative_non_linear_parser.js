@@ -40,12 +40,10 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
       nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
       nonlinearAd.width = nonlinearResource.getAttribute('width');
       nonlinearAd.height = nonlinearResource.getAttribute('height');
-      nonlinearAd.expandedWidth = nonlinearResource.getAttribute(
-        'expandedWidth'
-      );
-      nonlinearAd.expandedHeight = nonlinearResource.getAttribute(
-        'expandedHeight'
-      );
+      nonlinearAd.expandedWidth =
+        nonlinearResource.getAttribute('expandedWidth');
+      nonlinearAd.expandedHeight =
+        nonlinearResource.getAttribute('expandedHeight');
       nonlinearAd.scalable = parserUtils.parseBoolean(
         nonlinearResource.getAttribute('scalable')
       );

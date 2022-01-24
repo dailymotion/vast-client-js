@@ -25,14 +25,14 @@ export function parseCreatives(creativeNodes) {
       creativeElement,
       'UniversalAdId'
     );
-    universalAdIdElements.forEach(universalAdIdElement => {
+    universalAdIdElements.forEach((universalAdIdElement) => {
       const universalAdId = {
         idRegistry:
           universalAdIdElement.getAttribute('idRegistry') || 'unknown',
         value: parserUtils.parseNodeText(universalAdIdElement),
       };
       universalAdIds.push(universalAdId);
-    })
+    });
 
     let creativeExtensions;
     const creativeExtensionsElement = parserUtils.childByName(
