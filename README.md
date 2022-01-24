@@ -121,9 +121,9 @@ You can add the script directly to your page and access the library's components
 ```
 
 ```javascript
-var vastClient = new VAST.VASTClient();
-var vastParser = new VAST.VASTParser();
-var vastTracker = new VAST.VASTTracker();
+const vastClient = new VAST.VASTClient();
+const vastParser = new VAST.VASTParser();
+const vastTracker = new VAST.VASTTracker();
 ```
 
 #### Node
