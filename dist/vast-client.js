@@ -1892,6 +1892,8 @@
 
 
   function parseAdElement(adTypeElement, emit) {
+    var adVerificationsFromExtensions = [];
+
     if (emit) {
       parserVerification.verifyRequiredValues(adTypeElement, emit);
     }
@@ -1929,7 +1931,7 @@
             */
 
             if (!ad.adVerifications.length) {
-              ad.adVerifications = _parseAdVerificationsFromExensions(extNodes);
+              adVerificationsFromExtensions = _parseAdVerificationsFromExtensions(extNodes);
             }
 
             break;
@@ -1999,6 +2001,10 @@
           });
           break;
       }
+    }
+
+    if (adVerificationsFromExtensions.length) {
+      ad.adVerifications = ad.adVerifications.concat(adVerificationsFromExtensions);
     }
 
     return ad;
@@ -2153,7 +2159,7 @@
    * @return {Array<Object>}
    */
 
-  function _parseAdVerificationsFromExensions(extensions) {
+  function _parseAdVerificationsFromExtensions(extensions) {
     var adVerificationsNode = null,
         adVerifications = []; // Find the first (and only) AdVerifications node from extensions
 
@@ -2502,6 +2508,27 @@
     };
   }
 
+  /*
+    We decided to put the estimated bitrate separated from classes to persist it between different instances of vast client/parser
+  */
+  var estimatedBitrateCount = 0;
+  var estimatedBitrate = 0;
+  /**
+   * Calculate average estimated bitrate from the previous values and new entries
+   * @param {Number} byteLength - The length of the response in bytes.
+   * @param {Number} duration - The duration of the request in ms.
+   */
+
+  var updateEstimatedBitrate = function updateEstimatedBitrate(byteLength, duration) {
+    if (!byteLength || !duration || byteLength <= 0 || duration <= 0) {
+      return;
+    } // We want the bitrate in kb/s, byteLength are in bytes and duration in ms, just need to convert the byteLength because kb/s = b/ms
+
+
+    var bitrate = byteLength * 8 / duration;
+    estimatedBitrate = (estimatedBitrate * estimatedBitrateCount + bitrate) / ++estimatedBitrateCount;
+  };
+
   var DEFAULT_MAX_WRAPPER_DEPTH = 10;
   var DEFAULT_EVENT_DATA = {
     ERRORCODE: 900,
@@ -2613,6 +2640,16 @@
         return this.rootErrorURLTemplates.concat(this.errorURLTemplates);
       }
       /**
+       * Returns the estimated bitrate calculated from all previous requests
+       * @returns The average of all estimated bitrates in kb/s.
+       */
+
+    }, {
+      key: "getEstimatedBitrate",
+      value: function getEstimatedBitrate() {
+        return estimatedBitrate;
+      }
+      /**
        * Fetches a VAST document for the given url.
        * Returns a Promise which resolves,rejects according to the result of the request.
        * @param  {String} url - The url to request the VAST document.
@@ -2661,6 +2698,8 @@
 
             _this2.emit('VAST-resolved', info);
 
+            updateEstimatedBitrate(details.byteLength, deltaTime);
+
             if (error) {
               reject(error);
             } else {
@@ -2693,6 +2732,7 @@
         this.rootURL = '';
         this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
         this.vastVersion = null;
+        updateEstimatedBitrate(options.byteLength, options.requestDuration);
       }
       /**
        * Resolves the next group of ads. If all is true resolves all the remaining ads.
@@ -3096,7 +3136,7 @@
           });
         } else {
           for (var index = vastResponse.ads.length - 1; index >= 0; index--) {
-            // - Error encountred while parsing
+            // - Error encountered while parsing
             // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
             // but no creative was found
             var ad = vastResponse.ads[index];

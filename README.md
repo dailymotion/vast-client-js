@@ -22,7 +22,7 @@ Complies with the [VAST 4.2 specification](https://iabtechlab.com/wp-content/upl
 VAST Client JS is available as an NPM package and can be easily installed with:
 
 ```Bash
-npm i vast-client
+npm i @dailymotion/vast-client
 ```
 
 Then import the components you need.
@@ -32,7 +32,7 @@ Then import the components you need.
 If you need to fetch and parse VAST documents, you can use the **VASTClient**:
 
 ```javascript
-import { VASTClient } from 'vast-client'
+import { VASTClient } from '@dailymotion/vast-client'
 
 const vastClient = new VASTClient();
 
@@ -52,7 +52,7 @@ In addition to fetching and parsing a VAST resource, **VASTClient** provides opt
 To directly parse a VAST XML you can use the **VASTParser**:
 
 ```Javascript
-import { VASTParser } from 'vast-client'
+import { VASTParser } from '@dailymotion/vast-client'
 
 const vastParser = new VASTParser();
 
@@ -70,7 +70,7 @@ vastParser.parseVAST(vastXml)
 To track the execution of an ad use the **VASTTracker**:
 
 ```Javascript
-import { VASTTracker } from 'vast-client'
+import { VASTTracker } from '@dailymotion/vast-client'
 
 const vastTracker = new VASTTracker(vastClient, ad, creative);
 
@@ -103,7 +103,7 @@ const import {
   VASTClient,
   VASTParser,
   VASTTracker
-} from 'vast-client'
+} from '@dailymotion/vast-client'
 
 const vastClient = new VASTClient();
 const vastParser = new VASTParser();
@@ -121,9 +121,9 @@ You can add the script directly to your page and access the library's components
 ```
 
 ```javascript
-var vastClient = new VAST.VASTClient();
-var vastParser = new VAST.VASTParser();
-var vastTracker = new VAST.VASTTracker();
+const vastClient = new VAST.VASTClient();
+const vastParser = new VAST.VASTParser();
+const vastTracker = new VAST.VASTTracker();
 ```
 
 #### Node
@@ -131,7 +131,7 @@ var vastTracker = new VAST.VASTTracker();
 A pre-bundled version for node is available too: [`vast-client-node.js`](dist/vast-client-node.js) or [`vast-client-node.min.js`](dist/vast-client-node.min.js) [minified].
 
 ```javascript
-const VAST = require('vast-client')
+const VAST = require('@dailymotion/vast-client')
 
 const vastClient = new VAST.VASTClient();
 const vastParser = new VAST.VASTParser();

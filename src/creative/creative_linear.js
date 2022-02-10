@@ -1,9 +1,8 @@
 import { createCreative } from './creative';
 
 export function createCreativeLinear(creativeAttributes = {}) {
-  const { id, adId, sequence, apiFramework } = createCreative(
-    creativeAttributes
-  );
+  const { id, adId, sequence, apiFramework } =
+    createCreative(creativeAttributes);
   return {
     id,
     adId,
@@ -21,7 +20,7 @@ export function createCreativeLinear(creativeAttributes = {}) {
     videoCustomClickURLTemplates: [],
     adParameters: null,
     icons: [],
-    trackingEvents: {}
+    trackingEvents: {},
   };
 }
 

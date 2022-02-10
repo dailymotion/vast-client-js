@@ -8,5 +8,5 @@ function get(url, options, cb) {
 }
 
 export const nodeURLHandler = {
-  get
+  get,
 };

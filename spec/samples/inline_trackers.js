@@ -13,32 +13,32 @@ export const inlineTrackersParsed = {
       categories: [
         {
           authority: 'https://www.example.com/categoryauthority',
-          value: 'Category-A'
+          value: 'Category-A',
         },
         {
           authority: 'https://www.example.com/categoryauthority',
-          value: 'Category-B'
+          value: 'Category-B',
         },
         {
           authority: 'https://www.example.com/categoryauthority',
-          value: 'Category-C'
-        }
+          value: 'Category-C',
+        },
       ],
       survey: 'http://example.com/survey',
       errorURLTemplates: ['http://example.com/error_[ERRORCODE]'],
       impressionURLTemplates: [
         {
           id: 'sample-impression1',
-          url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]'
+          url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
         },
         {
           id: 'sample-impression2',
-          url: 'http://example.com/impression2_[random]'
+          url: 'http://example.com/impression2_[random]',
         },
         {
           id: 'sample-impression3',
-          url: 'http://example.com/impression3_[RANDOM]'
-        }
+          url: 'http://example.com/impression3_[RANDOM]',
+        },
       ],
       creatives: [
         {
@@ -63,7 +63,7 @@ export const inlineTrackersParsed = {
               height: 288,
               apiFramework: null,
               scalable: true,
-              maintainAspectRatio: null
+              maintainAspectRatio: null,
             },
             {
               id: null,
@@ -79,8 +79,8 @@ export const inlineTrackersParsed = {
               height: 288,
               apiFramework: 'VPAID',
               scalable: null,
-              maintainAspectRatio: null
-            }
+              maintainAspectRatio: null,
+            },
           ],
           mezzanine: {
             id: 'mezzanine-id-165468451',
@@ -91,29 +91,27 @@ export const inlineTrackersParsed = {
             width: 1080,
             height: 720,
             fileSize: 700,
-            mediaType: '2D'
+            mediaType: '2D',
           },
           videoClickThroughURLTemplate: {
             id: 'click-through',
-            url:
-              'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]'
+            url: 'http://example.com/linear-clickthrough_adplayhead:[ADPLAYHEAD]',
           },
           videoClickTrackingURLTemplates: [
             {
               id: 'video-click-1',
-              url:
-                'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]'
+              url: 'http://example.com/linear-clicktracking1_ts:[TIMESTAMP]_adplayhead:[ADPLAYHEAD]',
             },
             {
               id: 'video-click-2',
-              url: 'http://example.com/linear-clicktracking2'
-            }
+              url: 'http://example.com/linear-clicktracking2',
+            },
           ],
           videoCustomClickURLTemplates: [
             {
               id: 'custom-click-1',
-              url: 'http://example.com/linear-customclick'
-            }
+              url: 'http://example.com/linear-customclick',
+            },
           ],
           adParameters: null,
           icons: [
@@ -136,16 +134,16 @@ export const inlineTrackersParsed = {
               iconClickTrackingURLTemplates: [
                 {
                   id: 'icon-click-1',
-                  url: 'http://example.com/linear-clicktracking1'
+                  url: 'http://example.com/linear-clicktracking1',
                 },
                 {
                   id: 'icon-click-2',
-                  url: 'http://example.com/linear-clicktracking2'
-                }
+                  url: 'http://example.com/linear-clicktracking2',
+                },
               ],
               iconViewTrackingURLTemplate:
-                'http://example.com/linear-viewtracking'
-            }
+                'http://example.com/linear-viewtracking',
+            },
           ],
           trackingEvents: {
             midpoint: ['http://example.com/linear-midpoint'],
@@ -157,30 +155,30 @@ export const inlineTrackersParsed = {
             'progress-30': ['http://example.com/linear-progress-30sec'],
             'progress-60%': ['http://example.com/linear-progress-60%'],
             otherAdInteraction: [
-              'http://example.com/linear-otherAdInteraction'
+              'http://example.com/linear-otherAdInteraction',
             ],
             acceptInvitation: [
-              'http://example.com/linear-acceptInvitation?category=[ADCATEGORIES]&adServingId=[ADSERVINGID]&adtype=[ADTYPE]'
+              'http://example.com/linear-acceptInvitation?category=[ADCATEGORIES]&adServingId=[ADSERVINGID]&adtype=[ADTYPE]',
             ],
             adExpand: ['http://example.com/linear-adExpand'],
             adCollapse: ['http://example.com/linear-adCollapse'],
             minimize: ['http://example.com/linear-minimize'],
             overlayViewDuration: [
-              'http://example.com/linear-overlayViewDuration&mph=[MEDIAPLAYHEAD]&ctp=[CONTENTPLAYHEAD]&uadid=[UNIVERSALADID]'
+              'http://example.com/linear-overlayViewDuration&mph=[MEDIAPLAYHEAD]&ctp=[CONTENTPLAYHEAD]&uadid=[UNIVERSALADID]',
             ],
-            notUsed: ['http://example.com/linear-notUsed&assetURI=[ASSETURI]']
+            notUsed: ['http://example.com/linear-notUsed&assetURI=[ASSETURI]'],
           },
           universalAdIds: [
             {
               idRegistry: 'sample-registry',
-              value: '000123'
+              value: '000123',
             },
             {
               idRegistry: 'sample-registry-2',
-              value: '000456'
-            }
-          ]
-        }
+              value: '000456',
+            },
+          ],
+        },
       ],
       extensions: [
         {
@@ -192,22 +190,22 @@ export const inlineTrackersParsed = {
               name: 'Price',
               value: '0',
               attributes: { model: 'CPM', currency: 'USD', source: 'someone' },
-              children: []
-            }
-          ]
+              children: [],
+            },
+          ],
         },
         {
           name: 'Extension',
           value: '4',
           attributes: { type: 'Count' },
-          children: []
+          children: [],
         },
         {
           name: 'Extension',
           value: '{ foo: bar }',
           attributes: {},
-          children: []
-        }
+          children: [],
+        },
       ],
       adVerifications: [
         {
@@ -218,13 +216,13 @@ export const inlineTrackersParsed = {
           parameters: null,
           trackingEvents: {
             verificationNotExecuted: [
-              'http://example.com/verification-not-executed-JS?reason=[REASON]'
-            ]
-          }
-        }
-      ]
-    }
+              'http://example.com/verification-not-executed-JS?reason=[REASON]',
+            ],
+          },
+        },
+      ],
+    },
   ],
   errorURLTemplates: [],
-  version: '2.1'
+  version: '2.1',
 };

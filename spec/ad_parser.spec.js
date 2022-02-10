@@ -3,6 +3,7 @@ import { getNodesFromXml } from './utils/utils';
 import { parserUtils } from '../src/parser/parser_utils';
 import { linearAd } from './samples/linear_ads';
 import { adVerificationExtensions } from './samples/ad_verification_extentions';
+import { adVerificationsInDedicatedNodeAndInExtensionsNode } from './samples/ad_verification_extension_and_node';
 import {
   viewableImpression,
   viewableImpressionPartial,
@@ -192,6 +193,43 @@ describe('AdParser', function () {
     });
   });
 
+  describe('parse adVerifications from extensions and parent node', function () {
+    let adVerificationsFromAd, ad;
+
+    beforeAll(() => {
+      adVerificationsFromAd = getNodesFromXml(
+        adVerificationsInDedicatedNodeAndInExtensionsNode
+      );
+      ad = parseAd(adVerificationsFromAd, null).ad;
+    });
+
+    it('should have 4 adVerification', () => {
+      expect(ad.adVerifications).toHaveLength(4);
+    });
+
+    it('validate first adVerification', () => {
+      expect(ad.adVerifications[0].resource).toEqual(
+        'https://verificationcompany.com/dedicatedNodeAdVerification1.js'
+      );
+    });
+
+    it('validate second adVerification', () => {
+      expect(ad.adVerifications[1].resource).toEqual(
+        'https://verificationcompany.com/dedicatedNodeAdVerification2.js'
+      );
+    });
+    it('validate the third adVerification', () => {
+      expect(ad.adVerifications[2].resource).toEqual(
+        'https://verificationcompany.com/extentionAdVerification1.js'
+      );
+    });
+    it('validate the fourth adVerification', () => {
+      expect(ad.adVerifications[3].resource).toEqual(
+        'https://verificationcompany.com/extentionAdVerification2.js'
+      );
+    });
+  });
+
   describe('adVerifications from extensions', function () {
     let adVerificationExtensionsNode, ad;
 
@@ -200,7 +238,7 @@ describe('AdParser', function () {
       ad = parseAd(adVerificationExtensionsNode, null).ad;
     });
 
-    it('should have 2 adVerifications', () => {
+    it('should have 2 adVerification', () => {
       expect(ad.adVerifications).toHaveLength(2);
     });
 

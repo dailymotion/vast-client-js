@@ -1,12 +1,12 @@
 import { util } from '../src/util/util';
 
-describe('util', function() {
-  describe('resolveURLTemplates', function() {
+describe('util', function () {
+  describe('resolveURLTemplates', function () {
     const now = new Date().toISOString();
     const playhead = '00:12:30.212';
     const assetURI = 'http://example.com/linear-asset.mp4?foo=1&bar=_-[{bar';
 
-    const encodeRFC3986 = str => util.encodeURIComponentRFC3986(str);
+    const encodeRFC3986 = (str) => util.encodeURIComponentRFC3986(str);
 
     const encodedAssetURI = encodeRFC3986(assetURI);
     const encodedPlayhead = encodeRFC3986(playhead);
@@ -25,7 +25,7 @@ describe('util', function() {
       Date.prototype.toISOString = realDateToISOString;
     });
 
-    describe('assetURI', function() {
+    describe('assetURI', function () {
       it('should resolve assetURI', () => {
         expect(
           resolve('http://test.com/?url=[ASSETURI]', { ASSETURI: assetURI })
@@ -39,7 +39,7 @@ describe('util', function() {
       });
     });
 
-    describe('cacheBusting', function() {
+    describe('cacheBusting', function () {
       it('should resolve cache busting', () => {
         const res = resolve('http://test.com/[CACHEBUSTING]');
         expect(/^http:\/\/test.com\/[0-9]+$/.test(res)).toBeTruthy();
@@ -47,17 +47,17 @@ describe('util', function() {
 
       it('should resolve cache buster, with percents', () => {
         const res = resolve('http://test.com/%%CACHEBUSTING%%', {
-          CACHEBUSTING: 178
+          CACHEBUSTING: 178,
         });
         expect(/^http:\/\/test.com\/[0-9]+$/.test(res)).toBeTruthy();
       });
     });
 
-    describe('contentPlayhead', function() {
+    describe('contentPlayhead', function () {
       it('should resolve playhead', () => {
         expect(
           resolve('http://test.com/[CONTENTPLAYHEAD]', {
-            CONTENTPLAYHEAD: playhead
+            CONTENTPLAYHEAD: playhead,
           })
         ).toBe(`http://test.com/${encodedPlayhead}`);
       });
@@ -65,13 +65,13 @@ describe('util', function() {
       it('should resolve playhead, with percents', () => {
         expect(
           resolve('http://test.com/%%CONTENTPLAYHEAD%%', {
-            CONTENTPLAYHEAD: playhead
+            CONTENTPLAYHEAD: playhead,
           })
         ).toBe(`http://test.com/${encodedPlayhead}`);
       });
     });
 
-    describe('timestamp', function() {
+    describe('timestamp', function () {
       it('should resolve timestamp', () => {
         expect(resolve('http://test.com/[TIMESTAMP]')).toBe(
           `http://test.com/${encodedTimestamp}`
@@ -85,7 +85,7 @@ describe('util', function() {
       });
     });
 
-    describe('random/RANDOM', function() {
+    describe('random/RANDOM', function () {
       it('should resolve random', () => {
         const res = resolve('http://test.com/[random]');
         expect(/^http:\/\/test.com\/[0-9]+$/.test(res)).toBeTruthy();
@@ -100,39 +100,39 @@ describe('util', function() {
     it('should resolve weird cases', () => {
       expect(
         resolve('http://test.com/%%CONTENTPLAYHEAD%%&[CONTENTPLAYHEAD]', {
-          CONTENTPLAYHEAD: 120
+          CONTENTPLAYHEAD: 120,
         })
       ).toBe('http://test.com/120&120');
     });
 
     it('should ignore other types than strings', () => {
-      [undefined, null, false, 123, {}, () => {}].forEach(URLTemplate => {
+      [undefined, null, false, 123, {}, () => {}].forEach((URLTemplate) => {
         expect(resolve(URLTemplate)).toBeUndefined();
       });
     });
   });
 
-  describe('extractURLsFromTemplates', function() {
+  describe('extractURLsFromTemplates', function () {
     it('should return an array of urls', () => {
       const input = [
         {
           id: null,
-          url: 'http://example.com/wrapperNoTracking-impression'
+          url: 'http://example.com/wrapperNoTracking-impression',
         },
         {
           id: 'wrapper-a-impression',
-          url: 'http://example.com/wrapperA-impression'
+          url: 'http://example.com/wrapperA-impression',
         },
         {
           id: 'wrapper-b-impression1',
-          url: 'http://example.com/wrapperB-impression1'
-        }
+          url: 'http://example.com/wrapperB-impression1',
+        },
       ];
 
       const expectedOutput = [
         'http://example.com/wrapperNoTracking-impression',
         'http://example.com/wrapperA-impression',
-        'http://example.com/wrapperB-impression1'
+        'http://example.com/wrapperB-impression1',
       ];
 
       const output = util.extractURLsFromTemplates(input);
@@ -144,13 +144,13 @@ describe('util', function() {
       const input = [
         'http://example.com/wrapperNoTracking-impression',
         'http://example.com/wrapperA-impression',
-        'http://example.com/wrapperB-impression'
+        'http://example.com/wrapperB-impression',
       ];
 
       const expectedOutput = [
         'http://example.com/wrapperNoTracking-impression',
         'http://example.com/wrapperA-impression',
-        'http://example.com/wrapperB-impression'
+        'http://example.com/wrapperB-impression',
       ];
 
       const output = util.extractURLsFromTemplates(input);
@@ -159,30 +159,30 @@ describe('util', function() {
     });
   });
 
-  describe('isTemplateObjectEqual', function() {
+  describe('isTemplateObjectEqual', function () {
     const obj1 = {
       id: null,
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
     const obj2 = {
       id: 'wrapper-a-impression',
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
     const copyOfObj2 = {
       id: 'wrapper-a-impression',
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
     const obj3 = {
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
     const copyOfObj3 = {
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
     const obj4 = {
-      id: 'wrapper-a-impression'
+      id: 'wrapper-a-impression',
     };
     const copyOfObj4 = {
-      id: 'wrapper-a-impression'
+      id: 'wrapper-a-impression',
     };
     const obj5 = null;
 
@@ -227,18 +227,18 @@ describe('util', function() {
     });
   });
 
-  describe('containsTemplateObject', function() {
+  describe('containsTemplateObject', function () {
     const obj1 = {
       id: null,
-      url: 'http://example.com/wrapperNoTracking-impression'
+      url: 'http://example.com/wrapperNoTracking-impression',
     };
     const obj2 = {
       id: 'wrapper-a-impression',
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
     const copyOfObj2 = {
       id: 'wrapper-a-impression',
-      url: 'http://example.com/wrapperA-impression'
+      url: 'http://example.com/wrapperA-impression',
     };
 
     it('should return false for an empty array', () => {
@@ -271,31 +271,31 @@ describe('util', function() {
     });
   });
 
-  describe('joinArrayOfUniqueTemplateObjs', function() {
+  describe('joinArrayOfUniqueTemplateObjs', function () {
     it('should return an array of unique objects', () => {
       const obj1 = {
         id: null,
-        url: 'http://example.com/wrapperNoTracking-impression'
+        url: 'http://example.com/wrapperNoTracking-impression',
       };
       const obj2 = {
         id: 'wrapper-a-impression',
-        url: 'http://example.com/wrapperA-impression'
+        url: 'http://example.com/wrapperA-impression',
       };
       const copyOfObj2 = {
         id: 'wrapper-a-impression',
-        url: 'http://example.com/wrapperA-impression'
+        url: 'http://example.com/wrapperA-impression',
       };
       const obj3 = {
         id: 'wrapper-b-impression1',
-        url: 'http://example.com/wrapperB-impression'
+        url: 'http://example.com/wrapperB-impression',
       };
       const obj4 = {
         id: 'wrapper-b-impression2',
-        url: 'http://example.com/wrapperB-impression'
+        url: 'http://example.com/wrapperB-impression',
       };
       const copyOfObj4 = {
         id: 'wrapper-b-impression2',
-        url: 'http://example.com/wrapperB-impression'
+        url: 'http://example.com/wrapperB-impression',
       };
 
       const arr1 = [obj1, obj2];
@@ -304,20 +304,20 @@ describe('util', function() {
       const expectedOutput = [
         {
           id: null,
-          url: 'http://example.com/wrapperNoTracking-impression'
+          url: 'http://example.com/wrapperNoTracking-impression',
         },
         {
           id: 'wrapper-a-impression',
-          url: 'http://example.com/wrapperA-impression'
+          url: 'http://example.com/wrapperA-impression',
         },
         {
           id: 'wrapper-b-impression1',
-          url: 'http://example.com/wrapperB-impression'
+          url: 'http://example.com/wrapperB-impression',
         },
         {
           id: 'wrapper-b-impression2',
-          url: 'http://example.com/wrapperB-impression'
-        }
+          url: 'http://example.com/wrapperB-impression',
+        },
       ];
 
       let outputArr = util.joinArrayOfUniqueTemplateObjs(arr1, arr2);
@@ -326,12 +326,12 @@ describe('util', function() {
     });
   });
 
-  describe('#replaceUrlMacros', function() {
+  describe('#replaceUrlMacros', function () {
     it('replace macro with corresponding values', () => {
       const replacedUrlMacros = util.replaceUrlMacros(
         'http://test.com?bp=[BREAKPOSITION]',
         {
-          BREAKPOSITION: 2
+          BREAKPOSITION: 2,
         }
       );
       expect(replacedUrlMacros).toEqual('http://test.com?bp=2');
@@ -342,7 +342,7 @@ describe('util', function() {
         'http://test.com?bp=[BREAKPOSITION]&ext=[EXTENSIONS]',
         {
           BREAKPOSITION: 2,
-          EXTENSIONS: ['AdVerifications', 'extensionA', 'extensionB']
+          EXTENSIONS: ['AdVerifications', 'extensionA', 'extensionB'],
         }
       );
       expect(replacedUrlMacros).toEqual(

@@ -94,7 +94,8 @@ export class VASTTracker extends EventEmitter {
     this.setDuration(this.creative.duration);
 
     this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
-    this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
+    this.clickTrackingURLTemplates =
+      this.creative.videoClickTrackingURLTemplates;
   }
 
   /**
@@ -128,12 +129,16 @@ export class VASTTracker extends EventEmitter {
     }
 
     if (isNonLinearAd(this.variation)) {
-      this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
-      this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
+      this.clickThroughURLTemplate =
+        this.variation.nonlinearClickThroughURLTemplate;
+      this.clickTrackingURLTemplates =
+        this.variation.nonlinearClickTrackingURLTemplates;
       this.setDuration(this.variation.minSuggestedDuration);
     } else if (isCompanionAd(this.variation)) {
-      this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
-      this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
+      this.clickThroughURLTemplate =
+        this.variation.companionClickThroughURLTemplate;
+      this.clickTrackingURLTemplates =
+        this.variation.companionClickTrackingURLTemplates;
     }
   }
 
@@ -620,10 +625,9 @@ export class VASTTracker extends EventEmitter {
         givenMacros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
+
     if (this.creative?.universalAdIds?.length) {
-      givenMacros[
-        'UNIVERSALADID'
-      ] = this.creative.universalAdIds
+      givenMacros['UNIVERSALADID'] = this.creative.universalAdIds
         .map((universalAdId) =>
           universalAdId.idRegistry.concat(' ', universalAdId.value)
         )

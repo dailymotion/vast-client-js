@@ -281,25 +281,26 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
         if (!Array.isArray(creative.trackingEvents[eventName])) {
           creative.trackingEvents[eventName] = [];
         }
-        creative.trackingEvents[eventName] = creative.trackingEvents[
-          eventName
-        ].concat(urls);
+        creative.trackingEvents[eventName] =
+          creative.trackingEvents[eventName].concat(urls);
       }
     }
 
     if (creative.type === 'linear') {
       // merge video click tracking url
       if (wrapperHasVideoClickTracking) {
-        creative.videoClickTrackingURLTemplates = creative.videoClickTrackingURLTemplates.concat(
-          wrapper.videoClickTrackingURLTemplates
-        );
+        creative.videoClickTrackingURLTemplates =
+          creative.videoClickTrackingURLTemplates.concat(
+            wrapper.videoClickTrackingURLTemplates
+          );
       }
 
       // merge video custom click url
       if (wrapperHasVideoCustomClick) {
-        creative.videoCustomClickURLTemplates = creative.videoCustomClickURLTemplates.concat(
-          wrapper.videoCustomClickURLTemplates
-        );
+        creative.videoCustomClickURLTemplates =
+          creative.videoCustomClickURLTemplates.concat(
+            wrapper.videoCustomClickURLTemplates
+          );
       }
 
       // VAST 2.0 support - Use Wrapper/linear/clickThrough when Inline/Linear/clickThrough is null
@@ -316,10 +317,11 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     // pass wrapper companion trackers to all companions
     if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
       (creative.variations || []).forEach((variation) => {
-        variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(
-          variation.companionClickTrackingURLTemplates,
-          wrapperCompanionClickTracking
-        );
+        variation.companionClickTrackingURLTemplates =
+          util.joinArrayOfUniqueTemplateObjs(
+            variation.companionClickTrackingURLTemplates,
+            wrapperCompanionClickTracking
+          );
       });
     }
   });

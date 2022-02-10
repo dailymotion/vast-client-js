@@ -3,8 +3,8 @@ import { parserUtils } from '../src/parser/parser_utils';
 import { getNodesFromXml } from './utils/utils';
 import { creatives } from './samples/creatives';
 
-describe('CreativesParser', function() {
-  describe('ParseCreatives', function() {
+describe('CreativesParser', function () {
+  describe('ParseCreatives', function () {
     let parsedCreatives;
 
     beforeAll(() => {

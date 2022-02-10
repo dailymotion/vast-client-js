@@ -79,6 +79,7 @@ function parseInLine(adElement, emit, { allowMultipleAds } = {}) {
  * @return {Object} ad - The ad object.
  */
 function parseAdElement(adTypeElement, emit) {
+  let adVerificationsFromExtensions = [];
   if (emit) {
     parserVerification.verifyRequiredValues(adTypeElement, emit);
   }
@@ -116,7 +117,8 @@ function parseAdElement(adTypeElement, emit) {
           from extensions the same way than for an AdVerifications node.
         */
         if (!ad.adVerifications.length) {
-          ad.adVerifications = _parseAdVerificationsFromExensions(extNodes);
+          adVerificationsFromExtensions =
+            _parseAdVerificationsFromExtensions(extNodes);
         }
         break;
       }
@@ -188,6 +190,11 @@ function parseAdElement(adTypeElement, emit) {
     }
   }
 
+  if (adVerificationsFromExtensions.length) {
+    ad.adVerifications = ad.adVerifications.concat(
+      adVerificationsFromExtensions
+    );
+  }
   return ad;
 }
 
@@ -329,9 +336,8 @@ export function _parseAdVerifications(verifications) {
         .childrenByName(trackingEventsElement, 'Tracking')
         .forEach((trackingElement) => {
           const eventName = trackingElement.getAttribute('event');
-          const trackingURLTemplate = parserUtils.parseNodeText(
-            trackingElement
-          );
+          const trackingURLTemplate =
+            parserUtils.parseNodeText(trackingElement);
           if (eventName && trackingURLTemplate) {
             if (!Array.isArray(verification.trackingEvents[eventName])) {
               verification.trackingEvents[eventName] = [];
@@ -352,7 +358,7 @@ export function _parseAdVerifications(verifications) {
  * @param  {Array<Node>} extensions - The array of extensions to parse.
  * @return {Array<Object>}
  */
-export function _parseAdVerificationsFromExensions(extensions) {
+export function _parseAdVerificationsFromExtensions(extensions) {
   let adVerificationsNode = null,
     adVerifications = [];
 
@@ -370,7 +376,6 @@ export function _parseAdVerificationsFromExensions(extensions) {
       parserUtils.childrenByName(adVerificationsNode, 'Verification')
     );
   }
-
   return adVerifications;
 }
 
@@ -399,7 +404,8 @@ export function _parseViewableImpression(viewableImpressionNode) {
     ) {
       continue;
     } else {
-      const viewableImpressionNodeNameLower = viewableImpressionNodeName.toLowerCase();
+      const viewableImpressionNodeNameLower =
+        viewableImpressionNodeName.toLowerCase();
       if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
         viewableImpression[viewableImpressionNodeNameLower] = [];
       }

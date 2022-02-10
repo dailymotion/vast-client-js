@@ -16,7 +16,7 @@ export function createNonLinearAd() {
     iframeResource: null,
     nonlinearClickThroughURLTemplate: null,
     nonlinearClickTrackingURLTemplates: [],
-    adParameters: null
+    adParameters: null,
   };
 }
 

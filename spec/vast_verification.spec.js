@@ -3,8 +3,8 @@ import { vastInLine } from './samples/inline_missing_values';
 import { vastMissingWrapperValues } from './samples/wrapper_missing_values';
 import { getNodesFromXml } from './utils/utils';
 
-describe('parserVerification', function() {
-  describe('verifyRequiredValues', function() {
+describe('parserVerification', function () {
+  describe('verifyRequiredValues', function () {
     let warnings = [];
 
     const emitter = (emitType, { message }) => {
@@ -24,7 +24,7 @@ describe('parserVerification', function() {
       parserVerification.verifyRequiredValues(inLineElement, emitter);
       expect(warnings).toEqual(
         expect.arrayContaining([
-          "Element 'InLine' missing required sub element(s) 'AdSystem, AdTitle, Impression, AdServingId, Creatives' "
+          "Element 'InLine' missing required sub element(s) 'AdSystem, AdTitle, Impression, AdServingId, Creatives' ",
         ])
       );
     });
@@ -42,7 +42,7 @@ describe('parserVerification', function() {
           "Element 'Linear' missing required sub element(s) 'MediaFiles, Duration' ",
           "Element 'Icons' missing required sub element(s) 'Icon' ",
           "Element 'Verification' must provide one of the following 'JavaScriptResource, ExecutableResource' ",
-          "Element 'MediaFiles' missing required sub element(s) 'MediaFile' "
+          "Element 'MediaFiles' missing required sub element(s) 'MediaFile' ",
         ])
       );
     });
@@ -52,7 +52,7 @@ describe('parserVerification', function() {
       parserVerification.verifyRequiredValues(wrapperElement, emitter);
       expect(warnings).toEqual(
         expect.arrayContaining([
-          "Element 'Wrapper' missing required sub element(s) 'VASTAdTagURI, Impression' "
+          "Element 'Wrapper' missing required sub element(s) 'VASTAdTagURI, Impression' ",
         ])
       );
     });
@@ -61,7 +61,7 @@ describe('parserVerification', function() {
       parserVerification.verifyRequiredValues(wrapperElement, emitter);
       expect(warnings).toEqual(
         expect.arrayContaining([
-          "Element 'BlockedAdCategories' missing required attribute(s) 'authority' "
+          "Element 'BlockedAdCategories' missing required attribute(s) 'authority' ",
         ])
       );
     });
@@ -92,7 +92,7 @@ describe('parserVerification', function() {
           "Element 'Companion' missing required attribute(s) 'width, height' ",
           "Element 'Companion' must provide one of the following 'StaticResource, IFrameResource, HTMLResource' ",
           "Element 'NonLinear' missing required attribute(s) 'width, height' ",
-          "Element 'NonLinear' must provide one of the following 'StaticResource, IFrameResource, HTMLResource' "
+          "Element 'NonLinear' must provide one of the following 'StaticResource, IFrameResource, HTMLResource' ",
         ])
       );
     });
@@ -115,13 +115,13 @@ describe('parserVerification', function() {
           "Element 'MediaFiles' is empty",
           "Element 'Creative' is empty",
           "Element 'Creatives' is empty",
-          "Element 'InLine' is empty"
+          "Element 'InLine' is empty",
         ])
       );
     });
   });
 
-  describe('hasSubElements', function() {
+  describe('hasSubElements', function () {
     it('should return false', () => {
       const element = getNodesFromXml('<InLine></InLine>');
       expect(parserVerification.hasSubElements(element)).toEqual(false);
@@ -140,7 +140,7 @@ describe('parserVerification', function() {
     });
   });
 
-  describe('emitMissingValueWarning', function() {
+  describe('emitMissingValueWarning', function () {
     let warning = {};
 
     const emitter = (emitType, payload) => {
@@ -156,14 +156,14 @@ describe('parserVerification', function() {
       const warn = {
         name: 'node',
         parentName: 'parentNode',
-        attributes: ['attribute1', 'attribute2']
+        attributes: ['attribute1', 'attribute2'],
       };
       parserVerification.emitMissingValueWarning(warn, emitter);
       expect(warning).toMatchObject({
         message:
           "Element 'node' missing required attribute(s) 'attribute1, attribute2' ",
         parentElement: 'parentNode',
-        specVersion: 4.1
+        specVersion: 4.1,
       });
     });
 
@@ -171,14 +171,14 @@ describe('parserVerification', function() {
       const warn = {
         name: 'node',
         parentName: 'parentNode',
-        subElements: ['subelement1', 'subelement2']
+        subElements: ['subelement1', 'subelement2'],
       };
       parserVerification.emitMissingValueWarning(warn, emitter);
       expect(warning).toMatchObject({
         message:
           "Element 'node' missing required sub element(s) 'subelement1, subelement2' ",
         parentElement: 'parentNode',
-        specVersion: 4.1
+        specVersion: 4.1,
       });
     });
 
@@ -186,33 +186,33 @@ describe('parserVerification', function() {
       const warn = {
         name: 'node',
         parentName: 'parentNode',
-        oneOfResources: ['ressource1', 'ressource2', 'ressource3']
+        oneOfResources: ['ressource1', 'ressource2', 'ressource3'],
       };
       parserVerification.emitMissingValueWarning(warn, emitter);
       expect(warning).toMatchObject({
         message:
           "Element 'node' must provide one of the following 'ressource1, ressource2, ressource3' ",
         parentElement: 'parentNode',
-        specVersion: 4.1
+        specVersion: 4.1,
       });
     });
 
     it('should emit node is empty warning', () => {
       const warn = {
         name: 'node',
-        parentName: 'parentNode'
+        parentName: 'parentNode',
       };
 
       parserVerification.emitMissingValueWarning(warn, emitter);
       expect(warning).toMatchObject({
         message: "Element 'node' is empty",
         parentElement: 'parentNode',
-        specVersion: 4.1
+        specVersion: 4.1,
       });
     });
   });
 
-  describe('verifyRequiredAttributes', function() {
+  describe('verifyRequiredAttributes', function () {
     it('should call the emit function for missing required attributes', () => {
       const emitMock = jest.fn();
       const element = getNodesFromXml('<MediaFile></MediaFile>');
@@ -231,7 +231,7 @@ describe('parserVerification', function() {
     });
   });
 
-  describe('verifyRequiredSubElements', function() {
+  describe('verifyRequiredSubElements', function () {
     it('should call the emit function for missing required subelement', () => {
       const element = getNodesFromXml('<Creatives></Creatives>');
       const emitMock = jest.fn();

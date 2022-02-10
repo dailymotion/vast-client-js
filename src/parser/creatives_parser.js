@@ -12,12 +12,12 @@ import { parserUtils } from './parser_utils';
 export function parseCreatives(creativeNodes) {
   const creatives = [];
 
-  creativeNodes.forEach(creativeElement => {
+  creativeNodes.forEach((creativeElement) => {
     const creativeAttributes = {
       id: creativeElement.getAttribute('id') || null,
       adId: parseCreativeAdIdAttribute(creativeElement),
       sequence: creativeElement.getAttribute('sequence') || null,
-      apiFramework: creativeElement.getAttribute('apiFramework') || null
+      apiFramework: creativeElement.getAttribute('apiFramework') || null,
     };
 
     const universalAdIds = [];
@@ -25,14 +25,14 @@ export function parseCreatives(creativeNodes) {
       creativeElement,
       'UniversalAdId'
     );
-    universalAdIdElements.forEach(universalAdIdElement => {
+    universalAdIdElements.forEach((universalAdIdElement) => {
       const universalAdId = {
         idRegistry:
           universalAdIdElement.getAttribute('idRegistry') || 'unknown',
-        value: parserUtils.parseNodeText(universalAdIdElement)
+        value: parserUtils.parseNodeText(universalAdIdElement),
       };
       universalAdIds.push(universalAdId);
-    })
+    });
 
     let creativeExtensions;
     const creativeExtensionsElement = parserUtils.childByName(

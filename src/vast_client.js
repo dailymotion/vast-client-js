@@ -20,7 +20,7 @@ export class VASTClient {
     this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
     this.defaultOptions = {
       withCredentials: false,
-      timeout: 0
+      timeout: 0,
     };
     this.vastParser = new VASTParser();
     this.storage = customStorage || new Storage();
@@ -113,9 +113,7 @@ export class VASTClient {
       if (this.cappingFreeLunch >= this.totalCalls) {
         return reject(
           new Error(
-            `VAST call canceled – FreeLunch capping not reached yet ${
-              this.totalCalls
-            }/${this.cappingFreeLunch}`
+            `VAST call canceled – FreeLunch capping not reached yet ${this.totalCalls}/${this.cappingFreeLunch}`
           )
         );
       }
@@ -129,17 +127,15 @@ export class VASTClient {
       } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
         return reject(
           new Error(
-            `VAST call canceled – (${
-              this.cappingMinimumTimeInterval
-            })ms minimum interval reached`
+            `VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval reached`
           )
         );
       }
 
       this.vastParser
         .getAndParseVAST(url, options)
-        .then(response => resolve(response))
-        .catch(err => reject(err));
+        .then((response) => resolve(response))
+        .catch((err) => reject(err));
     });
   }
 }

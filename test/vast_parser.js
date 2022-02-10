@@ -110,8 +110,7 @@ describe('VASTParser', function () {
           },
           {
             id: 'sample-impression1',
-            url:
-              'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
+            url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
           },
           {
             id: 'sample-impression2',
@@ -547,7 +546,10 @@ describe('VASTParser', function () {
         });
 
         it('should have a UniversalAdId', () => {
-          should.equal(nonlinears.universalAdIds[0].idRegistry, 'daily-motion-NL');
+          should.equal(
+            nonlinears.universalAdIds[0].idRegistry,
+            'daily-motion-NL'
+          );
           should.equal(nonlinears.universalAdIds[0].value, 'NonLinear-12345');
         });
 
