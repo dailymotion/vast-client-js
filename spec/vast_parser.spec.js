@@ -27,6 +27,25 @@ const wrapperWithAttributesVastUrl = urlFor(
 );
 const wrapperInvalidVastUrl = urlFor('wrapper-invalid-xmlfile.xml');
 const vastWithErrorUrl = urlFor('empty-no-ad.xml');
+const ad = {
+  id: null,
+  sequence: 1,
+  system: { value: 'VAST', version: null },
+  title: null,
+  description: null,
+  advertiser: null,
+  pricing: null,
+  survey: null,
+  errorURLTemplates: ['http://example.com/wrapperA-error'],
+  impressionURLTemplates: [],
+  creatives: [],
+  extensions: [],
+  adVerifications: [],
+  trackingEvents: { nonlinear: [], linear: [] },
+  videoClickTrackingURLTemplates: [],
+  videoCustomClickURLTemplates: [],
+  viewableImpression: [],
+};
 
 describe('VASTParser', () => {
   let VastParser;
@@ -73,7 +92,8 @@ describe('VASTParser', () => {
         return VastParser.fetchVAST(
           'www.foo.foo',
           2,
-          'www.original.foo'
+          'www.original.foo',
+          ad
         ).finally(() => {
           expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
             url: 'www.foo.foo',
@@ -81,6 +101,7 @@ describe('VASTParser', () => {
             wrapperDepth: 2,
             maxWrapperDepth: 8,
             timeout: 120000,
+            ad,
           });
 
           expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
@@ -134,7 +155,7 @@ describe('VASTParser', () => {
       });
 
       it('emits VAST-resolving and VAST-resolved events', () => {
-        return VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo')
+        return VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo', ad)
           .then(() => {
             expect(true).toBeFalsy();
           })
@@ -148,6 +169,7 @@ describe('VASTParser', () => {
                 wrapperDepth: 2,
                 maxWrapperDepth: 8,
                 timeout: 120000,
+                ad,
               }
             );
 
@@ -256,10 +278,10 @@ describe('VASTParser', () => {
           expect(VastParser.fetchVAST.mock.calls).toEqual(
             expect.arrayContaining([
               [wrapperAVastUrl],
-              [wrapperBVastUrl, 1, wrapperAVastUrl],
-              [inlineVpaidVastUrl, 1, wrapperAVastUrl],
-              [inlineSampleVastUrl, 2, wrapperBVastUrl],
-              [inlineSampleVastUrl, 2, wrapperBVastUrl],
+              [wrapperBVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
+              [inlineVpaidVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
+              [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
+              [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
             ])
           );
         });
@@ -282,6 +304,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 0,
                   maxWrapperDepth: 8,
                   timeout: 120000,
+                  ad: expect.any(Object),
                 },
               ],
               [
@@ -324,6 +347,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 1,
                   maxWrapperDepth: 8,
                   timeout: 120000,
+                  ad: expect.any(Object),
                 },
               ],
               // RESOLVING AD 2 (WRAPPER VPAID) IN WRAPPER A
@@ -335,6 +359,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 1,
                   maxWrapperDepth: 8,
                   timeout: 120000,
+                  ad: expect.any(Object),
                 },
               ],
               // AD 1 (WRAPPER B) IN WRAPPER A
@@ -368,6 +393,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 2,
                   maxWrapperDepth: 8,
                   timeout: 120000,
+                  ad: expect.any(Object),
                 },
               ],
               // AD 2 (WRAPPER VPAID) IN WRAPPER A
@@ -805,7 +831,8 @@ describe('VASTParser', () => {
           expect(VastParser.fetchVAST).toHaveBeenCalledWith(
             wrapperBVastUrl,
             1,
-            wrapperAVastUrl
+            wrapperAVastUrl,
+            adWithWrapper,
           );
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
@@ -832,7 +859,8 @@ describe('VASTParser', () => {
           expect(VastParser.fetchVAST).toHaveBeenCalledWith(
             wrapperBVastUrl,
             1,
-            wrapperAVastUrl
+            wrapperAVastUrl,
+            adWithWrapper
           );
           expect(VastParser.parse).not.toHaveBeenCalled();
           expect(parserUtils.mergeWrapperAdData).not.toBeCalled();
