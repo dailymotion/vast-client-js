@@ -110,12 +110,12 @@ export class VASTParser extends EventEmitter {
    * @param  {String} url - The url to request the VAST document.
    * @param {Number} wrapperDepth - How many times the current url has been wrapped.
    * @param {String} previousUrl - Url of the previous VAST.
-   * @param {Object} ad - Previously parsed ad node (Wrapper) related to this fetching.
+   * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-  fetchVAST(url, wrapperDepth = 0, previousUrl = null, ad = null) {
+  fetchVAST(url, wrapperDepth = 0, previousUrl = null, wrapperAd = null) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
       this.URLTemplateFilters.forEach((filter) => {
@@ -130,7 +130,7 @@ export class VASTParser extends EventEmitter {
         wrapperDepth,
         maxWrapperDepth: this.maxWrapperDepth,
         timeout: this.fetchingOptions.timeout,
-        ad,
+        wrapperAd,
       });
 
       this.urlHandler.get(

@@ -101,7 +101,7 @@ describe('VASTParser', () => {
             wrapperDepth: 2,
             maxWrapperDepth: 8,
             timeout: 120000,
-            ad,
+            wrapperAd: ad,
           });
 
           expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
@@ -169,7 +169,7 @@ describe('VASTParser', () => {
                 wrapperDepth: 2,
                 maxWrapperDepth: 8,
                 timeout: 120000,
-                ad,
+                wrapperAd: ad,
               }
             );
 
@@ -304,7 +304,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 0,
                   maxWrapperDepth: 8,
                   timeout: 120000,
-                  ad: expect.any(Object),
+                  wrapperAd: expect.any(Object),
                 },
               ],
               [
@@ -347,7 +347,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 1,
                   maxWrapperDepth: 8,
                   timeout: 120000,
-                  ad: expect.any(Object),
+                  wrapperAd: expect.any(Object),
                 },
               ],
               // RESOLVING AD 2 (WRAPPER VPAID) IN WRAPPER A
@@ -359,7 +359,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 1,
                   maxWrapperDepth: 8,
                   timeout: 120000,
-                  ad: expect.any(Object),
+                  wrapperAd: expect.any(Object),
                 },
               ],
               // AD 1 (WRAPPER B) IN WRAPPER A
@@ -393,7 +393,7 @@ describe('VASTParser', () => {
                   wrapperDepth: 2,
                   maxWrapperDepth: 8,
                   timeout: 120000,
-                  ad: expect.any(Object),
+                  wrapperAd: expect.any(Object),
                 },
               ],
               // AD 2 (WRAPPER VPAID) IN WRAPPER A

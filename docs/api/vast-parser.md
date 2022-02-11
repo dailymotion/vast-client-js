@@ -87,7 +87,7 @@ Event is triggered when `fetchVAST` function is called, before the fetching star
 - `wrapperDepth: Number`
 - `maxWrapperDepth: Number`
 - `timeout: Number`
-- `ad: Ad`
+- `wrapperAd: Ad`
 
 ```Javascript
 vastParser.on('VAST-resolving', ({ url, wrapperDepth, previousUrl }) => {
@@ -216,7 +216,7 @@ Tracks the error provided in the errorCode parameter and emits a `VAST-error` ev
 - **`errorCode: Object`** - An Object containing the error data
 - **`data: Object`** - One (or more) Object containing additional data
 
-### fetchVAST(url, wrapperDepth = 0, previousUrl = null, ad = null)
+### fetchVAST(url, wrapperDepth = 0, previousUrl = null, wrapperAd = null)
 
 Fetches a VAST document for the given url. Returns a `Promise` which resolves with the fetched xml or rejects with an error, according to the result of the request.
 
@@ -225,7 +225,7 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves wi
 - **`url: String`** - The url to request the VAST document
 - **`wrapperDepth: Number`** - Number of wrappers that have occurred
 - **`previousUrl: String`** - The url of the previous VAST
-- **`ad: Ad`** - Previously parsed ad node (Wrapper) related to this fetching.
+- **`wrapperAd: Ad`** - Previously parsed ad node (Wrapper) related to this fetching.
 
 #### Events emitted
 
