@@ -23,8 +23,10 @@ describe('CreativesParser', function () {
       const creative = parsedCreatives[0];
       expect(creative.id).toEqual('id130984');
       expect(creative.adId).toEqual('adId345690');
-      expect(creative.universalAdId.idRegistry).toEqual('daily-motion-L');
-      expect(creative.universalAdId.value).toEqual('Linear-12345');
+      expect(creative.universalAdIds[0].idRegistry).toEqual('daily-motion-L1');
+      expect(creative.universalAdIds[0].value).toEqual('Linear-12345');
+      expect(creative.universalAdIds[1].idRegistry).toEqual('daily-motion-L2');
+      expect(creative.universalAdIds[1].value).toEqual('Linear-5678');
       expect(creative.type).toEqual('linear');
       expect(creative.mediaFiles.length).toEqual(2);
     });
@@ -33,7 +35,7 @@ describe('CreativesParser', function () {
       const creative = parsedCreatives[1];
       expect(creative.id).toEqual('id130985');
       expect(creative.adId).toEqual('adId345691');
-      expect(creative.universalAdId).toEqual(undefined);
+      expect(creative.universalAdIds).toEqual([]);
       expect(creative.type).toEqual('companion');
       expect(creative.variations.length).toEqual(3);
     });
@@ -42,8 +44,8 @@ describe('CreativesParser', function () {
       const creative = parsedCreatives[2];
       expect(creative.id).toEqual('id130986');
       expect(creative.adId).toEqual(null);
-      expect(creative.universalAdId.idRegistry).toEqual('daily-motion-NL');
-      expect(creative.universalAdId.value).toEqual('NonLinear-12345');
+      expect(creative.universalAdIds[0].idRegistry).toEqual('daily-motion-NL');
+      expect(creative.universalAdIds[0].value).toEqual('NonLinear-12345');
       expect(creative.type).toEqual('nonlinear');
       expect(creative.variations.length).toEqual(1);
     });

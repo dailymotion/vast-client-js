@@ -63,9 +63,8 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
           .childrenByName(trackingEventsElement, 'Tracking')
           .forEach((trackingElement) => {
             const eventName = trackingElement.getAttribute('event');
-            const trackingURLTemplate = parserUtils.parseNodeText(
-              trackingElement
-            );
+            const trackingURLTemplate =
+              parserUtils.parseNodeText(trackingElement);
             if (eventName && trackingURLTemplate) {
               if (!Array.isArray(companionAd.trackingEvents[eventName])) {
                 companionAd.trackingEvents[eventName] = [];
@@ -94,9 +93,8 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
         'AdParameters'
       );
       if (adParametersElement) {
-        companionAd.adParameters = parserUtils.parseNodeText(
-          adParametersElement
-        );
+        companionAd.adParameters =
+          parserUtils.parseNodeText(adParametersElement);
         companionAd.xmlEncoded =
           adParametersElement.getAttribute('xmlEncoded') || null;
       }

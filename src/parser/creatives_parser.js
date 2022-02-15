@@ -20,18 +20,19 @@ export function parseCreatives(creativeNodes) {
       apiFramework: creativeElement.getAttribute('apiFramework') || null,
     };
 
-    let universalAdId;
-    const universalAdIdElement = parserUtils.childByName(
+    const universalAdIds = [];
+    const universalAdIdElements = parserUtils.childrenByName(
       creativeElement,
       'UniversalAdId'
     );
-    if (universalAdIdElement) {
-      universalAdId = {
+    universalAdIdElements.forEach((universalAdIdElement) => {
+      const universalAdId = {
         idRegistry:
           universalAdIdElement.getAttribute('idRegistry') || 'unknown',
         value: parserUtils.parseNodeText(universalAdIdElement),
       };
-    }
+      universalAdIds.push(universalAdId);
+    });
 
     let creativeExtensions;
     const creativeExtensionsElement = parserUtils.childByName(
@@ -74,8 +75,8 @@ export function parseCreatives(creativeNodes) {
       }
 
       if (parsedCreative) {
-        if (universalAdId) {
-          parsedCreative.universalAdId = universalAdId;
+        if (universalAdIds) {
+          parsedCreative.universalAdIds = universalAdIds;
         }
 
         if (creativeExtensions) {

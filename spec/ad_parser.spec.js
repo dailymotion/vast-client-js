@@ -96,20 +96,20 @@ describe('AdParser', function () {
     });
 
     it('gets viewableImpression values', () => {
-      expect(ad.viewableImpression.id).toBe('viewable_impression_id');
-      expect(ad.viewableImpression.viewable).toHaveLength(2);
-      expect(ad.viewableImpression.viewable).toEqual([
+      expect(ad.viewableImpression[0].id).toEqual('viewable_impression_id');
+      expect(ad.viewableImpression[0].viewable).toHaveLength(2);
+      expect(ad.viewableImpression[0].viewable).toEqual([
         'http://www.example.com/viewable_impression_1',
         'http://www.sample.com/viewable_impression_2',
       ]);
-      expect(ad.viewableImpression.notviewable).toHaveLength(3);
-      expect(ad.viewableImpression.notviewable).toEqual([
+      expect(ad.viewableImpression[0].notviewable).toHaveLength(3);
+      expect(ad.viewableImpression[0].notviewable).toEqual([
         'http://www.example.com/not_viewable_1',
         'http://www.sample.com/not_viewable_2',
         'http://www.sample.com/not_viewable_3',
       ]);
-      expect(ad.viewableImpression.viewundetermined).toHaveLength(1);
-      expect(ad.viewableImpression.viewundetermined).toEqual([
+      expect(ad.viewableImpression[0].viewundetermined).toHaveLength(1);
+      expect(ad.viewableImpression[0].viewundetermined).toEqual([
         'http://www.example.com/view_undetermined_1',
       ]);
     });

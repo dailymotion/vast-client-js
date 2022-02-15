@@ -91,9 +91,8 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
         .childrenByName(trackingEventsElement, 'Tracking')
         .forEach((trackingElement) => {
           let eventName = trackingElement.getAttribute('event');
-          const trackingURLTemplate = parserUtils.parseNodeText(
-            trackingElement
-          );
+          const trackingURLTemplate =
+            parserUtils.parseNodeText(trackingElement);
           if (eventName && trackingURLTemplate) {
             if (eventName === 'progress') {
               offset = trackingElement.getAttribute('offset');
@@ -147,9 +146,8 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
             const closedCaptionFile = createClosedCaptionFile(
               parserUtils.parseAttributes(closedCaptionElement)
             );
-            closedCaptionFile.fileURL = parserUtils.parseNodeText(
-              closedCaptionElement
-            );
+            closedCaptionFile.fileURL =
+              parserUtils.parseNodeText(closedCaptionElement);
 
             creative.closedCaptionFiles.push(closedCaptionFile);
           });
@@ -231,9 +229,8 @@ function parseMediaFile(mediaFileElement) {
     'maintainAspectRatio'
   );
   if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
-    mediaFile.maintainAspectRatio = parserUtils.parseBoolean(
-      maintainAspectRatio
-    );
+    mediaFile.maintainAspectRatio =
+      parserUtils.parseBoolean(maintainAspectRatio);
   }
   return mediaFile;
 }

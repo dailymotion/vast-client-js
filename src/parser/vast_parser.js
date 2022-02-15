@@ -108,13 +108,14 @@ export class VASTParser extends EventEmitter {
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
    * @param  {String} url - The url to request the VAST document.
-   * @param {Number} wrapperDepth - how many times the current url has been wrapped
-   * @param {String} previousUrl - url of the previous VAST
+   * @param {Number} wrapperDepth - How many times the current url has been wrapped.
+   * @param {String} previousUrl - Url of the previous VAST.
+   * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-  fetchVAST(url, wrapperDepth = 0, previousUrl = null) {
+  fetchVAST(url, wrapperDepth = 0, previousUrl = null, wrapperAd = null) {
     return new Promise((resolve, reject) => {
       // Process url with defined filter
       this.URLTemplateFilters.forEach((filter) => {
@@ -129,6 +130,7 @@ export class VASTParser extends EventEmitter {
         wrapperDepth,
         maxWrapperDepth: this.maxWrapperDepth,
         timeout: this.fetchingOptions.timeout,
+        wrapperAd,
       });
 
       this.urlHandler.get(
@@ -520,7 +522,7 @@ export class VASTParser extends EventEmitter {
         this.parsingOptions.allowMultipleAds ?? ad.allowMultipleAds;
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
-      this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl)
+      this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl, ad)
         .then((xml) => {
           return this.parse(xml, {
             url: ad.nextWrapperURL,
