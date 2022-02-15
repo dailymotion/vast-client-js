@@ -2,22 +2,42 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.VAST = {}));
-}(this, (function (exports) { 'use strict';
+})(this, (function (exports) { 'use strict';
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = null != arguments[i] ? arguments[i] : {};
+      i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+
+    return target;
+  }
 
   function _typeof(obj) {
     "@babel/helpers - typeof";
 
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+      return typeof obj;
+    } : function (obj) {
+      return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    }, _typeof(obj);
   }
 
   function _classCallCheck(instance, Constructor) {
@@ -39,6 +59,9 @@
   function _createClass(Constructor, protoProps, staticProps) {
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
+    Object.defineProperty(Constructor, "prototype", {
+      writable: false
+    });
     return Constructor;
   }
 
@@ -57,40 +80,6 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function");
@@ -102,6 +91,9 @@
         writable: true,
         configurable: true
       }
+    });
+    Object.defineProperty(subClass, "prototype", {
+      writable: false
     });
     if (superClass) _setPrototypeOf(subClass, superClass);
   }
@@ -128,7 +120,7 @@
     if (typeof Proxy === "function") return true;
 
     try {
-      Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
       return true;
     } catch (e) {
       return false;
@@ -146,6 +138,8 @@
   function _possibleConstructorReturn(self, call) {
     if (call && (typeof call === "object" || typeof call === "function")) {
       return call;
+    } else if (call !== void 0) {
+      throw new TypeError("Derived constructors may only return object or undefined");
     }
 
     return _assertThisInitialized(self);
@@ -170,6 +164,39 @@
     };
   }
 
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+  }
+
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+  }
+
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
   function createAd() {
     var adAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     return {
@@ -179,7 +206,7 @@
       adServingId: null,
       categories: [],
       expires: null,
-      viewableImpression: {},
+      viewableImpression: [],
       system: null,
       title: null,
       description: null,
@@ -248,10 +275,7 @@
       adId: creativeAttributes.adId || null,
       sequence: creativeAttributes.sequence || null,
       apiFramework: creativeAttributes.apiFramework || null,
-      universalAdId: {
-        value: null,
-        idRegistry: 'unknown'
-      },
+      universalAdIds: [],
       creativeExtensions: []
     };
   }
@@ -760,7 +784,12 @@
   function mergeWrapperAdData(unwrappedAd, wrapper) {
     unwrappedAd.errorURLTemplates = wrapper.errorURLTemplates.concat(unwrappedAd.errorURLTemplates);
     unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
-    unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions); // values from the child wrapper will be overridden
+    unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
+
+    if (wrapper.viewableImpression.length > 0) {
+      unwrappedAd.viewableImpression = [].concat(_toConsumableArray(unwrappedAd.viewableImpression), _toConsumableArray(wrapper.viewableImpression));
+    } // values from the child wrapper will be overridden
+
 
     unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
     unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
@@ -818,9 +847,10 @@
           variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(variation.companionClickTrackingURLTemplates, wrapperCompanionClickTracking);
         });
       }
-    }); // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
+    });
 
     if (wrapper.adVerifications) {
+      // As specified by VAST specs unwrapped ads should contains wrapper adVerification script
       unwrappedAd.adVerifications = unwrappedAd.adVerifications.concat(wrapper.adVerifications);
     }
 
@@ -1511,16 +1541,15 @@
         sequence: creativeElement.getAttribute('sequence') || null,
         apiFramework: creativeElement.getAttribute('apiFramework') || null
       };
-      var universalAdId;
-      var universalAdIdElement = parserUtils.childByName(creativeElement, 'UniversalAdId');
-
-      if (universalAdIdElement) {
-        universalAdId = {
+      var universalAdIds = [];
+      var universalAdIdElements = parserUtils.childrenByName(creativeElement, 'UniversalAdId');
+      universalAdIdElements.forEach(function (universalAdIdElement) {
+        var universalAdId = {
           idRegistry: universalAdIdElement.getAttribute('idRegistry') || 'unknown',
           value: parserUtils.parseNodeText(universalAdIdElement)
         };
-      }
-
+        universalAdIds.push(universalAdId);
+      });
       var creativeExtensions;
       var creativeExtensionsElement = parserUtils.childByName(creativeElement, 'CreativeExtensions');
 
@@ -1547,8 +1576,8 @@
         }
 
         if (parsedCreative) {
-          if (universalAdId) {
-            parsedCreative.universalAdId = universalAdId;
+          if (universalAdIds) {
+            parsedCreative.universalAdIds = universalAdIds;
           }
 
           if (creativeExtensions) {
@@ -1968,7 +1997,7 @@
           break;
 
         case 'ViewableImpression':
-          ad.viewableImpression = _parseViewableImpression(node);
+          ad.viewableImpression.push(_parseViewableImpression(node));
           break;
 
         case 'Description':
@@ -2386,12 +2415,12 @@
   // This mock module is loaded in stead of the original NodeURLHandler module
   // when bundling the library for environments which are not node.
   // This allows us to avoid bundling useless node components and have a smaller build.
-  function get(url, options, cb) {
+  function get$2(url, options, cb) {
     cb(new Error('Please bundle the library for node to use the node urlHandler'));
   }
 
   var nodeURLHandler = {
-    get: get
+    get: get$2
   };
 
   var DEFAULT_TIMEOUT = 120000;
@@ -2474,7 +2503,7 @@
     supported: supported
   };
 
-  function get$2(url, options, cb) {
+  function get(url, options, cb) {
     // Allow skip of the options param
     if (!cb) {
       if (typeof options === 'function') {
@@ -2494,7 +2523,7 @@
   }
 
   var urlHandler = {
-    get: get$2
+    get: get
   };
 
   function createVASTResponse(_ref) {
@@ -2653,8 +2682,9 @@
        * Fetches a VAST document for the given url.
        * Returns a Promise which resolves,rejects according to the result of the request.
        * @param  {String} url - The url to request the VAST document.
-       * @param {Number} wrapperDepth - how many times the current url has been wrapped
-       * @param {String} previousUrl - url of the previous VAST
+       * @param {Number} wrapperDepth - How many times the current url has been wrapped.
+       * @param {String} previousUrl - Url of the previous VAST.
+       * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
        * @emits  VASTParser#VAST-resolving
        * @emits  VASTParser#VAST-resolved
        * @return {Promise}
@@ -2667,6 +2697,7 @@
 
         var wrapperDepth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
         var previousUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+        var wrapperAd = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
         return new Promise(function (resolve, reject) {
           // Process url with defined filter
           _this2.URLTemplateFilters.forEach(function (filter) {
@@ -2682,7 +2713,8 @@
             previousUrl: previousUrl,
             wrapperDepth: wrapperDepth,
             maxWrapperDepth: _this2.maxWrapperDepth,
-            timeout: _this2.fetchingOptions.timeout
+            timeout: _this2.fetchingOptions.timeout,
+            wrapperAd: wrapperAd
           });
 
           _this2.urlHandler.get(url, _this2.fetchingOptions, function (error, xml) {
@@ -3085,7 +3117,7 @@
 
           var wrapperSequence = ad.sequence;
 
-          _this7.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl).then(function (xml) {
+          _this7.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl, ad).then(function (xml) {
             return _this7.parse(xml, {
               url: ad.nextWrapperURL,
               previousUrl: previousUrl,
@@ -3351,12 +3383,36 @@
         return this.vastParser;
       }
     }, {
-      key: "hasRemainingAds",
-
+      key: "lastSuccessfulAd",
+      get: function get() {
+        return this.storage.getItem('vast-client-last-successful-ad');
+      },
+      set: function set(value) {
+        this.storage.setItem('vast-client-last-successful-ad', value);
+      }
+    }, {
+      key: "totalCalls",
+      get: function get() {
+        return this.storage.getItem('vast-client-total-calls');
+      },
+      set: function set(value) {
+        this.storage.setItem('vast-client-total-calls', value);
+      }
+    }, {
+      key: "totalCallsTimeout",
+      get: function get() {
+        return this.storage.getItem('vast-client-total-calls-timeout');
+      },
+      set: function set(value) {
+        this.storage.setItem('vast-client-total-calls-timeout', value);
+      }
       /**
        * Returns a boolean indicating if there are more ads to resolve for the current parsing.
        * @return {Boolean}
        */
+
+    }, {
+      key: "hasRemainingAds",
       value: function hasRemainingAds() {
         return this.vastParser.remainingAds.length > 0;
       }
@@ -3422,30 +3478,6 @@
             return reject(err);
           });
         });
-      }
-    }, {
-      key: "lastSuccessfulAd",
-      get: function get() {
-        return this.storage.getItem('vast-client-last-successful-ad');
-      },
-      set: function set(value) {
-        this.storage.setItem('vast-client-last-successful-ad', value);
-      }
-    }, {
-      key: "totalCalls",
-      get: function get() {
-        return this.storage.getItem('vast-client-total-calls');
-      },
-      set: function set(value) {
-        this.storage.setItem('vast-client-total-calls', value);
-      }
-    }, {
-      key: "totalCallsTimeout",
-      get: function get() {
-        return this.storage.getItem('vast-client-total-calls-timeout');
-      },
-      set: function set(value) {
-        this.storage.setItem('vast-client-total-calls-timeout', value);
       }
     }]);
 
@@ -4173,6 +4205,8 @@
     }, {
       key: "trackURLs",
       value: function trackURLs(URLTemplates) {
+        var _this$creative, _this$creative$univer;
+
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -4189,8 +4223,10 @@
           }
         }
 
-        if (this.creative && this.creative.universalAdId && this.creative.universalAdId.idRegistry && this.creative.universalAdId.value) {
-          givenMacros['UNIVERSALADID'] = "".concat(this.creative.universalAdId.idRegistry, " ").concat(this.creative.universalAdId.value);
+        if ((_this$creative = this.creative) !== null && _this$creative !== void 0 && (_this$creative$univer = _this$creative.universalAdIds) !== null && _this$creative$univer !== void 0 && _this$creative$univer.length) {
+          givenMacros['UNIVERSALADID'] = this.creative.universalAdIds.map(function (universalAdId) {
+            return universalAdId.idRegistry.concat(' ', universalAdId.value);
+          }).join(',');
         }
 
         if (this.ad) {
@@ -4207,8 +4243,8 @@
           }
 
           if (this.ad.categories && this.ad.categories.length) {
-            givenMacros['ADCATEGORIES'] = this.ad.categories.map(function (categorie) {
-              return categorie.value;
+            givenMacros['ADCATEGORIES'] = this.ad.categories.map(function (category) {
+              return category.value;
             }).join(',');
           }
 
@@ -4258,4 +4294,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
