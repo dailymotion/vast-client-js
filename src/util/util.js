@@ -231,6 +231,18 @@ function joinArrayOfUniqueTemplateObjs(arr1 = [], arr2 = []) {
   }, []);
 }
 
+/**
+ * Check if a provided value is a valid time value according to the IAB definition
+ * @param {Number} time
+ * According to IAB, if a value is not implemented, the ad unit returns a -1 value.
+ * If the value is unknown, the ad unit returns a -2.
+ *
+ * @return {Boolean}
+ */
+function isValidTimeValue(time) {
+  return Number.isFinite(time) && time >= -2
+}
+
 export const util = {
   track,
   resolveURLTemplates,
@@ -244,4 +256,5 @@ export const util = {
   isNumeric,
   flatten,
   joinArrayOfUniqueTemplateObjs,
+  isValidTimeValue,
 };

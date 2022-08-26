@@ -225,7 +225,14 @@ describe('VASTTracker', function () {
       });
     });
 
-    describe('setProgress', () => {
+    describe('#setDuration', () => {
+      it('should return undefined for invalid duration input',  () => {
+        const invalidDuration = 'aint a valid duration';
+        expect(vastTracker.setDuration(invalidDuration)).toBeUndefined();
+      })
+    })
+
+    describe('#setProgress', () => {
       beforeEach(() => {
         vastTracker.assetDuration = 10;
         vastTracker.setProgress(5);
@@ -247,6 +254,26 @@ describe('VASTTracker', function () {
           ['progress-4%', expect.anything()]
         );
       });
+      it('should return undefined for invalid progress input',  () => {
+        const invalidParam = 'aint a valid progress';
+        expect(vastTracker.setProgress(invalidParam)).toBeUndefined();
+      })
+    });
+
+    describe('#isQuartileReached', () => {
+      it('should return false for invalid quartile input', () => {
+        const time = 0;
+        const progress = 0;
+        const invalidQuartile = 'aint a valid quartile';
+        expect(vastTracker.isQuartileReached(invalidParam, time, progress)).toBeFalsy();
+      })
+    })
+
+    describe('#setSkipDelay', () => {
+      it('should return undefined for invalid duration input',  () => {
+        const invalidDuration = 'aint a valid duration';
+        expect(vastTracker.setSkipDelay(invalidDuration)).toBeUndefined();
+      })
     });
 
     describe('#trackImpression', () => {

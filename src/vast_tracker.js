@@ -148,6 +148,10 @@ export class VASTTracker extends EventEmitter {
    * @param  {Number} duration - The duration of the ad.
    */
   setDuration(duration) {
+    // check if duration is a valid time input
+    if(!util.isValidTimeValue(duration)) {
+      return;
+    }
     this.assetDuration = duration;
     // beware of key names, theses are also used as event names
     this.quartiles = {
@@ -173,14 +177,18 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#thirdQuartile
    */
   setProgress(progress, macros = {}) {
+    // check if progress is a valid time input
+    if(!util.isValidTimeValue(progress)) {
+      return;
+    }
     const skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
     if (skipDelay !== -1 && !this.skippable) {
       if (skipDelay > progress) {
-        this.emit('skip-countdown', skipDelay - progress);
+        this.emit('skip-countdown', [skipDelay - progress]);
       } else {
         this.skippable = true;
-        this.emit('skip-countdown', 0);
+        this.emit('skip-countdown', [0]);
       }
     }
 
@@ -242,6 +250,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#unmute
    */
   setMuted(muted, macros = {}) {
+    if (typeof muted !== 'boolean') {
+      return;
+    }
     if (this.muted !== muted) {
       this.track(muted ? 'mute' : 'unmute', { macros });
     }
@@ -257,6 +268,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#resume
    */
   setPaused(paused, macros = {}) {
+    if (typeof paused !== 'boolean') {
+      return;
+    }
     if (this.paused !== paused) {
       this.track(paused ? 'pause' : 'resume', { macros });
     }
@@ -272,6 +286,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#exitFullscreen
    */
   setFullscreen(fullscreen, macros = {}) {
+    if (typeof fullscreen !== 'boolean') {
+      return;
+    }
     if (this.fullscreen !== fullscreen) {
       this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', { macros });
     }
@@ -289,6 +306,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#playerCollapse
    */
   setExpand(expanded, macros = {}) {
+    if (typeof expanded !== 'boolean') {
+      return;
+    }
     if (this.expanded !== expanded) {
       this.track(expanded ? 'expand' : 'collapse', { macros });
       this.track(expanded ? 'playerExpand' : 'playerCollapse', { macros });
@@ -305,9 +325,10 @@ export class VASTTracker extends EventEmitter {
    * @param {Number} duration - The time in seconds until the skip button is displayed.
    */
   setSkipDelay(duration) {
-    if (typeof duration === 'number') {
-      this.skipDelay = duration;
+    if(!util.isValidTimeValue(duration)) {
+      return;
     }
+    this.skipDelay = duration;
   }
 
   /**
@@ -488,6 +509,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#overlayViewDuration
    */
   overlayViewDuration(duration, macros = {}) {
+    if (!util.isValidTimeValue(duration)) {
+      return;
+    }
     macros['ADPLAYHEAD'] = duration;
     this.track('overlayViewDuration', { macros });
   }
