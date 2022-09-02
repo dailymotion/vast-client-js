@@ -1,9 +1,11 @@
 # VASTTracker
 
 The `VASTTracker` class provides methods to track the execution of an Ad.
+At key points during ad playback you will need to call thoses methods to fire corresponding [tracking elements](https://iabtechlab.com/wp-content/uploads/2019/06/VAST_4.2_final_june26.pdf#page=28).
 
 - [Constructor](#constructor)
 - [Events](#events)
+- [Fire trackers URI](#trakers)
 - [Macros](#macros)
 - [Methods](#methods)
 
@@ -54,41 +56,70 @@ vastTracker.on('exitFullscreen', () => {
 
 ### Events list
 
-| **Event**                 | **Description**                                                                                                                        | **Payload**                               |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `complete`                | Only for linear ads with a duration. Emitted after `complete()` has been called.                                                       | `{ trackingURLTemplates: Array<String> }` |
-| `clickthrough`            | Emitted when calling `click()` if there is at least one `<clickThroughURLTemplate>` element. A URL will be passed as a data            | `String`                                  |
-| `close`                   | Only for non-linear ads, emitted when `close()` is called                                                                              | `{ trackingURLTemplates: Array<String> }` |
-| `closeLinear`             | Only for linear ads, emitted when `close()` is called                                                                                  | `{ trackingURLTemplates: Array<String> }` |
-| `collapse`                | Emitted when calling `setExpand(expanded)` and changing the expand state from true to false                                            | `{ trackingURLTemplates: Array<String> }` |
-| `creativeView`            | Emitted when `trackImpression()` is called.                                                                                            | `{ trackingURLTemplates: Array<String> }` |
-| `exitFullscreen`          | Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false                                  | `{ trackingURLTemplates: Array<String> }` |
-| `expand`                  | Emitted when calling `setExpand(expanded)` and changing the expand state from false to true                                            | `{ trackingURLTemplates: Array<String> }` |
-| `firstQuartile`           | Only for linear ads with a duration. Emitted when the adunit has reached 25% of its duration                                           | `{ trackingURLTemplates: Array<String> }` |
-| `fullscreen`              | Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from false to true                                  | `{ trackingURLTemplates: Array<String> }` |
-| `loaded`                  | Only for linear ad. Emitted when calling `load()`                                                                                      | `{ trackingURLTemplates: Array<String> }` |
-| `midpoint`                | Only for linear ads with a duration. Emitted when the adunit has reached 50% of its duration                                           | `{ trackingURLTemplates: Array<String> }` |
-| `mute`                    | Emitted when calling `setMuted(muted)` and changing the mute state from false to true                                                  | `{ trackingURLTemplates: Array<String> }` |
-| `pause`                   | Emitted when calling `setPaused(paused)` and changing the pause state from false to true                                               | `{ trackingURLTemplates: Array<String> }` |
-| `playerExpand`            | Emitted when calling `setExpand(true)` is called. This event replaces the fullscreen event in VAST 4.1                                 | `{ trackingURLTemplates: Array<String> }` |
-| `playerCollapse`          | Emitted when calling `setExpand(false)` is called. This event replaces the exitFullscreen event in VAST 4.1                            | `{ trackingURLTemplates: Array<String> }` |
-| `progress-[0-100]%`       | Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion | `{ trackingURLTemplates: Array<String> }` |
-| `progress-[currentTime]`  | Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time    | `{ trackingURLTemplates: Array<String> }` |
-| `resume`                  | Emitted when calling `setPaused(paused)` and changing the pause state from true to false                                               | `{ trackingURLTemplates: Array<String> }` |
-| `rewind`                  | Emitted when `setProgress(duration)` is called with a smaller duration than the previous one                                           | `{ trackingURLTemplates: Array<String> }` |
-| `skip`                    | Emitted when calling `skip()`                                                                                                          | `{ trackingURLTemplates: Array<String> }` |
-| `skip-countdown`          | Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, the updated countdown will be passed as a data    | `Number`                                  |
-| `start`                   | Only for linear ads with a duration. Emitted on the 1st non-null `setProgress(duration)` call                                          | `{ trackingURLTemplates: Array<String> }` |
-| `thirdQuartile`           | Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration                                           | `{ trackingURLTemplates: Array<String> }` |
-| `unmute`                  | Emitted when calling `setMuted(muted)` and changing the mute state from true to false                                                  | `{ trackingURLTemplates: Array<String> }` |
-| `notUsed`                 | Emitted when calling `notUsed()`.This is a terminal event; no other tracking events are sent when this is used                         | `{ trackingURLTemplates: Array<String> }` |
-| `otherAdInteraction`      | Emitted when calling `otherAdInteraction()`                                                                                            | `{ trackingURLTemplates: Array<String> }` |
-| `acceptInvitation`        | Emitted when calling `acceptInvitation()`                                                                                              | `{ trackingURLTemplates: Array<String> }` |
-| `adExpand`                | Emitted when calling `adExpand()`                                                                                                      | `{ trackingURLTemplates: Array<String> }` |
-| `adCollapse`              | Emitted when calling `adCollapse()`                                                                                                    | `{ trackingURLTemplates: Array<String> }` |
-| `minimize`                | Emitted when calling `minimize()`                                                                                                      | `{ trackingURLTemplates: Array<String> }` |
-| `overlayViewDuration`     | Emitted when calling `overlayViewDuration()`                                                                                           | `{ trackingURLTemplates: Array<String> }` |
-| `verificationNotExecuted` | Emitted when calling `verificationNotExecuted()`                                                                                       | `{ trackingURLTemplates: Array<String> }` |
+| **Event**                 | **Description**                                                                                                                       | **VAST Element**              | **Payload**                               |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------|-------------------------------| ----------------------------------------- |
+| `complete`                | Only for linear ads with a duration. Emitted after `complete()` has been called.                                                      |             | `{ trackingURLTemplates: Array<String> }` |
+| `clickthrough`            | Emitted when calling `click()` if there is at least one `<clickThroughURLTemplate>` element. A URL will be passed as a data           |             | `String`                                  |
+| `close`                   | Only for non-linear ads, emitted when `close()` is called                                                                             |             | `{ trackingURLTemplates: Array<String> }` |
+| `closeLinear`             | Only for linear ads, emitted when `close()` is called                                                                                 |             | `{ trackingURLTemplates: Array<String> }` |
+| `collapse`                | Emitted when calling `setExpand(expanded)` and changing the expand state from true to false                                           |             | `{ trackingURLTemplates: Array<String> }` |
+| `creativeView`            | Emitted when `trackImpression()` is called.                                                                                           |             | `{ trackingURLTemplates: Array<String> }` |
+| `exitFullscreen`          | Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from true to false                                 |             | `{ trackingURLTemplates: Array<String> }` |
+| `expand`                  | Emitted when calling `setExpand(expanded)` and changing the expand state from false to true                                           |             | `{ trackingURLTemplates: Array<String> }` |
+| `firstQuartile`           | Only for linear ads with a duration. Emitted when the adunit has reached 25% of its duration                                          |             | `{ trackingURLTemplates: Array<String> }` |
+| `fullscreen`              | Emitted when calling `setFullscreen(fullscreen)` and changing the fullscreen state from false to true                                 |         | `{ trackingURLTemplates: Array<String> }` |
+| `loaded`                  | Only for linear ad. Emitted when calling `load()`                                                                                     |     | `{ trackingURLTemplates: Array<String> }` |
+| `midpoint`                | Only for linear ads with a duration. Emitted when the adunit has reached 50% of its duration                                          |       | `{ trackingURLTemplates: Array<String> }` |
+| `mute`                    | Emitted when calling `setMuted(muted)` and changing the mute state from false to true                                                 |   | `{ trackingURLTemplates: Array<String> }` |
+| `pause`                   | Emitted when calling `setPaused(paused)` and changing the pause state from false to true                                              |    | `{ trackingURLTemplates: Array<String> }` |
+| `playerExpand`            | Emitted when calling `setExpand(true)` is called. This event replaces the fullscreen event in VAST 4.1                                | `<Tracking event="playerExpand">`             | `{ trackingURLTemplates: Array<String> }` |
+| `playerCollapse`          | Emitted when calling `setExpand(false)` is called. This event replaces the exitFullscreen event in VAST 4.1                           | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `progress-[0-100]%`       | Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [0-100] is the adunit percentage completion| `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `progress-[currentTime]`  | Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, where [currentTime] is the adunit current time   | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `resume`                  | Emitted when calling `setPaused(paused)` and changing the pause state from true to false                                              | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `rewind`                  | Emitted when `setProgress(duration)` is called with a smaller duration than the previous one                                          | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `skip`                    | Emitted when calling `skip()`                                                                                                         | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `skip-countdown`          | Only for linear ads with a duration. Emitted on every `setProgress(duration)` calls, the updated countdown will be passed as a data   | `<Tracking event="exitFullscreen">`             | `Number`                                  |
+| `start`                   | Only for linear ads with a duration. Emitted on the 1st non-null `setProgress(duration)` call                                         | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `thirdQuartile`           | Only for linear ads with a duration. Emitted when the adunit has reached 75% of its duration                                          | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `unmute`                  | Emitted when calling `setMuted(muted)` and changing the mute state from true to false                                                 | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `notUsed`                 | Emitted when calling `notUsed()`.This is a terminal event; no other tracking events are sent when this is used                        | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `otherAdInteraction`      | Emitted when calling `otherAdInteraction()`                                                                                           | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `acceptInvitation`        | Emitted when calling `acceptInvitation()`                                                                                             | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `adExpand`                | Emitted when calling `adExpand()`                                                                                                     | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `adCollapse`              | Emitted when calling `adCollapse()`                                                                                                   | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `minimize`                | Emitted when calling `minimize()`                                                                                                     | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `overlayViewDuration`     | Emitted when calling `overlayViewDuration()`                                                                                          | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+| `verificationNotExecuted` | Emitted when calling `verificationNotExecuted()`                                                                                      | `<Tracking event="exitFullscreen">`             | `{ trackingURLTemplates: Array<String> }` |
+|
+
+## Fire trackers URI <a name="trackers"></a>
+
+VAST tracking is implemented using a number of [individual tracking elements](https://iabtechlab.com/wp-content/uploads/2019/06/VAST_4.2_final_june26.pdf#page=28) that map to
+video events. To trigger a tracker you will need to call the corresponding `VASTTracker` [public method](#methods) please refer to below table to see the mapping and method definitions for more details.
+
+| **Method name**                                     | **VAST element(s)**                                                                                                                                                                              |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [error](#error)                                     | `<Error>`                                                                                                                                                                                     |
+| [load](#load)                                       | `<Tracking event="loaded">`                                                                                                                                                                   |
+| [complete](#complete)                               | `<Tracking event="complete">`                                                                                                                                                                 |
+| [click](#click)                                     | `<ClickTracking>`                                                                                                                                                                             |
+| [close](#close)                                     | `<Tracking event="close">`,  `<Tracking event="closeLinear">`                                                                                                                                 |
+| [skip](#skip)                                       | `<Tracking event="skip">`                                                                                                                                                                     |
+| [setExpand](#setExpand)                             | `<Tracking event="playerExpand">`,`<Tracking event="playerCollapse">`                                                                                                                         |
+| [setFullscreen](#setFullscreen)                     | `<Tracking event="fullscreen">`, `<Tracking event="exitFullscreen">`                                                                                                                          |
+| [setMuted](#setMuted)                               | `<Tracking event="mute">`, `<Tracking event="mute">`                                                                                                                                          |
+| [setPaused](#setPaused)                             | `<Tracking event="pause">`                                                                                                                                                                    |
+| [setProgress](#setProgress)                         | `<Tracking event="start">`, `<Tracking event="firstQuartile">`, `<Tracking event="midpoint">`, `<Tracking event="thirdQuartile">`, `<Tracking event="progress">`, `<Tracking event="rewind">` |
+| [trackImpression](#trackImpression)                 | `<Impression>`, `<Tracking event="creativeView">`                                                                                                                                             |
+| [notUsed](#notUsed)                                 | `<Tracking event="notUsed">`                                                                                                                                                                  |
+| [otherAdInteraction](#otherAdInteraction)           | `<Tracking event="otherAdInteraction">`                                                                                                                                                       |
+| [acceptInvitation](#acceptInvitation)               | `<Tracking event="acceptInvitation">`                                                                                                                                                         |
+| [adExpand](#adExpand)                               | `<Tracking event="adExpand">`                                                                                                                                                                 |
+| [adCollapse](#adCollapse)                           | `<Tracking event="adCollapse">`                                                                                                                                                               |
+| [minimize](#minimize)                               | `<Tracking event="minimize">`                                                                                                                                                                 |
+| [overlayViewDuration](#overlayViewDuration)         | `<Tracking event="overlayViewDuration">`                                                                                                                                                      |
+| [verificationNotExecuted](#verificationNotExecuted) | `<Tracking event="verificationNotExecuted">`                                                                                                                                                  |
 
 ## Macros <a name="macros"></a>
 
@@ -152,7 +183,7 @@ const customCode = '405';
 
 const macrosParam = {
   CONTENTURI: 'https://mycontentserver.com/video.mp4',
-  ERRORCODE : customCode 
+  ERRORCODE : customCode
 }
 
 // Bind error listener to the player
@@ -181,7 +212,7 @@ player.on('error', () => {
 });
 ```
 
-### load(macros)
+### load(macros) <a name="load"></a>
 
 Must be called when the player considers that it has loaded and buffered the creative’s media and assets either fully or to the extent that it is ready to play the media.
 
@@ -206,7 +237,7 @@ vastTracker.on('loaded', () => {
 });
 ```
 
-### complete(macros)
+### complete(macros) <a name="complete"></a>
 
 Must be called when the user watched the linear creative until its end. Calls the complete tracking URLs.
 
@@ -231,7 +262,7 @@ vastTracker.on('complete', () => {
 });
 ```
 
-### click(fallbackClickThroughURL, macros)
+### click(fallbackClickThroughURL, macros) <a name="click"></a>
 
 Must be called when the user clicks on the creative. Calls the tracking URLs.
 
@@ -259,7 +290,7 @@ vastTracker.on('clickthrough', url => {
 });
 ```
 
-### close(macros)
+### close(macros) <a name="close"></a>
 
 Must be called when the player or the window is closed during the ad. Calls the `closeLinear` (in VAST 3.0) and `close` tracking URLs
 
@@ -291,7 +322,7 @@ vastTracker.on('close', () => {
 });
 ```
 
-### skip(macros)
+### skip(macros) <a name="skip"></a>
 
 Must be called when the skip button is clicked. Calls the skip tracking URLs.
 
@@ -316,7 +347,7 @@ vastTracker.on('skip', () => {
 });
 ```
 
-### setDuration(duration)
+### setDuration(duration) <a name="setDuration"></a>
 
 Sets the duration of the ad and updates the quartiles based on that.
 
@@ -324,7 +355,7 @@ Sets the duration of the ad and updates the quartiles based on that.
 
 - **`duration: Number`** - The duration of the ad
 
-### setExpand(expanded, macros)
+### setExpand(expanded, macros) <a name="setExpand"></a>
 
 Updates the expand state and calls the expand/collapse as well as playerExpand/playerCollapse for VAST 4.1. tracking URLs.
 
@@ -364,7 +395,7 @@ vastTracker.on('collapse', () => {
 });
 ```
 
-### setFullscreen(fullscreen, macros)
+### setFullscreen(fullscreen, macros) <a name="setFullscreen"></a>
 
 Updates the fullscreen state and calls the fullscreen tracking URLs.
 
@@ -397,7 +428,7 @@ vastTracker.on('exitFullscreen', () => {
 });
 ```
 
-### setMuted(muted, macros)
+### setMuted(muted, macros) <a name="setMuted"></a>
 
 Updates the mute state and calls the mute/unmute tracking URLs.
 
@@ -428,7 +459,7 @@ vastTracker.on('unmute', () => {
 });
 ```
 
-### setPaused(paused, macros)
+### setPaused(paused, macros) <a name="setPaused"></a>
 
 Update the pause state and call the resume/pause tracking URLs.
 
@@ -458,7 +489,7 @@ vastTracker.on('pause', () => {
 });
 ```
 
-### setProgress(progress, macros)
+### setProgress(progress, macros) <a name="setProgress"></a>
 
 Sets the duration of the ad and updates the quartiles based on that. This is required for tracking time related events such as `start`, `firstQuartile`, `midpoint`, `thirdQuartile` or `rewind`.
 
@@ -508,7 +539,7 @@ Do not call this method if you want to keep the original `Skipoffset` value.
 vastTracker.setSkipDelay(5);
 ```
 
-### trackImpression(macros)
+### trackImpression(macros) <a name="trackImpression"></a>
 
 Reports the impression URI. Can only be called once. Will report the following URI:
 
@@ -536,7 +567,7 @@ vastTracker.on('creativeView', () => {
 });
 ```
 
-### notUsed(macros)
+### notUsed(macros) <a name="notUsed"></a>
 
 Must be called if the ad was not and will not be played (e.g. it was prefetched for a particular ad break but was not
 chosen for playback). This allows ad servers to reuse an ad earlier than otherwise would be possible due to
@@ -566,7 +597,7 @@ vastTracker.notUsed();
 
 ```
 
-### otherAdInteraction(macros)
+### otherAdInteraction(macros) <a name="otherAdInteraction"></a>
 
 An optional metric that can capture all other user interactions under one metric such as hover-overs, or custom clicks.
 It should NOT replace clickthrough events or other existing events like mute, unmute, pause, etc.
@@ -592,7 +623,7 @@ vastTracker.on('otherAdInteraction', () => {
 });
 ```
 
-### acceptInvitation(macros)
+### acceptInvitation(macros) <a name="acceptInvitation"></a>
 
 The user clicked or otherwise activated a control used to pause streaming content, which either expands the ad within
 the player’s viewable area or “takes-over” the streaming content area by launching an additional portion of the ad.
@@ -622,7 +653,7 @@ vastTracker.on('acceptInvitation', () => {
 });
 ```
 
-### adExpand(macros)
+### adExpand(macros) <a name="adExpand"></a>
 
 The user activated a control to expand the creative.
 
@@ -649,7 +680,7 @@ vastTracker.on('adExpand', () => {
 });
 ```
 
-### adCollapse(macros)
+### adCollapse(macros) <a name="adCollapse"></a>
 
 The user activated a control to reduce the creative to its original dimensions.
 
@@ -676,7 +707,7 @@ vastTracker.on('adCollapse', () => {
 });
 ```
 
-### minimize(macros)
+### minimize(macros) <a name="minimize"></a>
 
 The user clicked or otherwise activated a control used to minimize the ad to a size smaller than a collapsed ad but
 without fully dispatching the ad from the player environment. Unlike a collapsed ad that is big enough to display it’s
@@ -717,7 +748,7 @@ Converts given seconds into a VAST compliant timecode (Format: `HH:MM:SS.sss`). 
 
 - **`timecode: String`** - The given seconds converted to timecode
 
-### overlayViewDuration(duration, macros)
+### overlayViewDuration(duration, macros) <a name="overlayViewDuration"></a>
 
 The time that the initial ad is displayed. This time is based on the time between the impression and either the
 completed length of display based on the agreement between transactional parties or a close, minimize, or accept
@@ -744,7 +775,7 @@ vastTracker.on('overlayViewDuration', () => {
 vastTracker.overlayViewDuration();
 ```
 
-### verificationNotExecuted(macros)
+### verificationNotExecuted(macros) <a name="verificationNotExecuted"></a>
 
 Must be called if the player did not or was not able to execute the provided verification code.The [REASON] macro must be filled with reason code. Reason code values can be found in the VAST specification.
 
