@@ -185,10 +185,10 @@ export class VASTTracker extends EventEmitter {
 
     if (skipDelay !== -1 && !this.skippable) {
       if (skipDelay > progress) {
-        this.emit('skip-countdown', [skipDelay - progress]);
+        this.emit('skip-countdown', skipDelay - progress);
       } else {
         this.skippable = true;
-        this.emit('skip-countdown', [0]);
+        this.emit('skip-countdown', 0);
       }
     }
 
@@ -688,15 +688,18 @@ export class VASTTracker extends EventEmitter {
    * @return {String}
    */
   convertToTimecode(timeInSeconds) {
-    const formattedMs = `${util.addLeadingZeros((timeInSeconds * 1000) % 1000, 3)}`;
-    return`${new Date(Date.UTC(
-      1970,
-      0,
-      1,
-      0,
-      new Date(0).getTimezoneOffset(),
-      timeInSeconds)
-    ).toLocaleTimeString("en-GB", {hour12: false})}.${formattedMs}`;
+    // Get the locale timezone offset in milliseconds
+    const timezoneOffsetInMs = new Date(timeInSeconds * 1000).getTimezoneOffset() * 60 * 1000;
+
+    // Create a date object from timeInSeconds
+    // Delete the timezone offset so that, new Date(0) => 00:00:00 regardless of the locale
+    // Shape the datetime object in a hh:mm:ss 24h format
+    const formattedTime =  new Date((timeInSeconds * 1000) + timezoneOffsetInMs).toLocaleTimeString('en-GB');
+
+    // Get milliseconds and leading zeros if needed.
+    const formattedMs = util.addLeadingZeros((timeInSeconds * 1000) % 1000, 3);
+
+    return `${formattedTime}.${formattedMs}`
   }
 
   /**
