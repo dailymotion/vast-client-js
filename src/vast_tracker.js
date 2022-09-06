@@ -227,7 +227,7 @@ export class VASTTracker extends EventEmitter {
    * Checks if a quartile has been reached without have being triggered already.
    *
    * @param {String} quartile - Quartile name
-   * @param {Number} time - Time offset, when this quartile is reached in seconds.
+   * @param {Number} time - Time offset of the quartile, when this quartile is reached in seconds.
    * @param {Number} progress - Current progress of the ads in seconds.
    *
    * @return {Boolean}
@@ -504,15 +504,15 @@ export class VASTTracker extends EventEmitter {
    * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
    * Calls the overlayViewDuration tracking URLs.
    *
-   * @param {String} duration - The time that the initial ad is displayed.
+   * @param {String} formattedDuration - The time that the initial ad is displayed.
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#overlayViewDuration
    */
-  overlayViewDuration(duration, macros = {}) {
-    if (!util.isValidTimeValue(duration)) {
+  overlayViewDuration(formattedDuration, macros = {}) {
+    if (typeof formattedDuration !== 'string') {
       return;
     }
-    macros['ADPLAYHEAD'] = duration;
+    macros['ADPLAYHEAD'] = formattedDuration;
     this.track('overlayViewDuration', { macros });
   }
 
@@ -688,15 +688,15 @@ export class VASTTracker extends EventEmitter {
    * @return {String}
    */
   convertToTimecode(timeInSeconds) {
-    const progress = timeInSeconds * 1000;
-    const hours = Math.floor(progress / (60 * 60 * 1000));
-    const minutes = Math.floor((progress / (60 * 1000)) % 60);
-    const seconds = Math.floor((progress / 1000) % 60);
-    const milliseconds = Math.floor(progress % 1000);
-    return `${util.leftpad(hours, 2)}:${util.leftpad(
-      minutes,
-      2
-    )}:${util.leftpad(seconds, 2)}.${util.leftpad(milliseconds, 3)}`;
+    const formattedMs = `${util.addLeadingZeros((timeInSeconds * 1000) % 1000, 3)}`;
+    return`${new Date(Date.UTC(
+      1970,
+      0,
+      1,
+      0,
+      new Date(0).getTimezoneOffset(),
+      timeInSeconds)
+    ).toLocaleTimeString("en-GB", {hour12: false})}.${formattedMs}`;
   }
 
   /**

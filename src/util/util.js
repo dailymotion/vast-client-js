@@ -32,7 +32,7 @@ function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
   }
 
   // Calc random/time based macros
-  macros['CACHEBUSTING'] = leftpad(
+  macros['CACHEBUSTING'] = addLeadingZeros(
     Math.round(Math.random() * 1.0e8).toString()
   );
   macros['TIMESTAMP'] = new Date().toISOString();
@@ -175,27 +175,15 @@ function encodeURIComponentRFC3986(str) {
   );
 }
 
-function leftpad(input, len = 8) {
-  const str = String(input);
-  if (str.length < len) {
-    return (
-      range(0, len - str.length, false)
-        .map(() => '0')
-        .join('') + str
-    );
-  }
-  return str;
-}
-
-function range(left, right, inclusive) {
-  const result = [];
-  const ascending = left < right;
-  const end = !inclusive ? right : ascending ? right + 1 : right - 1;
-
-  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    result.push(i);
-  }
-  return result;
+/**
+ * Return a string of the input number with leading zeros defined by the length param
+ *
+ * @param {Number} input - number to convert
+ * @param {Number} length - length of the desired string
+ */
+function addLeadingZeros(input, length = 8) {
+  const additionalZerosCount = Math.max(0, length - input.toString().length);
+  return '0'.repeat(additionalZerosCount) + input.toString();
 }
 
 function isNumeric(n) {
@@ -251,10 +239,9 @@ export const util = {
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,
   replaceUrlMacros,
-  leftpad,
-  range,
   isNumeric,
   flatten,
   joinArrayOfUniqueTemplateObjs,
   isValidTimeValue,
+  addLeadingZeros,
 };

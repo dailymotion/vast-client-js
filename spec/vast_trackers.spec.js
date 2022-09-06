@@ -261,11 +261,11 @@ describe('VASTTracker', function () {
     });
 
     describe('#isQuartileReached', () => {
-      it('should return false for invalid quartile input', () => {
-        const time = 0;
-        const progress = 0;
-        const invalidQuartile = 'aint a valid quartile';
-        expect(vastTracker.isQuartileReached(invalidParam, time, progress)).toBeFalsy();
+      it('should return true when the given quartile has been reached', () => {
+        const time = 20;
+        const progress = 30;
+        const quartile = 'midpoint';
+        expect(vastTracker.isQuartileReached(quartile, time, progress)).toBeTruthy();
       })
     })
 
@@ -306,6 +306,15 @@ describe('VASTTracker', function () {
         vastTracker.trackImpression(macros);
         expect(spyTrackUrl).not.toHaveBeenCalledTimes(2);
         expect(spyTrack).not.toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('#convertToTimecode', () => {
+      it('should return the formatted time string', () => {
+        const timeInSeconds = 3600 + 1200 + 36 + 0.123; // 1h + 20min + 36sec + 0.123ms
+        const expectedResult = '01:20:36.123';
+        const result = vastTracker.convertToTimecode(timeInSeconds);
+        expect(result).toEqual(expectedResult);
       });
     });
 
