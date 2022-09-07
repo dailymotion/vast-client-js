@@ -226,11 +226,13 @@ describe('VASTTracker', function () {
     });
 
     describe('#setDuration', () => {
-      it('should return undefined for invalid duration input',  () => {
-        const invalidDuration = 'aint a valid duration';
-        expect(vastTracker.setDuration(invalidDuration)).toBeUndefined();
-      })
-    })
+      it('should update assetDuration with the given value',  () => {
+        const newDuration = 123;
+        vastTracker.assetDuration = null;
+        vastTracker.setDuration(newDuration);
+        expect(vastTracker.assetDuration).toEqual(123);
+      });
+    });
 
     describe('#setProgress', () => {
       beforeEach(() => {
@@ -254,10 +256,6 @@ describe('VASTTracker', function () {
           ['progress-4%', expect.anything()]
         );
       });
-      it('should return undefined for invalid progress input',  () => {
-        const invalidParam = 'aint a valid progress';
-        expect(vastTracker.setProgress(invalidParam)).toBeUndefined();
-      })
     });
 
     describe('#isQuartileReached', () => {
@@ -270,9 +268,11 @@ describe('VASTTracker', function () {
     })
 
     describe('#setSkipDelay', () => {
-      it('should return undefined for invalid duration input',  () => {
-        const invalidDuration = 'aint a valid duration';
-        expect(vastTracker.setSkipDelay(invalidDuration)).toBeUndefined();
+      it('should update skipDelay value to the given value',  () => {
+        const newSkipDelay = 123;
+        vastTracker.skipDelay = null;
+        vastTracker.setSkipDelay(newSkipDelay);
+        expect(vastTracker.skipDelay).toEqual(123);
       })
     });
 

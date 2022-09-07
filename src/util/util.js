@@ -32,9 +32,7 @@ function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
   }
 
   // Calc random/time based macros
-  macros['CACHEBUSTING'] = addLeadingZeros(
-    Math.round(Math.random() * 1.0e8).toString()
-  );
+  macros['CACHEBUSTING'] = addLeadingZeros(Math.round(Math.random() * 1.0e8));
   macros['TIMESTAMP'] = new Date().toISOString();
 
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
@@ -180,10 +178,11 @@ function encodeURIComponentRFC3986(str) {
  *
  * @param {Number} input - number to convert
  * @param {Number} length - length of the desired string
+ *
+ * @return {String}
  */
 function addLeadingZeros(input, length = 8) {
-  const additionalZerosCount = Math.max(0, length - input.toString().length);
-  return '0'.repeat(additionalZerosCount) + input.toString();
+  return input.toString().padStart(length, '0');
 }
 
 function isNumeric(n) {
@@ -221,9 +220,9 @@ function joinArrayOfUniqueTemplateObjs(arr1 = [], arr2 = []) {
 
 /**
  * Check if a provided value is a valid time value according to the IAB definition
+ * Check if a provided value is a valid time value according to the IAB definition: Must be a positive number or -1.
+ * if not implemented by ad unit or -2 if value is unknown.
  * @param {Number} time
- * According to IAB, if a value is not implemented, the ad unit returns a -1 value.
- * If the value is unknown, the ad unit returns a -2.
  *
  * @return {Boolean}
  */
