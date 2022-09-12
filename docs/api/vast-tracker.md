@@ -5,7 +5,7 @@ At key points during ad playback you will need to call thoses methods to fire co
 
 - [Constructor](#constructor)
 - [Events](#events)
-- [Fire trackers URI](#trakers)
+- [Fire trackers URI](#trackers)
 - [Macros](#macros)
 - [Methods](#methods)
 
@@ -771,7 +771,7 @@ Calls the overlayViewDuration tracking URLs.
 vastTracker.on('overlayViewDuration', () => {
   // overlayViewDuration tracking URLs have been called
 });
-// Call the overlayViewDuration event
+// Trigger the overlayViewDuration event, and call tracking URLs
 vastTracker.overlayViewDuration();
 ```
 
@@ -783,6 +783,7 @@ Calls the verificationNotExecuted trackings URLs.
 
 #### Parameters
 
+- **`vendor: String`** An identifier for the verification vendor. The recommended format is [domain]-[useCase], to avoid name collisions. For example, "company.com-omid".
 - **`macros: Object`** - Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
 #### Events emitted
@@ -795,8 +796,9 @@ Calls the verificationNotExecuted trackings URLs.
 vastTracker.on('verificationNotExecuted', () => {
   // verificationNotExecuted tracking URLs have been called
 });
-// Call the overlayViewDuration event
-vastTracker.verificationNotExecuted({REASON: 3});
+const vendor = "company.com-omid"
+// Trigger the verificationNotExecuted event, and call tracking URLs
+vastTracker.verificationNotExecuted(vendor, {REASON: 3});
 ```
 
 ### track(eventName, { macros, once })

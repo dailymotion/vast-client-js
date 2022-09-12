@@ -67,7 +67,7 @@ vastParser.parseVAST(vastXml)
 
 ### VASTTracker
 
-To track the execution of an ad, by calling [VAST tracking elements](https://iabtechlab.com/wp-content/uploads/2019/06/VAST_4.2_final_june26.pdf#page=28), use the **VASTTracker**:
+To track the execution of an ad, create a **VASTTracker** instance and use the dedicated [methods](docs/api/vast-tracker.md) to calls [VAST tracking elements](https://iabtechlab.com/wp-content/uploads/2019/06/VAST_4.2_final_june26.pdf#page=28).
 
 ```Javascript
 import { VASTTracker } from '@dailymotion/vast-client'
