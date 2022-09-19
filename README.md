@@ -86,6 +86,8 @@ The API documentation is organized by components:
 * [VASTParser](docs/api/vast-parser.md)
 * [VASTTracker](docs/api/vast-tracker.md)
 
+Changelog and migration guides can be found in the [release notes](https://github.com/dailymotion/vast-client-js/releases).
+
 ### Pre-bundled versions
 
 We provide several pre-bundled versions of the client (see [`dist` directory](dist/))
