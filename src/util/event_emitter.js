@@ -60,7 +60,7 @@ export class EventEmitter {
    * Synchronously calls each of the handlers registered for the named event,
    * in the order they were registered, passing the supplied arguments to each.
    * @param {String} event
-   * @param  {any[]} args
+   * @param  {...any} args list of arguments that will be used by the event handler
    * @returns {Boolean} true if the event had handlers, false otherwise.
    */
   emit(event, ...args) {

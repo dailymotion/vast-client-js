@@ -148,6 +148,10 @@ export class VASTTracker extends EventEmitter {
    * @param  {Number} duration - The duration of the ad.
    */
   setDuration(duration) {
+    // check if duration is a valid time input
+    if(!util.isValidTimeValue(duration)) {
+      return;
+    }
     this.assetDuration = duration;
     // beware of key names, theses are also used as event names
     this.quartiles = {
@@ -173,6 +177,10 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#thirdQuartile
    */
   setProgress(progress, macros = {}) {
+    // check if progress is a valid time input
+    if (!util.isValidTimeValue(progress) || typeof macros !== 'object') {
+      return;
+    }
     const skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
     if (skipDelay !== -1 && !this.skippable) {
@@ -219,7 +227,7 @@ export class VASTTracker extends EventEmitter {
    * Checks if a quartile has been reached without have being triggered already.
    *
    * @param {String} quartile - Quartile name
-   * @param {Number} time - Time offset, when this quartile is reached in seconds.
+   * @param {Number} time - Time offset of the quartile, when this quartile is reached in seconds.
    * @param {Number} progress - Current progress of the ads in seconds.
    *
    * @return {Boolean}
@@ -242,6 +250,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#unmute
    */
   setMuted(muted, macros = {}) {
+    if (typeof muted !== 'boolean' || typeof macros !== 'object') {
+      return;
+    }
     if (this.muted !== muted) {
       this.track(muted ? 'mute' : 'unmute', { macros });
     }
@@ -257,6 +268,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#resume
    */
   setPaused(paused, macros = {}) {
+    if (typeof paused !== 'boolean' || typeof macros !== 'object') {
+      return;
+    }
     if (this.paused !== paused) {
       this.track(paused ? 'pause' : 'resume', { macros });
     }
@@ -272,6 +286,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#exitFullscreen
    */
   setFullscreen(fullscreen, macros = {}) {
+    if (typeof fullscreen !== 'boolean' || typeof macros !== 'object') {
+      return;
+    }
     if (this.fullscreen !== fullscreen) {
       this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', { macros });
     }
@@ -289,6 +306,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#playerCollapse
    */
   setExpand(expanded, macros = {}) {
+    if (typeof expanded !== 'boolean' || typeof macros !== 'object') {
+      return;
+    }
     if (this.expanded !== expanded) {
       this.track(expanded ? 'expand' : 'collapse', { macros });
       this.track(expanded ? 'playerExpand' : 'playerCollapse', { macros });
@@ -305,9 +325,10 @@ export class VASTTracker extends EventEmitter {
    * @param {Number} duration - The time in seconds until the skip button is displayed.
    */
   setSkipDelay(duration) {
-    if (typeof duration === 'number') {
-      this.skipDelay = duration;
+    if (!util.isValidTimeValue(duration)) {
+      return;
     }
+    this.skipDelay = duration;
   }
 
   /**
@@ -316,6 +337,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#creativeView
    */
   trackImpression(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     if (!this.impressed) {
       this.impressed = true;
       this.trackURLs(this.ad.impressionURLTemplates, macros);
@@ -329,6 +353,9 @@ export class VASTTracker extends EventEmitter {
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
   error(macros = {}, isCustomCode = false) {
+    if (typeof macros !== 'object' || typeof isCustomCode !== 'boolean') {
+      return;
+    }
     this.trackURLs(this.ad.errorURLTemplates, macros, { isCustomCode });
   }
 
@@ -340,6 +367,9 @@ export class VASTTracker extends EventEmitter {
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
    */
   errorWithCode(errorCode, isCustomCode = false) {
+    if (typeof errorCode !== 'string' || typeof isCustomCode !== 'boolean') {
+      return;
+    }
     this.error({ ERRORCODE: errorCode }, isCustomCode);
     //eslint-disable-next-line
     console.log(
@@ -355,6 +385,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#complete
    */
   complete(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('complete', { macros });
   }
 
@@ -367,6 +400,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#notUsed
    */
   notUsed(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('notUsed', { macros });
     this.trackingEvents = [];
   }
@@ -381,6 +417,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#otherAdInteraction
    */
   otherAdInteraction(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('otherAdInteraction', { macros });
   }
 
@@ -395,6 +434,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#acceptInvitation
    */
   acceptInvitation(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('acceptInvitation', { macros });
   }
 
@@ -406,6 +448,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#adExpand
    */
   adExpand(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('adExpand', { macros });
   }
 
@@ -417,6 +462,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#adCollapse
    */
   adCollapse(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('adCollapse', { macros });
   }
 
@@ -428,6 +476,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#minimize
    */
   minimize(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('minimize', { macros });
   }
 
@@ -441,6 +492,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#verificationNotExecuted
    */
   verificationNotExecuted(vendor, macros = {}) {
+    if (typeof vendor !== 'string' || typeof macros !== 'object') {
+      return;
+    }
     if (
       !this.ad ||
       !this.ad.adVerifications ||
@@ -483,12 +537,15 @@ export class VASTTracker extends EventEmitter {
    * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
    * Calls the overlayViewDuration tracking URLs.
    *
-   * @param {String} duration - The time that the initial ad is displayed.
+   * @param {String} formattedDuration - The time that the initial ad is displayed.
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#overlayViewDuration
    */
-  overlayViewDuration(duration, macros = {}) {
-    macros['ADPLAYHEAD'] = duration;
+  overlayViewDuration(formattedDuration, macros = {}) {
+    if (typeof formattedDuration !== 'string' || typeof macros !== 'object') {
+      return;
+    }
+    macros['ADPLAYHEAD'] = formattedDuration;
     this.track('overlayViewDuration', { macros });
   }
 
@@ -501,6 +558,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#close
    */
   close(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track(this.linear ? 'closeLinear' : 'close', { macros });
   }
 
@@ -511,6 +571,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#skip
    */
   skip(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('skip', { macros });
   }
 
@@ -523,6 +586,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#loaded
    */
   load(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     this.track('loaded', { macros });
   }
 
@@ -536,6 +602,9 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#clickthrough
    */
   click(fallbackClickThroughURL = null, macros = {}) {
+    if ((fallbackClickThroughURL !== null && typeof fallbackClickThroughURL !== 'string') || typeof macros !== 'object') {
+      return;
+    }
     if (
       this.clickTrackingURLTemplates &&
       this.clickTrackingURLTemplates.length
@@ -571,6 +640,9 @@ export class VASTTracker extends EventEmitter {
    *
    */
   track(eventName, { macros = {}, once = false } = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
     // closeLinear event was introduced in VAST 3.0
     // Fallback to vast 2.0 close event if necessary
     if (
@@ -664,15 +736,18 @@ export class VASTTracker extends EventEmitter {
    * @return {String}
    */
   convertToTimecode(timeInSeconds) {
+    if (!util.isValidTimeValue(timeInSeconds)) {
+      return '';
+    }
     const progress = timeInSeconds * 1000;
     const hours = Math.floor(progress / (60 * 60 * 1000));
     const minutes = Math.floor((progress / (60 * 1000)) % 60);
     const seconds = Math.floor((progress / 1000) % 60);
     const milliseconds = Math.floor(progress % 1000);
-    return `${util.leftpad(hours, 2)}:${util.leftpad(
+    return `${util.addLeadingZeros(hours, 2)}:${util.addLeadingZeros(
       minutes,
       2
-    )}:${util.leftpad(seconds, 2)}.${util.leftpad(milliseconds, 3)}`;
+    )}:${util.addLeadingZeros(seconds, 2)}.${util.addLeadingZeros(milliseconds, 3)}`;
   }
 
   /**

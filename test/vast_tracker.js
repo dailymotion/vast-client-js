@@ -283,7 +283,7 @@ describe('VASTTracker', function () {
         });
       });
 
-      describe('#errorWithCode', () => {
+      describe('#error', () => {
         before(() => {
           util.track = function (URLTemplates, variables, options) {
             _eventsSent.push(
@@ -296,7 +296,7 @@ describe('VASTTracker', function () {
         });
 
         it('should have called error urls with right code', () => {
-          this.Tracker.errorWithCode(405);
+          this.Tracker.error({ ERRORCODE: 405 });
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',
@@ -305,7 +305,7 @@ describe('VASTTracker', function () {
         });
 
         it('should have called error urls with 900 if unknown code', () => {
-          this.Tracker.errorWithCode(10001);
+          this.Tracker.error({ ERRORCODE: 10001 });
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',
@@ -314,7 +314,7 @@ describe('VASTTracker', function () {
         });
 
         it('should have called error urls with custom code when enabled', () => {
-          this.Tracker.errorWithCode(10001, true);
+          this.Tracker.error({ ERRORCODE: 10001 }, true);
           _eventsSent[0].should.eql([
             'http://example.com/wrapperA-error',
             'http://example.com/wrapperB-error',

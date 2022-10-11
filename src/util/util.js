@@ -32,9 +32,7 @@ function resolveURLTemplates(URLTemplates, macros = {}, options = {}) {
   }
 
   // Calc random/time based macros
-  macros['CACHEBUSTING'] = leftpad(
-    Math.round(Math.random() * 1.0e8).toString()
-  );
+  macros['CACHEBUSTING'] = addLeadingZeros(Math.round(Math.random() * 1.0e8));
   macros['TIMESTAMP'] = new Date().toISOString();
 
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
@@ -175,27 +173,16 @@ function encodeURIComponentRFC3986(str) {
   );
 }
 
-function leftpad(input, len = 8) {
-  const str = String(input);
-  if (str.length < len) {
-    return (
-      range(0, len - str.length, false)
-        .map(() => '0')
-        .join('') + str
-    );
-  }
-  return str;
-}
-
-function range(left, right, inclusive) {
-  const result = [];
-  const ascending = left < right;
-  const end = !inclusive ? right : ascending ? right + 1 : right - 1;
-
-  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    result.push(i);
-  }
-  return result;
+/**
+ * Return a string of the input number with leading zeros defined by the length param
+ *
+ * @param {Number} input - number to convert
+ * @param {Number} length - length of the desired string
+ *
+ * @return {String}
+ */
+function addLeadingZeros(input, length = 8) {
+  return input.toString().padStart(length, '0');
 }
 
 function isNumeric(n) {
@@ -231,6 +218,18 @@ function joinArrayOfUniqueTemplateObjs(arr1 = [], arr2 = []) {
   }, []);
 }
 
+/**
+ * Check if a provided value is a valid time value according to the IAB definition
+ * Check if a provided value is a valid time value according to the IAB definition: Must be a positive number or -1.
+ * if not implemented by ad unit or -2 if value is unknown.
+ * @param {Number} time
+ *
+ * @return {Boolean}
+ */
+function isValidTimeValue(time) {
+  return Number.isFinite(time) && time >= -2
+}
+
 export const util = {
   track,
   resolveURLTemplates,
@@ -239,9 +238,9 @@ export const util = {
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,
   replaceUrlMacros,
-  leftpad,
-  range,
   isNumeric,
   flatten,
   joinArrayOfUniqueTemplateObjs,
+  isValidTimeValue,
+  addLeadingZeros,
 };

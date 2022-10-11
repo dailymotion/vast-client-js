@@ -225,7 +225,16 @@ describe('VASTTracker', function () {
       });
     });
 
-    describe('setProgress', () => {
+    describe('#setDuration', () => {
+      it('should update assetDuration with the given value',  () => {
+        const newDuration = 123;
+        vastTracker.assetDuration = null;
+        vastTracker.setDuration(newDuration);
+        expect(vastTracker.assetDuration).toEqual(123);
+      });
+    });
+
+    describe('#setProgress', () => {
       beforeEach(() => {
         vastTracker.assetDuration = 10;
         vastTracker.setProgress(5);
@@ -247,6 +256,24 @@ describe('VASTTracker', function () {
           ['progress-4%', expect.anything()]
         );
       });
+    });
+
+    describe('#isQuartileReached', () => {
+      it('should return true when the given quartile has been reached', () => {
+        const time = 20;
+        const progress = 30;
+        const quartile = 'midpoint';
+        expect(vastTracker.isQuartileReached(quartile, time, progress)).toBeTruthy();
+      })
+    })
+
+    describe('#setSkipDelay', () => {
+      it('should update skipDelay value to the given value',  () => {
+        const newSkipDelay = 123;
+        vastTracker.skipDelay = null;
+        vastTracker.setSkipDelay(newSkipDelay);
+        expect(vastTracker.skipDelay).toEqual(123);
+      })
     });
 
     describe('#trackImpression', () => {
@@ -279,6 +306,15 @@ describe('VASTTracker', function () {
         vastTracker.trackImpression(macros);
         expect(spyTrackUrl).not.toHaveBeenCalledTimes(2);
         expect(spyTrack).not.toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('#convertToTimecode', () => {
+      it('should return the formatted time string', () => {
+        const timeInSeconds = 3600 + 1200 + 36 + 0.123; // 1h + 20min + 36sec + 0.123ms
+        const expectedResult = '01:20:36.123';
+        const result = vastTracker.convertToTimecode(timeInSeconds);
+        expect(result).toEqual(expectedResult);
       });
     });
 
