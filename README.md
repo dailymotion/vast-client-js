@@ -37,7 +37,7 @@ import { VASTClient } from '@dailymotion/vast-client'
 const vastClient = new VASTClient();
 
 vastClient.get('https://www.examplevast.com/vast.xml')
-  .then(res => {
+  .then(parsedVAST => {
     // Do something with the parsed VAST response
   })
   .catch(err => {
@@ -57,7 +57,7 @@ import { VASTParser } from '@dailymotion/vast-client'
 const vastParser = new VASTParser();
 
 vastParser.parseVAST(vastXml)
-  .then(res => {
+  .then(parsedVAST => {
     // Do something with the parsed VAST response
   })
   .catch(err => {
@@ -67,14 +67,14 @@ vastParser.parseVAST(vastXml)
 
 ### VASTTracker
 
-To track the execution of an ad use the **VASTTracker**:
+To track the execution of an ad, create a **VASTTracker** instance and use the dedicated [methods](docs/api/vast-tracker.md) to calls [VAST tracking elements](https://iabtechlab.com/wp-content/uploads/2019/06/VAST_4.2_final_june26.pdf#page=28).
 
 ```Javascript
 import { VASTTracker } from '@dailymotion/vast-client'
 
 const vastTracker = new VASTTracker(vastClient, ad, creative);
 
-// Track an impression for the given ad
+// Track an impression for the given ad. Will call any <Impression> URI from the <InLine> and <Wrapper> tracking elements.
 vastTracker.trackImpression();
 ```
 
@@ -86,9 +86,7 @@ The API documentation is organized by components:
 * [VASTParser](docs/api/vast-parser.md)
 * [VASTTracker](docs/api/vast-tracker.md)
 
-**:warning: IMPORTANT :warning:** : the release of the `3.0` version of the library introduced many breaking changes in the API.
-
-Read the [3.0 migration guide](docs/api/3.0-migration.md) to update your project or follow the [2.0 migration guide](docs/api/2.0-migration.md) or [1.x API documentation](docs/api/1.x) if you're still using the old version.
+Changelog and migration guides can be found in the [release notes](https://github.com/dailymotion/vast-client-js/releases).
 
 ### Pre-bundled versions
 
