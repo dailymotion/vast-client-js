@@ -332,7 +332,7 @@
     } // Calc random/time based macros
 
 
-    macros['CACHEBUSTING'] = leftpad(Math.round(Math.random() * 1.0e8).toString());
+    macros['CACHEBUSTING'] = addLeadingZeros(Math.round(Math.random() * 1.0e8));
     macros['TIMESTAMP'] = new Date().toISOString(); // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
 
     macros['RANDOM'] = macros['random'] = macros['CACHEBUSTING'];
@@ -476,30 +476,19 @@
       return "%".concat(c.charCodeAt(0).toString(16));
     });
   }
+  /**
+   * Return a string of the input number with leading zeros defined by the length param
+   *
+   * @param {Number} input - number to convert
+   * @param {Number} length - length of the desired string
+   *
+   * @return {String}
+   */
 
-  function leftpad(input) {
-    var len = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
-    var str = String(input);
 
-    if (str.length < len) {
-      return range(0, len - str.length, false).map(function () {
-        return '0';
-      }).join('') + str;
-    }
-
-    return str;
-  }
-
-  function range(left, right, inclusive) {
-    var result = [];
-    var ascending = left < right;
-    var end = !inclusive ? right : ascending ? right + 1 : right - 1;
-
-    for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-      result.push(i);
-    }
-
-    return result;
+  function addLeadingZeros(input) {
+    var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
+    return input.toString().padStart(length, '0');
   }
 
   function isNumeric(n) {
@@ -535,6 +524,19 @@
       return res;
     }, []);
   }
+  /**
+   * Check if a provided value is a valid time value according to the IAB definition
+   * Check if a provided value is a valid time value according to the IAB definition: Must be a positive number or -1.
+   * if not implemented by ad unit or -2 if value is unknown.
+   * @param {Number} time
+   *
+   * @return {Boolean}
+   */
+
+
+  function isValidTimeValue(time) {
+    return Number.isFinite(time) && time >= -2;
+  }
 
   var util = {
     track: track,
@@ -544,11 +546,11 @@
     isTemplateObjectEqual: isTemplateObjectEqual,
     encodeURIComponentRFC3986: encodeURIComponentRFC3986,
     replaceUrlMacros: replaceUrlMacros,
-    leftpad: leftpad,
-    range: range,
     isNumeric: isNumeric,
     flatten: flatten,
-    joinArrayOfUniqueTemplateObjs: joinArrayOfUniqueTemplateObjs
+    joinArrayOfUniqueTemplateObjs: joinArrayOfUniqueTemplateObjs,
+    isValidTimeValue: isValidTimeValue,
+    addLeadingZeros: addLeadingZeros
   };
 
   /**
@@ -2301,7 +2303,7 @@
        * Synchronously calls each of the handlers registered for the named event,
        * in the order they were registered, passing the supplied arguments to each.
        * @param {String} event
-       * @param  {any[]} args
+       * @param  {...any} args list of arguments that will be used by the event handler
        * @returns {Boolean} true if the event had handlers, false otherwise.
        */
 
@@ -3623,6 +3625,11 @@
     }, {
       key: "setDuration",
       value: function setDuration(duration) {
+        // check if duration is a valid time input
+        if (!util.isValidTimeValue(duration)) {
+          return;
+        }
+
         this.assetDuration = duration; // beware of key names, theses are also used as event names
 
         this.quartiles = {
@@ -3653,6 +3660,12 @@
         var _this2 = this;
 
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        // check if progress is a valid time input
+        if (!util.isValidTimeValue(progress) || _typeof(macros) !== 'object') {
+          return;
+        }
+
         var skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
         if (skipDelay !== -1 && !this.skippable) {
@@ -3707,7 +3720,7 @@
        * Checks if a quartile has been reached without have being triggered already.
        *
        * @param {String} quartile - Quartile name
-       * @param {Number} time - Time offset, when this quartile is reached in seconds.
+       * @param {Number} time - Time offset of the quartile, when this quartile is reached in seconds.
        * @param {Number} progress - Current progress of the ads in seconds.
        *
        * @return {Boolean}
@@ -3738,6 +3751,10 @@
       value: function setMuted(muted) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+        if (typeof muted !== 'boolean' || _typeof(macros) !== 'object') {
+          return;
+        }
+
         if (this.muted !== muted) {
           this.track(muted ? 'mute' : 'unmute', {
             macros: macros
@@ -3760,6 +3777,10 @@
       value: function setPaused(paused) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+        if (typeof paused !== 'boolean' || _typeof(macros) !== 'object') {
+          return;
+        }
+
         if (this.paused !== paused) {
           this.track(paused ? 'pause' : 'resume', {
             macros: macros
@@ -3781,6 +3802,10 @@
       key: "setFullscreen",
       value: function setFullscreen(fullscreen) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (typeof fullscreen !== 'boolean' || _typeof(macros) !== 'object') {
+          return;
+        }
 
         if (this.fullscreen !== fullscreen) {
           this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', {
@@ -3806,6 +3831,10 @@
       value: function setExpand(expanded) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+        if (typeof expanded !== 'boolean' || _typeof(macros) !== 'object') {
+          return;
+        }
+
         if (this.expanded !== expanded) {
           this.track(expanded ? 'expand' : 'collapse', {
             macros: macros
@@ -3829,9 +3858,11 @@
     }, {
       key: "setSkipDelay",
       value: function setSkipDelay(duration) {
-        if (typeof duration === 'number') {
-          this.skipDelay = duration;
+        if (!util.isValidTimeValue(duration)) {
+          return;
         }
+
+        this.skipDelay = duration;
       }
       /**
        * Tracks an impression (can be called only once).
@@ -3843,6 +3874,10 @@
       key: "trackImpression",
       value: function trackImpression() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
 
         if (!this.impressed) {
           this.impressed = true;
@@ -3863,6 +3898,11 @@
       value: function error() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        if (_typeof(macros) !== 'object' || typeof isCustomCode !== 'boolean') {
+          return;
+        }
+
         this.trackURLs(this.ad.errorURLTemplates, macros, {
           isCustomCode: isCustomCode
         });
@@ -3879,6 +3919,11 @@
       key: "errorWithCode",
       value: function errorWithCode(errorCode) {
         var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+        if (typeof errorCode !== 'string' || typeof isCustomCode !== 'boolean') {
+          return;
+        }
+
         this.error({
           ERRORCODE: errorCode
         }, isCustomCode); //eslint-disable-next-line
@@ -3897,6 +3942,11 @@
       key: "complete",
       value: function complete() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('complete', {
           macros: macros
         });
@@ -3914,6 +3964,11 @@
       key: "notUsed",
       value: function notUsed() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('notUsed', {
           macros: macros
         });
@@ -3933,6 +3988,11 @@
       key: "otherAdInteraction",
       value: function otherAdInteraction() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('otherAdInteraction', {
           macros: macros
         });
@@ -3952,6 +4012,11 @@
       key: "acceptInvitation",
       value: function acceptInvitation() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('acceptInvitation', {
           macros: macros
         });
@@ -3968,6 +4033,11 @@
       key: "adExpand",
       value: function adExpand() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('adExpand', {
           macros: macros
         });
@@ -3984,6 +4054,11 @@
       key: "adCollapse",
       value: function adCollapse() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('adCollapse', {
           macros: macros
         });
@@ -4000,6 +4075,11 @@
       key: "minimize",
       value: function minimize() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('minimize', {
           macros: macros
         });
@@ -4018,6 +4098,10 @@
       key: "verificationNotExecuted",
       value: function verificationNotExecuted(vendor) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (typeof vendor !== 'string' || _typeof(macros) !== 'object') {
+          return;
+        }
 
         if (!this.ad || !this.ad.adVerifications || !this.ad.adVerifications.length) {
           throw new Error('No adVerifications provided');
@@ -4053,16 +4137,21 @@
        * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
        * Calls the overlayViewDuration tracking URLs.
        *
-       * @param {String} duration - The time that the initial ad is displayed.
+       * @param {String} formattedDuration - The time that the initial ad is displayed.
        * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
        * @emits VASTTracker#overlayViewDuration
        */
 
     }, {
       key: "overlayViewDuration",
-      value: function overlayViewDuration(duration) {
+      value: function overlayViewDuration(formattedDuration) {
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        macros['ADPLAYHEAD'] = duration;
+
+        if (typeof formattedDuration !== 'string' || _typeof(macros) !== 'object') {
+          return;
+        }
+
+        macros['ADPLAYHEAD'] = formattedDuration;
         this.track('overlayViewDuration', {
           macros: macros
         });
@@ -4080,6 +4169,11 @@
       key: "close",
       value: function close() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track(this.linear ? 'closeLinear' : 'close', {
           macros: macros
         });
@@ -4095,6 +4189,11 @@
       key: "skip",
       value: function skip() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('skip', {
           macros: macros
         });
@@ -4112,6 +4211,11 @@
       key: "load",
       value: function load() {
         var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        if (_typeof(macros) !== 'object') {
+          return;
+        }
+
         this.track('loaded', {
           macros: macros
         });
@@ -4131,6 +4235,10 @@
       value: function click() {
         var fallbackClickThroughURL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
         var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        if (fallbackClickThroughURL !== null && typeof fallbackClickThroughURL !== 'string' || _typeof(macros) !== 'object') {
+          return;
+        }
 
         if (this.clickTrackingURLTemplates && this.clickTrackingURLTemplates.length) {
           this.trackURLs(this.clickTrackingURLTemplates, macros);
@@ -4168,8 +4276,12 @@
             _ref$once = _ref.once,
             once = _ref$once === void 0 ? false : _ref$once;
 
-        // closeLinear event was introduced in VAST 3.0
+        if (_typeof(macros) !== 'object') {
+          return;
+        } // closeLinear event was introduced in VAST 3.0
         // Fallback to vast 2.0 close event if necessary
+
+
         if (eventName === 'closeLinear' && !this.trackingEvents[eventName] && this.trackingEvents['close']) {
           eventName = 'close';
         }
@@ -4265,12 +4377,16 @@
     }, {
       key: "convertToTimecode",
       value: function convertToTimecode(timeInSeconds) {
+        if (!util.isValidTimeValue(timeInSeconds)) {
+          return '';
+        }
+
         var progress = timeInSeconds * 1000;
         var hours = Math.floor(progress / (60 * 60 * 1000));
         var minutes = Math.floor(progress / (60 * 1000) % 60);
         var seconds = Math.floor(progress / 1000 % 60);
         var milliseconds = Math.floor(progress % 1000);
-        return "".concat(util.leftpad(hours, 2), ":").concat(util.leftpad(minutes, 2), ":").concat(util.leftpad(seconds, 2), ".").concat(util.leftpad(milliseconds, 3));
+        return "".concat(util.addLeadingZeros(hours, 2), ":").concat(util.addLeadingZeros(minutes, 2), ":").concat(util.addLeadingZeros(seconds, 2), ".").concat(util.addLeadingZeros(milliseconds, 3));
       }
       /**
        * Formats time progress in a readable string.
