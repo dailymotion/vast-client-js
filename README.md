@@ -139,3 +139,5 @@ const vastTracker = new VAST.VASTTracker();
 ## Build / Contribute
 
 See [CONTRIBUTING](docs/CONTRIBUTING.md)
+
+```USE lastest version for better use```
