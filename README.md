@@ -129,7 +129,12 @@ const vastTracker = new VAST.VASTTracker();
 A pre-bundled version for node is available too: [`vast-client-node.js`](dist/vast-client-node.js) or [`vast-client-node.min.js`](dist/vast-client-node.min.js) [minified].
 
 ```javascript
+// Method 1: From npm
 const VAST = require('@dailymotion/vast-client')
+
+// Method 2: For pre-bundled you must copy first the file inside your project
+// then you will be able to require it without the need of npm
+const VAST = require('your/path/vast-client-node.min.js')
 
 const vastClient = new VAST.VASTClient();
 const vastParser = new VAST.VASTParser();
