@@ -226,7 +226,7 @@ describe('VASTTracker', function () {
     });
 
     describe('#setDuration', () => {
-      it('should update assetDuration with the given value',  () => {
+      it('should update assetDuration with the given value', () => {
         const newDuration = 123;
         vastTracker.assetDuration = null;
         vastTracker.setDuration(newDuration);
@@ -263,17 +263,47 @@ describe('VASTTracker', function () {
         const time = 20;
         const progress = 30;
         const quartile = 'midpoint';
-        expect(vastTracker.isQuartileReached(quartile, time, progress)).toBeTruthy();
-      })
-    })
+        expect(
+          vastTracker.isQuartileReached(quartile, time, progress)
+        ).toBeTruthy();
+      });
+    });
+
+    describe('#setMuted', () => {
+      beforeEach(() => {
+        vastTracker.muted = false;
+      });
+      afterAll(() => {
+        vastTracker.muted = false;
+      });
+      it('Should emit mute tracker and update muted attribute when muted', () => {
+        vastTracker.setMuted(true);
+        expect(spyTrack).toHaveBeenCalledWith('mute', expect.anything());
+      });
+      it('Should emit unmute tracker and update muted attribute when unmuted', () => {
+        vastTracker.muted = true;
+        vastTracker.setMuted(false);
+        expect(spyTrack).toHaveBeenCalledWith('unmute', expect.anything());
+      });
+      it('Should not emit any tracker for same value', () => {
+        vastTracker.setMuted(false);
+        expect(spyTrack).not.toHaveBeenCalled();
+      });
+      it('Should not emit any tracker and not update muted attribute for invalid value', () => {
+        vastTracker.setMuted(null);
+        vastTracker.setMuted({ foo: 'bar' });
+        expect(spyTrack).not.toHaveBeenCalled();
+        expect(vastTracker.muted).toEqual(false);
+      });
+    });
 
     describe('#setSkipDelay', () => {
-      it('should update skipDelay value to the given value',  () => {
+      it('should update skipDelay value to the given value', () => {
         const newSkipDelay = 123;
         vastTracker.skipDelay = null;
         vastTracker.setSkipDelay(newSkipDelay);
         expect(vastTracker.skipDelay).toEqual(123);
-      })
+      });
     });
 
     describe('#trackImpression', () => {
