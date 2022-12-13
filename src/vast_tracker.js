@@ -26,7 +26,7 @@ export class VASTTracker extends EventEmitter {
    * @param {Ad} ad - The ad to track.
    * @param {Creative} creative - The creative to track.
    * @param {Object} [variation=null] - An optional variation of the creative.
-   * @param {boolean} [muted=false] - The initial muted state of the video.
+   * @param {Boolean} [muted=false] - The initial muted state of the video.
    * @constructor
    */
   constructor(client, ad, creative, variation = null, muted = false) {
@@ -150,7 +150,7 @@ export class VASTTracker extends EventEmitter {
    */
   setDuration(duration) {
     // check if duration is a valid time input
-    if(!util.isValidTimeValue(duration)) {
+    if (!util.isValidTimeValue(duration)) {
       return;
     }
     this.assetDuration = duration;
@@ -598,12 +598,16 @@ export class VASTTracker extends EventEmitter {
    * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
    * clickthrough URL when done.
    *
-   * @param {String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
+   * @param {?String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @emits VASTTracker#clickthrough
    */
   click(fallbackClickThroughURL = null, macros = {}) {
-    if ((fallbackClickThroughURL !== null && typeof fallbackClickThroughURL !== 'string') || typeof macros !== 'object') {
+    if (
+      (fallbackClickThroughURL !== null &&
+        typeof fallbackClickThroughURL !== 'string') ||
+      typeof macros !== 'object'
+    ) {
       return;
     }
     if (
@@ -636,8 +640,9 @@ export class VASTTracker extends EventEmitter {
    * Calls the tracking URLs for the given eventName and emits the event.
    *
    * @param {String} eventName - The name of the event.
-   * @param {Object} [macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
-   * @param {Boolean} [once=false] - Boolean to define if the event has to be tracked only once.
+   * @param {Object} options
+   * @param {Object} [options.macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
+   * @param {Boolean} [options.once=false] - Boolean to define if the event has to be tracked only once.
    *
    */
   track(eventName, { macros = {}, once = false } = {}) {
@@ -748,7 +753,10 @@ export class VASTTracker extends EventEmitter {
     return `${util.addLeadingZeros(hours, 2)}:${util.addLeadingZeros(
       minutes,
       2
-    )}:${util.addLeadingZeros(seconds, 2)}.${util.addLeadingZeros(milliseconds, 3)}`;
+    )}:${util.addLeadingZeros(seconds, 2)}.${util.addLeadingZeros(
+      milliseconds,
+      3
+    )}`;
   }
 
   /**
