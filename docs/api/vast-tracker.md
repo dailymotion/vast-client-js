@@ -14,7 +14,7 @@ At key points during ad playback you will need to call thoses methods to fire co
 The constructor signature is:
 
 ```Javascript
-constructor(client, ad, creative, variation = null)
+constructor(client, ad, creative, variation = null, muted = false)
 ```
 
 #### Parameters
@@ -23,6 +23,7 @@ constructor(client, ad, creative, variation = null)
 - **`ad: Ad`** - The ad to track
 - **`creative: Creative`** - The creative to track
 - **`variation: CompanionAd|NonLinearAd`** - An optional variation of the creative, for Companion and NonLinear Ads
+- **`muted: Boolean`** - The initial muted state of the video. (optional, `false` by default)
 
 #### Example
 
@@ -39,6 +40,8 @@ const vastClient = new VASTClient();
 const vastTracker = new VASTTracker(vastClient, ad, creative);
 // For a companion ad
 const vastTracker = new VASTTracker(vastClient, ad, creative, companion);
+// With the initial muted state
+const vastTracker = new VASTTracker(vastClient, ad, creative, null, muted);
 
 // Without a client instance
 const vastTracker = new VASTTracker(null, ad, creative);
@@ -430,6 +433,8 @@ vastTracker.on('exitFullscreen', () => {
 ### setMuted(muted, macros) <a name="setMuted"></a>
 
 Updates the mute state and calls the mute/unmute tracking URLs.
+
+> :warning: setMuted is relying on an internal mute state, which is `unmuted` by default. If the initial mute state is `muted`, be sure to set it up when initializing the VASTTracker. Otherwise, the first unmute event will not be fired.
 
 #### Parameters
 
