@@ -26,14 +26,15 @@ export class VASTTracker extends EventEmitter {
    * @param {Ad} ad - The ad to track.
    * @param {Creative} creative - The creative to track.
    * @param {Object} [variation=null] - An optional variation of the creative.
+   * @param {boolean} [muted=false] - The initial muted state of the video.
    * @constructor
    */
-  constructor(client, ad, creative, variation = null) {
+  constructor(client, ad, creative, variation = null, muted = false) {
     super();
     this.ad = ad;
     this.creative = creative;
     this.variation = variation;
-    this.muted = false;
+    this.muted = muted;
     this.impressed = false;
     this.skippable = false;
     this.trackingEvents = {};
