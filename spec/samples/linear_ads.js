@@ -9,7 +9,7 @@ export const linearAd = `<Ad id="ad_id_0001" sequence="1" adType="video">
     <Advertiser id='advertiser-desc'><![CDATA[Advertiser name]]></Advertiser>
     <Description><![CDATA[Description text]]></Description>
     <Pricing model="CPM" currency="USD" ><![CDATA[1.09]]></Pricing>
-    <Survey><![CDATA[http://example.com/survey]]></Survey>
+    <Survey type="text/javascript"><![CDATA[http://example.com/survey]]></Survey>
     <Error><![CDATA[http://example.com/error_[ERRORCODE]]]></Error>
     <Impression id="sample-impression1"><![CDATA[http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]]]></Impression>
     <Impression id="sample-impression2"><![CDATA[http://example.com/impression2_[random]]]></Impression>

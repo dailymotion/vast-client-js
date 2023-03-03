@@ -385,6 +385,48 @@ describe('ParserUtils', function () {
             },
           ],
         },
+        {
+          type: 'linear',
+          adId: '3447226',
+          id: 'linearCreativeWithIcons',
+          mediaFiles: [],
+          icons: [
+            {
+              program: 'iconWrapper1',
+              height: 1,
+              width: 1,
+              xPosition: 0,
+              yPosition: 0,
+              apiFramework: 'omid',
+              offset: 5,
+              duration: 12,
+              type: 'image/jpeg',
+              staticResource: 'lient vers crea',
+              htmlResource:
+                '<!DOCTYPE html>\r\n                                            <html lang="en">\r\n                                            <head>\r\n                                                <meta charset="UTF-8">\r\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\r\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\r\n                                                <title>Document</title>\r\n                                            </head>\r\n                                            <body>\r\n                                                <h1>titre</h1>\r\n                                            </body>\r\n                                            </html>',
+              iframeResource: 'lient vers html',
+              pxratio: '2',
+              iconClickThroughURLTemplate: 'https://iabtechlab.com',
+              iconClickTrackingURLTemplates: [
+                {
+                  id: 'iconTracking',
+                  url: 'http://localhost:3000/tracker/clicktrack?clickpos=[CLICKPOS]',
+                },
+                {
+                  id: 'iconTracking',
+                  url: 'http://localhost:3000/tracker/clicktrack?loiuytfyuiop=[CLICKPOS]',
+                },
+              ],
+              iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
+              iconClickFallbackImages: [
+                {
+                  id: 0,
+                  url: 'http://adserver.com/fallback.png',
+                },
+              ],
+            },
+          ],
+        },
       ],
       extensions: [
         {
@@ -609,6 +651,48 @@ describe('ParserUtils', function () {
                 {
                   id: 'custom-click-1',
                   url: 'http://example.com/linear-customclick',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'linear',
+          adId: '3447226',
+          id: 'linearCreativeWithIcons',
+          mediaFiles: [],
+          icons: [
+            {
+              program: 'iconWrapper1',
+              height: 1,
+              width: 1,
+              xPosition: 0,
+              yPosition: 0,
+              apiFramework: 'omid',
+              offset: 5,
+              duration: 12,
+              type: 'image/jpeg',
+              staticResource: 'lient vers crea',
+              htmlResource:
+                '<!DOCTYPE html>\r\n                                            <html lang="en">\r\n                                            <head>\r\n                                                <meta charset="UTF-8">\r\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\r\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\r\n                                                <title>Document</title>\r\n                                            </head>\r\n                                            <body>\r\n                                                <h1>titre</h1>\r\n                                            </body>\r\n                                            </html>',
+              iframeResource: 'lient vers html',
+              pxratio: '2',
+              iconClickThroughURLTemplate: 'https://iabtechlab.com',
+              iconClickTrackingURLTemplates: [
+                {
+                  id: 'iconTracking',
+                  url: 'http://localhost:3000/tracker/clicktrack?clickpos=[CLICKPOS]',
+                },
+                {
+                  id: 'iconTracking',
+                  url: 'http://localhost:3000/tracker/clicktrack?loiuytfyuiop=[CLICKPOS]',
+                },
+              ],
+              iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
+              iconClickFallbackImages: [
+                {
+                  id: 0,
+                  url: 'http://adserver.com/fallback.png',
                 },
               ],
             },

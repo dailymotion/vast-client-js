@@ -105,11 +105,10 @@ describe('parseCreativeCompanion', function () {
 
     describe('adParameters', () => {
       it('gets adParameters', () => {
-        expect(companion.adParameters).toBe('campaign_id=1');
-      });
-
-      it('gets xmlEncoded attribute', () => {
-        expect(companion.xmlEncoded).toBe('false');
+        expect(companion.adParameters).toMatchObject({
+          value: 'campaign_id=1',
+          xmlEncoded: 'false',
+        });
       });
     });
   });
@@ -166,11 +165,10 @@ describe('parseCreativeCompanion', function () {
 
     describe('adParameters', () => {
       it('gets adParameters', () => {
-        expect(companion.adParameters).toBe('campaign_id=2');
-      });
-
-      it('has no xmlEncoded attribute', () => {
-        expect(companion.xmlEncoded).toBeNull();
+        expect(companion.adParameters).toMatchObject({
+          value: 'campaign_id=2',
+          xmlEncoded: null,
+        });
       });
     });
   });
@@ -227,11 +225,10 @@ describe('parseCreativeCompanion', function () {
 
     describe('adParameters', () => {
       it('gets adParameters', () => {
-        expect(companion.adParameters).toBe('campaign_id=3');
-      });
-
-      it('has no xmlEncoded attribute', () => {
-        expect(companion.xmlEncoded).toBeNull();
+        expect(companion.adParameters).toMatchObject({
+          value: 'campaign_id=3',
+          xmlEncoded: null,
+        });
       });
     });
   });
