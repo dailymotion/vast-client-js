@@ -81,7 +81,10 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
     'AdParameters'
   );
   if (adParamsElement) {
-    creative.adParameters = parserUtils.parseNodeText(adParamsElement);
+    creative.adParameters = {
+      value: parserUtils.parseNodeText(adParamsElement),
+      xmlEncoded: adParamsElement.getAttribute('xmlEncoded') || null,
+    };
   }
 
   parserUtils
@@ -301,6 +304,14 @@ function parseIcon(iconElement) {
         icon.iconClickTrackingURLTemplates.push({
           id: iconClickTrackingElement.getAttribute('id') || null,
           url: parserUtils.parseNodeText(iconClickTrackingElement),
+        });
+      });
+    parserUtils
+      .childrenByName(iconClicksElement, 'IconClickFallbackImages')
+      .forEach((iconClickFallbackImage, id) => {
+        icon.iconClickFallbackImages.push({
+          id,
+          url: parserUtils.parseNodeText(iconClickFallbackImage),
         });
       });
   }

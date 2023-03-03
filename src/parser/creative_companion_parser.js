@@ -93,10 +93,10 @@ export function parseCreativeCompanion(creativeElement, creativeAttributes) {
         'AdParameters'
       );
       if (adParametersElement) {
-        companionAd.adParameters =
-          parserUtils.parseNodeText(adParametersElement);
-        companionAd.xmlEncoded =
-          adParametersElement.getAttribute('xmlEncoded') || null;
+        companionAd.adParameters = {
+          value: parserUtils.parseNodeText(adParametersElement),
+          xmlEncoded: adParametersElement.getAttribute('xmlEncoded') || null,
+        };
       }
 
       return companionAd;

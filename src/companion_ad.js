@@ -16,7 +16,6 @@ export function createCompanionAd(creativeAttributes = {}) {
     htmlResources: [],
     iframeResources: [],
     adParameters: null,
-    xmlEncoded: null,
     altText: null,
     companionClickThroughURLTemplate: null,
     companionClickTrackingURLTemplates: [],

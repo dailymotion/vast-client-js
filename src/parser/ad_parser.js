@@ -178,7 +178,10 @@ function parseAdElement(adTypeElement, emit) {
         break;
 
       case 'Survey':
-        ad.survey = parserUtils.parseNodeText(node);
+        ad.survey = {
+          value: parserUtils.parseNodeText(node),
+          type: node.getAttribute('type') || null,
+        };
         break;
 
       case 'BlockedAdCategories':

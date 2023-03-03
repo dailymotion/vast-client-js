@@ -338,6 +338,17 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
       wrapper.blockedAdCategories
     );
   }
+  
+  if (wrapper.creatives?.length) {
+    const wrapperCreativesWithIconsNode = wrapper.creatives.filter(
+      (creative) => creative.icons?.length && !creative.mediaFiles.length
+    );
+    if (wrapperCreativesWithIconsNode.length) {
+      unwrappedAd.creatives = unwrappedAd.creatives.concat(
+        wrapperCreativesWithIconsNode
+      );
+    }
+  }
 }
 
 export const parserUtils = {
