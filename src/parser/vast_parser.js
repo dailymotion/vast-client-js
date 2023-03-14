@@ -27,6 +27,7 @@ export class VASTParser extends EventEmitter {
   constructor() {
     super();
 
+    this.parseDuration = parserUtils.parseDuration;
     this.remainingAds = [];
     this.parentURLs = [];
     this.errorURLTemplates = [];
