@@ -416,3 +416,27 @@ Merges the data between an unwrapped ad and his wrapper.
 
 - **`unwrappedAd: Ad`** - The 'unwrapped' Ad.
 - **`wrapper: Ad`** - The wrapper Ad.
+
+### parseDuration(duration)
+ 
+Parses a duration in the format `HH:MM:SS`, `HH:MM:SS.mmm`  or `SS` and returns a duration in seconds.
+
+```javascript
+
+const a = parseDuration('00:01:30.000');
+console.log(a); // output: 90
+
+const b = parseDuration('30');
+console.log(b); // output: 30
+
+const c = parseDuration(30);
+console.log(c); // output: 30
+
+const d = parseDuration('thirty');
+console.log(d); // output -1
+
+```
+
+#### Parameter
+
+- **`duration: String`** - The duration represented as a string.
