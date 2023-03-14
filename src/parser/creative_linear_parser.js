@@ -306,12 +306,18 @@ function parseIcon(iconElement) {
           url: parserUtils.parseNodeText(iconClickTrackingElement),
         });
       });
+
+    const iconClickFallbackImagesElement = parserUtils.childByName(
+      iconClicksElement,
+      'IconClickFallbackImages'
+    );
+
     parserUtils
-      .childrenByName(iconClicksElement, 'IconClickFallbackImages')
-      .forEach((iconClickFallbackImage, id) => {
+      .childrenByName(iconClickFallbackImagesElement, 'IconClickFallbackImage')
+      .forEach((iconClickFallbackImageElement, id) => {
         icon.iconClickFallbackImages.push({
           id,
-          url: parserUtils.parseNodeText(iconClickFallbackImage),
+          url: parserUtils.parseNodeText(iconClickFallbackImageElement),
         });
       });
   }
