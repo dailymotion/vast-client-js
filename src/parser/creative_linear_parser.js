@@ -312,14 +312,19 @@ function parseIcon(iconElement) {
       'IconClickFallbackImages'
     );
 
-    parserUtils
-      .childrenByName(iconClickFallbackImagesElement, 'IconClickFallbackImage')
-      .forEach((iconClickFallbackImageElement, id) => {
-        icon.iconClickFallbackImages.push({
-          id,
-          url: parserUtils.parseNodeText(iconClickFallbackImageElement),
+    if (iconClickFallbackImagesElement) {
+      parserUtils
+        .childrenByName(
+          iconClickFallbackImagesElement,
+          'IconClickFallbackImage'
+        )
+        .forEach((iconClickFallbackImageElement, id) => {
+          icon.iconClickFallbackImages.push({
+            id,
+            url: parserUtils.parseNodeText(iconClickFallbackImageElement),
+          });
         });
-      });
+    }
   }
 
   icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(
