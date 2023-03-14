@@ -401,20 +401,20 @@ describe('ParserUtils', function () {
               offset: 5,
               duration: 12,
               type: 'image/jpeg',
-              staticResource: 'lient vers crea',
+              staticResource: 'link',
               htmlResource:
                 '<!DOCTYPE html>\r\n                                            <html lang="en">\r\n                                            <head>\r\n                                                <meta charset="UTF-8">\r\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\r\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\r\n                                                <title>Document</title>\r\n                                            </head>\r\n                                            <body>\r\n                                                <h1>titre</h1>\r\n                                            </body>\r\n                                            </html>',
-              iframeResource: 'lient vers html',
+              iframeResource: 'link',
               pxratio: '2',
               iconClickThroughURLTemplate: 'https://iabtechlab.com',
               iconClickTrackingURLTemplates: [
                 {
                   id: 'iconTracking',
-                  url: 'http://localhost:3000/tracker/clicktrack?clickpos=[CLICKPOS]',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos=[CLICKPOS]',
                 },
                 {
                   id: 'iconTracking',
-                  url: 'http://localhost:3000/tracker/clicktrack?loiuytfyuiop=[CLICKPOS]',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos2=[CLICKPOS]',
                 },
               ],
               iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
@@ -672,20 +672,20 @@ describe('ParserUtils', function () {
               offset: 5,
               duration: 12,
               type: 'image/jpeg',
-              staticResource: 'lient vers crea',
+              staticResource: 'link',
               htmlResource:
                 '<!DOCTYPE html>\r\n                                            <html lang="en">\r\n                                            <head>\r\n                                                <meta charset="UTF-8">\r\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\r\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\r\n                                                <title>Document</title>\r\n                                            </head>\r\n                                            <body>\r\n                                                <h1>titre</h1>\r\n                                            </body>\r\n                                            </html>',
-              iframeResource: 'lient vers html',
+              iframeResource: 'link',
               pxratio: '2',
               iconClickThroughURLTemplate: 'https://iabtechlab.com',
               iconClickTrackingURLTemplates: [
                 {
                   id: 'iconTracking',
-                  url: 'http://localhost:3000/tracker/clicktrack?clickpos=[CLICKPOS]',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos=[CLICKPOS]',
                 },
                 {
                   id: 'iconTracking',
-                  url: 'http://localhost:3000/tracker/clicktrack?loiuytfyuiop=[CLICKPOS]',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos2=[CLICKPOS]',
                 },
               ],
               iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
