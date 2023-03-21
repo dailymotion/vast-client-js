@@ -355,6 +355,31 @@ vastParser.parseVAST(vastXml, options)
   });
 ```
 
+### parseDuration(duration)
+ 
+Parses a duration in the format `HH:MM:SS`, `HH:MM:SS.mmm`  or `SS` and returns a duration in seconds.
+
+```javascript
+
+const a = parseDuration('00:01:30.000');
+console.log(a); // output: 90
+
+const b = parseDuration('30');
+console.log(b); // output: 30
+
+const c = parseDuration(30);
+console.log(c); // output: 30
+
+const d = parseDuration('thirty');
+console.log(d); // output -1
+
+```
+
+#### Parameter
+
+- **`duration: String`** - The duration represented as a string.
+
+
 ## Private Methods :warning:<a name="private-methods"></a>
 
 These methods documentation is provided in order to make the parser internal logic clearer. It should not be considered as part of the class public API
@@ -416,27 +441,3 @@ Merges the data between an unwrapped ad and his wrapper.
 
 - **`unwrappedAd: Ad`** - The 'unwrapped' Ad.
 - **`wrapper: Ad`** - The wrapper Ad.
-
-### parseDuration(duration)
- 
-Parses a duration in the format `HH:MM:SS`, `HH:MM:SS.mmm`  or `SS` and returns a duration in seconds.
-
-```javascript
-
-const a = parseDuration('00:01:30.000');
-console.log(a); // output: 90
-
-const b = parseDuration('30');
-console.log(b); // output: 30
-
-const c = parseDuration(30);
-console.log(c); // output: 30
-
-const d = parseDuration('thirty');
-console.log(d); // output -1
-
-```
-
-#### Parameter
-
-- **`duration: String`** - The duration represented as a string.
