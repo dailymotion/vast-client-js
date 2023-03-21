@@ -68,7 +68,26 @@ describe('CreativesParser', function () {
         'http://example.com/linear-viewtracking'
       );
       expect(icon.iconClickFallbackImages).toEqual([
-        { id: 0, url: 'http://adserver.com/fallback.png' },
+        {
+          url: 'http://adserver.com/fallback.png',
+          width: '10px',
+          height: '10px',
+        },
+        {
+          url: null,
+          width: '10px',
+          height: '10px',
+        },
+        {
+          url: 'http://adserver.com/fallback.png',
+          width: null,
+          height: '10px',
+        },
+        {
+          url: 'http://adserver.com/fallback.png',
+          width: '10px',
+          height: null,
+        },
       ]);
     });
 

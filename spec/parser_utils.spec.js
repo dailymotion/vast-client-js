@@ -402,8 +402,7 @@ describe('ParserUtils', function () {
               duration: 12,
               type: 'image/jpeg',
               staticResource: 'link',
-              htmlResource:
-                '<!DOCTYPE html>\r\n                                            <html lang="en">\r\n                                            <head>\r\n                                                <meta charset="UTF-8">\r\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\r\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\r\n                                                <title>Document</title>\r\n                                            </head>\r\n                                            <body>\r\n                                                <h1>titre</h1>\r\n                                            </body>\r\n                                            </html>',
+              htmlResource: '<body><h1>title</h1></body>',
               iframeResource: 'link',
               pxratio: '2',
               iconClickThroughURLTemplate: 'https://iabtechlab.com',
@@ -420,8 +419,9 @@ describe('ParserUtils', function () {
               iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
               iconClickFallbackImages: [
                 {
-                  id: 0,
                   url: 'http://adserver.com/fallback.png',
+                  width: '10px',
+                  height: '10px',
                 },
               ],
             },
@@ -673,8 +673,7 @@ describe('ParserUtils', function () {
               duration: 12,
               type: 'image/jpeg',
               staticResource: 'link',
-              htmlResource:
-                '<!DOCTYPE html>\r\n                                            <html lang="en">\r\n                                            <head>\r\n                                                <meta charset="UTF-8">\r\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\r\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\r\n                                                <title>Document</title>\r\n                                            </head>\r\n                                            <body>\r\n                                                <h1>titre</h1>\r\n                                            </body>\r\n                                            </html>',
+              htmlResource: '<body><h1>title</h1></body>',
               iframeResource: 'link',
               pxratio: '2',
               iconClickThroughURLTemplate: 'https://iabtechlab.com',
@@ -691,8 +690,9 @@ describe('ParserUtils', function () {
               iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
               iconClickFallbackImages: [
                 {
-                  id: 0,
                   url: 'http://adserver.com/fallback.png',
+                  width: '10px',
+                  height: '10px',
                 },
               ],
             },

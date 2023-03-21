@@ -53,6 +53,14 @@ export const creatives = `<Creatives>
               <IconClickFallbackImage width="10px" height="10px">
                 <![CDATA[http://adserver.com/fallback.png]]>
               </IconClickFallbackImage>
+              <IconClickFallbackImage width="10px" height="10px">
+              </IconClickFallbackImage>
+              <IconClickFallbackImage  height="10px">
+                <![CDATA[http://adserver.com/fallback.png]]>
+              </IconClickFallbackImage>
+              <IconClickFallbackImage width="10px">
+                <![CDATA[http://adserver.com/fallback.png]]>
+              </IconClickFallbackImage>
             </IconClickFallbackImages> 
           </IconClicks>
         </Icon>
