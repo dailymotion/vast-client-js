@@ -318,10 +318,13 @@ function parseIcon(iconElement) {
           iconClickFallbackImagesElement,
           'IconClickFallbackImage'
         )
-        .forEach((iconClickFallbackImageElement, id) => {
+        .forEach((iconClickFallbackImageElement) => {
           icon.iconClickFallbackImages.push({
-            id,
-            url: parserUtils.parseNodeText(iconClickFallbackImageElement),
+            url:
+              parserUtils.parseNodeText(iconClickFallbackImageElement) || null,
+            width: iconClickFallbackImageElement.getAttribute('width') || null,
+            height:
+              iconClickFallbackImageElement.getAttribute('height') || null,
           });
         });
     }
