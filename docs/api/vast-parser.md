@@ -355,6 +355,8 @@ vastParser.parseVAST(vastXml, options)
   });
 ```
 
+## Parser Utils
+
 ### parseDuration(duration)
  
 Parses a duration in the format `HH:MM:SS`, `HH:MM:SS.mmm`  or `SS` and returns a duration in seconds.
@@ -378,6 +380,7 @@ console.log(d); // output -1
 #### Parameter
 
 - **`duration: String`** - The duration represented as a string.
+
 
 
 ## Private Methods :warning:<a name="private-methods"></a>
