@@ -53,7 +53,7 @@ describe('parseCreativeCompanion', function () {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '1',
+        adSlotId: '1',
         pxratio: '2',
         renderingMode: 'end-card',
       });
@@ -129,7 +129,7 @@ describe('parseCreativeCompanion', function () {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '2',
+        adSlotId: '2',
         pxratio: '1',
         renderingMode: 'concurrent',
       });
@@ -189,7 +189,7 @@ describe('parseCreativeCompanion', function () {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '3',
+        adSlotId: '3',
         pxratio: '1',
         renderingMode: 'default',
       });
