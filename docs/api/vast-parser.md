@@ -381,8 +381,6 @@ console.log(d); // output -1
 
 - **`duration: String`** - The duration represented as a string.
 
-
-
 ## Private Methods :warning:<a name="private-methods"></a>
 
 These methods documentation is provided in order to make the parser internal logic clearer. It should not be considered as part of the class public API
