@@ -385,6 +385,48 @@ describe('ParserUtils', function () {
             },
           ],
         },
+        {
+          type: 'linear',
+          adId: '3447226',
+          id: 'linearCreativeWithIcons',
+          mediaFiles: [],
+          icons: [
+            {
+              program: 'iconWrapper1',
+              height: 1,
+              width: 1,
+              xPosition: 0,
+              yPosition: 0,
+              apiFramework: 'omid',
+              offset: 5,
+              duration: 12,
+              type: 'image/jpeg',
+              staticResource: 'link',
+              htmlResource: '<body><h1>title</h1></body>',
+              iframeResource: 'link',
+              pxratio: '2',
+              iconClickThroughURLTemplate: 'https://iabtechlab.com',
+              iconClickTrackingURLTemplates: [
+                {
+                  id: 'iconTracking',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos=[CLICKPOS]',
+                },
+                {
+                  id: 'iconTracking',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos2=[CLICKPOS]',
+                },
+              ],
+              iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
+              iconClickFallbackImages: [
+                {
+                  url: 'http://adserver.com/fallback.png',
+                  width: '10px',
+                  height: '10px',
+                },
+              ],
+            },
+          ],
+        },
       ],
       extensions: [
         {
@@ -609,6 +651,48 @@ describe('ParserUtils', function () {
                 {
                   id: 'custom-click-1',
                   url: 'http://example.com/linear-customclick',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'linear',
+          adId: '3447226',
+          id: 'linearCreativeWithIcons',
+          mediaFiles: [],
+          icons: [
+            {
+              program: 'iconWrapper1',
+              height: 1,
+              width: 1,
+              xPosition: 0,
+              yPosition: 0,
+              apiFramework: 'omid',
+              offset: 5,
+              duration: 12,
+              type: 'image/jpeg',
+              staticResource: 'link',
+              htmlResource: '<body><h1>title</h1></body>',
+              iframeResource: 'link',
+              pxratio: '2',
+              iconClickThroughURLTemplate: 'https://iabtechlab.com',
+              iconClickTrackingURLTemplates: [
+                {
+                  id: 'iconTracking',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos=[CLICKPOS]',
+                },
+                {
+                  id: 'iconTracking',
+                  url: 'http://exemple.com/tracker/clicktrack?clickpos2=[CLICKPOS]',
+                },
+              ],
+              iconViewTrackingURLTemplate: 'http://adserver.com/fallback.png',
+              iconClickFallbackImages: [
+                {
+                  url: 'http://adserver.com/fallback.png',
+                  width: '10px',
+                  height: '10px',
                 },
               ],
             },

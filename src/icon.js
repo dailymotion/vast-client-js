@@ -16,5 +16,6 @@ export function createIcon() {
     iconClickThroughURLTemplate: null,
     iconClickTrackingURLTemplates: [],
     iconViewTrackingURLTemplate: null,
+    iconClickFallbackImages: [],
   };
 }

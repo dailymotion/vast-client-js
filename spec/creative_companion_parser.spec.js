@@ -53,7 +53,7 @@ describe('parseCreativeCompanion', function () {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '1',
+        adSlotId: '1',
         pxratio: '2',
         renderingMode: 'end-card',
       });
@@ -105,11 +105,10 @@ describe('parseCreativeCompanion', function () {
 
     describe('adParameters', () => {
       it('gets adParameters', () => {
-        expect(companion.adParameters).toBe('campaign_id=1');
-      });
-
-      it('gets xmlEncoded attribute', () => {
-        expect(companion.xmlEncoded).toBe('false');
+        expect(companion.adParameters).toMatchObject({
+          value: 'campaign_id=1',
+          xmlEncoded: 'false',
+        });
       });
     });
   });
@@ -130,7 +129,7 @@ describe('parseCreativeCompanion', function () {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '2',
+        adSlotId: '2',
         pxratio: '1',
         renderingMode: 'concurrent',
       });
@@ -166,11 +165,10 @@ describe('parseCreativeCompanion', function () {
 
     describe('adParameters', () => {
       it('gets adParameters', () => {
-        expect(companion.adParameters).toBe('campaign_id=2');
-      });
-
-      it('has no xmlEncoded attribute', () => {
-        expect(companion.xmlEncoded).toBeNull();
+        expect(companion.adParameters).toMatchObject({
+          value: 'campaign_id=2',
+          xmlEncoded: null,
+        });
       });
     });
   });
@@ -191,7 +189,7 @@ describe('parseCreativeCompanion', function () {
         expandedWidth: '350',
         expandedHeight: '250',
         apiFramework: 'VPAID',
-        adSlotID: '3',
+        adSlotId: '3',
         pxratio: '1',
         renderingMode: 'default',
       });
@@ -227,11 +225,10 @@ describe('parseCreativeCompanion', function () {
 
     describe('adParameters', () => {
       it('gets adParameters', () => {
-        expect(companion.adParameters).toBe('campaign_id=3');
-      });
-
-      it('has no xmlEncoded attribute', () => {
-        expect(companion.xmlEncoded).toBeNull();
+        expect(companion.adParameters).toMatchObject({
+          value: 'campaign_id=3',
+          xmlEncoded: null,
+        });
       });
     });
   });

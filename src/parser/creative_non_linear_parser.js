@@ -82,7 +82,10 @@ export function parseCreativeNonLinear(creativeElement, creativeAttributes) {
         'AdParameters'
       );
       if (adParamsElement) {
-        nonlinearAd.adParameters = parserUtils.parseNodeText(adParamsElement);
+        nonlinearAd.adParameters = {
+          value: parserUtils.parseNodeText(adParamsElement),
+          xmlEncoded: adParamsElement.getAttribute('xmlEncoded') || null,
+        };
       }
 
       nonlinearAd.nonlinearClickThroughURLTemplate = parserUtils.parseNodeText(

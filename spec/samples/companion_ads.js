@@ -1,5 +1,5 @@
 export const companionAds = `<CompanionAds required="any">
-  <Companion id="1" width="300" height="250" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotID="1" pxratio="2" renderingMode="end-card">
+  <Companion id="1" width="300" height="250" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotId="1" pxratio="2" renderingMode="end-card">
     <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource1]]></StaticResource>
     <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource2]]></StaticResource>
     <AltText><![CDATA[Sample Alt Text Content]]></AltText>
@@ -11,7 +11,7 @@ export const companionAds = `<CompanionAds required="any">
     <CompanionClickTracking id="1"><![CDATA[http://example.com/companion1-clicktracking-first]]></CompanionClickTracking>
     <CompanionClickTracking id="2"><![CDATA[http://example.com/companion1-clicktracking-second]]></CompanionClickTracking>
   </Companion>
-  <Companion id="2" width="300" height="60" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotID="2" renderingMode="concurrent">
+  <Companion id="2" width="300" height="60" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotId="2" renderingMode="concurrent">
     <IFrameResource><![CDATA[http://www.example.com/companion2-example.php]]></IFrameResource>
     <AltText><![CDATA[Sample Alt Text Content]]></AltText>
     <TrackingEvents>
@@ -20,7 +20,7 @@ export const companionAds = `<CompanionAds required="any">
     <AdParameters><![CDATA[campaign_id=2]]></AdParameters>
     <CompanionClickThrough><![CDATA[http://www.example.com/companion2-clickthrough]]></CompanionClickThrough>
   </Companion>
-  <Companion id="3" width="300" height="60" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotID="3">
+  <Companion id="3" width="300" height="60" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250" apiFramework="VPAID" adSlotId="3">
     <HTMLResource>
       <![CDATA[
         <a href="http://www.example.com" target="_blank">Some call to action HTML!</a>

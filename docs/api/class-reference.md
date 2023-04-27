@@ -24,7 +24,7 @@ This object represents a single parsed Ad
 - `description: String|null`
 - `advertiser: Object|null`
 - `pricing: String|null`
-- `survey: String|null`
+- `survey: Object|null` [go to object](#survey)
 - `errorURLTemplates: Array<String>`
 - `impressionURLTemplates: Array<Object>`
 - `creatives: Array<Object>` [go to object](#creative)
@@ -54,7 +54,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `videoClickThroughURLTemplate: String|null`
 - `videoClickTrackingURLTemplates: Array<String>`
 - `videoCustomClickURLTemplates: Array<String>`
-- `adParameters: String|null`
+- `adParameters: Object|null` [go to object](#adparameters)
 - `icons: Array<Object>` [go to object](#icon)
 - `trackingEvents: Object`
 
@@ -130,7 +130,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `iframeResource: String|null`
 - `nonlinearClickThroughURLTemplate: String|null`
 - `nonlinearClickTrackingURLTemplates: Array<Object>`
-- `adParameters: String|null`
+- `adParameters: Object|null` [go to object](#adparameters)
 
 ## CompanionAd<a name="companion-ad"></a>
 
@@ -142,7 +142,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `expandedWidth: Number|null`
 - `expandedHeight: Number|null`
 - `apiFramework: String|null`
-- `adSlotID: String|null`
+- `adSlotId: String|null`
 - `pxratio: String|'1'` The pixel ratio for which the companion creative is intended. Default value = 1
 - `renderingMode: String|'default'` Used to indicate when and where to use this companion ad. Default value = default
 - `staticResources: Array<{ url: String, creativeType: String|null }>`
@@ -152,8 +152,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `companionClickThroughURLTemplate: String|null`
 - `companionClickTrackingURLTemplates: Array<Object>`
 - `trackingEvents: Object`
-- `adParameters: String|null`
-- `xmlEncoded: Boolean|null`
+- `adParameters: Object|null` [go to object](#adparameters)
 
 ## Icon<a name="icon"></a>
 
@@ -173,6 +172,7 @@ This object represents a generic Creative. It's used as a parent object for more
 - `iconClickThroughURLTemplate: String|null`
 - `iconClickTrackingURLTemplates: Array<Object>`
 - `iconViewTrackingURLTemplate: String|null`
+- `iconClickFallbackImages: Array<object>` [go to object](#iconclickfallbackimage)
 
 ## Extension<a name="extension"></a>
 
@@ -212,3 +212,19 @@ This object represents a generic Creative. It's used as a parent object for more
 
 - `authority: String`
 - `value: String`
+
+## AdParameters<a name="adparameters"></a>
+
+- `value: String`
+- `xmlEncoded: String|null`
+
+## Survey<a name="survey"></a>
+
+- `value: String`
+- `type: String|null`
+
+## IconClickFallbackImage <a name="iconclickfallbackimage"></a>
+
+- `url: String|null`,
+- `width: String|null`,
+- `height: String|null`

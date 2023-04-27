@@ -81,7 +81,10 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
     'AdParameters'
   );
   if (adParamsElement) {
-    creative.adParameters = parserUtils.parseNodeText(adParamsElement);
+    creative.adParameters = {
+      value: parserUtils.parseNodeText(adParamsElement),
+      xmlEncoded: adParamsElement.getAttribute('xmlEncoded') || null,
+    };
   }
 
   parserUtils
@@ -303,6 +306,28 @@ function parseIcon(iconElement) {
           url: parserUtils.parseNodeText(iconClickTrackingElement),
         });
       });
+
+    const iconClickFallbackImagesElement = parserUtils.childByName(
+      iconClicksElement,
+      'IconClickFallbackImages'
+    );
+
+    if (iconClickFallbackImagesElement) {
+      parserUtils
+        .childrenByName(
+          iconClickFallbackImagesElement,
+          'IconClickFallbackImage'
+        )
+        .forEach((iconClickFallbackImageElement) => {
+          icon.iconClickFallbackImages.push({
+            url:
+              parserUtils.parseNodeText(iconClickFallbackImageElement) || null,
+            width: iconClickFallbackImageElement.getAttribute('width') || null,
+            height:
+              iconClickFallbackImageElement.getAttribute('height') || null,
+          });
+        });
+    }
   }
 
   icon.iconViewTrackingURLTemplate = parserUtils.parseNodeText(

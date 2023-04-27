@@ -118,7 +118,7 @@ function parseAttributes(element) {
  * @param  {String} durationString - The dureation represented as a string.
  * @return {Number}
  */
-function parseDuration(durationString) {
+export function parseDuration(durationString) {
   if (durationString === null || typeof durationString === 'undefined') {
     return -1;
   }
@@ -337,6 +337,19 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     unwrappedAd.blockedAdCategories = unwrappedAd.blockedAdCategories.concat(
       wrapper.blockedAdCategories
     );
+  }
+
+  // Merge Wrapper's creatives containing icon elements
+  if (wrapper.creatives?.length) {
+    // As specified by VAST specs, wrapper should not contain any mediafiles
+    const wrapperCreativesWithIconsNode = wrapper.creatives.filter(
+      (creative) => creative.icons?.length && !creative.mediaFiles.length
+    );
+    if (wrapperCreativesWithIconsNode.length) {
+      unwrappedAd.creatives = unwrappedAd.creatives.concat(
+        wrapperCreativesWithIconsNode
+      );
+    }
   }
 }
 

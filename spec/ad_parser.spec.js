@@ -69,7 +69,10 @@ describe('AdParser', function () {
       expect(ad.adServingId).toBe('Ad_serving_id_12345');
       expect(ad.title).toBe('Ad title');
       expect(ad.description).toBe('Description text');
-      expect(ad.survey).toBe('http://example.com/survey');
+      expect(ad.survey).toMatchObject({
+        type: 'text/javascript',
+        value: 'http://example.com/survey',
+      });
       expect(ad.advertiser.id).toBe('advertiser-desc');
       expect(ad.advertiser.value).toBe('Advertiser name');
       expect(ad.pricing.value).toBe('1.09');

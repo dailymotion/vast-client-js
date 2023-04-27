@@ -17,6 +17,9 @@ export const creatives = `<Creatives>
     </CreativeExtensions>
     <Linear>
       <Duration>00:01:30.123</Duration>
+      <AdParameters xmlEncoded="false">
+          <![CDATA[{"key":"value"}]]>
+      </AdParameters>
       <TrackingEvents>
         <Tracking event="midpoint"><![CDATA[http://example.com/linear-midpoint]]></Tracking>
         <Tracking event="complete"><![CDATA[http://example.com/linear-complete]]></Tracking>
@@ -46,6 +49,19 @@ export const creatives = `<Creatives>
             <IconClickThrough><![CDATA[http://example.com/linear-clickthrough]]></IconClickThrough>
             <IconClickTracking id='icon-click-1'><![CDATA[http://example.com/linear-clicktracking1]]></IconClickTracking>
             <IconClickTracking id='icon-click-2'><![CDATA[http://example.com/linear-clicktracking2]]></IconClickTracking>
+            <IconClickFallbackImages>
+              <IconClickFallbackImage width="10px" height="10px">
+                <![CDATA[http://adserver.com/fallback.png]]>
+              </IconClickFallbackImage>
+              <IconClickFallbackImage width="10px" height="10px">
+              </IconClickFallbackImage>
+              <IconClickFallbackImage  height="10px">
+                <![CDATA[http://adserver.com/fallback.png]]>
+              </IconClickFallbackImage>
+              <IconClickFallbackImage width="10px">
+                <![CDATA[http://adserver.com/fallback.png]]>
+              </IconClickFallbackImage>
+            </IconClickFallbackImages> 
           </IconClicks>
         </Icon>
       </Icons>
@@ -86,9 +102,9 @@ export const creatives = `<Creatives>
   <Creative id="id130986">
     <UniversalAdId idRegistry="daily-motion-NL">NonLinear-12345</UniversalAdId>
     <NonLinearAds>
-      <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI" >
+      <NonLinear id="nonlinear1" width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI" >
         <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
-        <AdParameters>
+        <AdParameters xmlEncoded="false">
           <![CDATA[{"key":"value"}]]>
         </AdParameters>
         <NonLinearClickThrough><![CDATA[http://example.com/nonlinear-clickthrough]]></NonLinearClickThrough>
