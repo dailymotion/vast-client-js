@@ -125,6 +125,25 @@ function extractURLsFromTemplates(URLTemplates) {
 }
 
 /**
+ * Filter URLTemplates elements to keep only valid and safe URL templates.
+ *   To be valid, urls should:
+ *   - have the same protocol as the client
+ *   or
+ *   - be protocol-relative urls
+ *
+ * @param {String|String[]|Object[]} URLTemplates - A string|string[]|object[] of url templates.
+ */
+function filterValidUrlTemplates(URLTemplates) {
+  if (Array.isArray(URLTemplates)) {
+    return URLTemplates.filter(urlTemplate => {
+      const url = urlTemplate.hasOwnProperty('url') ? urlTemplate.url : urlTemplate;
+      return (url.startsWith(location.protocol) || url.startsWith('//'))
+    })
+  }
+  return (URLTemplates.startsWith(location.protocol) || URLTemplates.startsWith('//'));
+}
+
+/**
  * Returns a boolean after checking if the object exists in the array.
  *   true - if the object exists, false otherwise
  *
@@ -234,6 +253,7 @@ export const util = {
   track,
   resolveURLTemplates,
   extractURLsFromTemplates,
+  filterValidUrlTemplates,
   containsTemplateObject,
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,

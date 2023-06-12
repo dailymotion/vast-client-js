@@ -39,6 +39,10 @@ export const inlineTrackersParsed = {
           id: 'sample-impression3',
           url: 'http://example.com/impression3_[RANDOM]',
         },
+        {
+          id: 'invalid-impression-url',
+          url: 'you_shall_not_path',
+        },
       ],
       creatives: [
         {
