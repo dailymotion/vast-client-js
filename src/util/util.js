@@ -131,16 +131,21 @@ function extractURLsFromTemplates(URLTemplates) {
  *   or
  *   - be protocol-relative urls
  *
- * @param {String|String[]|Object[]} URLTemplates - A string|string[]|object[] of url templates.
+ * @param {Array} URLTemplates - A Array of string/object containing urls templates.
  */
 function filterValidUrlTemplates(URLTemplates) {
   if (Array.isArray(URLTemplates)) {
     return URLTemplates.filter(urlTemplate => {
       const url = urlTemplate.hasOwnProperty('url') ? urlTemplate.url : urlTemplate;
-      return (url.startsWith(location.protocol) || url.startsWith('//'))
+      return isValidUrl(url);
     })
   }
-  return (URLTemplates.startsWith(location.protocol) || URLTemplates.startsWith('//'));
+  return isValidUrl(URLTemplates);
+}
+
+function isValidUrl(url) {
+  const regex = /^(https?:\/\/|\/\/)/;
+  return regex.test(url);
 }
 
 /**
