@@ -25,45 +25,8 @@ export class VASTParser extends EventEmitter {
   constructor() {
     super();
     this.maxWrapperDepth = null;
-    // this.URLTemplateFilters = [];
-    // this.parsingOptions = {};
     this.fetchingMethod = null;
   }
-
-  // /**
-  //  * Adds a filter function to the array of filters which are called before fetching a VAST document.
-  //  * @param  {function} filter - The filter function to be added at the end of the array.
-  //  * @return {void}
-  //  */
-  // addURLTemplateFilter(filter) {
-  //   if (typeof filter === 'function') {
-  //     this.URLTemplateFilters.push(filter);
-  //   }
-  // }
-
-  // /**
-  //  * Removes the last element of the url templates filters array.
-  //  * @return {void}
-  //  */
-  // removeURLTemplateFilter() {
-  //   this.URLTemplateFilters.pop();
-  // }
-
-  // /**
-  //  * Returns the number of filters of the url templates filters array.
-  //  * @return {Number}
-  //  */
-  // countURLTemplateFilters() {
-  //   return this.URLTemplateFilters.length;
-  // }
-
-  // /**
-  //  * Removes all the filter functions from the url templates filters array.
-  //  * @return {void}
-  //  */
-  // clearURLTemplateFilters() {
-  //   this.URLTemplateFilters = [];
-  // }
 
   /**
    * Tracks the error provided in the errorCode parameter and emits a VAST-error event for the given error.
@@ -428,13 +391,6 @@ export class VASTParser extends EventEmitter {
         ad.nextWrapperURL,
         previousUrl
       );
-
-      // TODO OK: move everything related to URLTemplateFilters to fetcher.js
-      // + update doc accordingly
-      // + filter already called in fetching method
-      // this.URLTemplateFilters.forEach((filter) => {
-      //   ad.nextWrapperURL = filter(ad.nextWrapperURL);
-      // });
 
       // If allowMultipleAds is set inside the parameter 'option' of public method
       // override the vast value by the one provided
