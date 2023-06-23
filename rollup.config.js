@@ -15,74 +15,97 @@ function onwarn(warning) {
   }
 }
 
-function minify(config) {
-  const minifiedConfig = Object.assign({}, config);
-  minifiedConfig.output = Object.assign({}, config.output);
-  minifiedConfig.plugins = Object.assign([], config.plugins);
+// Node configuration
 
-  const outputFile = minifiedConfig.output.file;
-  const extensionIndex = outputFile.lastIndexOf('.js');
-  minifiedConfig.output.file =
-    outputFile.substr(0, extensionIndex) +
-    '.min' +
-    outputFile.substr(extensionIndex);
+function createNodeConfig(filePath, minifiedOutput, notMinifiedOutput) {
+  let config = {
+    input: filePath,
+    output: [
+      {
+        format: 'cjs',
+        file: `dist/node/${notMinifiedOutput}`,
+      },
+      {
+        format: 'cjs',
+        file: `dist/node/min/${minifiedOutput}`,
+        plugins: [terser()],
+      },
+    ],
+    plugins: [
+      alias({
+        entries: [
+          {
+            find: './urlhandlers/mock_node_url_handler',
+            replacement: './urlhandlers/node_url_handler',
+          },
+        ],
+      }),
+      resolve({
+        preferBuiltins: true,
+      }),
+      babelPlugin,
+    ],
+    onwarn,
+  };
 
-  minifiedConfig.plugins.push(terser());
-
-  return minifiedConfig;
+  return config;
 }
 
-const browserConfig = {
-  input: 'src/index.js',
-  output: {
-    name: 'VAST',
-    format: 'umd',
-    file: 'dist/vast-client.js',
-  },
-  plugins: [babelPlugin],
-};
+// Browser configuration
 
-const browserScriptConfig = {
-  input: 'src/index.js',
-  output: {
-    name: 'VAST',
-    format: 'iife',
-    file: 'dist/vast-client-browser.js',
-  },
-  plugins: [babelPlugin],
-};
+function createBrowserConfig(filePath, minifiedOutput, notMinifiedOutput) {
+  let config = {
+    input: filePath,
+    output: [
+      {
+        format: 'es',
+        file: `dist/${notMinifiedOutput}`,
+      },
+      {
+        format: 'es',
+        file: `dist/min/${minifiedOutput}`,
+        plugins: [terser()],
+      },
+    ],
+    plugins: [babelPlugin],
+  };
 
-const nodeConfig = {
-  input: 'src/index.js',
-  output: {
-    format: 'cjs',
-    file: 'dist/vast-client-node.js',
-  },
-  plugins: [
-    alias({
-      entries: [
-        {
-          find: './urlhandlers/mock_node_url_handler',
-          replacement: './urlhandlers/node_url_handler',
-        },
-      ],
-    }),
-    resolve({
-      preferBuiltins: true,
-    }),
-    babelPlugin,
-  ],
-  onwarn,
-};
+  return config;
+}
 
 export default [
-  // Browser-friendly UMD build [package.json "browser"]
-  browserConfig,
-  minify(browserConfig),
-
+  // Browser-friendly build [package.json "browser"]
+  createBrowserConfig(
+    'src/parser/vast_parser.js',
+    'vast-parser.min.js',
+    'vast-parser.js'
+  ),
+  createBrowserConfig(
+    'src/vast_tracker.js',
+    'vast-tracker.min.js',
+    'vast-tracker.js'
+  ),
+  createBrowserConfig('src/index.js', 'vast-client.min.js', 'vast-client.js'),
+  createBrowserConfig('src/vast_client.js', 'client.min.js', 'client.js'),
   // CommonJS build for Node usage [package.json "main"]
-  nodeConfig,
-  minify(nodeConfig),
-
-  minify(browserScriptConfig),
+  createNodeConfig(
+    'src/index.js',
+    'vast-client-node.min.js',
+    'vast-client-node.js'
+  ),
+  createNodeConfig(
+    'src/parser/vast_parser.js',
+    'vast-parser-node.min.js',
+    'vast-parser-node.min.js'
+  ),
+  createNodeConfig(
+    'src/vast_tracker.js',
+    'vast-tracker-node.min.js',
+    'vast-tracker-node.js'
+  ),
+  createNodeConfig(
+    'src/vast_client.js',
+    'client-node.min.js',
+    'client-node.js'
+  ),
 ];
