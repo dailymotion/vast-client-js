@@ -1,5 +1,6 @@
 import { Storage } from './util/storage';
 import { VASTParser } from './parser/vast_parser';
+import { Fetcher } from './fetcher.js';
 
 /**
  * This class provides methods to fetch and parse a VAST document using VASTParser.
@@ -18,13 +19,9 @@ export class VASTClient {
   constructor(cappingFreeLunch, cappingMinimumTimeInterval, customStorage) {
     this.cappingFreeLunch = cappingFreeLunch || 0;
     this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
-    this.defaultOptions = {
-      withCredentials: false,
-      timeout: 0,
-    };
     this.vastParser = new VASTParser();
     this.storage = customStorage || new Storage();
-
+    this.fetcher = new Fetcher();
     // Init values if not already set
     if (this.lastSuccessfulAd === undefined) {
       this.lastSuccessfulAd = 0;
@@ -36,6 +33,39 @@ export class VASTClient {
     if (this.totalCallsTimeout === undefined) {
       this.totalCallsTimeout = 0;
     }
+  }
+
+  /**
+   * Adds a filter function to the array of filters which are called before fetching a VAST document.
+   * @param  {function} filter - The filter function to be added at the end of the array.
+   * @return {void}
+   */
+  addURLTemplateFilter(filter) {
+    this.fetcher.addURLTemplateFilter(filter);
+  }
+
+  /**
+   * Removes the last element of the url templates filters array.
+   * @return {void}
+   */
+  removeURLTemplateFilter() {
+    this.fetcher.removeURLTemplateFilter();
+  }
+
+  /**
+   * Returns the number of filters of the url templates filters array.
+   * @return {Number}
+   */
+  countURLTemplateFilters() {
+    return this.fetcher.countURLTemplateFilters();
+  }
+
+  /**
+   * Removes all the filter functions from the url templates filters array.
+   * @return {void}
+   */
+  clearURLTemplateFilters() {
+    this.fetcher.clearURLTemplateFilters();
   }
 
   getParser() {
@@ -92,7 +122,7 @@ export class VASTClient {
    */
   get(url, options = {}) {
     const now = Date.now();
-    options = Object.assign({}, this.defaultOptions, options);
+    // options = Object.assign({}, this.defaultOptions, options);
 
     // By default the client resolves only the first Ad or AdPod
     if (!options.hasOwnProperty('resolveAll')) {
@@ -132,9 +162,33 @@ export class VASTClient {
         );
       }
 
-      this.vastParser
-        .getAndParseVAST(url, options)
-        .then((response) => resolve(response))
+      // const fetcher = new Fetcher(options);
+
+      this.vastParser.initParsingStatus(options);
+      this.fetcher.setOptions(options);
+      this.vastParser.fetchingMethod = this.fetcher.fetchVAST.bind(
+        this.fetcher
+      );
+
+      this.fetcher.rootURL = this.vastParser.rootURL;
+
+      this.fetcher
+        .fetchVAST(
+          url,
+          { wrapperDepth: 0, previousUrl: null, wrapperAd: null },
+          this.vastParser.maxWrapperDepth,
+          this.vastParser.parentURLs,
+          this.vastParser.emit.bind(this.vastParser)
+        )
+        .then((xml) => {
+          options.previousUrl = url;
+          options.isRootVAST = true;
+          console.log(options);
+          return this.vastParser.parse(xml, options).then((resolvedAd) => {
+            const vastResponse = this.vastParser.buildVASTResponse(resolvedAd);
+            resolve(vastResponse);
+          });
+        })
         .catch((err) => reject(err));
     });
   }
