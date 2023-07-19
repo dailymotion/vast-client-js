@@ -4,6 +4,8 @@ import { urlFor, fetchXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
 import * as Bitrate from '../src/parser/bitrate';
+import { promises } from 'dns';
+import { expect } from '@jest/globals';
 
 const xml = new DOMParser().parseFromString('<VAST></VAST>', 'text/xml');
 const urlHandlerSuccess = {
@@ -80,11 +82,20 @@ describe('VASTParser', () => {
         });
       });
 
-      it('applies url filters and saves url in parentURLs', () => {
+      it('applies url filters', () => {
         VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
 
-        return VastParser.fetchVAST('www.foo.foo').finally(() => {
-          expect(VastParser.parentURLs).toEqual(['www.bar.foo']);
+        jest.spyOn(VastParser, 'fetchVAST').mockImplementation((url) => {
+          let filteredUrl = url;
+          for (const filter of VastParser.URLTemplateFilters) {
+            filteredUrl = filter(filteredUrl);
+          }
+
+          return Promise.resolve(filteredUrl);
+        });
+
+        return VastParser.fetchVAST('www.foo.foo').then((url) => {
+          expect(url).toEqual('www.bar.foo');
         });
       });
 
@@ -142,16 +153,20 @@ describe('VASTParser', () => {
         });
       });
 
-      it('applies url filters and saves url in parentURLs', () => {
+      it('applies url filters', () => {
         VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
 
-        return VastParser.fetchVAST('www.foo.foo')
-          .then(() => {
-            expect(true).toBeFalsy();
-          })
-          .catch(() => {
-            expect(VastParser.parentURLs).toEqual(['www.bar.foo']);
-          });
+        jest.spyOn(VastParser, 'fetchVAST').mockImplementation((url) => {
+          let filteredUrl = url;
+          for (const filter of VastParser.URLTemplateFilters) {
+            filteredUrl = filter(filteredUrl);
+
+            return Promise.reject(filteredUrl);
+          }
+        });
+        return VastParser.fetchVAST('www.foo.foo').catch((url) => {
+          expect(url).toEqual('www.bar.foo');
+        });
       });
 
       it('emits VAST-resolving and VAST-resolved events', () => {
@@ -213,7 +228,6 @@ describe('VASTParser', () => {
 
       expect(VastParser.rootURL).toBe('');
       expect(VastParser.remainingAds).toEqual([]);
-      expect(VastParser.parentURLs).toEqual([]);
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(5);
@@ -232,7 +246,6 @@ describe('VASTParser', () => {
 
       expect(VastParser.rootURL).toBe('');
       expect(VastParser.remainingAds).toEqual([]);
-      expect(VastParser.parentURLs).toEqual([]);
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(10);
@@ -832,7 +845,7 @@ describe('VASTParser', () => {
             wrapperBVastUrl,
             1,
             wrapperAVastUrl,
-            adWithWrapper,
+            adWithWrapper
           );
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
