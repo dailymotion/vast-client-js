@@ -22,6 +22,7 @@ export class VASTClient {
     this.vastParser = new VASTParser();
     this.storage = customStorage || new Storage();
     this.fetcher = new Fetcher();
+    this.vastParser.fetchingMethod = this.fetcher.fetchVAST.bind(this.fetcher);
     // Init values if not already set
     if (this.lastSuccessfulAd === undefined) {
       this.lastSuccessfulAd = 0;
@@ -114,6 +115,17 @@ export class VASTClient {
   }
 
   /**
+   * Parses the given xml Object into a VASTResponse.
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param {*} xml - An object representing a vast xml document.
+   * @param {*} options - An optional Object of parameters to be used in the parsing and fetching process.
+   * @returns {Promise}
+   */
+  parseVAST(xml, options = {}) {
+    this.fetcher.setOptions(options);
+    return this.vastParser.parseVAST(xml, options);
+  }
+  /**
    * Gets a parsed VAST document for the given url, applying the skipping rules defined.
    * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
    * @param  {String} url - The url to use to fecth the VAST document.
@@ -162,14 +174,8 @@ export class VASTClient {
         );
       }
 
-      // const fetcher = new Fetcher(options);
-
       this.vastParser.initParsingStatus(options);
       this.fetcher.setOptions(options);
-      this.vastParser.fetchingMethod = this.fetcher.fetchVAST.bind(
-        this.fetcher
-      );
-
       this.fetcher.rootURL = this.vastParser.rootURL;
 
       this.fetcher
@@ -183,7 +189,6 @@ export class VASTClient {
         .then((xml) => {
           options.previousUrl = url;
           options.isRootVAST = true;
-          console.log(options);
           return this.vastParser.parse(xml, options).then((resolvedAd) => {
             const vastResponse = this.vastParser.buildVASTResponse(resolvedAd);
             resolve(vastResponse);

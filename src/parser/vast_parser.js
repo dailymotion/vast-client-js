@@ -65,7 +65,6 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - The options to initialize a parsing sequence
    */
   initParsingStatus(options = {}) {
-    console.log(options);
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.parsingOptions = { allowMultipleAds: options.allowMultipleAds };
     this.resetParsingStatus();
@@ -260,7 +259,6 @@ export class VASTParser extends EventEmitter {
       allowMultipleAds,
     } = {}
   ) {
-    console.log(isRootVAST);
     let ads = [];
     // allowMultipleAds was introduced in VAST 3 as wrapper attribute
     // for retrocompatibility set it to true for vast pre-version 3

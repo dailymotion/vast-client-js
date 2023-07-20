@@ -14,7 +14,6 @@ export class Fetcher {
   }
 
   setOptions(options = {}) {
-    console.log(options);
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.URLTemplateFilters = [];
     this.fetchingOptions = {
