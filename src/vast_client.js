@@ -183,12 +183,12 @@ export class VASTClient {
           url,
           { wrapperDepth: 0, previousUrl: null, wrapperAd: null },
           this.vastParser.maxWrapperDepth,
-          this.vastParser.parentURLs,
           this.vastParser.emit.bind(this.vastParser)
         )
         .then((xml) => {
           options.previousUrl = url;
           options.isRootVAST = true;
+          options.url = url;
           return this.vastParser.parse(xml, options).then((resolvedAd) => {
             const vastResponse = this.vastParser.buildVASTResponse(resolvedAd);
             resolve(vastResponse);

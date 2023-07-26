@@ -15,7 +15,7 @@ export class Fetcher {
 
   setOptions(options = {}) {
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
-    this.URLTemplateFilters = [];
+    // this.URLTemplateFilters = [];
     this.fetchingOptions = {
       timeout: options.timeout || DEFAULT_TIMEOUT,
       withCredentials: options.withCredentials || false,
@@ -65,7 +65,6 @@ export class Fetcher {
    * @param {String} previousUrl - Url of the previous VAST.
    * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @param {Number} maxWrapperDepth - The maximum number of Wrapper that can be fetch
-   * @param {Array<String>} parentUrls Array containing all the previous fetched URL
    * @param {emitter} emitter - The function used to Emit event
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
@@ -76,7 +75,6 @@ export class Fetcher {
     url,
     { wrapperDepth = 0, previousUrl = null, wrapperAd = null } = {},
     maxWrapperDepth,
-    parentURLs,
     emitter
   ) {
     return new Promise((resolve, reject) => {
@@ -88,8 +86,6 @@ export class Fetcher {
       });
 
       this.rootURL = url;
-
-      parentURLs.push(url);
 
       emitter('VAST-resolving', {
         url,

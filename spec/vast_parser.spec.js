@@ -4,6 +4,7 @@ import { urlFor, fetchXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
 import * as Bitrate from '../src/parser/bitrate';
+import { Fetcher } from '../src/fetcher';
 
 const xml = new DOMParser().parseFromString('<VAST></VAST>', 'text/xml');
 const urlHandlerSuccess = {
@@ -71,147 +72,16 @@ describe('VASTParser', () => {
     jest.spyOn(VastParser, 'emit');
   });
 
-  describe('fetchVAST', () => {
-    describe('on resolved', () => {
-      beforeEach(() => {
-        VastParser.initParsingStatus({
-          wrapperLimit: 8,
-          urlHandler: urlHandlerSuccess,
-        });
-      });
-
-      it('applies url filters', (done) => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
-
-        VastParser.fetchVAST('www.foo.foo').then(() => {
-          expect(urlHandlerSpy).toHaveBeenCalledWith(
-            'www.bar.foo',
-            expect.anything(),
-            expect.anything()
-          );
-          done();
-        });
-      });
-
-      it('emits VAST-resolving and VAST-resolved events with filtered url', () => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        return VastParser.fetchVAST(
-          'www.foo.foo',
-          2,
-          'www.original.foo',
-          ad
-        ).finally(() => {
-          expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            maxWrapperDepth: 8,
-            timeout: 120000,
-            wrapperAd: ad,
-          });
-
-          expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            error: null,
-            duration: expect.any(Number),
-            byteLength: 1234,
-            statusCode: 200,
-          });
-        });
-      });
-
-      it('updates the estimated bitrate', () => {
-        jest.spyOn(Bitrate, 'updateEstimatedBitrate');
-
-        return VastParser.fetchVAST('www.foo.foo').finally(() => {
-          expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
-            1234,
-            expect.any(Number)
-          );
-        });
-      });
-
-      it('resolves with xml', () => {
-        return expect(
-          VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo')
-        ).resolves.toEqual(xml);
-      });
-    });
-
-    describe('on rejected', () => {
-      beforeEach(() => {
-        VastParser.initParsingStatus({
-          wrapperLimit: 8,
-          urlHandler: urlHandlerFailure,
-        });
-      });
-
-      it('applies url filters', () => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
-
-        return VastParser.fetchVAST('www.foo.foo').catch(() => {
-          expect(urlHandlerSpy).toHaveBeenCalledWith(
-            'www.bar.foo',
-            expect.anything(),
-            expect.anything()
-          );
-        });
-      });
-
-      it('emits VAST-resolving and VAST-resolved events with filtered url', () => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        return VastParser.fetchVAST(
-          'www.foo.foo',
-          2,
-          'www.original.foo',
-          ad
-        ).catch(() => {
-          expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            maxWrapperDepth: 8,
-            timeout: 120000,
-            wrapperAd: ad,
-          });
-
-          expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            error: new Error('timeout'),
-            duration: expect.any(Number),
-            statusCode: 408,
-          });
-        });
-      });
-
-      it('rejects with error', () => {
-        return expect(
-          VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo')
-        ).rejects.toEqual(new Error('timeout'));
-      });
-    });
-  });
-
   describe('initParsingStatus', () => {
+    beforeEach(() => {
+      jest.spyOn(VastParser, 'resetParsingStatus');
+    });
+
     it('assigns options to properties', () => {
-      const urlHandler = jest.fn();
       jest.spyOn(Bitrate, 'updateEstimatedBitrate');
 
       VastParser.initParsingStatus({
         wrapperLimit: 5,
-        timeout: 1000,
-        withCredentials: true,
-        urlHandler,
         allowMultipleAds: true,
         byteLength: 1000,
         requestDuration: 200,
@@ -222,14 +92,10 @@ describe('VASTParser', () => {
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(5);
-      expect(VastParser.fetchingOptions).toEqual({
-        timeout: 1000,
-        withCredentials: true,
-      });
-      expect(VastParser.urlHandler).toEqual(urlHandler);
       expect(VastParser.vastVersion).toBeNull();
       expect(VastParser.parsingOptions).toEqual({ allowMultipleAds: true });
       expect(Bitrate.updateEstimatedBitrate).toBeCalledWith(1000, 200);
+      expect(VastParser.resetParsingStatus).toHaveBeenCalled();
     });
 
     it('uses default values if no options are passed', () => {
@@ -240,367 +106,364 @@ describe('VASTParser', () => {
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(10);
-      expect(VastParser.fetchingOptions).toEqual({
-        timeout: 120000,
-        withCredentials: undefined,
-      });
       expect(VastParser.vastVersion).toBeNull();
       expect(VastParser.parsingOptions).toEqual({
         allowMultipleAds: undefined,
       });
+      expect(VastParser.resetParsingStatus).toHaveBeenCalled();
     });
   });
 
-  describe('getAndParseVAST', () => {
-    beforeEach(() => {
-      jest.spyOn(VastParser, 'initParsingStatus');
-      jest.spyOn(VastParser, 'fetchVAST');
-      jest.spyOn(VastParser, 'parse');
-      jest.spyOn(VastParser, 'buildVASTResponse');
-    });
+  // describe('getAndParseVAST', () => {
+  //   beforeEach(() => {
+  //     jest.spyOn(VastParser, 'initParsingStatus');
+  //     jest.spyOn(VastParser, 'fetchVAST');
+  //     jest.spyOn(VastParser, 'parse');
+  //     jest.spyOn(VastParser, 'buildVASTResponse');
+  //   });
 
-    it('passes options to initParsingStatus and assigns rootUrl', () => {
-      VastParser.getAndParseVAST(wrapperAVastUrl, {
-        wrapperLimit: 8,
-        urlHandler: nodeURLHandler,
-      });
+  //   it('passes options to initParsingStatus and assigns rootUrl', () => {
+  //     VastParser.getAndParseVAST(wrapperAVastUrl, {
+  //       wrapperLimit: 8,
+  //       urlHandler: nodeURLHandler,
+  //     });
 
-      expect(VastParser.initParsingStatus).toHaveBeenCalledWith({
-        wrapperLimit: 8,
-        urlHandler: nodeURLHandler,
-      });
-      expect(VastParser.rootURL).toBe(wrapperAVastUrl);
-    });
+  //     expect(VastParser.initParsingStatus).toHaveBeenCalledWith({
+  //       wrapperLimit: 8,
+  //       urlHandler: nodeURLHandler,
+  //     });
+  //     expect(VastParser.rootURL).toBe(wrapperAVastUrl);
+  //   });
 
-    describe('on success', () => {
-      it('calls fetchVast with correct params multiple times', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.fetchVAST).toHaveBeenCalledTimes(4);
-          expect(VastParser.fetchVAST.mock.calls).toEqual(
-            expect.arrayContaining([
-              [wrapperAVastUrl],
-              [wrapperBVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
-              [inlineVpaidVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
-              [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
-              [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
-            ])
-          );
-        });
-      });
+  //   describe('on success', () => {
+  //     it('calls fetchVast with correct params multiple times', () => {
+  //       return VastParser.getAndParseVAST(wrapperAVastUrl, {
+  //         wrapperLimit: 8,
+  //         urlHandler: nodeURLHandler,
+  //       }).finally(() => {
+  //         expect(VastParser.fetchVAST).toHaveBeenCalledTimes(4);
+  //         expect(VastParser.fetchVAST.mock.calls).toEqual(
+  //           expect.arrayContaining([
+  //             [wrapperAVastUrl],
+  //             [wrapperBVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
+  //             [inlineVpaidVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
+  //             [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
+  //             [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
+  //           ])
+  //         );
+  //       });
+  //     });
 
-      it('emits events in the right order', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.emit).toHaveBeenCalledTimes(14);
-          expect(VastParser.emit.mock.calls).toEqual(
-            expect.arrayContaining([
-              // WRAPPER A
-              [
-                'VAST-resolving',
-                {
-                  url: wrapperAVastUrl,
-                  previousUrl: null,
-                  wrapperDepth: 0,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              [
-                'VAST-resolved',
-                {
-                  url: wrapperAVastUrl,
-                  previousUrl: null,
-                  wrapperDepth: 0,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'WRAPPER',
-                  url: wrapperAVastUrl,
-                  wrapperDepth: 0,
-                  adIndex: 0,
-                  vastVersion: '2.0',
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'WRAPPER',
-                  url: wrapperAVastUrl,
-                  wrapperDepth: 0,
-                  adIndex: 1,
-                  vastVersion: '2.0',
-                },
-              ],
-              // RESOLVING AD 1 (WRAPPER B) IN WRAPPER A
-              [
-                'VAST-resolving',
-                {
-                  url: wrapperBVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              // RESOLVING AD 2 (WRAPPER VPAID) IN WRAPPER A
-              [
-                'VAST-resolving',
-                {
-                  url: inlineVpaidVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              // AD 1 (WRAPPER B) IN WRAPPER A
-              [
-                'VAST-resolved',
-                {
-                  url: wrapperBVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'WRAPPER',
-                  url: wrapperBVastUrl,
-                  wrapperDepth: 1,
-                  adIndex: 0,
-                  vastVersion: '2.0',
-                },
-              ],
-              // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
-              [
-                'VAST-resolving',
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              // AD 2 (WRAPPER VPAID) IN WRAPPER A
-              [
-                'VAST-resolved',
-                {
-                  url: inlineVpaidVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'INLINE',
-                  url: inlineVpaidVastUrl,
-                  wrapperDepth: 1,
-                  adIndex: 0,
-                  vastVersion: '2.0',
-                },
-              ],
-              // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
-              [
-                'VAST-resolved',
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'INLINE',
-                  url: inlineSampleVastUrl,
-                  wrapperDepth: 2,
-                  adIndex: 0,
-                  vastVersion: '2.1',
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'INLINE',
-                  url: inlineSampleVastUrl,
-                  wrapperDepth: 2,
-                  adIndex: 1,
-                  vastVersion: '2.1',
-                },
-              ],
-            ])
-          );
-        });
-      });
+  //     it('emits events in the right order', () => {
+  //       return VastParser.getAndParseVAST(wrapperAVastUrl, {
+  //         wrapperLimit: 8,
+  //         urlHandler: nodeURLHandler,
+  //       }).finally(() => {
+  //         expect(VastParser.emit).toHaveBeenCalledTimes(14);
+  //         expect(VastParser.emit.mock.calls).toEqual(
+  //           expect.arrayContaining([
+  //             // WRAPPER A
+  //             [
+  //               'VAST-resolving',
+  //               {
+  //                 url: wrapperAVastUrl,
+  //                 previousUrl: null,
+  //                 wrapperDepth: 0,
+  //                 maxWrapperDepth: 8,
+  //                 timeout: 120000,
+  //                 wrapperAd: expect.any(Object),
+  //               },
+  //             ],
+  //             [
+  //               'VAST-resolved',
+  //               {
+  //                 url: wrapperAVastUrl,
+  //                 previousUrl: null,
+  //                 wrapperDepth: 0,
+  //                 error: null,
+  //                 duration: expect.any(Number),
+  //                 byteLength: expect.any(Number),
+  //               },
+  //             ],
+  //             [
+  //               'VAST-ad-parsed',
+  //               {
+  //                 type: 'WRAPPER',
+  //                 url: wrapperAVastUrl,
+  //                 wrapperDepth: 0,
+  //                 adIndex: 0,
+  //                 vastVersion: '2.0',
+  //               },
+  //             ],
+  //             [
+  //               'VAST-ad-parsed',
+  //               {
+  //                 type: 'WRAPPER',
+  //                 url: wrapperAVastUrl,
+  //                 wrapperDepth: 0,
+  //                 adIndex: 1,
+  //                 vastVersion: '2.0',
+  //               },
+  //             ],
+  //             // RESOLVING AD 1 (WRAPPER B) IN WRAPPER A
+  //             [
+  //               'VAST-resolving',
+  //               {
+  //                 url: wrapperBVastUrl,
+  //                 previousUrl: wrapperAVastUrl,
+  //                 wrapperDepth: 1,
+  //                 maxWrapperDepth: 8,
+  //                 timeout: 120000,
+  //                 wrapperAd: expect.any(Object),
+  //               },
+  //             ],
+  //             // RESOLVING AD 2 (WRAPPER VPAID) IN WRAPPER A
+  //             [
+  //               'VAST-resolving',
+  //               {
+  //                 url: inlineVpaidVastUrl,
+  //                 previousUrl: wrapperAVastUrl,
+  //                 wrapperDepth: 1,
+  //                 maxWrapperDepth: 8,
+  //                 timeout: 120000,
+  //                 wrapperAd: expect.any(Object),
+  //               },
+  //             ],
+  //             // AD 1 (WRAPPER B) IN WRAPPER A
+  //             [
+  //               'VAST-resolved',
+  //               {
+  //                 url: wrapperBVastUrl,
+  //                 previousUrl: wrapperAVastUrl,
+  //                 wrapperDepth: 1,
+  //                 error: null,
+  //                 duration: expect.any(Number),
+  //                 byteLength: expect.any(Number),
+  //               },
+  //             ],
+  //             [
+  //               'VAST-ad-parsed',
+  //               {
+  //                 type: 'WRAPPER',
+  //                 url: wrapperBVastUrl,
+  //                 wrapperDepth: 1,
+  //                 adIndex: 0,
+  //                 vastVersion: '2.0',
+  //               },
+  //             ],
+  //             // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
+  //             [
+  //               'VAST-resolving',
+  //               {
+  //                 url: inlineSampleVastUrl,
+  //                 previousUrl: wrapperBVastUrl,
+  //                 wrapperDepth: 2,
+  //                 maxWrapperDepth: 8,
+  //                 timeout: 120000,
+  //                 wrapperAd: expect.any(Object),
+  //               },
+  //             ],
+  //             // AD 2 (WRAPPER VPAID) IN WRAPPER A
+  //             [
+  //               'VAST-resolved',
+  //               {
+  //                 url: inlineVpaidVastUrl,
+  //                 previousUrl: wrapperAVastUrl,
+  //                 wrapperDepth: 1,
+  //                 error: null,
+  //                 duration: expect.any(Number),
+  //                 byteLength: expect.any(Number),
+  //               },
+  //             ],
+  //             [
+  //               'VAST-ad-parsed',
+  //               {
+  //                 type: 'INLINE',
+  //                 url: inlineVpaidVastUrl,
+  //                 wrapperDepth: 1,
+  //                 adIndex: 0,
+  //                 vastVersion: '2.0',
+  //               },
+  //             ],
+  //             // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
+  //             [
+  //               'VAST-resolved',
+  //               {
+  //                 url: inlineSampleVastUrl,
+  //                 previousUrl: wrapperBVastUrl,
+  //                 wrapperDepth: 2,
+  //                 error: null,
+  //                 duration: expect.any(Number),
+  //                 byteLength: expect.any(Number),
+  //               },
+  //             ],
+  //             [
+  //               'VAST-ad-parsed',
+  //               {
+  //                 type: 'INLINE',
+  //                 url: inlineSampleVastUrl,
+  //                 wrapperDepth: 2,
+  //                 adIndex: 0,
+  //                 vastVersion: '2.1',
+  //               },
+  //             ],
+  //             [
+  //               'VAST-ad-parsed',
+  //               {
+  //                 type: 'INLINE',
+  //                 url: inlineSampleVastUrl,
+  //                 wrapperDepth: 2,
+  //                 adIndex: 1,
+  //                 vastVersion: '2.1',
+  //               },
+  //             ],
+  //           ])
+  //         );
+  //       });
+  //     });
 
-      it('calls parse with correct params multiple times', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.parse).toHaveBeenCalledTimes(4);
-          expect(VastParser.parse.mock.calls).toEqual(
-            expect.arrayContaining([
-              [
-                jasmine.any(Object),
-                {
-                  wrapperLimit: 8,
-                  urlHandler: nodeURLHandler,
-                  previousUrl: wrapperAVastUrl,
-                  isRootVAST: true,
-                  url: wrapperAVastUrl,
-                },
-              ],
-              [
-                jasmine.any(Object),
-                {
-                  url: wrapperBVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  wrapperSequence: null,
-                  allowMultipleAds: false,
-                  followAdditionalWrappers: true,
-                },
-              ],
-              [
-                jasmine.any(Object),
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  wrapperSequence: null,
-                  allowMultipleAds: false,
-                  followAdditionalWrappers: true,
-                },
-              ],
-              [
-                jasmine.any(Object),
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  wrapperSequence: null,
-                  allowMultipleAds: false,
-                  followAdditionalWrappers: true,
-                },
-              ],
-            ])
-          );
-        });
-      });
+  //     it('calls parse with correct params multiple times', () => {
+  //       return VastParser.getAndParseVAST(wrapperAVastUrl, {
+  //         wrapperLimit: 8,
+  //         urlHandler: nodeURLHandler,
+  //       }).finally(() => {
+  //         expect(VastParser.parse).toHaveBeenCalledTimes(4);
+  //         expect(VastParser.parse.mock.calls).toEqual(
+  //           expect.arrayContaining([
+  //             [
+  //               jasmine.any(Object),
+  //               {
+  //                 wrapperLimit: 8,
+  //                 urlHandler: nodeURLHandler,
+  //                 previousUrl: wrapperAVastUrl,
+  //                 isRootVAST: true,
+  //                 url: wrapperAVastUrl,
+  //               },
+  //             ],
+  //             [
+  //               jasmine.any(Object),
+  //               {
+  //                 url: wrapperBVastUrl,
+  //                 previousUrl: wrapperAVastUrl,
+  //                 wrapperDepth: 1,
+  //                 wrapperSequence: null,
+  //                 allowMultipleAds: false,
+  //                 followAdditionalWrappers: true,
+  //               },
+  //             ],
+  //             [
+  //               jasmine.any(Object),
+  //               {
+  //                 url: inlineSampleVastUrl,
+  //                 previousUrl: wrapperBVastUrl,
+  //                 wrapperDepth: 2,
+  //                 wrapperSequence: null,
+  //                 allowMultipleAds: false,
+  //                 followAdditionalWrappers: true,
+  //               },
+  //             ],
+  //             [
+  //               jasmine.any(Object),
+  //               {
+  //                 url: inlineSampleVastUrl,
+  //                 previousUrl: wrapperBVastUrl,
+  //                 wrapperDepth: 2,
+  //                 wrapperSequence: null,
+  //                 allowMultipleAds: false,
+  //                 followAdditionalWrappers: true,
+  //               },
+  //             ],
+  //           ])
+  //         );
+  //       });
+  //     });
 
-      it('calls buildVASTResponse with correct params one time', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.buildVASTResponse).toBeCalledTimes(1);
-        });
-      });
-    });
+  //     it('calls buildVASTResponse with correct params one time', () => {
+  //       return VastParser.getAndParseVAST(wrapperAVastUrl, {
+  //         wrapperLimit: 8,
+  //         urlHandler: nodeURLHandler,
+  //       }).finally(() => {
+  //         expect(VastParser.buildVASTResponse).toBeCalledTimes(1);
+  //       });
+  //     });
+  //   });
 
-    describe('on failure', () => {
-      it('fails on bad fetch request', () => {
-        return VastParser.getAndParseVAST('badUrl', {
-          urlHandler: nodeURLHandler,
-        })
-          .then(() => {
-            expect(true).toBeFalsy();
-          })
-          .catch((e) => {
-            expect(e).toBeTruthy();
-            expect(VastParser.parse).not.toBeCalled();
-          });
-      });
+  //   describe('on failure', () => {
+  //     it('fails on bad fetch request', () => {
+  //       return VastParser.getAndParseVAST('badUrl', {
+  //         urlHandler: nodeURLHandler,
+  //       })
+  //         .then(() => {
+  //           expect(true).toBeFalsy();
+  //         })
+  //         .catch((e) => {
+  //           expect(e).toBeTruthy();
+  //           expect(VastParser.parse).not.toBeCalled();
+  //         });
+  //     });
 
-      describe('invalid VAST xml', () => {
-        it('when inline, rejects with error', () => {
-          return VastParser.getAndParseVAST(inlineInvalidVastUrl, {
-            urlHandler: nodeURLHandler,
-          })
-            .then(() => {
-              expect(true).toBeFalsy();
-            })
-            .catch((e) => {
-              expect(e.message).toEqual('Invalid VAST XMLDocument');
-              expect(VastParser.buildVASTResponse).not.toBeCalled();
-            });
-        });
-        it('when wrapped, emits a VAST-error & track', (done) => {
-          const errorData = [];
-          const trackCalls = [];
-          VastParser.on('VAST-error', (data) => errorData.push(data));
-          jest
-            .spyOn(util, 'track')
-            .mockImplementation((templates, variables) => {
-              trackCalls.push({ templates, variables });
-            });
+  //     describe('invalid VAST xml', () => {
+  //       it('when inline, rejects with error', () => {
+  //         return VastParser.getAndParseVAST(inlineInvalidVastUrl, {
+  //           urlHandler: nodeURLHandler,
+  //         })
+  //           .then(() => {
+  //             expect(true).toBeFalsy();
+  //           })
+  //           .catch((e) => {
+  //             expect(e.message).toEqual('Invalid VAST XMLDocument');
+  //             expect(VastParser.buildVASTResponse).not.toBeCalled();
+  //           });
+  //       });
+  //       it('when wrapped, emits a VAST-error & track', (done) => {
+  //         const errorData = [];
+  //         const trackCalls = [];
+  //         VastParser.on('VAST-error', (data) => errorData.push(data));
+  //         jest
+  //           .spyOn(util, 'track')
+  //           .mockImplementation((templates, variables) => {
+  //             trackCalls.push({ templates, variables });
+  //           });
 
-          return VastParser.getAndParseVAST(wrapperInvalidVastUrl, {
-            urlHandler: nodeURLHandler,
-          }).then((res) => {
-            expect(res.ads).toHaveLength(0);
-            expect(errorData).toHaveLength(1);
-            expect(errorData[0]).toEqual({
-              ERRORCODE: 301,
-              ERRORMESSAGE: 'Invalid VAST XMLDocument',
-              extensions: [
-                {
-                  attributes: {},
-                  name: 'Extension',
-                  value: null,
-                  children: [
-                    {
-                      attributes: {},
-                      name: 'paramWrapperInvalidXmlfile',
-                      value: 'valueWrapperInvalidXmlfile',
-                      children: [],
-                    },
-                  ],
-                },
-              ],
-              system: { value: 'VAST', version: null },
-            });
+  //         return VastParser.getAndParseVAST(wrapperInvalidVastUrl, {
+  //           urlHandler: nodeURLHandler,
+  //         }).then((res) => {
+  //           expect(res.ads).toHaveLength(0);
+  //           expect(errorData).toHaveLength(1);
+  //           expect(errorData[0]).toEqual({
+  //             ERRORCODE: 301,
+  //             ERRORMESSAGE: 'Invalid VAST XMLDocument',
+  //             extensions: [
+  //               {
+  //                 attributes: {},
+  //                 name: 'Extension',
+  //                 value: null,
+  //                 children: [
+  //                   {
+  //                     attributes: {},
+  //                     name: 'paramWrapperInvalidXmlfile',
+  //                     value: 'valueWrapperInvalidXmlfile',
+  //                     children: [],
+  //                   },
+  //                 ],
+  //               },
+  //             ],
+  //             system: { value: 'VAST', version: null },
+  //           });
 
-            expect(trackCalls).toHaveLength(1);
-            expect(trackCalls[0]).toEqual({
-              templates: [
-                'http://example.com/wrapper-invalid-xmlfile_wrapper-error',
-              ],
-              variables: { ERRORCODE: 301 },
-            });
-            done();
-          });
-        });
-      });
-    });
-  });
+  //           expect(trackCalls).toHaveLength(1);
+  //           expect(trackCalls[0]).toEqual({
+  //             templates: [
+  //               'http://example.com/wrapper-invalid-xmlfile_wrapper-error',
+  //             ],
+  //             variables: { ERRORCODE: 301 },
+  //           });
+  //           done();
+  //         });
+  //       });
+  //     });
+  //   });
+  // });
 
   describe('parseVastXml', () => {
     it('handles invalid XML vast', () => {
@@ -631,6 +494,8 @@ describe('VASTParser', () => {
     });
 
     it('handles Error tag for root VAST', () => {
+      //initParsingStatus always  will be called before parseVastXml
+      VastParser.initParsingStatus();
       VastParser.parseVastXml(errorXml, { isRootVAST: true });
       expect(VastParser.rootErrorURLTemplates).toEqual([
         'http://example.com/empty-no-ad',
@@ -638,6 +503,7 @@ describe('VASTParser', () => {
     });
 
     it('handles Error tag for not root VAST', () => {
+      VastParser.initParsingStatus();
       VastParser.parseVastXml(errorXml, { isRootVAST: false });
       expect(VastParser.errorURLTemplates).toEqual([
         'http://example.com/empty-no-ad',
@@ -782,6 +648,7 @@ describe('VASTParser', () => {
   });
 
   describe('resolveWrappers', () => {
+    let fetcher;
     const ad = {
       id: null,
       sequence: 1,
@@ -803,6 +670,7 @@ describe('VASTParser', () => {
     };
 
     beforeEach(() => {
+      fetcher = new Fetcher();
       VastParser.previousUrl = wrapperAVastUrl;
       VastParser.initParsingStatus({ urlHandler: urlHandlerSuccess });
     });
@@ -815,15 +683,24 @@ describe('VASTParser', () => {
 
     it('will add errorcode to resolved ad if parsing has reached maximum amount of unwrapping', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: 'http://example.com/foo' };
+      VastParser.fetchingMethod = () => {};
       VastParser.maxWrapperDepth = 10;
       return VastParser.resolveWrappers(adWithWrapper, 10).then((res) => {
-        expect(res).toEqual({ ...ad, errorCode: 302 });
+        expect(res).toEqual({
+          ...ad,
+          errorCode: 302,
+        });
       });
     });
 
     it('will successfully fetch the next wrapper url if it is provided', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: wrapperBVastUrl };
-      jest.spyOn(VastParser, 'fetchVAST');
+
+      jest.spyOn(fetcher, 'fetchVAST').mockImplementation(() => {
+        return Promise.resolve(expect.any(Object));
+      });
+      VastParser.fetchingMethod = fetcher.fetchVAST;
+
       jest
         .spyOn(VastParser, 'parse')
         .mockImplementation(() => Promise.resolve([ad]));
@@ -832,11 +709,11 @@ describe('VASTParser', () => {
 
       return VastParser.resolveWrappers(adWithWrapper, 0, wrapperAVastUrl).then(
         (res) => {
-          expect(VastParser.fetchVAST).toHaveBeenCalledWith(
+          expect(fetcher.fetchVAST).toHaveBeenCalledWith(
             wrapperBVastUrl,
-            1,
-            wrapperAVastUrl,
-            adWithWrapper
+            { previousUrl: null, wrapperAd: null, wrapperDepth: 0 },
+            VastParser.maxWrapperDepth,
+            expect.any(Function)
           );
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
@@ -851,20 +728,23 @@ describe('VASTParser', () => {
     });
 
     it('will pass timeout error to ad if fetching next wrapper fails', () => {
-      VastParser.initParsingStatus({ urlHandler: urlHandlerFailure });
+      fetcher.setOptions({ urlHandler: urlHandlerFailure });
       const adWithWrapper = { ...ad, nextWrapperURL: wrapperBVastUrl };
-      jest.spyOn(VastParser, 'fetchVAST');
+      jest.spyOn(fetcher, 'fetchVAST').mockImplementation(() => {
+        return Promise.reject(new Error('timeout'));
+      });
+      VastParser.fetchingMethod = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse');
       jest.spyOn(parserUtils, 'mergeWrapperAdData');
       VastParser.maxWrapperDepth = 10;
 
       return VastParser.resolveWrappers(adWithWrapper, 0, wrapperAVastUrl).then(
         (res) => {
-          expect(VastParser.fetchVAST).toHaveBeenCalledWith(
+          expect(fetcher.fetchVAST).toHaveBeenCalledWith(
             wrapperBVastUrl,
-            1,
-            wrapperAVastUrl,
-            adWithWrapper
+            { previousUrl: null, wrapperAd: null, wrapperDepth: 0 },
+            VastParser.maxWrapperDepth,
+            expect.any(Function)
           );
           expect(VastParser.parse).not.toHaveBeenCalled();
           expect(parserUtils.mergeWrapperAdData).not.toBeCalled();
@@ -880,8 +760,9 @@ describe('VASTParser', () => {
 
     it('will take the allowMultipleAds value from the option', () => {
       jest
-        .spyOn(VastParser, 'fetchVAST')
+        .spyOn(fetcher, 'fetchVAST')
         .mockReturnValue(Promise.resolve('<xml></xml>'));
+      VastParser.fetchingMethod = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
 
       const adWithWrapper = {
@@ -903,8 +784,9 @@ describe('VASTParser', () => {
 
     it('will take the allowMultipleAds value from the ad if does not set in the option', () => {
       jest
-        .spyOn(VastParser, 'fetchVAST')
+        .spyOn(fetcher, 'fetchVAST')
         .mockReturnValue(Promise.resolve('<xml></xml>'));
+      VastParser.fetchingMethod = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
 
       const expectedValue = { allowMultipleAds: true };

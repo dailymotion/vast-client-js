@@ -26,6 +26,7 @@ export class VASTParser extends EventEmitter {
     super();
     this.maxWrapperDepth = null;
     this.fetchingMethod = null;
+    this.remainingAds = [];
   }
 
   /**
@@ -76,8 +77,6 @@ export class VASTParser extends EventEmitter {
    */
   resetParsingStatus() {
     this.errorURLTemplates = [];
-    this.parentURLs = [];
-    this.remainingAds = [];
     this.rootErrorURLTemplates = [];
     this.rootURL = '';
     this.vastVersion = null;
@@ -401,7 +400,6 @@ export class VASTParser extends EventEmitter {
         ad.nextWrapperURL,
         { wrapperDepth: 0, previousUrl: null, wrapperAd: null },
         this.maxWrapperDepth,
-        this.parentURLs,
         this.emit.bind(this)
       )
         .then((xml) => {
