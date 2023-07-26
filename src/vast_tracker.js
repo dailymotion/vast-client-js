@@ -688,6 +688,7 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
   trackURLs(URLTemplates, macros = {}, options = {}) {
+    const validUrlTemplates = util.filterValidUrlTemplates(URLTemplates)
     //Avoid mutating the object received in parameters.
     const givenMacros = { ...macros };
     if (this.linear) {
@@ -732,7 +733,7 @@ export class VASTTracker extends EventEmitter {
       }
     }
 
-    util.track(URLTemplates, givenMacros, options);
+    util.track(validUrlTemplates, givenMacros, options);
   }
 
   /**

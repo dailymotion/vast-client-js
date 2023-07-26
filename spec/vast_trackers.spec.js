@@ -1,6 +1,7 @@
 import { VASTClient } from '../src/vast_client';
 import { VASTTracker } from '../src/vast_tracker';
 import { inlineTrackersParsed } from '../spec/samples/inline_trackers';
+import { util } from '../src/util/util';
 
 const vastClient = new VASTClient();
 
@@ -336,6 +337,26 @@ describe('VASTTracker', function () {
         vastTracker.trackImpression(macros);
         expect(spyTrackUrl).not.toHaveBeenCalledTimes(2);
         expect(spyTrack).not.toHaveBeenCalledTimes(2);
+      });
+
+      it('should skip invalid urls', () => {
+        const expectedUrlTemplates = [
+          {
+            id: 'sample-impression1',
+            url: 'http://example.com/impression1_asset:[ASSETURI]_[CACHEBUSTING]',
+          },
+          {
+            id: 'sample-impression2',
+            url: 'http://example.com/impression2_[random]',
+          },
+          {
+            id: 'sample-impression3',
+            url: '//example.com/impression3_[RANDOM]',
+          }
+        ]
+        const spyUtilTrack = jest.spyOn(util, 'track');
+        vastTracker.trackURLs(ad.impressionURLTemplates);
+        expect(spyUtilTrack).toHaveBeenCalledWith(expectedUrlTemplates, expect.anything(), expect.anything());
       });
     });
 
