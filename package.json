@@ -37,8 +37,7 @@
     "postbuild": "node bundle_size.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
-    "test": "mocha --require @babel/register && jest",
-    "jest": "jest"
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
