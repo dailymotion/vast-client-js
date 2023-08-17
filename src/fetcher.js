@@ -85,8 +85,6 @@ export class Fetcher {
         url = filter(url);
       });
 
-      this.rootURL = url;
-
       emitter('VAST-resolving', {
         url,
         previousUrl,

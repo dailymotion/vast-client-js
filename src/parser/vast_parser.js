@@ -68,6 +68,7 @@ export class VASTParser extends EventEmitter {
   initParsingStatus(options = {}) {
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.parsingOptions = { allowMultipleAds: options.allowMultipleAds };
+    this.rootURL = '';
     this.resetParsingStatus();
     updateEstimatedBitrate(options.byteLength, options.requestDuration);
   }
@@ -78,7 +79,6 @@ export class VASTParser extends EventEmitter {
   resetParsingStatus() {
     this.errorURLTemplates = [];
     this.rootErrorURLTemplates = [];
-    this.rootURL = '';
     this.vastVersion = null;
   }
   /**
@@ -361,9 +361,8 @@ export class VASTParser extends EventEmitter {
       wrapperDepth++;
 
       // If you need to fectch a VAST document, or follow additional wrapper,
-      // you need to use the get method from de VASTClient, this method will use the fetchVAST method from the
+      // you need to use the get method from VASTClient, this method will use the fetchVAST method from the
       // Fetcher class to fetch your document and set the fetchingMethod in case you want to fetch additional wrapper
-
       if (!this.fetchingMethod) {
         ad.VASTAdTagURI = ad.nextWrapperURL;
         delete ad.nextWrapperURL;
@@ -403,6 +402,7 @@ export class VASTParser extends EventEmitter {
         this.emit.bind(this)
       )
         .then((xml) => {
+          this.rootURL = ad.nextWrapperURL;
           return this.parse(xml, {
             url: ad.nextWrapperURL,
             previousUrl,
@@ -432,7 +432,6 @@ export class VASTParser extends EventEmitter {
           // (URI was either unavailable or reached a timeout as defined by the video player.)
           ad.errorCode = 301;
           ad.errorMessage = err.message;
-
           resolve(ad);
         });
     });

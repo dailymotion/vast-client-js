@@ -1,6 +1,8 @@
 import { VASTClient } from '../src/vast_client';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
 import { urlFor } from './utils/utils';
+import 'regenerator-runtime/runtime';
+import { Fetcher } from '../src/fetcher';
 
 const wrapperMultipleAdsVastUrl = urlFor('wrapper-multiple-ads.xml');
 const emptyVastUrl = urlFor('empty-no-ad.xml');
@@ -98,33 +100,16 @@ describe('VASTClient', () => {
       VastParser = VastClient.getParser();
     });
 
-    // it('should call getAndParseVAST with correct options', () => {
-    //   jest
-    //     .spyOn(VastParser, 'getAndParseVAST')
-    //     .mockImplementation(() => Promise.resolve());
-    //   return VastClient.get(wrapperMultipleAdsVastUrl, options).then(() => {
-    //     expect(VastParser.getAndParseVAST).toHaveBeenNthCalledWith(
-    //       1,
-    //       wrapperMultipleAdsVastUrl,
-    //       {
-    //         urlhandler: nodeURLHandler,
-    //         resolveAll: false,
-    //         withCredentials: true,
-    //         timeout: 0,
-    //       }
-    //     );
-    //   });
-    // });
-
     describe('with resolveAll set to false', () => {
-      const optionsWithNoResolveAll = { ...options, resolveAll: false };
+      const optionsWithNoResolveAll = {
+        ...options,
+        resolveAll: false,
+      };
       let res;
-      beforeEach((done) => {
-        VastClient.get(wrapperMultipleAdsVastUrl, optionsWithNoResolveAll).then(
-          (results) => {
-            res = results;
-            done();
-          }
+      beforeEach(async () => {
+        res = await VastClient.get(
+          wrapperMultipleAdsVastUrl,
+          optionsWithNoResolveAll
         );
       });
       it('returns first ad parsed', () => {
@@ -160,23 +145,16 @@ describe('VASTClient', () => {
       });
 
       describe('getNextAds', () => {
-        it('resolves all next ads if requested', () => {
-          VastClient.get(wrapperMultipleAdsVastUrl, optionsWithNoResolveAll)
-            .then((res1) => {
-              VastClient.getNextAds(true)
-                .then((res) => {
-                  expect(res).toEqual({
-                    ads: expect.any(Array),
-                    errorURLTemplates: [],
-                    version: '3.0',
-                  });
-                  expect(res.ads).toHaveLength(3);
-                })
-                .catch((err) => console.log(err));
-            })
-            .catch((err) => console.log(err));
+        it('resolves all next ads if requested', async () => {
+          let res = await VastClient.getNextAds(true);
+          expect(res).toEqual({
+            ads: expect.any(Array),
+            errorURLTemplates: [],
+            version: '3.0',
+          });
+          expect(res.ads).toHaveLength(3);
         });
-        it('resolves only next ad if requested', () => {
+        it('resolves only next ad if requested', (done) => {
           VastClient.get(
             wrapperMultipleAdsVastUrl,
             optionsWithNoResolveAll
@@ -191,6 +169,7 @@ describe('VASTClient', () => {
                 expect(res.ads).toHaveLength(2);
               })
               .catch((err) => console.log(err));
+            done();
           });
         });
       });

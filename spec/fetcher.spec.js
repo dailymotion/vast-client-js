@@ -191,4 +191,50 @@ describe('Fetcher', () => {
       expect(fetcher.fetchingOptions.withCredentials).toEqual(false);
     });
   });
+  describe('URLtemplatefilter modifications', () => {
+    let filter = jest.fn();
+    beforeEach(() => {
+      fetcher.URLTemplateFilters = [filter];
+    });
+    describe('addURLTemplateFilter', () => {
+      it('add given urlTemplateFilters to the fetcher instance', () => {
+        const myFilter = jest.fn();
+        const anotherFilter = jest.fn();
+        fetcher.addURLTemplateFilter(myFilter);
+        fetcher.addURLTemplateFilter(anotherFilter);
+        expect(fetcher.URLTemplateFilters).toEqual([
+          filter,
+          myFilter,
+          anotherFilter,
+        ]);
+      });
+      it('does not add given urlTemplateFilters when wrong type', () => {
+        fetcher.addURLTemplateFilter(1);
+        fetcher.addURLTemplateFilter('2');
+        fetcher.addURLTemplateFilter(true);
+        fetcher.addURLTemplateFilter();
+        expect(fetcher.URLTemplateFilters.length).toBe(1);
+      });
+    });
+    describe('clearURLTemplateFilters', () => {
+      it('should clear URLTemplateFilters array', () => {
+        fetcher.clearURLTemplateFilters();
+        expect(fetcher.URLTemplateFilters).toEqual([]);
+      });
+    });
+
+    describe('countURLTemplateFilters', () => {
+      it('should return the length of URLTemplateFilters array', () => {
+        let result = fetcher.countURLTemplateFilters();
+        expect(result).toBe(1);
+      });
+    });
+
+    describe('removeURLTemplateFilter', () => {
+      it('remove the last element of the URLTemplateFilters array', () => {
+        fetcher.removeURLTemplateFilter();
+        expect(fetcher.URLTemplateFilters.length).toBe(0);
+      });
+    });
+  });
 });

@@ -69,7 +69,7 @@ export const inlineTrackersParsed = {
           apiFramework: null,
           type: 'linear',
           duration: 90.123,
-          skipDelay: null,
+          skipDelay: 3,
           mediaFiles: [
             {
               id: null,
@@ -170,6 +170,18 @@ export const inlineTrackersParsed = {
             midpoint: ['http://example.com/linear-midpoint'],
             complete: ['http://example.com/linear-complete'],
             start: ['http://example.com/linear-start'],
+            loaded: ['http://example.com/linear-loaded'],
+            complete: ['http://example.com/linear-complete'],
+            mute: ['http://example.com/linear-muted'],
+            unmute: ['http://example.com/linear-unmute'],
+            pause: ['http://example.com/linear-pause'],
+            resume: ['http://example.com/linear-resume'],
+            rewind: ['http://example.com/linear-rewind'],
+            skip: ['http://example.com/linear-skip'],
+            playerExpand: ['http://example.com/linear-playerExpant'],
+            playerCollapse: ['http://example.com/linear-playerCollapse'],
+            fullscreen: ['http://exemple.com/linear-fullscreen'],
+            exitFullscreen: ['http://exemple.com/linear-exitFullscreen'],
             firstQuartile: ['http://example.com/linear-firstQuartile'],
             close: ['http://example.com/linear-close'],
             thirdQuartile: ['http://example.com/linear-thirdQuartile'],
@@ -197,6 +209,113 @@ export const inlineTrackersParsed = {
             {
               idRegistry: 'sample-registry-2',
               value: '000456',
+            },
+          ],
+        },
+        {
+          id: '5480',
+          adId: '2447226',
+          sequence: '1',
+          apiFramework: 'omid',
+          type: 'nonlinear',
+          variations: [
+            {
+              id: null,
+              width: '350px',
+              height: '350px',
+              expandedWidth: '550px',
+              expandedHeight: '550px',
+              scalable: true,
+              maintainAspectRatio: true,
+              minSuggestedDuration: 10,
+              apiFramework: 'omid',
+              adType: 'nonLinearAd',
+              type: 'image/png',
+              staticResource:
+                'https://mms.businesswire.com/media/20150623005446/en/473787/21/iab_tech_lab.jpg',
+              htmlResource:
+                '<!DOCTYPE html>\n                                            <html lang="en">\n                                            <head>\n                                                <meta charset="UTF-8">\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\n                                                <title>Document</title>\n                                            </head>\n                                            <body>\n                                                <h1>titre</h1>\n                                            </body>\n                                            </html>',
+              iframeResource: 'lient vers html',
+              nonlinearClickThroughURLTemplate: 'https://iabtechlab.com',
+              nonlinearClickTrackingURLTemplates: [
+                {
+                  id: null,
+                  url: 'https://example.com/tracking/clickTracking',
+                },
+              ],
+              adParameters: 'campaign_id=1',
+            },
+          ],
+          trackingEvents: {
+            progress: ['http://example.com/tracking/progress-10'],
+            firstQuartile: ['https://example.com/tracking/firstQuartile'],
+            midpoint: ['https://example.com/tracking/midpoint'],
+            thirdQuartile: ['https://example.com/tracking/thirdQuartile'],
+            complete: ['https://example.com/tracking/complete'],
+          },
+          universalAdIds: [
+            {
+              idRegistry: 'ad-id.org',
+              value: 'CNPA0484000H',
+            },
+          ],
+          creativeExtensions: [
+            {
+              name: 'CreativeExtension',
+              value: null,
+              attributes: {
+                type: 'application/javascript',
+              },
+              children: [],
+            },
+          ],
+        },
+        {
+          id: '5480',
+          adId: '2447226',
+          sequence: '1',
+          apiFramework: null,
+          type: 'companion',
+          required: null,
+          variations: [
+            {
+              id: '1232',
+              adType: 'companionAd',
+              width: '100',
+              height: '150',
+              assetWidth: '250',
+              assetHeight: '200',
+              expandedWidth: '350',
+              expandedHeight: '250',
+              apiFramework: null,
+              adSlotID: null,
+              pxratio: '1400',
+              renderingMode: 'default',
+              staticResources: [
+                {
+                  url: 'https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png',
+                  creativeType: 'image/png',
+                },
+              ],
+              htmlResources: [],
+              iframeResources: [],
+              adParameters: null,
+              xmlEncoded: null,
+              altText: null,
+              companionClickThroughURLTemplate: 'https://iabtechlab.com',
+              companionClickTrackingURLTemplates: [
+                {
+                  id: null,
+                  url: 'https://example.com/tracking/clickTracking',
+                },
+              ],
+              trackingEvents: {},
+            },
+          ],
+          universalAdIds: [
+            {
+              idRegistry: 'Ad-ID',
+              value: '8465',
             },
           ],
         },

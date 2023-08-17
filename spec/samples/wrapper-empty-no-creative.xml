@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<VAST version="2.0">
+  <Ad>
+    <Wrapper>
+      <AdSystem>VAST</AdSystem>
+      <VASTAdTagURI>empty-no-creative.xml</VASTAdTagURI>
+      <Error>http://example.com/wrapper-no-creative_wrapper-error</Error>
+      <Impression>http://example.com/wrapper-impression</Impression>
+      <Creatives>
+        <Creative>
+          <Linear>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[http://example.com/wrapper-start]]></Tracking>
+              <Tracking event="complete"><![CDATA[http://example.com/wrapper-complete]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickTracking><![CDATA[http://example.com/wrapper-clicktracking]]></ClickTracking>
+            </VideoClicks>
+          </Linear>
+        </Creative>
+      </Creatives>
+      <Extensions>
+        <Extension>
+            <paramWrapperEmptyNoCreative><![CDATA[valueWrapperEmptyNoCreative]]></paramWrapperEmptyNoCreative>
+        </Extension>
+      </Extensions>
+    </Wrapper>
+  </Ad>
+</VAST>

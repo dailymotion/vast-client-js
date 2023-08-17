@@ -12,8 +12,8 @@ describe('util', function () {
     const encodedPlayhead = encodeRFC3986(playhead);
     const encodedTimestamp = encodeRFC3986(now);
 
-    const resolve = (URLTemplate, macros) =>
-      util.resolveURLTemplates([URLTemplate], macros)[0];
+    const resolve = (URLTemplate, macros, options = {}) =>
+      util.resolveURLTemplates([URLTemplate], macros, options)[0];
 
     const realDateToISOString = Date.prototype.toISOString;
 
@@ -23,6 +23,24 @@ describe('util', function () {
 
     afterAll(() => {
       Date.prototype.toISOString = realDateToISOString;
+    });
+
+    describe('ERRORCODE', () => {
+      it('should resolve ERRORCODE with 900 if ERRORCODE is invalid ', () => {
+        expect(
+          resolve('http://example.com/[ERRORCODE]', { ERRORCODE: 10001 })
+        ).toBe('http://example.com/900');
+      });
+
+      it('should have called error urls with custom code when enabled', () => {
+        expect(
+          resolve(
+            'http://example.com/[ERRORCODE]',
+            { ERRORCODE: 10001 },
+            { isCustomCode: true }
+          )
+        ).toBe('http://example.com/10001');
+      });
     });
 
     describe('assetURI', function () {
