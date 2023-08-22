@@ -352,11 +352,51 @@ describe('VASTTracker', function () {
           {
             id: 'sample-impression3',
             url: '//example.com/impression3_[RANDOM]',
-          }
-        ]
+          },
+        ];
         const spyUtilTrack = jest.spyOn(util, 'track');
         vastTracker.trackURLs(ad.impressionURLTemplates);
-        expect(spyUtilTrack).toHaveBeenCalledWith(expectedUrlTemplates, expect.anything(), expect.anything());
+        expect(spyUtilTrack).toHaveBeenCalledWith(
+          expectedUrlTemplates,
+          expect.anything(),
+          expect.anything()
+        );
+      });
+    });
+
+    describe('#viewableImpression', () => {
+      const macros = {
+        SERVERSIDE: '0',
+      };
+
+      describe('#trackViewableImpression', () => {
+        it('should call Viewable URLs', () => {
+          vastTracker.trackViewableImpression(macros);
+          expect(spyTrackUrl).toHaveBeenCalledWith(
+            ['http://example.com/viewable', 'http://example.com/viewable2'],
+            macros
+          );
+        });
+      });
+
+      describe('#trackNotViewableImpression', () => {
+        it('should call NotViewable URLs', () => {
+          vastTracker.trackNotViewableImpression(macros);
+          expect(spyTrackUrl).toHaveBeenCalledWith(
+            ['http://example.com/notviewable'],
+            macros
+          );
+        });
+      });
+
+      describe('#trackUndeterminedImpression', () => {
+        it('should call ViewUndetermined URLs', () => {
+          vastTracker.trackUndeterminedImpression(macros);
+          expect(spyTrackUrl).toHaveBeenCalledWith(
+            ['http://example.com/undertermined'],
+            macros
+          );
+        });
       });
     });
 
