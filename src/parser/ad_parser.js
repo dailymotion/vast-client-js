@@ -389,34 +389,23 @@ export function _parseAdVerificationsFromExtensions(extensions) {
  */
 export function _parseViewableImpression(viewableImpressionNode) {
   const viewableImpression = {};
-  viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
-  const viewableImpressionChildNodes = viewableImpressionNode.childNodes;
-  for (const viewableImpressionElementKey in viewableImpressionChildNodes) {
-    const viewableImpressionElement =
-      viewableImpressionChildNodes[viewableImpressionElementKey];
-    const viewableImpressionNodeName = viewableImpressionElement.nodeName;
-    const viewableImpressionNodeValue = parserUtils.parseNodeText(
-      viewableImpressionElement
-    );
 
-    if (
-      (viewableImpressionNodeName !== 'Viewable' &&
-        viewableImpressionNodeName !== 'NotViewable' &&
-        viewableImpressionNodeName !== 'ViewUndetermined') ||
-      !viewableImpressionNodeValue
-    ) {
-      continue;
-    } else {
-      const viewableImpressionNodeNameLower =
-        viewableImpressionNodeName.toLowerCase();
-      if (!Array.isArray(viewableImpression[viewableImpressionNodeNameLower])) {
-        viewableImpression[viewableImpressionNodeNameLower] = [];
-      }
-      viewableImpression[viewableImpressionNodeNameLower].push(
-        viewableImpressionNodeValue
-      );
+  viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
+  const validNodes = ['Viewable', 'NotViewable', 'ViewUndetermined'];
+
+  const viewableImpressionChildNodes = [
+    ...viewableImpressionNode.childNodes,
+  ].filter((node) => validNodes.includes(node.nodeName));
+
+  validNodes.forEach((nodeName) => {
+    if (!Array.isArray(viewableImpression[nodeName])) {
+      viewableImpression[nodeName] = [];
     }
-  }
+  });
+
+  viewableImpressionChildNodes.forEach((node) => {
+    viewableImpression[node.nodeName].push(parserUtils.parseNodeText(node));
+  });
 
   return viewableImpression;
 }
