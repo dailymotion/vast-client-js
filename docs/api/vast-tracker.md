@@ -122,6 +122,9 @@ video events. To trigger a tracker you will need to call the corresponding `VAST
 | [minimize](#minimize)                               | `<Tracking event="minimize">`                                                                                                                                                                 |
 | [overlayViewDuration](#overlayViewDuration)         | `<Tracking event="overlayViewDuration">`                                                                                                                                                      |
 | [verificationNotExecuted](#verificationNotExecuted) | `<Tracking event="verificationNotExecuted">`                                                                                                                                                  |
+| [trackViewableImpression](#trackViewableImpression) | `<Viewable>`|
+|[trackNotViewableImpression](#trackNotViewableImpression) | `<NotViewable>`|
+|[trackUndeterminedImpression](#trackUndeterminedImpression) | `<ViewUndetermined>`|
 
 ## Macros <a name="macros"></a>
 
@@ -568,6 +571,71 @@ player.on('canplay', () => {
 
 vastTracker.on('creativeView', () => {
   // impression tracking URLs have been called
+});
+```
+### trackViewableImpression(macros) <a name='trackViewableImpression'></a>
+
+Reports the viewable impression URI. Will report the following URI:
+
+- All `<Viewable>` URI from the `<InLine>` and `<Wrapper>` tracking elements
+
+This method can be call on any player events depending on your player logic. 
+
+#### Parameters
+
+- - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+
+#### Example
+
+
+```Javascript
+// Bind an event listener to the player
+player.addEventListener('you_event_here', () => {
+  vastTracker.trackViewableImpression();
+});
+```
+
+### trackNotViewableImpression(macro) <a name='trackNotViewableImpression'></a>
+
+Reports the viewable impression URI. Will report the following URI:
+
+- All `<NotViewable>` URI from the `<InLine>` and `<Wrapper>` tracking elements
+
+This method can be call on any player events depending on your player logic. 
+
+#### Parameters
+
+- - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+
+#### Example
+
+
+```Javascript
+// Bind an event listener to the player
+player.addEventListener('you_event_here', () => {
+  vastTracker.trackNotViewableImpression();
+});
+```
+
+### trackUndeterminedImpression(macro) <a name='trackUndeterminedImpression'></a>
+
+Reports the viewable impression URI. Will report the following URI:
+
+- All `<ViewUndetermined>` URI from the `<InLine>` and `<Wrapper>` tracking elements
+
+This method can be call on any player events depending on your player logic. 
+
+#### Parameters
+
+- - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+
+#### Example
+
+
+```Javascript
+// Bind an event listener to the player
+player.addEventListener('you_event_here', () => {
+  vastTracker.trackUndeterminedImpression();
 });
 ```
 
