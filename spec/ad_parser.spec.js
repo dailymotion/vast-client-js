@@ -326,11 +326,11 @@ describe('AdParser', function () {
     });
 
     it('validate viewableImpressionPartial NotViewable is undefined', () => {
-      expect(parsedViewableImpressionPartial.NotNiewable).toBeUndefined;
+      expect(parsedViewableImpressionPartial.notViewable).toEqual([]);
     });
 
     it('validate viewableImpressionPartial viewundetermined is undefined', () => {
-      expect(parsedViewableImpressionPartial.viewundetermined).toBeUndefined;
+      expect(parsedViewableImpressionPartial.viewUndetermined).toEqual([]);
     });
   });
 });
