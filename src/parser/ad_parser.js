@@ -388,22 +388,21 @@ export function _parseAdVerificationsFromExtensions(extensions) {
  * @return {Object} viewableImpression - The viewableImpression object
  */
 export function _parseViewableImpression(viewableImpressionNode) {
-  const viewableImpression = {};
-
-  viewableImpression.id = viewableImpressionNode.getAttribute('id') || null;
-  const validNodes = ['Viewable', 'NotViewable', 'ViewUndetermined'];
-
-  const viewableImpressionChildNodes = [
-    ...viewableImpressionNode.childNodes,
-  ].filter((node) => validNodes.includes(node.nodeName));
-
-  validNodes.forEach((nodeName) => {
-    viewableImpression[nodeName] = [];
-  });
-
-  viewableImpressionChildNodes.forEach((node) => {
-    viewableImpression[node.nodeName].push(parserUtils.parseNodeText(node));
-  });
-
-  return viewableImpression;
+  const regroupNodesUrl = (urls, node) => {
+    const url = parserUtils.parseNodeText(node);
+    url && urls.push(url);
+    return urls;
+  };
+  return {
+    id: viewableImpressionNode.getAttribute('id') || null,
+    viewable: parserUtils
+      .childrenByName(viewableImpressionNode, 'Viewable')
+      .reduce(regroupNodesUrl, []),
+    notViewable: parserUtils
+      .childrenByName(viewableImpressionNode, 'NotViewable')
+      .reduce(regroupNodesUrl, []),
+    viewUndetermined: parserUtils
+      .childrenByName(viewableImpressionNode, 'ViewUndetermined')
+      .reduce(regroupNodesUrl, []),
+  };
 }
