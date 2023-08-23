@@ -86,12 +86,12 @@ describe('VASTParser', () => {
         const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
 
         VastParser.fetchVAST('www.foo.foo').then(() => {
-          done();
           expect(urlHandlerSpy).toHaveBeenCalledWith(
             'www.bar.foo',
             expect.anything(),
             expect.anything()
           );
+          done();
         });
       });
 
