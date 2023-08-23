@@ -13,15 +13,15 @@ export const inlineTrackersParsed = {
       viewableImpression: [
         {
           id: '3234256',
-          Viewable: [
+          viewable: [
             'http://example.com/viewable',
             'http://example.com/viewable2',
           ],
-          NotViewable: [
+          notViewable: [
             'http://example.com/notviewable',
             'http://example.com/notviewable2',
           ],
-          ViewUndetermined: [
+          viewUndetermined: [
             'http://example.com/undertermined',
             'http://example.com/undertermined2',
           ],
