@@ -357,7 +357,7 @@ export class VASTTracker extends EventEmitter {
       return;
     }
     this.ad.viewableImpression.forEach((impression) => {
-      this.trackURLs(impression.Viewable, macros);
+      this.trackURLs(impression.viewable, macros);
     });
   }
 
@@ -372,7 +372,7 @@ export class VASTTracker extends EventEmitter {
     }
 
     this.ad.viewableImpression.forEach((impression) => {
-      this.trackURLs(impression.NotViewable, macros);
+      this.trackURLs(impression.notViewable, macros);
     });
   }
 
@@ -386,7 +386,7 @@ export class VASTTracker extends EventEmitter {
     }
 
     this.ad.viewableImpression.forEach((impression) => {
-      this.trackURLs(impression.ViewUndetermined, macros);
+      this.trackURLs(impression.viewUndetermined, macros);
     });
   }
 
