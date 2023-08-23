@@ -28,7 +28,6 @@ export class VASTParser extends EventEmitter {
     super();
 
     this.remainingAds = [];
-    this.parentURLs = [];
     this.errorURLTemplates = [];
     this.rootErrorURLTemplates = [];
     this.maxWrapperDepth = null;
@@ -122,7 +121,6 @@ export class VASTParser extends EventEmitter {
         url = filter(url);
       });
 
-      this.parentURLs.push(url);
       const timeBeforeGet = Date.now();
       this.emit('VAST-resolving', {
         url,
@@ -174,7 +172,6 @@ export class VASTParser extends EventEmitter {
       withCredentials: options.withCredentials,
     };
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
-    this.parentURLs = [];
     this.parsingOptions = { allowMultipleAds: options.allowMultipleAds };
     this.remainingAds = [];
     this.rootErrorURLTemplates = [];
@@ -200,7 +197,6 @@ export class VASTParser extends EventEmitter {
       ? util.flatten(this.remainingAds)
       : this.remainingAds.shift();
     this.errorURLTemplates = [];
-    this.parentURLs = [];
 
     return this.resolveAds(ads, {
       wrapperDepth: 0,
@@ -449,7 +445,6 @@ export class VASTParser extends EventEmitter {
   resolveAds(ads = [], { wrapperDepth, previousUrl, url }) {
     const resolveWrappersPromises = [];
     previousUrl = url;
-
     ads.forEach((ad) => {
       const resolveWrappersPromise = this.resolveWrappers(
         ad,
@@ -494,11 +489,7 @@ export class VASTParser extends EventEmitter {
         delete ad.nextWrapperURL;
         return resolve(ad);
       }
-
-      if (
-        wrapperDepth >= this.maxWrapperDepth ||
-        this.parentURLs.indexOf(ad.nextWrapperURL) !== -1
-      ) {
+      if (wrapperDepth >= this.maxWrapperDepth) {
         // Wrapper limit reached, as defined by the video player.
         // Too many Wrapper responses have been received with no InLine response.
         ad.errorCode = 302;

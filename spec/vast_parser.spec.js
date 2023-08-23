@@ -80,15 +80,24 @@ describe('VASTParser', () => {
         });
       });
 
-      it('applies url filters and saves url in parentURLs', () => {
+      it('applies url filters', (done) => {
         VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
 
-        return VastParser.fetchVAST('www.foo.foo').finally(() => {
-          expect(VastParser.parentURLs).toEqual(['www.bar.foo']);
+        const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
+
+        VastParser.fetchVAST('www.foo.foo').then(() => {
+          expect(urlHandlerSpy).toHaveBeenCalledWith(
+            'www.bar.foo',
+            expect.anything(),
+            expect.anything()
+          );
+          done();
         });
       });
 
-      it('emits VAST-resolving and VAST-resolved events', () => {
+      it('emits VAST-resolving and VAST-resolved events with filtered url', () => {
+        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
+
         return VastParser.fetchVAST(
           'www.foo.foo',
           2,
@@ -96,7 +105,7 @@ describe('VASTParser', () => {
           ad
         ).finally(() => {
           expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
-            url: 'www.foo.foo',
+            url: 'www.bar.foo',
             previousUrl: 'www.original.foo',
             wrapperDepth: 2,
             maxWrapperDepth: 8,
@@ -105,7 +114,7 @@ describe('VASTParser', () => {
           });
 
           expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
-            url: 'www.foo.foo',
+            url: 'www.bar.foo',
             previousUrl: 'www.original.foo',
             wrapperDepth: 2,
             error: null,
@@ -142,50 +151,47 @@ describe('VASTParser', () => {
         });
       });
 
-      it('applies url filters and saves url in parentURLs', () => {
+      it('applies url filters', () => {
         VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
 
-        return VastParser.fetchVAST('www.foo.foo')
-          .then(() => {
-            expect(true).toBeFalsy();
-          })
-          .catch(() => {
-            expect(VastParser.parentURLs).toEqual(['www.bar.foo']);
-          });
+        const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
+
+        return VastParser.fetchVAST('www.foo.foo').catch(() => {
+          expect(urlHandlerSpy).toHaveBeenCalledWith(
+            'www.bar.foo',
+            expect.anything(),
+            expect.anything()
+          );
+        });
       });
 
-      it('emits VAST-resolving and VAST-resolved events', () => {
-        return VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo', ad)
-          .then(() => {
-            expect(true).toBeFalsy();
-          })
-          .catch(() => {
-            expect(VastParser.emit).toHaveBeenNthCalledWith(
-              1,
-              'VAST-resolving',
-              {
-                url: 'www.foo.foo',
-                previousUrl: 'www.original.foo',
-                wrapperDepth: 2,
-                maxWrapperDepth: 8,
-                timeout: 120000,
-                wrapperAd: ad,
-              }
-            );
+      it('emits VAST-resolving and VAST-resolved events with filtered url', () => {
+        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
 
-            expect(VastParser.emit).toHaveBeenNthCalledWith(
-              2,
-              'VAST-resolved',
-              {
-                url: 'www.foo.foo',
-                previousUrl: 'www.original.foo',
-                wrapperDepth: 2,
-                error: new Error('timeout'),
-                duration: expect.any(Number),
-                statusCode: 408,
-              }
-            );
+        return VastParser.fetchVAST(
+          'www.foo.foo',
+          2,
+          'www.original.foo',
+          ad
+        ).catch(() => {
+          expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
+            url: 'www.bar.foo',
+            previousUrl: 'www.original.foo',
+            wrapperDepth: 2,
+            maxWrapperDepth: 8,
+            timeout: 120000,
+            wrapperAd: ad,
           });
+
+          expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
+            url: 'www.bar.foo',
+            previousUrl: 'www.original.foo',
+            wrapperDepth: 2,
+            error: new Error('timeout'),
+            duration: expect.any(Number),
+            statusCode: 408,
+          });
+        });
       });
 
       it('rejects with error', () => {
@@ -213,7 +219,6 @@ describe('VASTParser', () => {
 
       expect(VastParser.rootURL).toBe('');
       expect(VastParser.remainingAds).toEqual([]);
-      expect(VastParser.parentURLs).toEqual([]);
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(5);
@@ -232,7 +237,6 @@ describe('VASTParser', () => {
 
       expect(VastParser.rootURL).toBe('');
       expect(VastParser.remainingAds).toEqual([]);
-      expect(VastParser.parentURLs).toEqual([]);
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(10);
@@ -832,7 +836,7 @@ describe('VASTParser', () => {
             wrapperBVastUrl,
             1,
             wrapperAVastUrl,
-            adWithWrapper,
+            adWithWrapper
           );
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
