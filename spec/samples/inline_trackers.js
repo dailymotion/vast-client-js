@@ -17,8 +17,14 @@ export const inlineTrackersParsed = {
             'http://example.com/viewable',
             'http://example.com/viewable2',
           ],
-          NotViewable: ['http://example.com/notviewable'],
-          ViewUndetermined: ['http://example.com/undertermined'],
+          NotViewable: [
+            'http://example.com/notviewable',
+            'http://example.com/notviewable2',
+          ],
+          ViewUndetermined: [
+            'http://example.com/undertermined',
+            'http://example.com/undertermined2',
+          ],
         },
       ],
       categories: [

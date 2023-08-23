@@ -383,7 +383,10 @@ describe('VASTTracker', function () {
         it('should call NotViewable URLs', () => {
           vastTracker.trackNotViewableImpression(macros);
           expect(spyTrackUrl).toHaveBeenCalledWith(
-            ['http://example.com/notviewable'],
+            [
+              'http://example.com/notviewable',
+              'http://example.com/notviewable2',
+            ],
             macros
           );
         });
@@ -393,7 +396,10 @@ describe('VASTTracker', function () {
         it('should call ViewUndetermined URLs', () => {
           vastTracker.trackUndeterminedImpression(macros);
           expect(spyTrackUrl).toHaveBeenCalledWith(
-            ['http://example.com/undertermined'],
+            [
+              'http://example.com/undertermined',
+              'http://example.com/undertermined2',
+            ],
             macros
           );
         });
