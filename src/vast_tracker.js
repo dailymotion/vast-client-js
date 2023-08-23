@@ -349,6 +349,48 @@ export class VASTTracker extends EventEmitter {
   }
 
   /**
+   * Tracks Viewable impression
+   * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   */
+  trackViewableImpression(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
+    this.ad.viewableImpression.forEach((impression) => {
+      this.trackURLs(impression.viewable, macros);
+    });
+  }
+
+  /**
+   * Tracks NotViewable impression
+   * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   */
+
+  trackNotViewableImpression(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
+
+    this.ad.viewableImpression.forEach((impression) => {
+      this.trackURLs(impression.notViewable, macros);
+    });
+  }
+
+  /**
+   * Tracks ViewUndetermined impression
+   * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   */
+  trackUndeterminedImpression(macros = {}) {
+    if (typeof macros !== 'object') {
+      return;
+    }
+
+    this.ad.viewableImpression.forEach((impression) => {
+      this.trackURLs(impression.viewUndetermined, macros);
+    });
+  }
+
+  /**
    * Send a request to the URI provided by the VAST <Error> element.
    * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
    * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
@@ -688,7 +730,7 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
   trackURLs(URLTemplates, macros = {}, options = {}) {
-    const validUrlTemplates = util.filterValidUrlTemplates(URLTemplates)
+    const validUrlTemplates = util.filterValidUrlTemplates(URLTemplates);
     //Avoid mutating the object received in parameters.
     const givenMacros = { ...macros };
     if (this.linear) {

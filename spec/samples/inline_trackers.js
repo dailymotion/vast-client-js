@@ -10,6 +10,23 @@ export const inlineTrackersParsed = {
       description: 'Description text',
       advertiser: { id: 'advertiser-desc', value: 'Advertiser name' },
       pricing: { value: '1.09', model: 'CPM', currency: 'USD' },
+      viewableImpression: [
+        {
+          id: '3234256',
+          viewable: [
+            'http://example.com/viewable',
+            'http://example.com/viewable2',
+          ],
+          notViewable: [
+            'http://example.com/notviewable',
+            'http://example.com/notviewable2',
+          ],
+          viewUndetermined: [
+            'http://example.com/undertermined',
+            'http://example.com/undertermined2',
+          ],
+        },
+      ],
       categories: [
         {
           authority: 'https://www.example.com/categoryauthority',

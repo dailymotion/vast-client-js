@@ -205,8 +205,8 @@ This object represents a generic Creative. It's used as a parent object for more
 
 - `id: String|null`
 - `viewable: Array<String>`
-- `notviewable: Array<String>`
-- `viewundetermined: Array<String>`
+- `notViewable: Array<String>`
+- `viewUndetermined: Array<String>`
 
 ## BlockedAdCategories<a name="blocked-ad-categories"></a>
 

@@ -105,14 +105,14 @@ describe('AdParser', function () {
         'http://www.example.com/viewable_impression_1',
         'http://www.sample.com/viewable_impression_2',
       ]);
-      expect(ad.viewableImpression[0].notviewable).toHaveLength(3);
-      expect(ad.viewableImpression[0].notviewable).toEqual([
+      expect(ad.viewableImpression[0].notViewable).toHaveLength(3);
+      expect(ad.viewableImpression[0].notViewable).toEqual([
         'http://www.example.com/not_viewable_1',
         'http://www.sample.com/not_viewable_2',
         'http://www.sample.com/not_viewable_3',
       ]);
-      expect(ad.viewableImpression[0].viewundetermined).toHaveLength(1);
-      expect(ad.viewableImpression[0].viewundetermined).toEqual([
+      expect(ad.viewableImpression[0].viewUndetermined).toHaveLength(1);
+      expect(ad.viewableImpression[0].viewUndetermined).toEqual([
         'http://www.example.com/view_undetermined_1',
       ]);
     });
@@ -290,7 +290,7 @@ describe('AdParser', function () {
       expect(parsedViewableImpression.id).toEqual('viewable_impression');
     });
 
-    it('validate viewableImpression viewable array', () => {
+    it('validate viewableImpression Viewable array', () => {
       expect(parsedViewableImpression.viewable.length).toEqual(2);
       expect(parsedViewableImpression.viewable).toEqual([
         'http://www.example.com/viewable_impression_1',
@@ -299,17 +299,17 @@ describe('AdParser', function () {
     });
 
     it('validate viewableImpression notviewable array', () => {
-      expect(parsedViewableImpression.notviewable.length).toEqual(3);
-      expect(parsedViewableImpression.notviewable).toEqual([
+      expect(parsedViewableImpression.notViewable.length).toEqual(3);
+      expect(parsedViewableImpression.notViewable).toEqual([
         'http://www.example.com/not_viewable_1',
         'http://www.sample.com/not_viewable_2',
         'http://www.sample.com/not_viewable_3',
       ]);
     });
 
-    it('validate viewableImpression viewundetermined array', () => {
-      expect(parsedViewableImpression.viewundetermined.length).toEqual(1);
-      expect(parsedViewableImpression.viewundetermined).toEqual([
+    it('validate viewableImpression ViewUndetermined array', () => {
+      expect(parsedViewableImpression.viewUndetermined.length).toEqual(1);
+      expect(parsedViewableImpression.viewUndetermined).toEqual([
         'http://www.example.com/view_undetermined_1',
       ]);
     });
@@ -318,15 +318,15 @@ describe('AdParser', function () {
       expect(parsedViewableImpressionPartial.id).toEqual(null);
     });
 
-    it('validate viewableImpressionPartial viewable array', () => {
+    it('validate viewableImpressionPartial Viewable array', () => {
       expect(parsedViewableImpressionPartial.viewable.length).toEqual(1);
       expect(parsedViewableImpressionPartial.viewable).toEqual([
         'http://www.example.com/viewable_impression_1',
       ]);
     });
 
-    it('validate viewableImpressionPartial notviewable is undefined', () => {
-      expect(parsedViewableImpressionPartial.notviewable).toBeUndefined;
+    it('validate viewableImpressionPartial NotViewable is undefined', () => {
+      expect(parsedViewableImpressionPartial.NotNiewable).toBeUndefined;
     });
 
     it('validate viewableImpressionPartial viewundetermined is undefined', () => {
