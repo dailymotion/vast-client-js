@@ -579,6 +579,8 @@ Reports the viewable impression URI. Will report the following URI:
 
 - All `<Viewable>` URI from the `<InLine>` and `<Wrapper>` tracking elements
 
+This method should be use when the ad meets criteria for Viewable impression as describe in [MRC Viewable Ad Impression Guidelines](https://www.iab.com/wp-content/uploads/2015/06/MRC-Viewable-Ad-Impression-Measurement-Guideline.pdf)
+
 #### Parameters
 
 - - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
@@ -595,9 +597,11 @@ if(isAdViewable){
 
 ### trackNotViewableImpression(macro) <a name='tracknotviewableimpression'></a>
 
-Reports the viewable impression URI. Will report the following URI:
+Reports the Notviewable impression URI. Will report the following URI:
 
 - All `<NotViewable>` URI from the `<InLine>` and `<Wrapper>` tracking elements
+
+This method should be use when the ad meets criteria for NotViewable impression as describe in [MRC Viewable Ad Impression Guidelines](https://www.iab.com/wp-content/uploads/2015/06/MRC-Viewable-Ad-Impression-Measurement-Guideline.pdf)
 
 #### Parameters
 
@@ -615,9 +619,11 @@ if(!isAdViewable){
 
 ### trackUndeterminedImpression(macro) <a name='trackundeterminedimpression'></a>
 
-Reports the viewable impression URI. Will report the following URI:
+Reports the ViewUndetermined impression URI. Will report the following URI:
 
 - All `<ViewUndetermined>` URI from the `<InLine>` and `<Wrapper>` tracking elements
+
+This method should be use when the ad meets criteria for ViewUndetermined impression as describe in [MRC Viewable Ad Impression Guidelines](https://www.iab.com/wp-content/uploads/2015/06/MRC-Viewable-Ad-Impression-Measurement-Guideline.pdf)
 
 #### Parameters
 
