@@ -398,9 +398,7 @@ export function _parseViewableImpression(viewableImpressionNode) {
   ].filter((node) => validNodes.includes(node.nodeName));
 
   validNodes.forEach((nodeName) => {
-    if (!Array.isArray(viewableImpression[nodeName])) {
-      viewableImpression[nodeName] = [];
-    }
+    viewableImpression[nodeName] = [];
   });
 
   viewableImpressionChildNodes.forEach((node) => {
