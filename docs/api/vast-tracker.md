@@ -597,7 +597,7 @@ if(isAdViewable){
 
 ### trackNotViewableImpression(macro) <a name='tracknotviewableimpression'></a>
 
-Reports the Notviewable impression URI. Will report the following URI:
+Reports the NotViewable impression URI. Will report the following URI:
 
 - All `<NotViewable>` URI from the `<InLine>` and `<Wrapper>` tracking elements
 
