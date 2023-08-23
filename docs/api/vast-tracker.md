@@ -100,7 +100,7 @@ vastTracker.on('exitFullscreen', () => {
 VAST tracking is implemented using a number of [individual tracking elements](https://iabtechlab.com/wp-content/uploads/2019/06/VAST_4.2_final_june26.pdf#page=28) that map to
 video events. To trigger a tracker you will need to call the corresponding `VASTTracker` [public method](#methods) please refer to below table to see the mapping and method definitions for more details.
 
-| **Method name**                                             | **VAST element(s)**                                                                                                                                                                              |
+| **Method name**                                             | **VAST element(s)**                                                                                                                                                                           |
 |-------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [error](#error)                                             | `<Error>`                                                                                                                                                                                     |
 | [load](#load)                                               | `<Tracking event="loaded">`                                                                                                                                                                   |
@@ -122,9 +122,9 @@ video events. To trigger a tracker you will need to call the corresponding `VAST
 | [minimize](#minimize)                                       | `<Tracking event="minimize">`                                                                                                                                                                 |
 | [overlayViewDuration](#overlayViewDuration)                 | `<Tracking event="overlayViewDuration">`                                                                                                                                                      |
 | [verificationNotExecuted](#verificationNotExecuted)         | `<Tracking event="verificationNotExecuted">`                                                                                                                                                  |
-| [trackViewableImpression](#trackviewableimpression)         | `<Viewable>`                                                                                                       |
-| [trackNotViewableImpression](#tracknotviewableimpression)   | `<NotViewable>`                                                                                                    |
-| [trackUndeterminedImpression](#trackundeterminedimpression) | `<ViewUndetermined>`                                                                                               |
+| [trackViewableImpression](#trackviewableimpression)         | `<Viewable>`                                                                                                                                                                                  |
+| [trackNotViewableImpression](#tracknotviewableimpression)   | `<NotViewable>`                                                                                                                                                                               |
+| [trackUndeterminedImpression](#trackundeterminedimpression) | `<ViewUndetermined>`                                                                                                                                                                          |
 
 ## Macros <a name="macros"></a>
 
