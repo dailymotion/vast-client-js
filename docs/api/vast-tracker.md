@@ -122,9 +122,9 @@ video events. To trigger a tracker you will need to call the corresponding `VAST
 | [minimize](#minimize)                                       | `<Tracking event="minimize">`                                                                                                                                                                 |
 | [overlayViewDuration](#overlayViewDuration)                 | `<Tracking event="overlayViewDuration">`                                                                                                                                                      |
 | [verificationNotExecuted](#verificationNotExecuted)         | `<Tracking event="verificationNotExecuted">`                                                                                                                                                  |
-| [trackViewableImpression](#trackviewableimpression)         | `<Viewable>`|
-| [trackNotViewableImpression](#tracknotviewableimpression)   | `<NotViewable>`|
-| [trackUndeterminedImpression](#trackundeterminedimpression) | `<ViewUndetermined>`|
+| [trackViewableImpression](#trackviewableimpression)         | `<Viewable>`                                                                                                       |
+| [trackNotViewableImpression](#tracknotviewableimpression)   | `<NotViewable>`                                                                                                    |
+| [trackUndeterminedImpression](#trackundeterminedimpression) | `<ViewUndetermined>`                                                                                               |
 
 ## Macros <a name="macros"></a>
 
