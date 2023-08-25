@@ -19,7 +19,7 @@
   "engines": {
     "node": ">=12.22.1"
   },
-  "browserslist" : [
+  "browserslist": [
     "chrome >= 63",
     "firefox >= 67",
     "edge >= 79",
@@ -55,7 +55,6 @@
     "eslint-plugin-import": "^2.25.4",
     "husky": "^8.0.3",
     "jest": "^26.6.3",
-    "mocha": "^10.0.0",
     "path": "^0.12.7",
     "prettier": "^2.5.1",
     "pretty-quick": "^3.1.3",
