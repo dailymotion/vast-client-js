@@ -15,7 +15,6 @@ export class Fetcher {
 
   setOptions(options = {}) {
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
-    // this.URLTemplateFilters = [];
     this.fetchingOptions = {
       timeout: options.timeout || DEFAULT_TIMEOUT,
       withCredentials: options.withCredentials || false,
