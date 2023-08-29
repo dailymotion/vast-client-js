@@ -360,6 +360,13 @@ export class VASTParser extends EventEmitter {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
 
+      // We already have a resolved VAST ad, no need to resolve wrapper
+
+      if (!ad.nextWrapperURL) {
+        delete ad.nextWrapperURL;
+        return resolve(ad);
+      }
+
       // If you need to fectch a VAST document, or follow additional wrapper,
       // you need to use the get method from VASTClient, this method will use the fetchVAST method from the
       // Fetcher class to fetch your document and set the fetchingMethod in case you want to fetch additional wrapper
@@ -368,12 +375,7 @@ export class VASTParser extends EventEmitter {
         delete ad.nextWrapperURL;
         return resolve(ad);
       }
-      // We already have a resolved VAST ad, no need to resolve wrapper
 
-      if (!ad.nextWrapperURL) {
-        delete ad.nextWrapperURL;
-        return resolve(ad);
-      }
       if (wrapperDepth >= this.maxWrapperDepth) {
         // Wrapper limit reached, as defined by the video player.
         // Too many Wrapper responses have been received with no InLine response.
@@ -402,7 +404,6 @@ export class VASTParser extends EventEmitter {
         this.emit.bind(this)
       )
         .then((xml) => {
-          this.rootURL = ad.nextWrapperURL;
           return this.parse(xml, {
             url: ad.nextWrapperURL,
             previousUrl,
