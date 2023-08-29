@@ -176,6 +176,7 @@ export class VASTClient {
 
       this.vastParser.initParsingStatus(options);
       this.fetcher.setOptions(options);
+      this.vastParser.rootURL = url;
 
       this.fetcher
         .fetchVAST(
