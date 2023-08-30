@@ -23,11 +23,11 @@ function createNodeConfig(filePath, minifiedOutput, notMinifiedOutput) {
     output: [
       {
         format: 'cjs',
-        file: `dist/node/${notMinifiedOutput}`,
+        file: `dist/${notMinifiedOutput}`,
       },
       {
         format: 'cjs',
-        file: `dist/node/min/${minifiedOutput}`,
+        file: `dist/${minifiedOutput}`,
         plugins: [terser()],
       },
     ],
@@ -63,7 +63,7 @@ function createBrowserConfig(filePath, minifiedOutput, notMinifiedOutput) {
       },
       {
         format: 'es',
-        file: `dist/min/${minifiedOutput}`,
+        file: `dist/${minifiedOutput}`,
         plugins: [terser()],
       },
     ],
@@ -75,37 +75,11 @@ function createBrowserConfig(filePath, minifiedOutput, notMinifiedOutput) {
 
 export default [
   // Browser-friendly build [package.json "browser"]
-  createBrowserConfig(
-    'src/parser/vast_parser.js',
-    'vast-parser.min.js',
-    'vast-parser.js'
-  ),
-  createBrowserConfig(
-    'src/vast_tracker.js',
-    'vast-tracker.min.js',
-    'vast-tracker.js'
-  ),
   createBrowserConfig('src/index.js', 'vast-client.min.js', 'vast-client.js'),
-  createBrowserConfig('src/vast_client.js', 'client.min.js', 'client.js'),
   // CommonJS build for Node usage [package.json "main"]
   createNodeConfig(
     'src/index.js',
     'vast-client-node.min.js',
     'vast-client-node.js'
-  ),
-  createNodeConfig(
-    'src/parser/vast_parser.js',
-    'vast-parser-node.min.js',
-    'vast-parser-node.min.js'
-  ),
-  createNodeConfig(
-    'src/vast_tracker.js',
-    'vast-tracker-node.min.js',
-    'vast-tracker-node.js'
-  ),
-  createNodeConfig(
-    'src/vast_client.js',
-    'client-node.min.js',
-    'client-node.js'
   ),
 ];
