@@ -29,7 +29,7 @@ Then import the components you need.
 
 ### VASTClient
 
-If you need to fetch and parse VAST documents, you can use the **VASTClient**:
+If you need to fetch and parse VAST documents, you can use the `get` method from the **VASTClient**:
 
 ```javascript
 import { VASTClient } from '@dailymotion/vast-client'
@@ -47,9 +47,25 @@ vastClient.get('https://www.examplevast.com/vast.xml')
 
 In addition to fetching and parsing a VAST resource, **VASTClient** provides options to filter a sequence of calls based on count and time of execution, together with the possibility to track URLs using **VASTTracker**.
 
+If you need to directy parse a VAST XML and follow a wrappers chain, you can use the `VASTClient` just like so :
+
+```javascript
+import { VASTClient } from '@dailymotion/vast-client'
+
+const vastClient = new VASTClient();
+
+vastClient.parseVAST(vastXml)
+  .then(parsedVAST => {
+    // Do something with the parsed VAST response
+  })
+  .catch(err => {
+    // Deal with the error
+  });
+```
 ### VASTParser
 
 To directly parse a VAST XML you can use the **VASTParser**:
+The VASTParser will not proceed to any fetching, the final response will only contain the first VAST encountered.
 
 ```Javascript
 import { VASTParser } from '@dailymotion/vast-client'
