@@ -220,6 +220,9 @@ vastClient.get('http://example.dailymotion.com/vast.xml', options)
 Parses the given xml Object into a [VASTResponse](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse).
 Returns a `Promise` which either resolves with the fully parsed `VASTResponse` or rejects with an `Error`.
 
+By using this method, you will be able to perform fetching in case you want to parse and unwrappe a wrapper.
+If you just need to parse an inline VAST or you want to parse the first VAST document encountered, you should use the `parseVAST` method from the `VASTParser`.
+
 #### Parameters
 
 - **`vastXml: Object`** - An object representing an xml document

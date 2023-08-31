@@ -127,13 +127,6 @@ vastParser.on('VAST-ad-parsed', ({ url, wrapperDepth, type,adIndex }) => {
 });
 ```
 
-
-## Properties<a name="properties"></a>
-
-### urlHandler: URLHandler
-
-Instance of the support class `URLHandler`, is used to make the requests.
-
 ## Public Methods 💚 <a name="methods"></a>
 
 
@@ -168,18 +161,14 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves wi
 Parses the given xml Object into a [VASTResponse](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse).
 Returns a `Promise` which either resolves with the fully parsed `VASTResponse` or rejects with an `Error`.
 
+This method will not proceed to any fetching, the final response will only contain the first VAST encountered.
+If you need to parse and unwrapper a wrapper, you should use the `parseVAST` method from the `VASTClient`.
+
 #### Parameters
 
 - **`vastXml: Object`** - An object representing an xml document
 - **`options: Object`** - An optional Object of parameters to be used in the parsing process
-  - `timeout: Number` - A custom timeout for the possible wrapper resolving requests (default `120000`)
-  - `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR URLHandler (default `false`)
-  - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
-  - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
-  - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
   - `allowMultipleAds: Boolean` - A boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
-  - `followAdditionalWrappers: Boolean` - A boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
-  - `requestDuration: Number` - The fetching time of the XML in ms. Provide it with byteLength to have a more accurate estimated bitrate.
   - `byteLength: Number`- The size of the request in bytes. Provide it with requestDuration to have a more accurate estimated bitrate.
 
 #### Events emitted

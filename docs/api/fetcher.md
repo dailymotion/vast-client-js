@@ -55,6 +55,13 @@ vastParser.on('VAST-resolved', ({ url, error }) => {
   // Access to the info
 });
 ```
+## Properties <a name="properties"></a>
+
+### urlHandler: URLHandler
+
+Instance of the support class `URLHandler`, is used to make the requests.
+
+
 ## Private Methods :warning:<a name="private-methods"></a>
 
 These methods documentation is provided in order to make the parser internal logic clearer. It should not be considered as part of the class public API.
