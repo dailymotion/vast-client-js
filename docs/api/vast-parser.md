@@ -122,7 +122,7 @@ Event is triggered when `parseVastXml` function is called, when an Ad tag has be
 - `adIndex: Number|undefined`
 
 ```Javascript
-vastParser.on('VAST-resolving', ({ url, wrapperDepth, previousUrl }) => {
+vastParser.on('VAST-ad-parsed', ({ url, wrapperDepth, type,adIndex }) => {
   // Access to the info
 });
 ```
@@ -136,75 +136,6 @@ Instance of the support class `URLHandler`, is used to make the requests.
 
 ## Public Methods 💚 <a name="methods"></a>
 
-### addURLTemplateFilter(filter)
-
-Adds a filter function to the array of filters which are called before fetching a VAST document.
-
-#### Parameters
-
-- **`filter: function`** - The filter function to be added at the end of the array
-
-#### Example
-
-```Javascript
-vastParser.addURLTemplateFilter( vastUrl => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-});
-
-/*
-For a VASTAdTagURI defined as :
-<VASTAdTagURI>http://example.dailymotion.com/vast.php?domain=[DOMAIN]</VASTAdTagURI>
-HTTP request will be:
-http://example.dailymotion.com/vast.php?domain=mywebsite.com
-*/
-```
-
-### removeURLTemplateFilter()
-
-Removes the last element of the url templates filters array.
-
-#### Example
-
-```Javascript
-const replaceDomain = () => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-};
-
-vastParser.addURLTemplateFilter(replaceDomain);
-// ...
-vastParser.removeURLTemplateFilter(replaceDomain);
-// [DOMAIN] placeholder is no longer replaced
-```
-
-### countURLTemplateFilters()
-
-Returns the number of filters of the url templates filters array.
-
-#### Example
-
-```Javascript
-vastParser.addURLTemplateFilter( vastUrl => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-});
-
-vastParser.countUrlTemplateFilters();
-// returns 1
-```
-
-### clearURLTemplateFilters()
-
-Removes all the filter functions from the url templates filters array.
-
-#### Example
-
-```Javascript
-vastParser.addURLTemplateFilter( vastUrl => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-});
-
-vastParser.clearUrlTemplateFilters();
-// [DOMAIN] placeholder is no longer replaced
-```
 
 ### trackVastError(urlTemplates, errorCode, ...data)
 
@@ -231,55 +162,6 @@ Fetches a VAST document for the given url. Returns a `Promise` which resolves wi
 
 - **`VAST-resolved`**
 - **`VAST-resolving`**
-
-### getAndParseVAST(url, options = {})<a name="getandparse"></a>
-
-Fetches and parses a VAST for the given url.
-Returns a `Promise` which either resolves with the fully parsed [`VASTResponse`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md#vastresponse) or rejects with an `Error`.
-
-#### Parameters
-
-- **`url: String`** - The url to request the VAST document
-- **`options: Object`** - An optional Object of parameters to be used in the request
-  - `timeout: Number` - A custom timeout for the requests (default `120000`)
-  - `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR URLHandler (default `false`)
-  - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
-  - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
-  - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
-  - `allowMultipleAds: Boolean` - A boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
-  - `followAdditionalWrappers: Boolean` - A boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
-
-#### Events emitted
-
-- **`VAST-resolved`**
-- **`VAST-resolving`**
-- **`VAST-warning`**
-
-#### Example
-
-```Javascript
-vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml')
-  .then(res => {
-    // Do something with the parsed VAST response
-  })
-  .catch(err => {
-    // Deal with the error
-  });
-
-// With some options
-const options = {
-  timeout: 5000,
-  withCredentials: true,
-  wrapperLimit: 7
-}
-vastParser.getAndParseVAST('http://example.dailymotion.com/vast.xml', options)
-  .then(res => {
-    // Do something with the parsed VAST response
-  })
-  .catch(err => {
-    // Deal with the error
-  });
-```
 
 ### parseVAST(vastXml, options)<a name="parse"></a>
 
