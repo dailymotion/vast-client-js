@@ -2,6 +2,8 @@
 
 The `VASTClient` class provides a client to manage the fetching and parsing of VAST documents.
 
+`VASTClient` provides a methods to fetch a VAST resource because of his ability to resolving the wrapper chain (recursive fetch and parse) by using the `VASTParser` parsing methods.
+
 - [Constructor](#constructor)
 - [Properties](#properties)
 - [Methods](#methods)
@@ -221,7 +223,7 @@ Parses the given xml Object into a [VASTResponse](https://github.com/dailymotion
 Returns a `Promise` which either resolves with the fully parsed `VASTResponse` or rejects with an `Error`.
 
 By using this method, you will be able to perform fetching in case you want to parse a VAST document and follow a wrappers chain.
-If you just need to parse an inline VAST or you want to parse the first VAST document encountered, you should use the `parseVAST` method from the `VASTParser`.
+If you just need to parse an inline VAST or you want to parse the first VAST document encountered, you should use the **parseVAST** method from the **VASTParser**.
 
 #### Parameters
 

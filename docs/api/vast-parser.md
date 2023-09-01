@@ -1,12 +1,8 @@
 # VASTParser
 
-The `VASTParser` class provides a parser to manage the fetching ([`getAndParseVAST`](#getandparse) method) and direct parsing ([`parseVAST`](#parse) method) of VAST documents.
-
-The behavior of this component may be confused with the one of `VASTClient`, since they both provide a way to fetch and parse a VAST document.
+The `VASTParser` class provides a parser to manage the parsing ([`parseVAST`](#parse) method) of VAST documents.
 
 `VASTClient` has to be intended as the preferred way to manage a sequence of VAST requests on a higher level, while `VASTParser` offers a set of method to follow in more detail the parsing process.
-
-`VASTParser` provides methods to fetch a VAST resource because of his ability to resolving the wrapper chain (recursive fetch and parse).
 
 Use an instance of this class directly only if you don't need any control on multiple calls, otherwise access it through an instance of `VASTClient`.
 
@@ -162,7 +158,7 @@ Parses the given xml Object into a [VASTResponse](https://github.com/dailymotion
 Returns a `Promise` which either resolves with the fully parsed `VASTResponse` or rejects with an `Error`.
 
 This method will not proceed to any fetching, the final response will only contain the first VAST encountered.
-If you need to parse and unwrapper a wrapper, you should use the `parseVAST` method from the `VASTClient`.
+If you need to parse and follow a wrappers chain, you should use the **parseVAST** method from the **VASTClient**.
 
 #### Parameters
 
