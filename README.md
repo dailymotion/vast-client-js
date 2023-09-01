@@ -47,7 +47,7 @@ vastClient.get('https://www.examplevast.com/vast.xml')
 
 In addition to fetching and parsing a VAST resource, **VASTClient** provides options to filter a sequence of calls based on count and time of execution, together with the possibility to track URLs using **VASTTracker**.
 
-If you need to directy parse a VAST XML and follow a wrappers chain, you can use the `VASTClient` just like so :
+If you need to directy parse a VAST XML and follow a wrappers chain, you can use the **VASTClient** just like so :
 
 ```javascript
 import { VASTClient } from '@dailymotion/vast-client'
@@ -65,7 +65,7 @@ vastClient.parseVAST(vastXml)
 ### VASTParser
 
 To directly parse a VAST XML you can use the **VASTParser**:
-The VASTParser will not proceed to any fetching, the final response will only contain the first VAST encountered.
+The **VASTParser** will not proceed to any fetching, the final response will only contain the first VAST encountered.
 
 ```Javascript
 import { VASTParser } from '@dailymotion/vast-client'
