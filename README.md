@@ -126,7 +126,7 @@ const vastTracker = new VASTTracker();
 
 #### Browser script
 
-A pre-bundled version of VAST Client JS is available: [`vast-client-browser.min.js`](dist/vast-client-browser.min.js) [minified].
+A pre-bundled version of VAST Client JS is available: [`vast-client.min.js`](dist/vast-client.min.js) [minified].
 
 You can add the script directly to your page and access the library's components through the `VAST` object.
 
