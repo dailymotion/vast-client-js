@@ -128,16 +128,18 @@ const vastTracker = new VASTTracker();
 
 A pre-bundled version of VAST Client JS is available: [`vast-client.min.js`](dist/vast-client.min.js) [minified].
 
-You can add the script directly to your page and access the library's components through the `VAST` object.
+If you want to use this file, add it to your project and  make sure that your main file is in type module as below.
 
 ```html
-<script src="vast-client-browser.min.js"></script>
+<script type="module" src="your-main-file.js"></script>
 ```
 
 ```javascript
-const vastClient = new VAST.VASTClient();
-const vastParser = new VAST.VASTParser();
-const vastTracker = new VAST.VASTTracker();
+import {VASTClient, VASTParser, VASTTracker} from "vast-client.min.js"
+
+const vastClient = new VASTClient();
+const vastParser = new VASTParser();
+const vastTracker = new VASTTracker();
 ```
 
 #### Node
