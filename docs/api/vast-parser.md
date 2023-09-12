@@ -166,6 +166,8 @@ If you need to parse and follow a wrappers chain, you should use the **parseVAST
 - **`options: Object`** - An optional Object of parameters to be used in the parsing process
   - `allowMultipleAds: Boolean` - A boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
   - `byteLength: Number`- The size of the request in bytes. Provide it with requestDuration to have a more accurate estimated bitrate.
+  - `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse them ad by ad or adPod by adPod (default `true`)
+
 
 #### Events emitted
 

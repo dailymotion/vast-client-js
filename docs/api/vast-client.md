@@ -101,74 +101,6 @@ Instance of a class which implements the `Storage` interface. Should be set up o
 
 ## Public Methods 💚 <a name="methods"></a>
 
-### addURLTemplateFilter(filter)
-
-Adds a filter function to the array of filters which are called before fetching a VAST document.
-
-#### Parameters
-
-- **`filter: function`** - The filter function to be added at the end of the array
-
-#### Example
-
-```Javascript
-vastClient.addURLTemplateFilter( vastUrl => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-});
-
-/*
-For a VASTAdTagURI defined as :
-<VASTAdTagURI>http://example.dailymotion.com/vast.php?domain=[DOMAIN]</VASTAdTagURI>
-HTTP request will be:
-http://example.dailymotion.com/vast.php?domain=mywebsite.com
-*/
-```
-
-### removeURLTemplateFilter()
-
-Removes the last element of the url templates filters array.
-
-#### Example
-
-```Javascript
-const replaceDomain = () => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-};
-
-vastClient.addURLTemplateFilter(replaceDomain);
-// ...
-vastClient.removeURLTemplateFilter(replaceDomain);
-// [DOMAIN] placeholder is no longer replaced
-```
-### countURLTemplateFilters()
-
-Returns the number of filters of the url templates filters array.
-
-#### Example
-
-```Javascript
-vastClient.addURLTemplateFilter( vastUrl => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-});
-
-vastClient.countUrlTemplateFilters();
-// returns 1
-```
-
-### clearURLTemplateFilters()
-
-Removes all the filter functions from the url templates filters array.
-
-#### Example
-
-```Javascript
-vastClient.addURLTemplateFilter( vastUrl => {
-    return url.replace('[DOMAIN]', 'mywebsite.com')
-});
-
-vastClient.clearUrlTemplateFilters();
-// [DOMAIN] placeholder is no longer replaced
-```
 ### get(url, options): Promise
 
 Gets a parsed VAST document for the given url, applying the skipping rules defined (`cappingFreeLunch` and `cappingMinimumTimeInterval`).
@@ -429,4 +361,73 @@ const vastParser = vastClient.getParser();
 
 // Clear the url template filters used
 vastParser.clearUrlTemplateFilters();
+```
+
+### addURLTemplateFilter(filter)
+
+Adds a filter function to the array of filters which are called before fetching a VAST document.
+
+#### Parameters
+
+- **`filter: function`** - The filter function to be added at the end of the array
+
+#### Example
+
+```Javascript
+vastClient.addURLTemplateFilter( vastUrl => {
+    return url.replace('[DOMAIN]', 'mywebsite.com')
+});
+
+/*
+For a VASTAdTagURI defined as :
+<VASTAdTagURI>http://example.dailymotion.com/vast.php?domain=[DOMAIN]</VASTAdTagURI>
+HTTP request will be:
+http://example.dailymotion.com/vast.php?domain=mywebsite.com
+*/
+```
+
+### removeURLTemplateFilter()
+
+Removes the last element of the url templates filters array.
+
+#### Example
+
+```Javascript
+const replaceDomain = () => {
+    return url.replace('[DOMAIN]', 'mywebsite.com')
+};
+
+vastClient.addURLTemplateFilter(replaceDomain);
+// ...
+vastClient.removeURLTemplateFilter(replaceDomain);
+// [DOMAIN] placeholder is no longer replaced
+```
+### countURLTemplateFilters()
+
+Returns the number of filters of the url templates filters array.
+
+#### Example
+
+```Javascript
+vastClient.addURLTemplateFilter( vastUrl => {
+    return url.replace('[DOMAIN]', 'mywebsite.com')
+});
+
+vastClient.countUrlTemplateFilters();
+// returns 1
+```
+
+### clearURLTemplateFilters()
+
+Removes all the filter functions from the url templates filters array.
+
+#### Example
+
+```Javascript
+vastClient.addURLTemplateFilter( vastUrl => {
+    return url.replace('[DOMAIN]', 'mywebsite.com')
+});
+
+vastClient.clearUrlTemplateFilters();
+// [DOMAIN] placeholder is no longer replaced
 ```
