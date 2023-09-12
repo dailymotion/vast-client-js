@@ -15,9 +15,7 @@ function onwarn(warning) {
   }
 }
 
-// Node configuration
-
-function createNodeConfig(filePath, minifiedOutput, notMinifiedOutput) {
+const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
   let config = {
     input: filePath,
     output: [
@@ -49,11 +47,9 @@ function createNodeConfig(filePath, minifiedOutput, notMinifiedOutput) {
   };
 
   return config;
-}
+};
 
-// Browser configuration
-
-function createBrowserConfig(filePath, minifiedOutput, notMinifiedOutput) {
+const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
   let config = {
     input: filePath,
     output: [
@@ -71,7 +67,7 @@ function createBrowserConfig(filePath, minifiedOutput, notMinifiedOutput) {
   };
 
   return config;
-}
+};
 
 export default [
   // Browser-friendly build [package.json "browser"]
