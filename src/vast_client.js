@@ -22,7 +22,9 @@ export class VASTClient {
     this.vastParser = new VASTParser();
     this.storage = customStorage || new Storage();
     this.fetcher = new Fetcher();
-    this.vastParser.fetchingMethod = this.fetcher.fetchVAST.bind(this.fetcher);
+    this.vastParser.fetchingCallback = this.fetcher.fetchVAST.bind(
+      this.fetcher
+    );
     // Init values if not already set
     if (this.lastSuccessfulAd === undefined) {
       this.lastSuccessfulAd = 0;
@@ -117,8 +119,8 @@ export class VASTClient {
   /**
    * Parses the given xml Object into a VASTResponse.
    * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
-   * @param {*} xml - An object representing a vast xml document.
-   * @param {*} options - An optional Object of parameters to be used in the parsing and fetching process.
+   * @param {Object} xml - An object representing a vast xml document.
+   * @param {Object} options - An optional Object of parameters to be used in the parsing and fetching process.
    * @returns {Promise}
    */
   parseVAST(xml, options = {}) {
@@ -134,7 +136,6 @@ export class VASTClient {
    */
   get(url, options = {}) {
     const now = Date.now();
-    // options = Object.assign({}, this.defaultOptions, options);
 
     // By default the client resolves only the first Ad or AdPod
     if (!options.hasOwnProperty('resolveAll')) {
@@ -179,12 +180,11 @@ export class VASTClient {
       this.vastParser.rootURL = url;
 
       this.fetcher
-        .fetchVAST(
+        .fetchVAST({
           url,
-          { wrapperDepth: 0, previousUrl: null, wrapperAd: null },
-          this.vastParser.maxWrapperDepth,
-          this.vastParser.emit.bind(this.vastParser)
-        )
+          emitter: this.vastParser.emit.bind(this.vastParser),
+          maxWrapperDepth: this.vastParser.maxWrapperDepth,
+        })
         .then((xml) => {
           options.previousUrl = url;
           options.isRootVAST = true;
