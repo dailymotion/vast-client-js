@@ -160,7 +160,6 @@ describe('VASTClient', () => {
           );
 
           let res = await VastClient.getNextAds(false);
-          console.log('ress', a);
 
           expect(res).toEqual({
             ads: expect.any(Array),
