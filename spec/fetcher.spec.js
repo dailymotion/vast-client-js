@@ -3,10 +3,12 @@ import { VASTParser } from '../src/parser/vast_parser';
 import * as Bitrate from '../src/parser/bitrate';
 import { urlHandler } from '../src/url_handler';
 import { expect } from '@jest/globals';
+import { getNodesFromXml } from './utils/utils';
 
 describe('Fetcher', () => {
-  let fetcher, vastParser;
-  const xml = new DOMParser().parseFromString('<VAST></VAST>', 'text/xml');
+  let fetcher, vastParser, mockEmit;
+
+  const xml = getNodesFromXml('<VAST></VAST>');
   const urlHandlerSuccess = {
     get: (url, options, cb) => {
       cb(null, xml, { byteLength: 1234, statusCode: 200 });
@@ -21,8 +23,7 @@ describe('Fetcher', () => {
 
   beforeEach(() => {
     fetcher = new Fetcher();
-    vastParser = new VASTParser();
-    jest.spyOn(vastParser, 'emit');
+    mockEmit = jest.fn();
   });
 
   describe('fetchVAST', () => {
@@ -42,7 +43,7 @@ describe('Fetcher', () => {
         const expectedUrl = 'www.bar.foo';
 
         fetcher
-          .fetchVAST(url, {}, 5, () => {})
+          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => {} })
           .then(() => {
             expect(urlHandlerSpy).toHaveBeenCalledWith(
               expectedUrl,
@@ -56,42 +57,38 @@ describe('Fetcher', () => {
         fetcher.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
         const expectedUrl = 'www.bar.foo';
         fetcher
-          .fetchVAST(url, {}, 4, vastParser.emit.bind(vastParser))
+          .fetchVAST({
+            url: url,
+            maxWrapperDepth: 4,
+            emitter: mockEmit,
+          })
           .then(() => {
-            expect(vastParser.emit).toHaveBeenNthCalledWith(
-              1,
-              'VAST-resolving',
-              {
-                url: expectedUrl,
-                previousUrl: null,
-                wrapperDepth: 0,
-                maxWrapperDepth: 4,
-                timeout: 120000,
-                wrapperAd: null,
-              }
-            );
+            expect(mockEmit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
+              url: expectedUrl,
+              previousUrl: null,
+              wrapperDepth: 0,
+              maxWrapperDepth: 4,
+              timeout: 120000,
+              wrapperAd: null,
+            });
 
-            expect(vastParser.emit).toHaveBeenNthCalledWith(
-              2,
-              'VAST-resolved',
-              {
-                url: expectedUrl,
-                byteLength: 1234,
-                duration: expect.any(Number),
-                error: null,
-                statusCode: 200,
-                previousUrl: null,
-                wrapperDepth: 0,
-              }
-            );
+            expect(mockEmit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
+              url: expectedUrl,
+              byteLength: 1234,
+              duration: expect.any(Number),
+              error: null,
+              statusCode: 200,
+              previousUrl: null,
+              wrapperDepth: 0,
+            });
           });
       });
 
       it('should updates the estimated bitrate', () => {
         jest.spyOn(Bitrate, 'updateEstimatedBitrate');
-        return fetcher
-          .fetchVAST(url, {}, 5, () => {})
-          .finally(() => {
+        fetcher
+          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => {} })
+          .then(() => {
             expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
               1234,
               expect.any(Number)
@@ -100,8 +97,12 @@ describe('Fetcher', () => {
       });
 
       it('should resolves with xml', () => {
-        let result = fetcher.fetchVAST(url, {}, 5, () => {});
-        expect(result).resolves.toEqual(xml);
+        let result = fetcher.fetchVAST({
+          url: url,
+          maxWrapperDepth: 5,
+          emitter: () => {},
+        });
+        return expect(result).resolves.toEqual(xml);
       });
     });
 
@@ -119,7 +120,7 @@ describe('Fetcher', () => {
         const expectedUrl = 'www.bar.foo';
 
         fetcher
-          .fetchVAST(url, {}, 5, () => {})
+          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => {} })
           .catch(() => {
             expect(urlHandlerSpy).toHaveBeenCalledWith(
               expectedUrl,
@@ -134,52 +135,52 @@ describe('Fetcher', () => {
         const expectedUrl = 'www.bar.foo';
 
         fetcher
-          .fetchVAST(url, {}, 4, vastParser.emit.bind(vastParser))
+          .fetchVAST({
+            url: url,
+            maxWrapperDepth: 4,
+            emitter: mockEmit,
+          })
           .catch(() => {
-            expect(vastParser.emit).toHaveBeenNthCalledWith(
-              1,
-              'VAST-resolving',
-              {
-                url: expectedUrl,
-                previousUrl: null,
-                wrapperDepth: 0,
-                maxWrapperDepth: 4,
-                timeout: 120000,
-                wrapperAd: null,
-              }
-            );
+            expect(mockEmit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
+              url: expectedUrl,
+              previousUrl: null,
+              wrapperDepth: 0,
+              maxWrapperDepth: 4,
+              timeout: 120000,
+              wrapperAd: null,
+            });
 
-            expect(vastParser.emit).toHaveBeenNthCalledWith(
-              2,
-              'VAST-resolved',
-              {
-                url: expectedUrl,
-                duration: expect.any(Number),
-                error: new Error('timeout'),
-                statusCode: 408,
-                previousUrl: null,
-                wrapperDepth: 0,
-              }
-            );
+            expect(mockEmit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
+              url: expectedUrl,
+              duration: expect.any(Number),
+              error: new Error('timeout'),
+              statusCode: 408,
+              previousUrl: null,
+              wrapperDepth: 0,
+            });
           });
       });
 
       it('should rejects with error', () => {
-        let result = fetcher.fetchVAST(url, {}, 5, () => {});
-        expect(result).rejects.toEqual(new Error('timeout'));
+        let result = fetcher.fetchVAST({
+          url: url,
+          maxWrapperDepth: 5,
+          emitter: () => {},
+        });
+        return expect(result).rejects.toEqual(new Error('timeout'));
       });
     });
   });
 
   describe('setOptions', () => {
-    it('should assign option to properties', () => {
-      const urlhandler = jest.fn();
+    it('should assign options to properties', () => {
+      const customUrlHandler = jest.fn();
       fetcher.setOptions({
-        urlHandler: urlhandler,
+        urlHandler: customUrlHandler,
         timeout: 50000,
         withCredentials: true,
       });
-      expect(fetcher.urlHandler).toEqual(urlhandler);
+      expect(fetcher.urlHandler).toEqual(customUrlHandler);
       expect(fetcher.fetchingOptions.timeout).toEqual(50000);
       expect(fetcher.fetchingOptions.withCredentials).toEqual(true);
     });

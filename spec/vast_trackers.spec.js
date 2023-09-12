@@ -734,7 +734,7 @@ describe('VASTTracker', function () {
         spyTrack = jest.spyOn(vastTracker, 'trackURLs');
         vastTracker.click();
       });
-      it('should have sent  clickthrough event with clickThrough url', () => {
+      it('should have emit clickthrough event with clickThrough url', () => {
         expect(spyEmit).toHaveBeenCalledWith(
           'clickthrough',
           'https://iabtechlab.com'
@@ -755,15 +755,13 @@ describe('VASTTracker', function () {
     const fallbackClickThroughURL = 'http://example.com/fallback-clickthrough',
       clickThroughURL = 'http://example.com/clickthrough';
 
-    describe('#VAST clichthrough with no fallback provided', () => {
-      beforeEach(() => {
+    describe('#VAST clickthrough with no fallback provided', () => {
+      it('should have sent clickthrough event with VAST clickthrough url', () => {
         const creative = createCreativeLinear();
         creative.videoClickThroughURLTemplate = clickThroughURL;
         vastTracker = new VASTTracker(vastClient, {}, creative);
         spyEmit = jest.spyOn(vastTracker, 'emit');
         vastTracker.click();
-      });
-      it('should have sent clickthrough event with VAST clickthrough url', () => {
         expect(spyEmit).toHaveBeenCalledWith(
           'clickthrough',
           'http://example.com/clickthrough'

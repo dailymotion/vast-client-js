@@ -25,22 +25,20 @@ describe('util', function () {
       Date.prototype.toISOString = realDateToISOString;
     });
 
-    describe('ERRORCODE', () => {
-      it('should resolve ERRORCODE with 900 if ERRORCODE is invalid ', () => {
-        expect(
-          resolve('http://example.com/[ERRORCODE]', { ERRORCODE: 10001 })
-        ).toBe('http://example.com/900');
-      });
+    it('should replace ERRORCODE with 900 if ERRORCODE is invalid ', () => {
+      expect(
+        resolve('http://example.com/[ERRORCODE]', { ERRORCODE: 10001 })
+      ).toBe('http://example.com/900');
+    });
 
-      it('should have called error urls with custom code when enabled', () => {
-        expect(
-          resolve(
-            'http://example.com/[ERRORCODE]',
-            { ERRORCODE: 10001 },
-            { isCustomCode: true }
-          )
-        ).toBe('http://example.com/10001');
-      });
+    it('should have called error urls with custom code when enabled', () => {
+      expect(
+        resolve(
+          'http://example.com/[ERRORCODE]',
+          { ERRORCODE: 10001 },
+          { isCustomCode: true }
+        )
+      ).toBe('http://example.com/10001');
     });
 
     describe('assetURI', function () {

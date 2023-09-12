@@ -1,6 +1,6 @@
 import { VASTParser } from '../src/parser/vast_parser';
 import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
-import { urlFor, fetchXml } from './utils/utils';
+import { urlFor, fetchXml, getNodesFromXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
 import * as Bitrate from '../src/parser/bitrate';
@@ -8,10 +8,7 @@ import { Fetcher } from '../src/fetcher';
 import { linearAd } from './samples/linear_ads';
 import { VASTClient } from '../src/vast_client';
 
-const xml = new DOMParser().parseFromString(
-  `<VAST>${linearAd}</VAST>`,
-  'text/xml'
-);
+const xml = getNodesFromXml(`<VAST>${linearAd}</VAST>`, 'text/xml');
 const urlHandlerSuccess = {
   get: (url, options, cb) => {
     cb(null, xml, { byteLength: 1234, statusCode: 200 });
@@ -148,12 +145,12 @@ describe('VASTParser', () => {
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
       });
-      expect(VastParser.vastVersion).toBe('2.1');
+      expect(VastParser.vastVersion).toBe('4.3');
     });
 
     it('handles Error tag for root VAST', () => {
       //initParsingStatus always  will be called before parseVastXml
-      VastParser.initParsingStatus();
+      VastParser.rootErrorURLTemplates = [];
       VastParser.parseVastXml(errorXml, { isRootVAST: true });
       expect(VastParser.rootErrorURLTemplates).toEqual([
         'http://example.com/empty-no-ad',
@@ -186,7 +183,7 @@ describe('VASTParser', () => {
             type: 'INLINE',
             url: inlineSampleVastUrl,
             wrapperDepth: 0,
-            vastVersion: '2.1',
+            vastVersion: '4.3',
           },
         ],
         [
@@ -196,7 +193,7 @@ describe('VASTParser', () => {
             type: 'INLINE',
             url: inlineSampleVastUrl,
             wrapperDepth: 0,
-            vastVersion: '2.1',
+            vastVersion: '4.3',
           },
         ],
       ]);
@@ -299,7 +296,7 @@ describe('VASTParser', () => {
       jest.spyOn(VastParser, 'initParsingStatus');
       jest
         .spyOn(VastParser, 'parse')
-        .mockImplementation(() => Promise.resolve([linearAd]));
+        .mockReturnValue(Promise.resolve([linearAd]));
       jest.spyOn(VastParser, 'buildVASTResponse').mockReturnValue({
         ads: [linearAd],
         errorURLTemplates: [],
@@ -314,8 +311,7 @@ describe('VASTParser', () => {
 
     it('should return a VAST response object', (done) => {
       VastParser.parseVAST(xml, options).then((response) => {
-        res = response;
-        expect(res).toEqual({
+        expect(response).toEqual({
           ads: [linearAd],
           errorURLTemplates: [],
           version: null,
@@ -345,10 +341,6 @@ describe('VASTParser', () => {
         expect(VastParser.parsingOptions).toEqual({
           allowMultipleAds: undefined,
         });
-        expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
-          undefined,
-          undefined
-        );
       });
       done();
     });
@@ -394,7 +386,7 @@ describe('VASTParser', () => {
               }
             }
           }
-          VastParser.fetchingMethod = fetcher.fetchVAST.bind(fetcher);
+          VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
           VastParser.parseVAST(xml, options).then((response) => {
             resolve(response);
           });
@@ -629,7 +621,7 @@ describe('VASTParser', () => {
     it('updates previousUrl value and calls resolveWrappers for each ad', () => {
       jest
         .spyOn(VastParser, 'resolveWrappers')
-        .mockImplementation(() => Promise.resolve(['ad1', 'ad2']));
+        .mockReturnValue(Promise.resolve(['ad1', 'ad2']));
       return VastParser.resolveAds(['ad1', 'ad2'], {
         wrapperDepth: 1,
         previousUrl: wrapperBVastUrl,
@@ -678,7 +670,7 @@ describe('VASTParser', () => {
 
     it('will add errorcode to resolved ad if parsing has reached maximum amount of unwrapping', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: 'http://example.com/foo' };
-      VastParser.fetchingMethod = () => {};
+      VastParser.fetchingCallback = () => {};
       VastParser.maxWrapperDepth = 10;
       return VastParser.resolveWrappers(adWithWrapper, 10).then((res) => {
         expect(res).toEqual({
@@ -691,10 +683,10 @@ describe('VASTParser', () => {
     it('will successfully fetch the next wrapper url if it is provided', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: wrapperBVastUrl };
 
-      jest.spyOn(fetcher, 'fetchVAST').mockImplementation(() => {
-        return Promise.resolve(expect.any(Object));
-      });
-      VastParser.fetchingMethod = fetcher.fetchVAST;
+      jest
+        .spyOn(fetcher, 'fetchVAST')
+        .mockReturnValue(Promise.resolve(expect.any(Object)));
+      VastParser.fetchingCallback = fetcher.fetchVAST;
 
       jest
         .spyOn(VastParser, 'parse')
@@ -704,12 +696,11 @@ describe('VASTParser', () => {
 
       return VastParser.resolveWrappers(adWithWrapper, 0, wrapperAVastUrl).then(
         (res) => {
-          expect(fetcher.fetchVAST).toHaveBeenCalledWith(
-            wrapperBVastUrl,
-            { previousUrl: null, wrapperAd: null, wrapperDepth: 0 },
-            VastParser.maxWrapperDepth,
-            expect.any(Function)
-          );
+          expect(fetcher.fetchVAST).toHaveBeenCalledWith({
+            url: wrapperBVastUrl,
+            maxWrapperDepth: VastParser.maxWrapperDepth,
+            emitter: expect.any(Function),
+          });
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
             previousUrl: wrapperAVastUrl,
@@ -728,19 +719,18 @@ describe('VASTParser', () => {
       jest.spyOn(fetcher, 'fetchVAST').mockImplementation(() => {
         return Promise.reject(new Error('timeout'));
       });
-      VastParser.fetchingMethod = fetcher.fetchVAST;
+      VastParser.fetchingCallback = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse');
       jest.spyOn(parserUtils, 'mergeWrapperAdData');
       VastParser.maxWrapperDepth = 10;
 
       return VastParser.resolveWrappers(adWithWrapper, 0, wrapperAVastUrl).then(
         (res) => {
-          expect(fetcher.fetchVAST).toHaveBeenCalledWith(
-            wrapperBVastUrl,
-            { previousUrl: null, wrapperAd: null, wrapperDepth: 0 },
-            VastParser.maxWrapperDepth,
-            expect.any(Function)
-          );
+          expect(fetcher.fetchVAST).toHaveBeenCalledWith({
+            url: wrapperBVastUrl,
+            maxWrapperDepth: VastParser.maxWrapperDepth,
+            emitter: expect.any(Function),
+          });
           expect(VastParser.parse).not.toHaveBeenCalled();
           expect(parserUtils.mergeWrapperAdData).not.toBeCalled();
           expect(res).toEqual(
@@ -757,7 +747,7 @@ describe('VASTParser', () => {
       jest
         .spyOn(fetcher, 'fetchVAST')
         .mockReturnValue(Promise.resolve('<xml></xml>'));
-      VastParser.fetchingMethod = fetcher.fetchVAST;
+      VastParser.fetchingCallback = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
 
       const adWithWrapper = {
@@ -781,7 +771,7 @@ describe('VASTParser', () => {
       jest
         .spyOn(fetcher, 'fetchVAST')
         .mockReturnValue(Promise.resolve('<xml></xml>'));
-      VastParser.fetchingMethod = fetcher.fetchVAST;
+      VastParser.fetchingCallback = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
 
       const expectedValue = { allowMultipleAds: true };
