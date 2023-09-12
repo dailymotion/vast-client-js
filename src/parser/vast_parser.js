@@ -25,7 +25,7 @@ export class VASTParser extends EventEmitter {
   constructor() {
     super();
     this.maxWrapperDepth = null;
-    this.fetchingMethod = null;
+    this.fetchingCallback = null;
     this.remainingAds = [];
   }
 
@@ -367,10 +367,7 @@ export class VASTParser extends EventEmitter {
         return resolve(ad);
       }
 
-      // If you need to fectch a VAST document, or follow additional wrapper,
-      // you need to use the get method from VASTClient, this method will use the fetchVAST method from the
-      // Fetcher class to fetch your document and set the fetchingMethod in case you want to fetch additional wrapper
-      if (!this.fetchingMethod) {
+      if (!this.fetchingCallback) {
         ad.VASTAdTagURI = ad.nextWrapperURL;
         delete ad.nextWrapperURL;
         return resolve(ad);
@@ -397,12 +394,11 @@ export class VASTParser extends EventEmitter {
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
 
-      this.fetchingMethod(
-        ad.nextWrapperURL,
-        { wrapperDepth: 0, previousUrl: null, wrapperAd: null },
-        this.maxWrapperDepth,
-        this.emit.bind(this)
-      )
+      this.fetchingCallback({
+        url: ad.nextWrapperURL,
+        emitter: this.emit.bind(this),
+        maxWrapperDepth: this.maxWrapperDepth,
+      })
         .then((xml) => {
           return this.parse(xml, {
             url: ad.nextWrapperURL,
