@@ -9,7 +9,7 @@ const missingRequiredSubElements = `
 `;
 
 const childMissingRequiredSubElements = `
-<VAST version="2.1">
+<VAST version="4.3">
   <Ad>
     <InLine>
       <AdVerifications>
@@ -48,7 +48,7 @@ const childMissingRequiredSubElements = `
 `;
 
 const missingRequiredAttributes = `
-<VAST version="2.1">
+<VAST version="4.3">
   <Ad id="ad_id_0001" sequence="1">
     <InLine>
       <AdTitle>Test sample ad</AdTitle>
@@ -184,7 +184,7 @@ const missingRequiredAttributes = `
 `;
 
 const emptyRequiredValues = `
-<VAST version="3.0">
+<VAST version="4.3">
   <Error><![CDATA[https://adtester.dailymotion.com/fake-event/error]]></Error>
   <Ad>
     <InLine>

@@ -1,5 +1,5 @@
 export const vastMissingWrapperValues = `
-<VAST version="4.1" xmlns="http://www.iab.com/VAST">
+<VAST version="4.3" xmlns="http://www.iab.com/VAST">
   <Ad id="20011" sequence="1" conditionalAd="false">
   <Wrapper>
       <AdSystem>VAST</AdSystem>

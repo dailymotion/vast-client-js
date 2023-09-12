@@ -232,7 +232,7 @@ export const inlineTrackersParsed = {
               adType: 'nonLinearAd',
               type: 'image/png',
               staticResource:
-                'https://mms.businesswire.com/media/20150623005446/en/473787/21/iab_tech_lab.jpg',
+                'https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png',
               htmlResource:
                 '<!DOCTYPE html>\n                                            <html lang="en">\n                                            <head>\n                                                <meta charset="UTF-8">\n                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">\n                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">\n                                                <title>Document</title>\n                                            </head>\n                                            <body>\n                                                <h1>titre</h1>\n                                            </body>\n                                            </html>',
               iframeResource: 'lient vers html',
