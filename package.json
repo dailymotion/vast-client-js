@@ -33,7 +33,8 @@
   "scripts": {
     "performance": "node performance/performance_test.js",
     "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
-    "build": "rollup -c --watch",
+    "build": "rollup -c",
+    "watch": "rollup -c --watch",
     "postbuild": "node bundle_size.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
