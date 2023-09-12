@@ -13,6 +13,10 @@ export class Fetcher {
     this.URLTemplateFilters = [];
   }
 
+  /**
+   * Inits the fetching properties of the class with the custom values provided as options
+   * @param {Object} options - The options to initialize before fetching
+   */
   setOptions(options = {}) {
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.fetchingOptions = {
@@ -69,13 +73,14 @@ export class Fetcher {
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-
-  fetchVAST(
+  fetchVAST({
     url,
-    { wrapperDepth = 0, previousUrl = null, wrapperAd = null } = {},
     maxWrapperDepth,
-    emitter
-  ) {
+    emitter,
+    wrapperDepth = 0,
+    previousUrl = null,
+    wrapperAd = null,
+  }) {
     return new Promise((resolve, reject) => {
       const timeBeforeGet = Date.now();
 
@@ -88,7 +93,7 @@ export class Fetcher {
         url,
         previousUrl,
         wrapperDepth,
-        maxWrapperDepth: maxWrapperDepth,
+        maxWrapperDepth,
         timeout: this.fetchingOptions.timeout,
         wrapperAd,
       });
