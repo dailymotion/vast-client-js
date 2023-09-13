@@ -30,14 +30,6 @@ const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
       },
     ],
     plugins: [
-      alias({
-        entries: [
-          {
-            find: './urlhandlers/mock_node_url_handler',
-            replacement: './urlhandlers/node_url_handler',
-          },
-        ],
-      }),
       resolve({
         preferBuiltins: true,
       }),
