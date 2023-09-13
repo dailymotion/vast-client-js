@@ -440,29 +440,27 @@ describe('VASTParser', () => {
 
       it('should emits VAST-error & track when wrapped', (done) => {
         const url = urlFor('wrapper-empty.xml');
-        dataFromGivenUrl(urlFor('wrapper-empty.xml'), options).then(
-          (response) => {
-            // Response doesn't have any ads
-            expect(response.ads).toEqual([]);
-            //error has been triggered
-            expect(dataTriggered.length).toBe(1);
-            expect(dataTriggered[0].ERRORCODE).toBe(303);
-            expect(dataTriggered[0].extensions[0].children[0].name).toBe(
-              'paramWrapperEmptyNoAd'
-            );
-            expect(dataTriggered[0].extensions[0].children[0].value).toBe(
-              'valueWrapperEmptyNoAd'
-            );
-            // TRacking has been done
-            expect(trackCalls.length).toBe(1);
-            expect(trackCalls[0].templates).toEqual([
-              'http://example.com/wrapper-empty_wrapper-error',
-              'http://example.com/empty-no-ad',
-            ]);
-            expect(trackCalls[0].variables).toEqual({ ERRORCODE: 303 });
-            done();
-          }
-        );
+        dataFromGivenUrl(url, options).then((response) => {
+          // Response doesn't have any ads
+          expect(response.ads).toEqual([]);
+          //error has been triggered
+          expect(dataTriggered.length).toBe(1);
+          expect(dataTriggered[0].ERRORCODE).toBe(303);
+          expect(dataTriggered[0].extensions[0].children[0].name).toBe(
+            'paramWrapperEmptyNoAd'
+          );
+          expect(dataTriggered[0].extensions[0].children[0].value).toBe(
+            'valueWrapperEmptyNoAd'
+          );
+          // TRacking has been done
+          expect(trackCalls.length).toBe(1);
+          expect(trackCalls[0].templates).toEqual([
+            'http://example.com/wrapper-empty_wrapper-error',
+            'http://example.com/empty-no-ad',
+          ]);
+          expect(trackCalls[0].variables).toEqual({ ERRORCODE: 303 });
+          done();
+        });
       });
     });
 

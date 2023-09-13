@@ -192,6 +192,7 @@ describe('Fetcher', () => {
       expect(fetcher.fetchingOptions.withCredentials).toEqual(false);
     });
   });
+
   describe('URLtemplatefilter modifications', () => {
     let filter = jest.fn();
     beforeEach(() => {
