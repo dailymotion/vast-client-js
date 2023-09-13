@@ -1,7 +1,7 @@
 import { Fetcher } from '../src/fetcher';
 import { VASTParser } from '../src/parser/vast_parser';
 import * as Bitrate from '../src/parser/bitrate';
-import { urlHandler } from '../src/url_handler';
+import { urlHandler } from '../src/urlhandlers/xhr_url_handler';
 import { expect } from '@jest/globals';
 import { getNodesFromXml } from './utils/utils';
 
@@ -10,15 +10,15 @@ describe('Fetcher', () => {
 
   const xml = getNodesFromXml('<VAST></VAST>');
   const urlHandlerSuccess = {
-    get: (url, options, cb) => {
-      cb(null, xml, { byteLength: 1234, statusCode: 200 });
-    },
+    get: (url, option) =>
+      new Promise((resolve, _) =>
+        resolve({ xml, details: { byteLength: 1234, statusCode: 200 } })
+      ),
   };
 
   const urlHandlerFailure = {
-    get: (url, options, cb) => {
-      cb(new Error('timeout'), null, { statusCode: 408 });
-    },
+    get: (url, option) =>
+      new Promise((_, reject) => reject({ error: new Error('error') })),
   };
 
   beforeEach(() => {
@@ -47,8 +47,7 @@ describe('Fetcher', () => {
           .then(() => {
             expect(urlHandlerSpy).toHaveBeenCalledWith(
               expectedUrl,
-              expect.anything(),
-              expect.anything()
+              expect.any(Object)
             );
           });
       });
