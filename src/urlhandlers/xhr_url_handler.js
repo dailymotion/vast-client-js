@@ -101,18 +101,22 @@ async function get(url, options) {
     }, options.timeout);
     /////
 
-    const request = await fetch(url, { ...options, signal: controller.signal });
+    const request = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      credentials: options.withCredentials ? 'include' : 'omit',
+    });
     clearTimeout(timer);
 
     const error = handleError(request);
     if (error) {
-      return { error: new Error(error) };
+      return { error: new Error(error), statusCode: request.status };
     }
     return handleResponse(request);
   } catch (error) {
     return {
       error,
-      statusCode: error.name === 'AbortError' ? 408 : undefined,
+      statusCode: error.name === 'AbortError' ? 408 : null,
     };
   }
 }
