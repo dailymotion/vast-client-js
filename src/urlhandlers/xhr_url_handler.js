@@ -1,118 +1,78 @@
 import { DEFAULT_TIMEOUT } from './consts';
+const nodeDOMParser = require('@xmldom/xmldom').DOMParser;
 
-// function supported() {
-//   return !!xhr();
-// }
-
-// // si succes
-// function handleLoad(request, cb) {
-//   if (request.status === 200) {
-//     cb(null, request.responseXML, {
-//       byteLength: request.response.length,
-//       statusCode: request.status,
-//     });
-//   } else {
-//     handleFail(request, cb, false);
-//   }
-// }
-
-// // si foireux
-// function handleFail(request, cb, isTimeout) {
-//   const statusCode = !isTimeout ? request.status : 408; // Request timeout
-//   const msg = isTimeout
-//     ? `XHRURLHandler: Request timed out after ${request.timeout} ms (${statusCode})`
-//     : `XHRURLHandler: ${request.statusText} (${statusCode})`;
-
-//   cb(new Error(msg), null, { statusCode });
-// }
-
-// function get(url, options, cb) {
-//   if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
-//     return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
-//   }
-
-//   try {
-//     const request = xhr();
-
-//     request.open('GET', url);
-//     request.timeout = options.timeout || DEFAULT_TIMEOUT;
-//     request.withCredentials = options.withCredentials || false;
-//     request.overrideMimeType && request.overrideMimeType('text/xml');
-//     request.onload = () => handleLoad(request, cb);
-//     request.onerror = () => handleFail(request, cb, false);
-//     request.onabort = () => handleFail(request, cb, false);
-//     request.ontimeout = () => handleFail(request, cb, true);
-
-//     request.send();
-//   } catch (error) {
-//     cb(new Error('XHRURLHandler: Unexpected error'));
-//   }
-// }
-
+/**
+ * Check if we are in a browser environment
+ * @returns {Boolean}
+ */
 function isBrowserEnvironment() {
   return typeof window !== 'undefined';
 }
 
 /**
- * handlingResponse
- * @param {*} request
- * @returns
+ * Return an object containing an XML document.
+ * in addition to the byteLength and the statusCode of the response.
+ * @param {Object} response the response of the fetch request.
+ * @returns {Object}
  */
-async function handleResponse(request) {
-  let details = {};
-  const textXml = await request.text();
-
-  details.byteLength = textXml.length;
-  details.statusCode = request.status;
+async function handleResponse(response) {
+  const textXml = await response.text();
 
   const parser = isBrowserEnvironment() ? new DOMParser() : new nodeDOMParser();
   const xml = parser.parseFromString(textXml, 'text/xml');
-  return { xml, details };
+  return {
+    xml,
+    details: { byteLength: textXml.length, statusCode: response.status },
+  };
 }
+
 /**
- * Error Handling
- * @param {*} request
- * @returns
+ * Return a custom message if an error occured
+ * @param {Object} response The response of fetch request
+ * @returns {String | null}
  */
-function handleError(request) {
+function handleError(response) {
   if (isBrowserEnvironment()) {
     if (
       window.location.protocol === 'http:' &&
-      request.url.indexOf('https://') === 0
+      response.url.indexOf('https://') === 0
     ) {
-      return 'XHRURLHandler: Cannot go from HTTPS to HTTP.';
+      return 'URLHandler: Cannot go from HTTPS to HTTP.';
     }
   }
-  if (request.status !== 200 || !request.ok) {
-    return `XHRURLHandler: ${request.statusText} (${request.status})`;
+
+  if (response.status !== 200 || !response.ok) {
+    return `URLHandler: ${response.statusText} (${response.status})`;
   }
   return null;
 }
 
 async function get(url, options) {
   try {
-    ///// timeout
+    // fetch does not have "timeout" option, we are using AbortController
+    // to abort the request if it reach the timeout.
     const controller = new AbortController();
     const timer = setTimeout(() => {
       controller.abort();
       throw new Error(
-        `XHRURLHandler: Request timed out after ${options.timeout} ms (408)`
+        `URLHandler: Request timed out after ${
+          options.timeout || DEFAULT_TIMEOUT
+        } ms (408)`
       );
-    }, options.timeout);
-    /////
+    }, options.timeout || DEFAULT_TIMEOUT);
 
-    const request = await fetch(url, {
+    const response = await fetch(url, {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit',
     });
     clearTimeout(timer);
 
-    const error = handleError(request);
+    const error = handleError(response);
     if (error) {
-      return { error: new Error(error), statusCode: request.status };
+      return { error: new Error(error), statusCode: response.status };
     }
-    return handleResponse(request);
+    return handleResponse(response);
   } catch (error) {
     return {
       error,
