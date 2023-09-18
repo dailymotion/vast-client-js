@@ -12,7 +12,7 @@ const nodeUrlHandler = {
       const response = await readFile(file, 'utf-8');
       return {
         xml: new DOMParser().parseFromString(response, 'text/xml'),
-        details: { ByteLength: 1234, statusCode: 200 },
+        details: { byteLength: 1234, statusCode: 200 },
       };
     } catch (err) {
       return { error: err, statusCode: 400 };
