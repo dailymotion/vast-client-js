@@ -182,6 +182,7 @@ describe('VASTParser', () => {
       });
 
       expect(ads).toHaveLength(2);
+      expect(VastParser.emit).toHaveBeenCalledTimes(2);
       expect(VastParser.emit).toHaveBeenCalledWith('VAST-ad-parsed', {
         adIndex: 0,
         type: 'INLINE',
