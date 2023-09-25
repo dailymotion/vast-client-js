@@ -34,8 +34,8 @@ async function handleResponse(response) {
 function handleError(response) {
   if (isBrowserEnvironment()) {
     if (
-      window.location.protocol === 'http:' &&
-      response.url.indexOf('https://') === 0
+      window.location.protocol === 'https:' &&
+      response.url.indexOf('http://') === 0
     ) {
       return 'URLHandler: Cannot go from HTTPS to HTTP.';
     }
