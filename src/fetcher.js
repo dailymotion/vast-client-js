@@ -68,7 +68,7 @@ export class Fetcher {
    * @param {String} previousUrl - Url of the previous VAST.
    * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @param {Number} maxWrapperDepth - The maximum number of Wrapper that can be fetch
-   * @param {emitter} emitter - The function used to Emit event
+   * @param {Function} emitter - The function used to Emit event
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
