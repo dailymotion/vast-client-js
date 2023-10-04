@@ -91,11 +91,9 @@ describe('VASTClient', () => {
 
   describe('get', () => {
     let VastClient;
-    let VastParser;
 
     beforeEach(() => {
       VastClient = new VASTClient();
-      VastParser = VastClient.getParser();
     });
 
     describe('with resolveAll set to false', () => {
@@ -144,7 +142,7 @@ describe('VASTClient', () => {
 
       describe('getNextAds', () => {
         it('resolves all next ads if requested', async () => {
-          let res = await VastClient.getNextAds(true);
+          const res = await VastClient.getNextAds(true);
           expect(res).toEqual({
             ads: expect.any(Array),
             errorURLTemplates: [],
@@ -154,12 +152,12 @@ describe('VASTClient', () => {
         });
 
         it('resolves only next ad if requested', async () => {
-          let a = await VastClient.get(
+          await VastClient.get(
             wrapperMultipleAdsVastUrl,
             optionsWithNoResolveAll
           );
 
-          let res = await VastClient.getNextAds(false);
+          const res = await VastClient.getNextAds(false);
 
           expect(res).toEqual({
             ads: expect.any(Array),

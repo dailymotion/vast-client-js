@@ -285,7 +285,6 @@ describe('VASTParser', () => {
 
   describe('parseVAST', () => {
     let options;
-    let res;
     beforeEach(() => {
       options = {
         wrapperLimit: 5,
@@ -350,7 +349,7 @@ describe('VASTParser', () => {
     let trackCalls = null;
     let dataTriggered = null;
     const options = {
-      urlhandler: nodeURLHandler,
+      urlHandler: nodeURLHandler,
     };
 
     const dataFromGivenUrl = (url, options = {}) => {
@@ -670,7 +669,7 @@ describe('VASTParser', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: 'http://example.com/foo' };
       VastParser.fetchingCallback = () => {};
       VastParser.maxWrapperDepth = 10;
-      return VastParser.resolveWrappers(adWithWrapper, 10).then((res) => {
+      return VastParser.resolveWrappers(adWithWrapper, 10, null).then((res) => {
         expect(res).toEqual({
           ...ad,
           errorCode: 302,
