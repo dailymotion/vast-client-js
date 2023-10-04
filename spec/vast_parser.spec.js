@@ -1,5 +1,5 @@
 import { VASTParser } from '../src/parser/vast_parser';
-import { urlFor } from './utils/utils';
+import { urlFor, getNodesFromXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
 import * as Bitrate from '../src/parser/bitrate';
@@ -159,7 +159,7 @@ describe('VASTParser', () => {
     it('handles Error tag for root VAST', () => {
       //initParsingStatus always  will be called before parseVastXml
       VastParser.rootErrorURLTemplates = [];
-      VastParser.parseVastXml(errorXml, { isRootVAST: true });
+      VastParser.parseVastXml(errorXml.xml, { isRootVAST: true });
       expect(VastParser.rootErrorURLTemplates).toEqual([
         'http://example.com/empty-no-ad',
       ]);
@@ -188,14 +188,14 @@ describe('VASTParser', () => {
         type: 'INLINE',
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
-        vastVersion: '2.1',
+        vastVersion: '4.3',
       });
       expect(VastParser.emit).toHaveBeenCalledWith('VAST-ad-parsed', {
         adIndex: 1,
         type: 'INLINE',
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
-        vastVersion: '2.1',
+        vastVersion: '4.3',
       });
     });
   });
@@ -403,7 +403,7 @@ describe('VASTParser', () => {
         );
 
         fetcher.setOptions({ ...options, url: url, previousUrl: url });
-        VastParser.fetchingMethod = fetcher.fetchVAST.bind(fetcher);
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
 
         const vastXML = await VastParser.parseVAST(response.xml, {
           url: url,
@@ -461,7 +461,7 @@ describe('VASTParser', () => {
         const response = await nodeUrlHandler.get(url);
 
         fetcher.setOptions({ ...options, url: url, previousUrl: url });
-        VastParser.fetchingMethod = fetcher.fetchVAST.bind(fetcher);
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
 
         const vastXML = await VastParser.parseVAST(response.xml, {
           url: url,
@@ -501,7 +501,7 @@ describe('VASTParser', () => {
         const response = await nodeUrlHandler.get(url);
 
         fetcher.setOptions({ ...options, url: url, previousUrl: url });
-        VastParser.fetchingMethod = fetcher.fetchVAST.bind(fetcher);
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
 
         const vastXML = await VastParser.parseVAST(response.xml, {
           url: url,
@@ -534,7 +534,7 @@ describe('VASTParser', () => {
         const response = await nodeUrlHandler.get(url);
 
         fetcher.setOptions({ ...options, url: url, previousUrl: url });
-        VastParser.fetchingMethod = fetcher.fetchVAST.bind(fetcher);
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
 
         const vastXML = await VastParser.parseVAST(response.xml, {
           url: url,

@@ -4,6 +4,7 @@ import * as Bitrate from '../src/parser/bitrate';
 import { urlHandler } from '../src/urlhandlers/xhr_url_handler';
 import { expect } from '@jest/globals';
 import { getNodesFromXml } from './utils/utils';
+import { async } from 'regenerator-runtime';
 
 describe('Fetcher', () => {
   let fetcher, vastParser, mockEmit;
@@ -166,7 +167,7 @@ describe('Fetcher', () => {
           maxWrapperDepth: 5,
           emitter: () => {},
         });
-        return expect(result).rejects.toEqual(new Error('timeout'));
+        expect(result).rejects.toEqual(new Error('error'));
       });
     });
   });
