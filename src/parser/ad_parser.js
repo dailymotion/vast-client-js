@@ -25,10 +25,15 @@ export function parseAd(
   const childNodes = Array.from(adElement.childNodes);
 
   const filteredChildNodes = childNodes
-    .filter((childNode) => ['Wrapper', 'InLine'].includes(childNode.nodeName))
+    .filter((childNode) =>
+      ['inline', 'wrapper'].includes(childNode.nodeName.toLowerCase())
+    )
     .filter(
       (adType) =>
-        !(adType.nodeName !== 'Wrapper' && followAdditionalWrappers === false)
+        !(
+          adType.nodeName.toLowerCase() === 'wrapper' &&
+          followAdditionalWrappers === false
+        )
     );
 
   for (const node of filteredChildNodes) {
@@ -43,6 +48,16 @@ export function parseAd(
         ad: parseInLine(node, emit, { allowMultipleAds }),
         type: 'INLINE',
       };
+    } else {
+      const wrongNode = node.nodeName.toLowerCase();
+      const message =
+        wrongNode === 'inline'
+          ? `<${node.nodeName}> must be written <InLine>`
+          : `<${node.nodeName}> must be written <Wrapper>`;
+      emit('VAST-warning', {
+        message,
+        wrongNode: node,
+      });
     }
   }
 }
