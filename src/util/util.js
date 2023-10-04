@@ -125,22 +125,34 @@ function extractURLsFromTemplates(URLTemplates) {
 }
 
 /**
- * Filter URLTemplates elements to keep only valid and safe URL templates.
+ * Filter URLTemplates elements .
  *   To be valid, urls should:
  *   - have the same protocol as the client
  *   or
  *   - be protocol-relative urls
  *
+ * Returns an object with two arrays
+ *    - validUrls : An array of valid URLs
+ *    - invalidUrls: An array of invalid URLs
+ *
  * @param {Array} URLTemplates - A Array of string/object containing urls templates.
+ * @returns {Object}
+ *
  */
-function filterValidUrlTemplates(URLTemplates) {
-  if (Array.isArray(URLTemplates)) {
-    return URLTemplates.filter(urlTemplate => {
-      const url = urlTemplate.hasOwnProperty('url') ? urlTemplate.url : urlTemplate;
-      return isValidUrl(url);
-    })
-  }
-  return isValidUrl(URLTemplates);
+function filterUrlTemplates(URLTemplates) {
+  return URLTemplates.reduce(
+    (acc, urlTemplate) => {
+      const url = urlTemplate.hasOwnProperty('url')
+        ? urlTemplate.url
+        : urlTemplate;
+
+      let urlVerification = isValidUrl(url);
+
+      urlVerification ? acc.validUrls.push(url) : acc.unvalidUrls.push(url);
+      return acc;
+    },
+    { validUrls: [], unvalidUrls: [] }
+  );
 }
 
 function isValidUrl(url) {
@@ -251,14 +263,14 @@ function joinArrayOfUniqueTemplateObjs(arr1 = [], arr2 = []) {
  * @return {Boolean}
  */
 function isValidTimeValue(time) {
-  return Number.isFinite(time) && time >= -2
+  return Number.isFinite(time) && time >= -2;
 }
 
 export const util = {
   track,
   resolveURLTemplates,
   extractURLsFromTemplates,
-  filterValidUrlTemplates,
+  filterUrlTemplates,
   containsTemplateObject,
   isTemplateObjectEqual,
   encodeURIComponentRFC3986,
@@ -268,4 +280,5 @@ export const util = {
   joinArrayOfUniqueTemplateObjs,
   isValidTimeValue,
   addLeadingZeros,
+  isValidUrl,
 };
