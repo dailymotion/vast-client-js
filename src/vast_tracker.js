@@ -151,6 +151,10 @@ export class VASTTracker extends EventEmitter {
   setDuration(duration) {
     // check if duration is a valid time input
     if (!util.isValidTimeValue(duration)) {
+      this.emit('TRACKER-error', {
+        message: 'the duration provided is not valid',
+        duration,
+      });
       return;
     }
     this.assetDuration = duration;
@@ -180,8 +184,14 @@ export class VASTTracker extends EventEmitter {
   setProgress(progress, macros = {}) {
     // check if progress is a valid time input
     if (!util.isValidTimeValue(progress) || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'setProgress parameters has the wrong type.',
+        parameter: { progress, macros },
+      });
+
       return;
     }
+
     const skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
 
     if (skipDelay !== -1 && !this.skippable) {
@@ -252,8 +262,13 @@ export class VASTTracker extends EventEmitter {
    */
   setMuted(muted, macros = {}) {
     if (typeof muted !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'setMuted parameters have the wrong type',
+        parameters: { muted, macros },
+      });
       return;
     }
+
     if (this.muted !== muted) {
       this.track(muted ? 'mute' : 'unmute', { macros });
     }
@@ -270,6 +285,10 @@ export class VASTTracker extends EventEmitter {
    */
   setPaused(paused, macros = {}) {
     if (typeof paused !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'setPaused parameters have the wrong type',
+        parameters: { paused, macros },
+      });
       return;
     }
     if (this.paused !== paused) {
@@ -288,6 +307,10 @@ export class VASTTracker extends EventEmitter {
    */
   setFullscreen(fullscreen, macros = {}) {
     if (typeof fullscreen !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'setFullScreen parameters have the wrong type',
+        parameters: { fullscreen, macros },
+      });
       return;
     }
     if (this.fullscreen !== fullscreen) {
@@ -308,8 +331,13 @@ export class VASTTracker extends EventEmitter {
    */
   setExpand(expanded, macros = {}) {
     if (typeof expanded !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'setExpand parameters have the wrong type',
+        parameters: { expanded, macros },
+      });
       return;
     }
+
     if (this.expanded !== expanded) {
       this.track(expanded ? 'expand' : 'collapse', { macros });
       this.track(expanded ? 'playerExpand' : 'playerCollapse', { macros });
@@ -327,6 +355,10 @@ export class VASTTracker extends EventEmitter {
    */
   setSkipDelay(duration) {
     if (!util.isValidTimeValue(duration)) {
+      this.emit('TRACKER-error', {
+        message: 'setSkipDelay parameter does not have a valid value',
+        parameter: duration,
+      });
       return;
     }
     this.skipDelay = duration;
@@ -339,6 +371,10 @@ export class VASTTracker extends EventEmitter {
    */
   trackImpression(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'trackImpression parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
     if (!this.impressed) {
@@ -354,6 +390,10 @@ export class VASTTracker extends EventEmitter {
    */
   trackViewableImpression(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'trackViewableImpression parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.ad.viewableImpression.forEach((impression) => {
@@ -368,6 +408,10 @@ export class VASTTracker extends EventEmitter {
 
   trackNotViewableImpression(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'trackNotViewableImpression parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
 
@@ -382,6 +426,10 @@ export class VASTTracker extends EventEmitter {
    */
   trackUndeterminedImpression(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'trackUndeterminedImpression parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
 
@@ -397,6 +445,10 @@ export class VASTTracker extends EventEmitter {
    */
   error(macros = {}, isCustomCode = false) {
     if (typeof macros !== 'object' || typeof isCustomCode !== 'boolean') {
+      this.emit('TRACKER-error', {
+        message: 'error parameters have the wrong type',
+        parameters: { macros, isCustomCode },
+      });
       return;
     }
     this.trackURLs(this.ad.errorURLTemplates, macros, { isCustomCode });
@@ -411,6 +463,10 @@ export class VASTTracker extends EventEmitter {
    */
   errorWithCode(errorCode, isCustomCode = false) {
     if (typeof errorCode !== 'string' || typeof isCustomCode !== 'boolean') {
+      this.emit('TRACKER-error', {
+        message: 'ErrorWithCode parameters have the wrong type',
+        parameters: { errorCode, isCustomCode },
+      });
       return;
     }
     this.error({ ERRORCODE: errorCode }, isCustomCode);
@@ -429,6 +485,10 @@ export class VASTTracker extends EventEmitter {
    */
   complete(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'complete parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('complete', { macros });
@@ -444,6 +504,10 @@ export class VASTTracker extends EventEmitter {
    */
   notUsed(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'notUsed parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('notUsed', { macros });
@@ -461,6 +525,10 @@ export class VASTTracker extends EventEmitter {
    */
   otherAdInteraction(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'otherAdInteraction parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('otherAdInteraction', { macros });
@@ -478,6 +546,10 @@ export class VASTTracker extends EventEmitter {
    */
   acceptInvitation(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'acceptInvitation parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('acceptInvitation', { macros });
@@ -492,6 +564,10 @@ export class VASTTracker extends EventEmitter {
    */
   adExpand(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'adExpand parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('adExpand', { macros });
@@ -506,6 +582,10 @@ export class VASTTracker extends EventEmitter {
    */
   adCollapse(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'adCollapse parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('adCollapse', { macros });
@@ -520,6 +600,10 @@ export class VASTTracker extends EventEmitter {
    */
   minimize(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'minimize parameter has to wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('minimize', { macros });
@@ -536,6 +620,10 @@ export class VASTTracker extends EventEmitter {
    */
   verificationNotExecuted(vendor, macros = {}) {
     if (typeof vendor !== 'string' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'verificationNotExecuted parameters have to wrong type',
+        parameters: { vendor, macros },
+      });
       return;
     }
     if (
@@ -586,6 +674,10 @@ export class VASTTracker extends EventEmitter {
    */
   overlayViewDuration(formattedDuration, macros = {}) {
     if (typeof formattedDuration !== 'string' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'overlayViewDuration parameters have the wrong type',
+        parameters: { formattedDuration, macros },
+      });
       return;
     }
     macros['ADPLAYHEAD'] = formattedDuration;
@@ -602,6 +694,10 @@ export class VASTTracker extends EventEmitter {
    */
   close(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'close parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track(this.linear ? 'closeLinear' : 'close', { macros });
@@ -615,6 +711,10 @@ export class VASTTracker extends EventEmitter {
    */
   skip(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'skip parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('skip', { macros });
@@ -630,6 +730,10 @@ export class VASTTracker extends EventEmitter {
    */
   load(macros = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'load parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
     this.track('loaded', { macros });
@@ -650,6 +754,10 @@ export class VASTTracker extends EventEmitter {
         typeof fallbackClickThroughURL !== 'string') ||
       typeof macros !== 'object'
     ) {
+      this.emit('TRACKER-error', {
+        message: 'click parameters have the wrong type',
+        parameters: { fallbackClickThroughURL, macros },
+      });
       return;
     }
     if (
@@ -689,6 +797,10 @@ export class VASTTracker extends EventEmitter {
    */
   track(eventName, { macros = {}, once = false } = {}) {
     if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: 'track macros parameter has the wrong type',
+        parameter: macros,
+      });
       return;
     }
     // closeLinear event was introduced in VAST 3.0
@@ -730,7 +842,15 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
   trackURLs(URLTemplates, macros = {}, options = {}) {
-    const validUrlTemplates = util.filterValidUrlTemplates(URLTemplates);
+    const { validUrls, unvalidUrls } = util.filterUrlTemplates(URLTemplates);
+
+    if (unvalidUrls.length) {
+      this.emit('TRACKER-error', {
+        unvalidUrls,
+        message: 'Provided urls are malformed',
+      });
+    }
+
     //Avoid mutating the object received in parameters.
     const givenMacros = { ...macros };
     if (this.linear) {
@@ -771,11 +891,13 @@ export class VASTTracker extends EventEmitter {
           .join(',');
       }
       if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
-        givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
+        givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories
+          .map((blockedCategorie) => blockedCategorie.value)
+          .join(',');
       }
     }
 
-    util.track(validUrlTemplates, givenMacros, options);
+    util.track(validUrls, givenMacros, options);
   }
 
   /**
