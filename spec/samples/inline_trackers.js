@@ -171,7 +171,6 @@ export const inlineTrackersParsed = {
             complete: ['http://example.com/linear-complete'],
             start: ['http://example.com/linear-start'],
             loaded: ['http://example.com/linear-loaded'],
-            complete: ['http://example.com/linear-complete'],
             mute: ['http://example.com/linear-muted'],
             unmute: ['http://example.com/linear-unmute'],
             pause: ['http://example.com/linear-pause'],
