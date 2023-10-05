@@ -1,5 +1,4 @@
 import { VASTClient } from '../src/vast_client';
-import 'regenerator-runtime/runtime';
 import { readFile } from 'fs/promises';
 import { afterAll } from '@jest/globals';
 

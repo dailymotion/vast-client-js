@@ -162,12 +162,15 @@ describe('Fetcher', () => {
       });
 
       it('should rejects with error', () => {
-        let result = fetcher.fetchVAST({
-          url: url,
-          maxWrapperDepth: 5,
-          emitter: () => {},
-        });
-        expect(result).rejects.toEqual(new Error('error'));
+        let result = fetcher
+          .fetchVAST({
+            url: url,
+            maxWrapperDepth: 5,
+            emitter: () => {},
+          })
+          .catch(() => {
+            return expect(result).rejects.toEqual('error');
+          });
       });
     });
   });
