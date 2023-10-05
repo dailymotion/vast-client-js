@@ -328,7 +328,7 @@ export function _parseAdVerifications(verifications) {
             parserUtils.assignAttributes(attributes, verification);
             break;
           case 'VerificationParameters':
-            verification.parameters = parserUtils.parseNodeText(textContent);
+            verification.parameters = textContent.trim();
             break;
         }
       });
