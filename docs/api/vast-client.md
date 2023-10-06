@@ -1,8 +1,6 @@
 # VASTClient
 
-The `VASTClient` class provides a client to manage the fetching and parsing of VAST documents.
-
-`VASTClient` provides a methods to fetch a VAST resource because of his ability to resolving the wrapper chain (recursive fetch and parse) by using the `VASTParser` parsing methods.
+The `VASTClient` class provides a client to manage the fetching and parsing of VAST documents. It provides methods for fetching VAST resources by resolving the wrapper chain (recursive fetching and parsing) by using the `VASTParser` parsing methods.
 
 - [Constructor](#constructor)
 - [Properties](#properties)

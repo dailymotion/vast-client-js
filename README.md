@@ -47,7 +47,7 @@ vastClient.get('https://www.examplevast.com/vast.xml')
 
 In addition to fetching and parsing a VAST resource, **VASTClient** provides options to filter a sequence of calls based on count and time of execution, together with the possibility to track URLs using **VASTTracker**.
 
-If you need to directly parse a VAST XML and  also follow any wrappers chain, you can use the  `parseVAST` method from the  **VASTClient** :
+If you need to directly parse a VAST XML and also follow any wrappers chain, you can use the  `parseVAST` method from the  **VASTClient** :
 
 ```javascript
 import { VASTClient } from '@dailymotion/vast-client'
@@ -128,13 +128,13 @@ const vastTracker = new VASTTracker();
 
 A pre-bundled version of VAST Client JS is available: [`vast-client.min.js`](dist/vast-client.min.js) [minified].
 
-If you want to use this file, download it place it your project at your prefered location.
-Then, make sure that your main file is in type module as below.
+To use it, either host it on your CDN or locally in your project. If you're using a script tag make sure to set the type property to module like below.
 
+_your index.html_
 ```html
 <script type="module" src="your-main-file.js"></script>
 ```
-
+_main.js_
 ```javascript
 import {VASTClient, VASTParser, VASTTracker} from "vast-client.min.js"
 
