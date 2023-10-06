@@ -63,7 +63,7 @@ export class Fetcher {
   /**
    * Fetches a VAST document for the given url.
    * Returns a Promise which resolves,rejects according to the result of the request.
-   * @param  {String} url - The url to request the VAST document.
+   * @param {String} url - The url to request the VAST document.
    * @param {Number} wrapperDepth - How many times the current url has been wrapped.
    * @param {String} previousUrl - Url of the previous VAST.
    * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.

@@ -359,9 +359,7 @@ export class VASTParser extends EventEmitter {
     return new Promise((resolve) => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
-
       // We already have a resolved VAST ad, no need to resolve wrapper
-
       if (!ad.nextWrapperURL) {
         delete ad.nextWrapperURL;
         return resolve(ad);
