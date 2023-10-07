@@ -177,7 +177,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#midpoint
    * @emits VASTTracker#thirdQuartile
    */
-  setProgress(progress, macros = {}) {
+  setProgress(progress, macros = {}, trackOnce = true) {
     // check if progress is a valid time input
     if (!util.isValidTimeValue(progress) || typeof macros !== 'object') {
       return;
@@ -213,7 +213,7 @@ export class VASTTracker extends EventEmitter {
         this.lastPercentage = percent;
       }
       events.forEach((eventName) => {
-        this.track(eventName, { macros, once: true });
+        this.track(eventName, { macros, once: trackOnce });
       });
 
       if (progress < this.progress) {
