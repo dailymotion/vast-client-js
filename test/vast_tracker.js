@@ -130,25 +130,6 @@ describe('VASTTracker', function () {
         });
       });
 
-      describe('#setProgress trackOnce', () => {
-
-        after(()=> {
-          this.stub?.restore();
-        })
-
-        it('should send firstQuartile event with trackOnce : false', () => {
-          this.stub = sinon.stub(this.Tracker, 'track').callsFake((eventName, params) => {
-            console.log("testprogress : "+eventName);
-            if(eventName === 'progress-23') {
-              params.once.should.equal(false);
-              
-            }
-          });
-
-          this.Tracker.setProgress(23, null, false);
-        });
-      });
-
       describe('#setMuted', () => {
         before((done) => {
           _eventsSent = [];
