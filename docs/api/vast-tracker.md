@@ -496,7 +496,7 @@ vastTracker.on('pause', () => {
 });
 ```
 
-### setProgress(progress, macros) <a name="setProgress"></a>
+### setProgress(progress, macros, trackOnce) <a name="setProgress"></a>
 
 Sets the duration of the ad and updates the quartiles based on that. This is required for tracking time related events such as `start`, `firstQuartile`, `midpoint`, `thirdQuartile` or `rewind`.
 
@@ -504,6 +504,7 @@ Sets the duration of the ad and updates the quartiles based on that. This is req
 
 - **`progress: Number`** - Current playback time in seconds
 - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`trackOnce: Boolean`** - Optional parameter. If set to false, quartile events can be triggered again after a 'rewind' situation.
 
 #### Events emitted
 
