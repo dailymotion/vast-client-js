@@ -232,9 +232,9 @@ describe('Fetcher', () => {
       });
     });
 
-    describe('removeURLTemplateFilter', () => {
+    describe('removeLastUrlTemplateFilter', () => {
       it('remove the last element of the URLTemplateFilters array', () => {
-        fetcher.removeURLTemplateFilter();
+        fetcher.removeLastURLTemplateFilter();
         expect(fetcher.URLTemplateFilters.length).toBe(0);
       });
     });

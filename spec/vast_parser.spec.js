@@ -72,9 +72,9 @@ describe('VASTParser', () => {
   });
 
   beforeEach(() => {
-    VastParser = new VASTParser();
     vastClient = new VASTClient();
     fetcher = new Fetcher();
+    VastParser = new VASTParser({ fetcher });
     jest.spyOn(VastParser, 'emit');
   });
 
