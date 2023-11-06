@@ -19,12 +19,9 @@ export class VASTClient {
   constructor(cappingFreeLunch, cappingMinimumTimeInterval, customStorage) {
     this.cappingFreeLunch = cappingFreeLunch || 0;
     this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
-    this.vastParser = new VASTParser();
-    this.storage = customStorage || new Storage();
     this.fetcher = new Fetcher();
-    this.vastParser.fetchingCallback = this.fetcher.fetchVAST.bind(
-      this.fetcher
-    );
+    this.vastParser = new VASTParser({ fetcher: this.fetcher });
+    this.storage = customStorage || new Storage();
     // Init values if not already set
     if (this.lastSuccessfulAd === undefined) {
       this.lastSuccessfulAd = 0;
@@ -51,8 +48,8 @@ export class VASTClient {
    * Removes the last element of the url templates filters array.
    * @return {void}
    */
-  removeURLTemplateFilter() {
-    this.fetcher.removeURLTemplateFilter();
+  removeLastURLTemplateFilter() {
+    this.fetcher.removeLastURLTemplateFilter();
   }
 
   /**
