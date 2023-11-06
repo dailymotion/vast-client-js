@@ -28,7 +28,6 @@ export class Fetcher {
   /**
    * Adds a filter function to the array of filters which are called before fetching a VAST document.
    * @param  {function} filter - The filter function to be added at the end of the array.
-   * @return {void}
    */
   addURLTemplateFilter(filter) {
     if (typeof filter === 'function') {
@@ -37,15 +36,14 @@ export class Fetcher {
   }
 
   /**
-   * Removes the last element of the url templates filters array.
-   * @return {void}
+   * Removes the latest URL template filter added.
    */
-  removeURLTemplateFilter() {
+  removeLastURLTemplateFilter() {
     this.URLTemplateFilters.pop();
   }
 
   /**
-   * Returns the number of filters of the url templates filters array.
+   * Returns the number of URL template filters added.
    * @return {Number}
    */
   countURLTemplateFilters() {
@@ -53,8 +51,7 @@ export class Fetcher {
   }
 
   /**
-   * Removes all the filter functions from the url templates filters array.
-   * @return {void}
+   * Removes all the URL template filters added.
    */
   clearURLTemplateFilters() {
     this.URLTemplateFilters = [];
@@ -62,15 +59,13 @@ export class Fetcher {
 
   /**
    * Fetches a VAST document for the given url.
-   * Returns a Promise which resolves,rejects according to the result of the request.
-   * @param {String} url - The url to request the VAST document.
-   * @param {Number} wrapperDepth - How many times the current url has been wrapped.
-   * @param {String} previousUrl - Url of the previous VAST.
-   * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
-   * @param {Number} maxWrapperDepth - The maximum number of Wrapper that can be fetch
-   * @param {Function} emitter - The function used to Emit event
-   * @emits  VASTParser#VAST-resolving
-   * @emits  VASTParser#VAST-resolved
+   * @param {Object} params
+   * @param {String} params.url - The url to request the VAST document.
+   * @param {Number} params.wrapperDepth - How many times the current url has been wrapped.
+   * @param {(String | null)} params.previousUrl - Url of the previous VAST.
+   * @param {Object} params.wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
+   * @param {Number} params.maxWrapperDepth - The maximum number of Wrapper that can be fetch
+   * @param {Function} params.emitter - The function used to Emit event
    * @return {Promise}
    */
   fetchVAST({
@@ -102,18 +97,18 @@ export class Fetcher {
         url,
         this.fetchingOptions,
         (error, xml, details = {}) => {
-          const deltaTime = Math.round(Date.now() - timeBeforeGet);
-          const info = {
+          const requestDuration = Math.round(Date.now() - timeBeforeGet);
+
+          emitter('VAST-resolved', {
             url,
             previousUrl,
             wrapperDepth,
             error,
-            duration: deltaTime,
+            duration: requestDuration,
             ...details,
-          };
+          });
 
-          emitter('VAST-resolved', info);
-          updateEstimatedBitrate(details.byteLength, deltaTime);
+          updateEstimatedBitrate(details.byteLength, requestDuration);
 
           if (error) {
             reject(error);
