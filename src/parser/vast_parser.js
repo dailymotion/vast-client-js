@@ -22,11 +22,11 @@ export class VASTParser extends EventEmitter {
    * Creates an instance of VASTParser.
    * @constructor
    */
-  constructor() {
+  constructor({ fetcher } = {}) {
     super();
     this.maxWrapperDepth = null;
-    this.fetchingCallback = null;
     this.remainingAds = [];
+    this.fetcher = fetcher || null;
   }
 
   /**
@@ -348,7 +348,7 @@ export class VASTParser extends EventEmitter {
   /**
    * Resolves the wrappers for the given ad in a recursive way.
    * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
-   * @param {Object} ad - An ad object to be unwrapped.
+   * @param {Object} adToUnWrap - An ad object to be unwrapped.
    * @param {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
    * @param {String} previousUrl - The previous vast url.
    * @return {Promise}
@@ -365,7 +365,7 @@ export class VASTParser extends EventEmitter {
         return resolve(ad);
       }
 
-      if (!this.fetchingCallback) {
+      if (!this.fetcher) {
         ad.VASTAdTagURI = ad.nextWrapperURL;
         delete ad.nextWrapperURL;
         return resolve(ad);
@@ -392,11 +392,12 @@ export class VASTParser extends EventEmitter {
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
 
-      this.fetchingCallback({
-        url: ad.nextWrapperURL,
-        emitter: this.emit.bind(this),
-        maxWrapperDepth: this.maxWrapperDepth,
-      })
+      this.fetcher
+        .fetchVAST({
+          url: ad.nextWrapperURL,
+          emitter: this.emit.bind(this),
+          maxWrapperDepth: this.maxWrapperDepth,
+        })
         .then((xml) => {
           return this.parse(xml, {
             url: ad.nextWrapperURL,
