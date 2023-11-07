@@ -21,7 +21,7 @@ export class Fetcher {
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.fetchingOptions = {
       timeout: options.timeout || DEFAULT_TIMEOUT,
-      withCredentials: options.withCredentials || false,
+      withCredentials: Boolean(options.withCredentials),
     };
   }
 
