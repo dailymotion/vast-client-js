@@ -250,7 +250,7 @@ export class VASTTracker extends EventEmitter {
    * @emits VASTTracker#mute
    * @emits VASTTracker#unmute
    */
-  setMuted(muted, macros = {}) {
+  setMuted(muted, {macros = {}}) {
     if (typeof muted !== 'boolean' || typeof macros !== 'object') {
       return;
     }
