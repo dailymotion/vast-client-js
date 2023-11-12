@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<VAST version="2.0">
+<VAST version="4.3">
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
@@ -30,7 +30,7 @@
       </Creatives>
       <Extensions>
         <Extension>
-            <paramWrapperInvalidXmlfile><![CDATA[valueWrapperInvalidXmlfile]]></paramWrapperInvalidXmlfile>
+          <paramWrapperInvalidXmlfile><![CDATA[valueWrapperInvalidXmlfile]]></paramWrapperInvalidXmlfile>
         </Extension>
       </Extensions>
     </Wrapper>

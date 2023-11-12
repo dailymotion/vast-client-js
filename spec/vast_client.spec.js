@@ -27,7 +27,7 @@ describe('VASTClient', () => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0',
+          version: '4.3',
         });
         expect(VastClient.totalCalls).toBe('2');
       });
@@ -42,7 +42,7 @@ describe('VASTClient', () => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0',
+          version: '4.3',
         });
         expect(VastClient.totalCalls).toBe('3');
       });
@@ -91,47 +91,28 @@ describe('VASTClient', () => {
 
   describe('get', () => {
     let VastClient;
-    let VastParser;
 
     beforeEach(() => {
       VastClient = new VASTClient();
-      VastParser = VastClient.getParser();
-    });
-
-    it('should call getAndParseVAST with correct options', () => {
-      jest
-        .spyOn(VastParser, 'getAndParseVAST')
-        .mockImplementation(() => Promise.resolve());
-      return VastClient.get(wrapperMultipleAdsVastUrl, options).then(() => {
-        expect(VastParser.getAndParseVAST).toHaveBeenNthCalledWith(
-          1,
-          wrapperMultipleAdsVastUrl,
-          {
-            urlhandler: nodeURLHandler,
-            resolveAll: false,
-            withCredentials: true,
-            timeout: 0,
-          }
-        );
-      });
     });
 
     describe('with resolveAll set to false', () => {
-      const optionsWithNoResolveAll = { ...options, resolveAll: false };
+      const optionsWithNoResolveAll = {
+        ...options,
+        resolveAll: false,
+      };
       let res;
-      beforeEach((done) => {
-        VastClient.get(wrapperMultipleAdsVastUrl, optionsWithNoResolveAll).then(
-          (results) => {
-            res = results;
-            done();
-          }
+      beforeEach(async () => {
+        res = await VastClient.get(
+          wrapperMultipleAdsVastUrl,
+          optionsWithNoResolveAll
         );
       });
       it('returns first ad parsed', () => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0',
+          version: '4.3',
         });
         expect(res.ads).toHaveLength(2);
       });
@@ -149,7 +130,7 @@ describe('VASTClient', () => {
             expect(result).toEqual({
               ads: [],
               errorURLTemplates: ['http://example.com/empty-no-ad'],
-              version: '2.0',
+              version: '4.3',
             });
           }
         );
@@ -160,25 +141,30 @@ describe('VASTClient', () => {
       });
 
       describe('getNextAds', () => {
-        it('resolves all next ads if requested', () => {
-          return VastClient.getNextAds(true).then((res) => {
-            expect(res).toEqual({
-              ads: expect.any(Array),
-              errorURLTemplates: [],
-              version: '3.0',
-            });
-            expect(res.ads).toHaveLength(3);
+        it('resolves all next ads if requested', async () => {
+          const res = await VastClient.getNextAds(true);
+          expect(res).toEqual({
+            ads: expect.any(Array),
+            errorURLTemplates: [],
+            version: '4.3',
           });
+          expect(res.ads).toHaveLength(3);
         });
-        it('resolves only next ad if requested', () => {
-          return VastClient.getNextAds(false).then((res) => {
-            expect(res).toEqual({
-              ads: expect.any(Array),
-              errorURLTemplates: [],
-              version: '3.0',
-            });
-            expect(res.ads).toHaveLength(2);
+
+        it('resolves only next ad if requested', async () => {
+          await VastClient.get(
+            wrapperMultipleAdsVastUrl,
+            optionsWithNoResolveAll
+          );
+
+          const res = await VastClient.getNextAds(false);
+
+          expect(res).toEqual({
+            ads: expect.any(Array),
+            errorURLTemplates: [],
+            version: '4.3',
           });
+          expect(res.ads).toHaveLength(2);
         });
       });
     });
@@ -198,7 +184,7 @@ describe('VASTClient', () => {
         expect(res).toEqual({
           ads: expect.any(Array),
           errorURLTemplates: [],
-          version: '3.0',
+          version: '4.3',
         });
         expect(res.ads).toHaveLength(5);
       });

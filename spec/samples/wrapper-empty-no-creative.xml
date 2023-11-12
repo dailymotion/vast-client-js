@@ -1,21 +1,12 @@
 <?xml version="1.0"?>
-<VAST version="2.0">
+<VAST version="4.3">
   <Ad>
     <Wrapper>
       <AdSystem>VAST</AdSystem>
-      <VASTAdTagURI>empty-no-ad.xml</VASTAdTagURI>
-      <Error>http://example.com/wrapper-empty_wrapper-error</Error>
+      <VASTAdTagURI>empty-no-creative.xml</VASTAdTagURI>
+      <Error>http://example.com/wrapper-no-creative_wrapper-error</Error>
       <Impression>http://example.com/wrapper-impression</Impression>
       <Creatives>
-        <Creative>
-          <CompanionAds>
-            <Companion id="urn:a2:287461:103" width="0" height="0">
-              <CompanionClickThrough><![CDATA[http://example.com/companion-click-thru]]></CompanionClickThrough>
-              <CompanionClickTracking><![CDATA[http://example.com/companion-click-tracking]]></CompanionClickTracking>
-              <AdParameters><![CDATA[campaign_id=10446]]></AdParameters>
-            </Companion>
-          </CompanionAds>
-        </Creative>
         <Creative>
           <Linear>
             <TrackingEvents>
@@ -30,7 +21,7 @@
       </Creatives>
       <Extensions>
         <Extension>
-            <paramWrapperEmptyNoAd><![CDATA[valueWrapperEmptyNoAd]]></paramWrapperEmptyNoAd>
+          <paramWrapperEmptyNoCreative><![CDATA[valueWrapperEmptyNoCreative]]></paramWrapperEmptyNoCreative>
         </Extension>
       </Extensions>
     </Wrapper>

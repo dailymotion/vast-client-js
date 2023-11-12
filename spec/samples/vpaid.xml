@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<VAST version="2.0">
+<VAST version="4.3">
     <Ad id="VPAID">
         <InLine>
             <AdSystem version="3.1">LiveRail</AdSystem>

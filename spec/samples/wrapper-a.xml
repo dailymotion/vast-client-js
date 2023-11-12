@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<VAST version="2.0">
+<VAST version="4.3">
   <Ad id="4321">
     <Wrapper>
       <AdSystem>VAST</AdSystem>
@@ -89,10 +89,10 @@
           <CompanionAds>
             <Companion id="1232" width="100" height="150" assetWidth="250" assetHeight="200" expandedWidth="350" expandedHeight="250">
               <StaticResource creativeType="image/png">
-                      <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
+                <![CDATA[https://www.iab.com/wp-content/uploads/2014/09/iab-tech-lab-6-644x290.png]]>
               </StaticResource>
               <CompanionClickThrough>
-                  <![CDATA[https://iabtechlab.com]]>
+                <![CDATA[https://iabtechlab.com]]>
               </CompanionClickThrough>
             </Companion>
           </CompanionAds>
