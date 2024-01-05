@@ -34,6 +34,7 @@ function get(url, options, cb) {
         cb(null, xml, {
           byteLength: Buffer.from(data).byteLength,
           statusCode: res.statusCode,
+          rawXml: data,
         });
       });
     });
