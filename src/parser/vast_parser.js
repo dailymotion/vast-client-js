@@ -458,7 +458,7 @@ export class VASTParser extends EventEmitter {
     return Promise.all(resolveWrappersPromises).then((unwrappedAds) => {
       const resolvedAds = util.flatten(unwrappedAds);
 
-      if (!resolvedAds && this.remainingAds.length > 0) {
+      if (!resolvedAds.length && this.remainingAds.length > 0) {
         const remainingAdsToResolve = this.remainingAds.shift();
 
         return this.resolveAds(remainingAdsToResolve, {
