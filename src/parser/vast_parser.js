@@ -452,14 +452,18 @@ export class VASTParser extends EventEmitter {
         // but no creative was found
         const ad = vastResponse.ads[index];
         if (ad.errorCode || ad.creatives.length === 0) {
-          this.trackVastError(
-            ad.errorURLTemplates.concat(vastResponse.errorURLTemplates),
-            { ERRORCODE: ad.errorCode || 303 },
-            { ERRORMESSAGE: ad.errorMessage || '' },
-            { extensions: ad.extensions },
-            { system: ad.system }
-          );
-          vastResponse.ads.splice(index, 1);
+          // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
+          // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
+          if (!ad.VASTAdTagURI) {
+            this.trackVastError(
+              ad.errorURLTemplates.concat(vastResponse.errorURLTemplates),
+              { ERRORCODE: ad.errorCode || 303 },
+              { ERRORMESSAGE: ad.errorMessage || '' },
+              { extensions: ad.extensions },
+              { system: ad.system }
+            );
+            vastResponse.ads.splice(index, 1);
+          }
         }
       }
     }
