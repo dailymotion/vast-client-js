@@ -22,7 +22,11 @@ async function handleResponse(response) {
   const xml = parser.parseFromString(textXml, 'text/xml');
   return {
     xml,
-    details: { byteLength: textXml.length, statusCode: response.status },
+    details: {
+      byteLength: textXml.length,
+      statusCode: response.status,
+      rawXml: textXml,
+    },
   };
 }
 
