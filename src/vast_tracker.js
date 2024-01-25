@@ -486,7 +486,7 @@ export class VASTTracker extends EventEmitter {
   complete(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'complete parameter has to wrong type',
+        message: 'complete parameter has the wrong type',
         parameter: macros,
       });
       return;
@@ -505,7 +505,7 @@ export class VASTTracker extends EventEmitter {
   notUsed(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'notUsed parameter has to wrong type',
+        message: 'notUsed parameter has the wrong type',
         parameter: macros,
       });
       return;
@@ -526,7 +526,7 @@ export class VASTTracker extends EventEmitter {
   otherAdInteraction(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'otherAdInteraction parameter has to wrong type',
+        message: 'otherAdInteraction parameter has the wrong type',
         parameter: macros,
       });
       return;
@@ -547,7 +547,7 @@ export class VASTTracker extends EventEmitter {
   acceptInvitation(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'acceptInvitation parameter has to wrong type',
+        message: 'acceptInvitation parameter has the wrong type',
         parameter: macros,
       });
       return;
@@ -565,7 +565,7 @@ export class VASTTracker extends EventEmitter {
   adExpand(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'adExpand parameter has to wrong type',
+        message: 'adExpand parameter has the wrong type',
         parameter: macros,
       });
       return;
@@ -583,7 +583,7 @@ export class VASTTracker extends EventEmitter {
   adCollapse(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'adCollapse parameter has to wrong type',
+        message: 'adCollapse parameter has the wrong type',
         parameter: macros,
       });
       return;
@@ -601,7 +601,7 @@ export class VASTTracker extends EventEmitter {
   minimize(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'minimize parameter has to wrong type',
+        message: 'minimize parameter has the wrong type',
         parameter: macros,
       });
       return;
