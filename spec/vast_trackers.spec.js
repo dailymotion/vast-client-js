@@ -196,7 +196,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.minimize('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'minimize parameter has to wrong type',
+          message: 'minimize parameter has the wrong type',
           parameter: 'foo',
         });
       });
@@ -277,7 +277,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.otherAdInteraction('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'otherAdInteraction parameter has to wrong type',
+          message: 'otherAdInteraction parameter has the wrong type',
           parameter: 'foo',
         });
       });
@@ -302,7 +302,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.acceptInvitation('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'acceptInvitation parameter has to wrong type',
+          message: 'acceptInvitation parameter has the wrong type',
           parameter: 'foo',
         });
       });
@@ -327,7 +327,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.adExpand('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'adExpand parameter has to wrong type',
+          message: 'adExpand parameter has the wrong type',
           parameter: 'foo',
         });
       });
@@ -348,7 +348,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.complete('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'complete parameter has to wrong type',
+          message: 'complete parameter has the wrong type',
           parameter: 'foo',
         });
       });
@@ -429,7 +429,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.adCollapse('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'adCollapse parameter has to wrong type',
+          message: 'adCollapse parameter has the wrong type',
           parameter: 'foo',
         });
       });
@@ -497,7 +497,7 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if macros is not valid', () => {
         vastTracker.notUsed('foo');
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'notUsed parameter has to wrong type',
+          message: 'notUsed parameter has the wrong type',
           parameter: 'foo',
         });
       });

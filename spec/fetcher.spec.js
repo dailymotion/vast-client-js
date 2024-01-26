@@ -4,11 +4,9 @@ import * as Bitrate from '../src/parser/bitrate';
 import { urlHandler } from '../src/urlhandlers/xhr_url_handler';
 import { expect } from '@jest/globals';
 import { getNodesFromXml } from './utils/utils';
-import { async } from 'regenerator-runtime';
 
 describe('Fetcher', () => {
-  let fetcher, vastParser, mockEmit;
-
+  let fetcher, mockEmit;
   const xml = getNodesFromXml('<VAST></VAST>');
   const urlHandlerSuccess = {
     get: (url, option) =>

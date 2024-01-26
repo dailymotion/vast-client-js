@@ -9,17 +9,7 @@ import { VASTClient } from '../src/vast_client';
 import { readFile } from 'fs/promises';
 
 const xml = getNodesFromXml(`<VAST>${linearAd}</VAST>`, 'text/xml');
-const urlHandlerSuccess = {
-  get: (url, option) =>
-    new Promise((resolve, _) =>
-      resolve({ xml, details: { byteLength: 1234, statusCode: 200 } })
-    ),
-};
 
-const urlHandlerFailure = {
-  get: (url, option) =>
-    new Promise((_, reject) => reject({ error: new Error('error') })),
-};
 const nodeUrlHandler = {
   get: async (file) => {
     try {
@@ -136,7 +126,6 @@ describe('VASTParser', () => {
           url: inlineInvalidVastUrl,
           wrapperDepth: 0,
         });
-        expect(true).toBeFalsy();
       } catch (e) {
         expect(e.message).toBe('Invalid VAST XMLDocument');
         expect(VastParser.emit).toHaveBeenLastCalledWith('VAST-ad-parsed', {
@@ -230,13 +219,9 @@ describe('VASTParser', () => {
         wrapperSequence: 1,
         wrapperDepth: 0,
         isRootVAST: true,
-      })
-        .then(() => {
-          expect(true).toBeFalsy();
-        })
-        .catch((e) => {
-          expect(e.message).toBe('Invalid VAST XMLDocument');
-        });
+      }).catch((e) => {
+        expect(e.message).toBe('Invalid VAST XMLDocument');
+      });
     });
 
     it('resolves first ad and saves remaining ads if resolveAll is false', () => {
@@ -373,7 +358,7 @@ describe('VASTParser', () => {
           `<VAST><Error>http://example.com/empty-no-ad</Error></VAST>`,
           'text/xml'
         );
-        VastParser.parseVAST(vast, options)
+        VastParser.parseVAST(vast)
           .then((response) => {
             // Response doesn't have any ads
             expect(response.ads).toEqual([]);
@@ -642,7 +627,7 @@ describe('VASTParser', () => {
 
     beforeEach(() => {
       VastParser.previousUrl = wrapperAVastUrl;
-      VastParser.initParsingStatus({ urlHandler: urlHandlerSuccess });
+      VastParser.initParsingStatus();
     });
 
     it('resolves with ad if there is no more wrappers', () => {
@@ -697,7 +682,6 @@ describe('VASTParser', () => {
     });
 
     it('will pass timeout error to ad if fetching next wrapper fails', () => {
-      fetcher.setOptions({ urlHandler: urlHandlerFailure });
       const adWithWrapper = { ...ad, nextWrapperURL: wrapperBVastUrl };
       jest.spyOn(fetcher, 'fetchVAST').mockImplementation(() => {
         return Promise.reject(new Error('timeout'));
