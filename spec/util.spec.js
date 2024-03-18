@@ -375,7 +375,7 @@ describe('util', function () {
     });
   });
   describe('#filterUrlTemplates', function () {
-    it('should filtered valid and unvalid urls', () => {
+    it('should filtered valid and invalid urls', () => {
       const urlsToFilter = [
         {
           id: 'sample-impression1',
@@ -399,13 +399,13 @@ describe('util', function () {
         },
       ];
 
-      const { validUrls, unvalidUrls } = util.filterUrlTemplates(urlsToFilter);
+      const { validUrls, invalidUrls } = util.filterUrlTemplates(urlsToFilter);
       expect(validUrls.length).toBe(3);
-      expect(unvalidUrls.length).toBe(2);
+      expect(invalidUrls.length).toBe(2);
     });
   });
 
-  describe('#isValidUrls', function () {
+  describe('#isValidUrl', function () {
     it('should return true if the url is valid', () => {
       const url = 'http://example.com';
       const validUrl = util.isValidUrl(url);
@@ -414,8 +414,8 @@ describe('util', function () {
 
     it('should return false if the url is not valid', () => {
       const url = 'example.com';
-      const validUrl = util.isValidUrl(url);
-      expect(validUrl).toBe(false);
+      const isValidUrl = util.isValidUrl(url);
+      expect(isValidUrl).toBe(false);
     });
   });
 });

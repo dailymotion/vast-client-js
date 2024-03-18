@@ -12,6 +12,7 @@ describe('VASTTracker', function () {
   let spyEmitter;
   let spyTrackUrl;
   let spyTrack;
+  const wrongTrackerValue = 'foo';
 
   describe('#linear', () => {
     let adTrackingUrls = ad.creatives[0].trackingEvents;
@@ -90,8 +91,7 @@ describe('VASTTracker', function () {
         vastTracker.trackURLs(urlTemplates);
 
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          unvalidUrls: ['example.com'],
-          message: 'Provided urls are malformed',
+          message: 'Provided urls are malformed. url: example.com',
         });
       });
     });
@@ -151,10 +151,9 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.track('start', { macros: 'foo', once: false });
+        vastTracker.track('start', { macros: wrongTrackerValue, once: false });
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'track macros parameter has the wrong type',
-          parameter: 'foo',
+          message: `track given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -194,10 +193,9 @@ describe('VASTTracker', function () {
         );
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.minimize('foo');
+        vastTracker.minimize(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'minimize parameter has the wrong type',
-          parameter: 'foo',
+          message: `minimize given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -215,16 +213,15 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if vendor is not valid', () => {
         vastTracker.verificationNotExecuted(1);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'verificationNotExecuted parameters have to wrong type',
-          parameters: { vendor: 1, macros: {} },
+          message:
+            'One given verificationNotExecuted parameter has to wrong type. vendor: 1, macros: {}',
         });
       });
 
       it('should emit TRACKER-error if macro is not valid', () => {
-        vastTracker.verificationNotExecuted('vendor', 'foo');
+        vastTracker.verificationNotExecuted('vendor', wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'verificationNotExecuted parameters have to wrong type',
-          parameters: { vendor: 'vendor', macros: 'foo' },
+          message: `One given verificationNotExecuted parameter has to wrong type. vendor: vendor, macros: ${wrongTrackerValue}`,
         });
       });
 
@@ -275,10 +272,9 @@ describe('VASTTracker', function () {
         );
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.otherAdInteraction('foo');
+        vastTracker.otherAdInteraction(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'otherAdInteraction parameter has the wrong type',
-          parameter: 'foo',
+          message: `otherAdInteraction given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -300,10 +296,9 @@ describe('VASTTracker', function () {
         );
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.acceptInvitation('foo');
+        vastTracker.acceptInvitation(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'acceptInvitation parameter has the wrong type',
-          parameter: 'foo',
+          message: `acceptInvitation given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -325,10 +320,9 @@ describe('VASTTracker', function () {
         );
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.adExpand('foo');
+        vastTracker.adExpand(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'adExpand parameter has the wrong type',
-          parameter: 'foo',
+          message: `adExpand given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -346,10 +340,9 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.complete('foo');
+        vastTracker.complete(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'complete parameter has the wrong type',
-          parameter: 'foo',
+          message: `complete given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -368,10 +361,9 @@ describe('VASTTracker', function () {
         );
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.close('foo');
+        vastTracker.close(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'close parameter has the wrong type',
-          parameter: 'foo',
+          message: `close given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -385,10 +377,9 @@ describe('VASTTracker', function () {
         expect(spyTrack).toHaveBeenCalledWith('skip', expect.any(Object));
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.skip('foo');
+        vastTracker.skip(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'skip parameter has the wrong type',
-          parameter: 'foo',
+          message: `skip given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -402,10 +393,9 @@ describe('VASTTracker', function () {
         expect(spyTrack).toHaveBeenCalledWith('loaded', expect.any(Object));
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.load('foo');
+        vastTracker.load(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'load parameter has the wrong type',
-          parameter: 'foo',
+          message: `load given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -427,10 +417,9 @@ describe('VASTTracker', function () {
         );
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.adCollapse('foo');
+        vastTracker.adCollapse(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'adCollapse parameter has the wrong type',
-          parameter: 'foo',
+          message: `adCollapse given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -463,15 +452,14 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if formattedDuration is not valid', () => {
         vastTracker.overlayViewDuration(1);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'overlayViewDuration parameters have the wrong type',
-          parameters: { formattedDuration: 1, macros: {} },
+          message:
+            'One given overlayViewDuration parameters has the wrong type. formattedDuration: 1, macros: {}',
         });
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.overlayViewDuration('00:00:12', 'foo');
+        vastTracker.overlayViewDuration('00:00:12', wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'overlayViewDuration parameters have the wrong type',
-          parameters: { formattedDuration: '00:00:12', macros: 'foo' },
+          message: `One given overlayViewDuration parameters has the wrong type. formattedDuration: 00:00:12, macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -495,10 +483,9 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.notUsed('foo');
+        vastTracker.notUsed(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'notUsed parameter has the wrong type',
-          parameter: 'foo',
+          message: `notUsed given macros has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -512,10 +499,9 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if duration is not valid', () => {
-        vastTracker.setDuration('foo');
+        vastTracker.setDuration(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'the duration provided is not valid',
-          duration: 'foo',
+          message: `the duration provided is not valid. duration: ${wrongTrackerValue}`,
         });
       });
     });
@@ -599,19 +585,17 @@ describe('VASTTracker', function () {
         );
       });
 
-      it('should emit TRACKER-error if progress is unvalid', () => {
-        vastTracker.setProgress('foo');
+      it('should emit TRACKER-error if progress is invalid', () => {
+        vastTracker.setProgress(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setProgress parameters has the wrong type.',
-          parameter: { progress: 'foo', macros: {} },
+          message: `One given setProgress parameter has the wrong type. progress: ${wrongTrackerValue}, macros: {}`,
         });
       });
 
-      it('should emit TRACKER-error if macros is unvalid', () => {
-        vastTracker.setProgress(12, 'foo');
+      it('should emit TRACKER-error if macros is invalid', () => {
+        vastTracker.setProgress(12, wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setProgress parameters has the wrong type.',
-          parameter: { progress: 12, macros: 'foo' },
+          message: `One given setProgress parameter has the wrong type. progress: 12, macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -655,18 +639,16 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if muted is not valid', () => {
-        vastTracker.setMuted('foo');
+        vastTracker.setMuted(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setMuted parameters have the wrong type',
-          parameters: { muted: 'foo', macros: {} },
+          message: `One given setMuted parameter has the wrong type. muted: ${wrongTrackerValue}, macros: {}`,
         });
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.setMuted(true, 'foo');
+        vastTracker.setMuted(true, wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setMuted parameters have the wrong type',
-          parameters: { muted: true, macros: 'foo' },
+          message: `One given setMuted parameter has the wrong type. muted: true, macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -692,18 +674,16 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if paused is not valid', () => {
-        vastTracker.setPaused('foo');
+        vastTracker.setPaused(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setPaused parameters have the wrong type',
-          parameters: { paused: 'foo', macros: {} },
+          message: `One given setPaused parameter has the wrong type. paused: ${wrongTrackerValue}, macros: {}`,
         });
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.setPaused(true, 'foo');
+        vastTracker.setPaused(true, wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setPaused parameters have the wrong type',
-          parameters: { paused: true, macros: 'foo' },
+          message: `One given setPaused parameter has the wrong type. paused: true, macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -731,18 +711,16 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if fullscreen is not valid', () => {
-        vastTracker.setFullscreen('foo');
+        vastTracker.setFullscreen(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setFullScreen parameters have the wrong type',
-          parameters: { fullscreen: 'foo', macros: {} },
+          message: `One given setFullScreen parameter has the wrong type. fullscreen: ${wrongTrackerValue}, macros: {}`,
         });
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.setFullscreen(true, 'foo');
+        vastTracker.setFullscreen(true, wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setFullScreen parameters have the wrong type',
-          parameters: { fullscreen: true, macros: 'foo' },
+          message: `One given setFullScreen parameter has the wrong type. fullscreen: true, macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -775,18 +753,16 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if expanded is not valid', () => {
-        vastTracker.setExpand('foo');
+        vastTracker.setExpand(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setExpand parameters have the wrong type',
-          parameters: { expanded: 'foo', macros: {} },
+          message: `One given setExpand parameter has the wrong type. expanded: ${wrongTrackerValue}, macros: {}`,
         });
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.setExpand(true, 'foo');
+        vastTracker.setExpand(true, wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setExpand parameters have the wrong type',
-          parameters: { expanded: true, macros: 'foo' },
+          message: `One given setExpand parameter has the wrong type. expanded: true, macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -808,10 +784,9 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if duration is not valid', () => {
-        vastTracker.setSkipDelay('foo');
+        vastTracker.setSkipDelay(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'setSkipDelay parameter does not have a valid value',
-          parameter: 'foo',
+          message: `setSkipDelay parameter does not have a valid value. duration: ${wrongTrackerValue}`,
         });
       });
     });
@@ -849,10 +824,9 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.trackImpression('foo');
+        vastTracker.trackImpression(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'trackImpression parameter has the wrong type',
-          parameter: 'foo',
+          message: `trackImpression parameter has the wrong type. macros: ${wrongTrackerValue}`,
         });
       });
     });
@@ -872,10 +846,9 @@ describe('VASTTracker', function () {
         });
 
         it('should emit TRACKER-error if macros is not valid ', () => {
-          vastTracker.trackViewableImpression('foo');
+          vastTracker.trackViewableImpression(wrongTrackerValue);
           expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-            message: 'trackViewableImpression parameter has the wrong type',
-            parameter: 'foo',
+            message: `trackViewableImpression given macros has the wrong type. macros: ${wrongTrackerValue}`,
           });
         });
       });
@@ -893,10 +866,9 @@ describe('VASTTracker', function () {
         });
 
         it('should emit TRACKER-error if macros is not valid ', () => {
-          vastTracker.trackNotViewableImpression('foo');
+          vastTracker.trackNotViewableImpression(wrongTrackerValue);
           expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-            message: 'trackNotViewableImpression parameter has the wrong type',
-            parameter: 'foo',
+            message: `trackNotViewableImpression given macros has the wrong type. macros: ${wrongTrackerValue}`,
           });
         });
       });
@@ -914,10 +886,9 @@ describe('VASTTracker', function () {
         });
 
         it('should emit TRACKER-error if macros is not valid ', () => {
-          vastTracker.trackUndeterminedImpression('foo');
+          vastTracker.trackUndeterminedImpression(wrongTrackerValue);
           expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-            message: 'trackUndeterminedImpression parameter has the wrong type',
-            parameter: 'foo',
+            message: `trackUndeterminedImpression given macros has the wrong type. macros: ${wrongTrackerValue}`,
           });
         });
       });
@@ -943,18 +914,16 @@ describe('VASTTracker', function () {
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.error('foo');
+        vastTracker.error(wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'error parameters have the wrong type',
-          parameters: { macros: 'foo', isCustomCode: false },
+          message: `One given error parameter has the wrong type. macros: ${wrongTrackerValue}, isCustomCode: false`,
         });
       });
 
       it('should emit TRACKER-error if isCustomCode is not valid', () => {
-        vastTracker.error({}, 'foo');
+        vastTracker.error({}, wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'error parameters have the wrong type',
-          parameters: { macros: {}, isCustomCode: 'foo' },
+          message: `One given error parameter has the wrong type. macros: {}, isCustomCode: ${wrongTrackerValue}`,
         });
       });
     });
@@ -969,15 +938,14 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if errorCode is not valid', () => {
         vastTracker.errorWithCode(1);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'ErrorWithCode parameters have the wrong type',
-          parameters: { errorCode: 1, isCustomCode: false },
+          message:
+            'One given errorWithCode parameter has the wrong type. errorCode: 1, isCustomCode: false',
         });
       });
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.errorWithCode('303', 'foo');
+        vastTracker.errorWithCode('303', wrongTrackerValue);
         expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'ErrorWithCode parameters have the wrong type',
-          parameters: { errorCode: '303', isCustomCode: 'foo' },
+          message: `One given errorWithCode parameter has the wrong type. errorCode: 303, isCustomCode: ${wrongTrackerValue}`,
         });
       });
     });
@@ -1014,19 +982,15 @@ describe('VASTTracker', function () {
       it('should emit TRACKER-error if fallbackClickThroughURL is not valid', () => {
         vastTracker.click(1);
         expect(spyEmit).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'click parameters have the wrong type',
-          parameters: { fallbackClickThroughURL: 1, macros: {} },
+          message:
+            'One given click parameter has the wrong type. fallbackClickThroughURL: 1, macros: {}',
         });
       });
 
       it('should emit TRACKER-error if macros is not valid', () => {
-        vastTracker.click('https://fallbackurl.com', 'foo');
+        vastTracker.click('https://fallbackurl.com', wrongTrackerValue);
         expect(spyEmit).toHaveBeenCalledWith('TRACKER-error', {
-          message: 'click parameters have the wrong type',
-          parameters: {
-            fallbackClickThroughURL: 'https://fallbackurl.com',
-            macros: 'foo',
-          },
+          message: `One given click parameter has the wrong type. fallbackClickThroughURL: https://fallbackurl.com, macros: ${wrongTrackerValue}`,
         });
       });
     });

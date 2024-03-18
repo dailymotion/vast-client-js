@@ -3,7 +3,7 @@ import { urlFor, getNodesFromXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
 import * as Bitrate from '../src/parser/bitrate';
-import { Fetcher } from '../src/fetcher';
+import { Fetcher } from '../src/fetcher/fetcher';
 import { linearAd } from './samples/linear_ads';
 import { VASTClient } from '../src/vast_client';
 import { readFile } from 'fs/promises';

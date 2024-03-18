@@ -1,7 +1,7 @@
-import { Fetcher } from '../src/fetcher';
+import { Fetcher } from '../src/fetcher/fetcher';
 import { VASTParser } from '../src/parser/vast_parser';
 import * as Bitrate from '../src/parser/bitrate';
-import { urlHandler } from '../src/urlhandlers/xhr_url_handler';
+import { urlHandler } from '../src/fetcher/url_handler';
 import { expect } from '@jest/globals';
 import { getNodesFromXml } from './utils/utils';
 
@@ -17,7 +17,9 @@ describe('Fetcher', () => {
 
   const urlHandlerFailure = {
     get: (url, option) =>
-      new Promise((_, reject) => reject({ error: new Error('error') })),
+      new Promise((_, reject) =>
+        reject({ error: new Error('AbortError'), statusCode: 408 })
+      ),
   };
 
   beforeEach(() => {
@@ -122,13 +124,21 @@ describe('Fetcher', () => {
           .catch(() => {
             expect(urlHandlerSpy).toHaveBeenCalledWith(
               expectedUrl,
-              expect.anything(),
               expect.anything()
             );
           });
       });
 
       it('should emits VAST-resolving and VAST-resolved events with a filtered url', () => {
+        fetcher.setOptions({});
+
+        // We need to mock global.fetch since jest does not handle it.
+        global.fetch = jest.fn().mockResolvedValue({
+          ok: false,
+          status: 500,
+          statusText: 'internal server error',
+        });
+
         fetcher.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
         const expectedUrl = 'www.bar.foo';
 
@@ -151,8 +161,8 @@ describe('Fetcher', () => {
             expect(mockEmit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
               url: expectedUrl,
               duration: expect.any(Number),
-              error: new Error('timeout'),
-              statusCode: 408,
+              error: expect.any(Error),
+              statusCode: 500,
               previousUrl: null,
               wrapperDepth: 0,
             });
@@ -160,15 +170,15 @@ describe('Fetcher', () => {
       });
 
       it('should rejects with error', () => {
-        let result = fetcher
-          .fetchVAST({
-            url: url,
-            maxWrapperDepth: 5,
-            emitter: () => {},
-          })
-          .catch(() => {
-            return expect(result).rejects.toEqual('error');
-          });
+        let result = fetcher.fetchVAST({
+          url: url,
+          maxWrapperDepth: 5,
+          emitter: () => {},
+        });
+        return expect(result).rejects.toEqual({
+          error: new Error('AbortError'),
+          statusCode: 408,
+        });
       });
     });
   });

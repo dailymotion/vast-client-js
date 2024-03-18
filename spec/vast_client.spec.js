@@ -1,6 +1,5 @@
 import { VASTClient } from '../src/vast_client';
 import { readFile } from 'fs/promises';
-import { afterAll } from '@jest/globals';
 
 const wrapperMultipleAdsVastUrl = './spec/samples/wrapper-multiple-ads.xml';
 const emptyVastUrl = './spec/samples/empty-no-ad.xml';
