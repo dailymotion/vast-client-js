@@ -142,16 +142,12 @@ function extractURLsFromTemplates(URLTemplates) {
 function filterUrlTemplates(URLTemplates) {
   return URLTemplates.reduce(
     (acc, urlTemplate) => {
-      const url = urlTemplate.hasOwnProperty('url')
-        ? urlTemplate.url
-        : urlTemplate;
+      const url = urlTemplate.url || urlTemplate;
 
-      let urlVerification = isValidUrl(url);
-
-      urlVerification ? acc.validUrls.push(url) : acc.unvalidUrls.push(url);
+      isValidUrl(url) ? acc.validUrls.push(url) : acc.invalidUrls.push(url);
       return acc;
     },
-    { validUrls: [], unvalidUrls: [] }
+    { validUrls: [], invalidUrls: [] }
   );
 }
 
@@ -266,6 +262,18 @@ function isValidTimeValue(time) {
   return Number.isFinite(time) && time >= -2;
 }
 
+/**
+ * Check if we are in a browser environment
+ * @returns {Boolean}
+ */
+function isBrowserEnvironment() {
+  return typeof window !== 'undefined';
+}
+
+function formatMacrosValues(macros) {
+  return typeof macros !== 'object' ? macros : JSON.stringify(macros);
+}
+
 export const util = {
   track,
   resolveURLTemplates,
@@ -281,4 +289,6 @@ export const util = {
   isValidTimeValue,
   addLeadingZeros,
   isValidUrl,
+  isBrowserEnvironment,
+  formatMacrosValues,
 };
