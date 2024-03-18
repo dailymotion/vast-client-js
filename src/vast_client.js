@@ -1,6 +1,6 @@
 import { Storage } from './util/storage';
 import { VASTParser } from './parser/vast_parser';
-import { Fetcher } from './fetcher.js';
+import { Fetcher } from './fetcher/fetcher.js';
 
 /**
  * This class provides methods to fetch and parse a VAST document using VASTParser.
