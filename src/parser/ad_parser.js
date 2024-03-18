@@ -261,9 +261,8 @@ function parseWrapper(wrapperElement, emit) {
           ad.trackingEvents[wrapperCreativeElement.type] = {};
         }
 
-        for (const [eventName, urls] of Object.entries(
-          wrapperCreativeElement.trackingEvents
-        )) {
+        for (const eventName in wrapperCreativeElement.trackingEvents) {
+          const urls = wrapperCreativeElement.trackingEvents[eventName];
           if (
             !Array.isArray(
               ad.trackingEvents[wrapperCreativeElement.type][eventName]
