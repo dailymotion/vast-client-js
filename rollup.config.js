@@ -15,19 +15,8 @@ function onwarn(warning) {
 }
 
 const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
-  let config = {
+  const baseConfig = {
     input: filePath,
-    output: [
-      {
-        format: 'cjs',
-        file: `dist/${notMinifiedOutput}`,
-      },
-      {
-        format: 'cjs',
-        file: `dist/${minifiedOutput}`,
-        plugins: [terser()],
-      },
-    ],
     plugins: [
       resolve({
         preferBuiltins: true,
@@ -37,7 +26,34 @@ const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
     onwarn,
   };
 
-  return config;
+  const nonMinifiedConfig = {
+    ...baseConfig,
+    output: {
+      format: 'cjs',
+      dir: 'dist',
+      entryFileNames: `${notMinifiedOutput}`,
+      chunkFileNames: 'chunks/[name]-[hash].js',
+      manualChunks: {
+        xmldom: ['@xmldom/xmldom'],
+      },
+    },
+  };
+
+  const minifiedConfig = {
+    ...baseConfig,
+    output: {
+      format: 'cjs',
+      dir: 'dist',
+      entryFileNames: `${minifiedOutput}`,
+      chunkFileNames: 'chunks/[name]-[hash].min.js',
+      manualChunks: {
+        xmldom: ['@xmldom/xmldom'],
+      },
+    },
+    plugins: [...baseConfig.plugins, terser()],
+  };
+
+  return [nonMinifiedConfig, minifiedConfig];
 };
 
 const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
@@ -46,11 +62,13 @@ const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
     output: [
       {
         format: 'es',
-        file: `dist/${notMinifiedOutput}`,
+        dir: 'dist',
+        entryFileNames: `${notMinifiedOutput}`,
       },
       {
         format: 'es',
-        file: `dist/${minifiedOutput}`,
+        dir: 'dist',
+        entryFileNames: `${minifiedOutput}`,
         plugins: [terser()],
       },
     ],
@@ -64,7 +82,7 @@ export default [
   // Browser-friendly build [package.json "browser"]
   createBrowserConfig('src/index.js', 'vast-client.min.js', 'vast-client.js'),
   // CommonJS build for Node usage [package.json "main"]
-  createNodeConfig(
+  ...createNodeConfig(
     'src/index.js',
     'vast-client-node.min.js',
     'vast-client-node.js'
