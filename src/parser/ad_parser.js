@@ -24,17 +24,13 @@ export function parseAd(
 ) {
   const childNodes = Array.from(adElement.childNodes);
 
-  const filteredChildNodes = childNodes
-    .filter((childNode) =>
-      ['inline', 'wrapper'].includes(childNode.nodeName.toLowerCase())
-    )
-    .filter(
-      (adType) =>
-        !(
-          adType.nodeName.toLowerCase() === 'wrapper' &&
-          followAdditionalWrappers === false
-        )
+  const filteredChildNodes = childNodes.filter((childNode) => {
+    const childNodeToLowerCase = childNode.nodeName.toLowerCase();
+    return (
+      childNodeToLowerCase === 'inline' ||
+      (followAdditionalWrappers !== false && childNodeToLowerCase === 'wrapper')
     );
+  });
 
   for (const node of filteredChildNodes) {
     parserUtils.copyNodeAttribute('id', adElement, node);
@@ -48,17 +44,17 @@ export function parseAd(
         ad: parseInLine(node, emit, { allowMultipleAds }),
         type: 'INLINE',
       };
-    } else {
-      const wrongNode = node.nodeName.toLowerCase();
-      const message =
-        wrongNode === 'inline'
-          ? `<${node.nodeName}> must be written <InLine>`
-          : `<${node.nodeName}> must be written <Wrapper>`;
-      emit('VAST-warning', {
-        message,
-        wrongNode: node,
-      });
     }
+
+    const wrongNode = node.nodeName.toLowerCase();
+    const message =
+      wrongNode === 'inline'
+        ? `<${node.nodeName}> must be written <InLine>`
+        : `<${node.nodeName}> must be written <Wrapper>`;
+    emit('VAST-warning', {
+      message,
+      wrongNode: node,
+    });
   }
 }
 
@@ -327,26 +323,18 @@ export function _parseAdVerifications(verifications) {
 
     parserUtils.assignAttributes(verificationNode.attributes, verification);
 
-    childNodes
-      .filter(({ nodeName }) =>
-        [
-          'JavaScriptResource',
-          'ExecutableResource',
-          'VerificationParameters',
-        ].includes(nodeName)
-      )
-      .forEach(({ nodeName, textContent, attributes }) => {
-        switch (nodeName) {
-          case 'JavaScriptResource':
-          case 'ExecutableResource':
-            verification.resource = textContent.trim();
-            parserUtils.assignAttributes(attributes, verification);
-            break;
-          case 'VerificationParameters':
-            verification.parameters = textContent.trim();
-            break;
-        }
-      });
+    childNodes.forEach(({ nodeName, textContent, attributes }) => {
+      switch (nodeName) {
+        case 'JavaScriptResource':
+        case 'ExecutableResource':
+          verification.resource = textContent.trim();
+          parserUtils.assignAttributes(attributes, verification);
+          break;
+        case 'VerificationParameters':
+          verification.parameters = textContent.trim();
+          break;
+      }
+    });
 
     const trackingEventsElement = parserUtils.childByName(
       verificationNode,
