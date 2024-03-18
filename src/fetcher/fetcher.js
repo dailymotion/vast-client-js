@@ -1,6 +1,6 @@
-import { updateEstimatedBitrate } from './parser/bitrate';
-import { urlHandler } from './urlhandlers/xhr_url_handler';
-import { DEFAULT_TIMEOUT } from './urlhandlers/consts';
+import { updateEstimatedBitrate } from '../parser/bitrate';
+import { urlHandler } from './url_handler';
+import { DEFAULT_TIMEOUT } from './consts';
 
 /**
  * This class provides a method to fetch a VAST document
@@ -114,7 +114,7 @@ export class Fetcher {
           resolve(data.xml);
         }
       } catch (error) {
-        console.error(error);
+        reject(error);
       }
     });
   }

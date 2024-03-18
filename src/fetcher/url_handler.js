@@ -1,13 +1,5 @@
 import { DEFAULT_TIMEOUT } from './consts';
-const nodeDOMParser = require('@xmldom/xmldom').DOMParser;
-
-/**
- * Check if we are in a browser environment
- * @returns {Boolean}
- */
-function isBrowserEnvironment() {
-  return typeof window !== 'undefined';
-}
+import { util } from '../util/util';
 
 /**
  * Return an object containing an XML document.
@@ -17,8 +9,15 @@ function isBrowserEnvironment() {
  */
 async function handleResponse(response) {
   const textXml = await response.text();
+  let parser;
 
-  const parser = isBrowserEnvironment() ? new DOMParser() : new nodeDOMParser();
+  if (!util.isBrowserEnvironment()) {
+    const xmlDom = await import('@xmldom/xmldom');
+    parser = new xmlDom.DOMParser();
+  } else {
+    parser = new DOMParser();
+  }
+
   const xml = parser.parseFromString(textXml, 'text/xml');
   return {
     xml,
@@ -36,13 +35,12 @@ async function handleResponse(response) {
  * @returns {String | null}
  */
 function handleError(response) {
-  if (isBrowserEnvironment()) {
-    if (
-      window.location.protocol === 'https:' &&
-      response.url.indexOf('http://') === 0
-    ) {
-      return 'URLHandler: Cannot go from HTTPS to HTTP.';
-    }
+  if (
+    util.isBrowserEnvironment() &&
+    window.location.protocol === 'https:' &&
+    response.url.includes('http://')
+  ) {
+    return 'URLHandler: Cannot go from HTTPS to HTTP.';
   }
 
   if (response.status !== 200 || !response.ok) {
