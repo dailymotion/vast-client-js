@@ -152,8 +152,7 @@ export class VASTTracker extends EventEmitter {
     // check if duration is a valid time input
     if (!util.isValidTimeValue(duration)) {
       this.emit('TRACKER-error', {
-        message: 'the duration provided is not valid',
-        duration,
+        message: `the duration provided is not valid. duration: ${duration}`,
       });
       return;
     }
@@ -185,8 +184,9 @@ export class VASTTracker extends EventEmitter {
     // check if progress is a valid time input
     if (!util.isValidTimeValue(progress) || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'setProgress parameters has the wrong type.',
-        parameter: { progress, macros },
+        message: `One given setProgress parameter has the wrong type. progress: ${progress}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
 
       return;
@@ -263,8 +263,9 @@ export class VASTTracker extends EventEmitter {
   setMuted(muted, macros = {}) {
     if (typeof muted !== 'boolean' || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'setMuted parameters have the wrong type',
-        parameters: { muted, macros },
+        message: `One given setMuted parameter has the wrong type. muted: ${muted}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -286,8 +287,9 @@ export class VASTTracker extends EventEmitter {
   setPaused(paused, macros = {}) {
     if (typeof paused !== 'boolean' || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'setPaused parameters have the wrong type',
-        parameters: { paused, macros },
+        message: `One given setPaused parameter has the wrong type. paused: ${paused}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -308,8 +310,9 @@ export class VASTTracker extends EventEmitter {
   setFullscreen(fullscreen, macros = {}) {
     if (typeof fullscreen !== 'boolean' || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'setFullScreen parameters have the wrong type',
-        parameters: { fullscreen, macros },
+        message: `One given setFullScreen parameter has the wrong type. fullscreen: ${fullscreen}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -332,8 +335,9 @@ export class VASTTracker extends EventEmitter {
   setExpand(expanded, macros = {}) {
     if (typeof expanded !== 'boolean' || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'setExpand parameters have the wrong type',
-        parameters: { expanded, macros },
+        message: `One given setExpand parameter has the wrong type. expanded: ${expanded}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -356,8 +360,7 @@ export class VASTTracker extends EventEmitter {
   setSkipDelay(duration) {
     if (!util.isValidTimeValue(duration)) {
       this.emit('TRACKER-error', {
-        message: 'setSkipDelay parameter does not have a valid value',
-        parameter: duration,
+        message: `setSkipDelay parameter does not have a valid value. duration: ${duration}`,
       });
       return;
     }
@@ -372,8 +375,7 @@ export class VASTTracker extends EventEmitter {
   trackImpression(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'trackImpression parameter has the wrong type',
-        parameter: macros,
+        message: `trackImpression parameter has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -391,8 +393,7 @@ export class VASTTracker extends EventEmitter {
   trackViewableImpression(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'trackViewableImpression parameter has the wrong type',
-        parameter: macros,
+        message: `trackViewableImpression given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -409,8 +410,7 @@ export class VASTTracker extends EventEmitter {
   trackNotViewableImpression(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'trackNotViewableImpression parameter has the wrong type',
-        parameter: macros,
+        message: `trackNotViewableImpression given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -427,8 +427,7 @@ export class VASTTracker extends EventEmitter {
   trackUndeterminedImpression(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'trackUndeterminedImpression parameter has the wrong type',
-        parameter: macros,
+        message: `trackUndeterminedImpression given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -446,8 +445,9 @@ export class VASTTracker extends EventEmitter {
   error(macros = {}, isCustomCode = false) {
     if (typeof macros !== 'object' || typeof isCustomCode !== 'boolean') {
       this.emit('TRACKER-error', {
-        message: 'error parameters have the wrong type',
-        parameters: { macros, isCustomCode },
+        message: `One given error parameter has the wrong type. macros: ${util.formatMacrosValues(
+          macros
+        )}, isCustomCode: ${isCustomCode}`,
       });
       return;
     }
@@ -464,8 +464,7 @@ export class VASTTracker extends EventEmitter {
   errorWithCode(errorCode, isCustomCode = false) {
     if (typeof errorCode !== 'string' || typeof isCustomCode !== 'boolean') {
       this.emit('TRACKER-error', {
-        message: 'ErrorWithCode parameters have the wrong type',
-        parameters: { errorCode, isCustomCode },
+        message: `One given errorWithCode parameter has the wrong type. errorCode: ${errorCode}, isCustomCode: ${isCustomCode}`,
       });
       return;
     }
@@ -486,8 +485,7 @@ export class VASTTracker extends EventEmitter {
   complete(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'complete parameter has the wrong type',
-        parameter: macros,
+        message: `complete given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -505,8 +503,7 @@ export class VASTTracker extends EventEmitter {
   notUsed(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'notUsed parameter has the wrong type',
-        parameter: macros,
+        message: `notUsed given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -526,8 +523,7 @@ export class VASTTracker extends EventEmitter {
   otherAdInteraction(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'otherAdInteraction parameter has the wrong type',
-        parameter: macros,
+        message: `otherAdInteraction given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -547,8 +543,7 @@ export class VASTTracker extends EventEmitter {
   acceptInvitation(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'acceptInvitation parameter has the wrong type',
-        parameter: macros,
+        message: `acceptInvitation given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -565,8 +560,7 @@ export class VASTTracker extends EventEmitter {
   adExpand(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'adExpand parameter has the wrong type',
-        parameter: macros,
+        message: `adExpand given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -583,8 +577,7 @@ export class VASTTracker extends EventEmitter {
   adCollapse(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'adCollapse parameter has the wrong type',
-        parameter: macros,
+        message: `adCollapse given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -601,8 +594,7 @@ export class VASTTracker extends EventEmitter {
   minimize(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'minimize parameter has the wrong type',
-        parameter: macros,
+        message: `minimize given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -621,8 +613,9 @@ export class VASTTracker extends EventEmitter {
   verificationNotExecuted(vendor, macros = {}) {
     if (typeof vendor !== 'string' || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'verificationNotExecuted parameters have to wrong type',
-        parameters: { vendor, macros },
+        message: `One given verificationNotExecuted parameter has to wrong type. vendor: ${vendor}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -675,8 +668,9 @@ export class VASTTracker extends EventEmitter {
   overlayViewDuration(formattedDuration, macros = {}) {
     if (typeof formattedDuration !== 'string' || typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'overlayViewDuration parameters have the wrong type',
-        parameters: { formattedDuration, macros },
+        message: `One given overlayViewDuration parameters has the wrong type. formattedDuration: ${formattedDuration}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -695,8 +689,7 @@ export class VASTTracker extends EventEmitter {
   close(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'close parameter has the wrong type',
-        parameter: macros,
+        message: `close given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -712,8 +705,7 @@ export class VASTTracker extends EventEmitter {
   skip(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'skip parameter has the wrong type',
-        parameter: macros,
+        message: `skip given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -731,8 +723,7 @@ export class VASTTracker extends EventEmitter {
   load(macros = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'load parameter has the wrong type',
-        parameter: macros,
+        message: `load given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -755,8 +746,9 @@ export class VASTTracker extends EventEmitter {
       typeof macros !== 'object'
     ) {
       this.emit('TRACKER-error', {
-        message: 'click parameters have the wrong type',
-        parameters: { fallbackClickThroughURL, macros },
+        message: `One given click parameter has the wrong type. fallbackClickThroughURL: ${fallbackClickThroughURL}, macros: ${util.formatMacrosValues(
+          macros
+        )}`,
       });
       return;
     }
@@ -798,8 +790,7 @@ export class VASTTracker extends EventEmitter {
   track(eventName, { macros = {}, once = false } = {}) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
-        message: 'track macros parameter has the wrong type',
-        parameter: macros,
+        message: `track given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
@@ -842,12 +833,11 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
    */
   trackURLs(URLTemplates, macros = {}, options = {}) {
-    const { validUrls, unvalidUrls } = util.filterUrlTemplates(URLTemplates);
+    const { validUrls, invalidUrls } = util.filterUrlTemplates(URLTemplates);
 
-    if (unvalidUrls.length) {
+    if (invalidUrls.length) {
       this.emit('TRACKER-error', {
-        unvalidUrls,
-        message: 'Provided urls are malformed',
+        message: `Provided urls are malformed. url: ${invalidUrls}`,
       });
     }
 
