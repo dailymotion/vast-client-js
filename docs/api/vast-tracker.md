@@ -50,7 +50,6 @@ const vastTracker = new VASTTracker(null, ad, creative);
 ## Events<a name="events"></a>
 
 
-
 `VASTTracker` extends a custom [`EventEmitter`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/event-emitter.md), therefore is possible to add event listeners like this:
 
 
@@ -62,6 +61,9 @@ vastTracker.on('exitFullscreen', () => {
 
 In addition, you can add a specific event listener to listen to any errors.
 
+##### TRACKER-error
+
+- `message: String`
 ```Javascript
 vastTracker.on('TRACKER-error', ({message}) => {
   console.log(message)
@@ -193,6 +195,7 @@ Pass `isCustomCode` as true only if you want to use a custom code for the `[ERRO
 - **`isCustomCode: Boolean`** - Flag to allow custom values on error code.
 
 #### Event emitted
+
 - **`TRACKER-error`**
 
 #### Example
@@ -221,6 +224,7 @@ Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERROR
 - **`isCustomCode: Boolean`** - Flag to allow custom values on error code.
 
 #### Event emitted
+
 - **`TRACKER-error`**
 
 #### Example
@@ -383,6 +387,7 @@ Sets the duration of the ad and updates the quartiles based on that.
 - **`duration: Number`** - The duration of the ad
 
 #### Event Emitted
+
 - **`TRACKER-error`**
 
 ### setExpand(expanded, macros) <a name="setExpand"></a>

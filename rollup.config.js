@@ -17,6 +17,13 @@ function onwarn(warning) {
 const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
   const baseConfig = {
     input: filePath,
+    output: {
+      format: 'cjs',
+      dir: 'dist',
+      manualChunks: {
+        xmldom: ['@xmldom/xmldom'],
+      },
+    },
     plugins: [
       resolve({
         preferBuiltins: true,
@@ -29,26 +36,18 @@ const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
   const nonMinifiedConfig = {
     ...baseConfig,
     output: {
-      format: 'cjs',
-      dir: 'dist',
-      entryFileNames: `${notMinifiedOutput}`,
+      ...baseConfig.output,
+      entryFileNames: notMinifiedOutput,
       chunkFileNames: 'chunks/[name]-[hash].js',
-      manualChunks: {
-        xmldom: ['@xmldom/xmldom'],
-      },
     },
   };
 
   const minifiedConfig = {
     ...baseConfig,
     output: {
-      format: 'cjs',
-      dir: 'dist',
-      entryFileNames: `${minifiedOutput}`,
+      ...baseConfig.output,
+      entryFileNames: minifiedOutput,
       chunkFileNames: 'chunks/[name]-[hash].min.js',
-      manualChunks: {
-        xmldom: ['@xmldom/xmldom'],
-      },
     },
     plugins: [...baseConfig.plugins, terser()],
   };
@@ -63,12 +62,12 @@ const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
       {
         format: 'es',
         dir: 'dist',
-        entryFileNames: `${notMinifiedOutput}`,
+        entryFileNames: notMinifiedOutput,
       },
       {
         format: 'es',
         dir: 'dist',
-        entryFileNames: `${minifiedOutput}`,
+        entryFileNames: minifiedOutput,
         plugins: [terser()],
       },
     ],

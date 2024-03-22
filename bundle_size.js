@@ -8,9 +8,7 @@ const getFileSizes = (folderPath) => {
   return fs.readdirSync(folderPath).reduce((res, fileName) => {
     const stats = fs.statSync(`${folderPath}/${fileName}`);
     if (stats.isFile()) {
-      res[fileName] = fs.readFileSync(
-        path.join(folderPath, fileName)
-      ).byteLength;
+      res[fileName] = stats.size;
     }
     return res;
   }, {});
