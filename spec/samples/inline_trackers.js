@@ -41,6 +41,12 @@ export const inlineTrackersParsed = {
           value: 'Category-C',
         },
       ],
+      blockedAdCategories: [
+        {
+          authority: 'https://www.example.com/categoryauthority',
+          value: 'blockedAdCategory',
+        },
+      ],
       survey: 'http://example.com/survey',
       errorURLTemplates: ['http://example.com/error_[ERRORCODE]'],
       impressionURLTemplates: [

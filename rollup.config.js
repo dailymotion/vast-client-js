@@ -1,6 +1,5 @@
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
-import alias from '@rollup/plugin-alias';
 import resolve from '@rollup/plugin-node-resolve';
 
 const babelPlugin = babel({
@@ -16,28 +15,16 @@ function onwarn(warning) {
 }
 
 const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
-  let config = {
+  const baseConfig = {
     input: filePath,
-    output: [
-      {
-        format: 'cjs',
-        file: `dist/${notMinifiedOutput}`,
+    output: {
+      format: 'cjs',
+      dir: 'dist',
+      manualChunks: {
+        xmldom: ['@xmldom/xmldom'],
       },
-      {
-        format: 'cjs',
-        file: `dist/${minifiedOutput}`,
-        plugins: [terser()],
-      },
-    ],
+    },
     plugins: [
-      alias({
-        entries: [
-          {
-            find: './urlhandlers/mock_node_url_handler',
-            replacement: './urlhandlers/node_url_handler',
-          },
-        ],
-      }),
       resolve({
         preferBuiltins: true,
       }),
@@ -46,7 +33,26 @@ const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
     onwarn,
   };
 
-  return config;
+  const nonMinifiedConfig = {
+    ...baseConfig,
+    output: {
+      ...baseConfig.output,
+      entryFileNames: notMinifiedOutput,
+      chunkFileNames: 'chunks/[name]-[hash].js',
+    },
+  };
+
+  const minifiedConfig = {
+    ...baseConfig,
+    output: {
+      ...baseConfig.output,
+      entryFileNames: minifiedOutput,
+      chunkFileNames: 'chunks/[name]-[hash].min.js',
+    },
+    plugins: [...baseConfig.plugins, terser()],
+  };
+
+  return [nonMinifiedConfig, minifiedConfig];
 };
 
 const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
@@ -55,11 +61,13 @@ const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
     output: [
       {
         format: 'es',
-        file: `dist/${notMinifiedOutput}`,
+        dir: 'dist',
+        entryFileNames: notMinifiedOutput,
       },
       {
         format: 'es',
-        file: `dist/${minifiedOutput}`,
+        dir: 'dist',
+        entryFileNames: minifiedOutput,
         plugins: [terser()],
       },
     ],
@@ -73,7 +81,7 @@ export default [
   // Browser-friendly build [package.json "browser"]
   createBrowserConfig('src/index.js', 'vast-client.min.js', 'vast-client.js'),
   // CommonJS build for Node usage [package.json "main"]
-  createNodeConfig(
+  ...createNodeConfig(
     'src/index.js',
     'vast-client-node.min.js',
     'vast-client-node.js'

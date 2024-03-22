@@ -49,11 +49,24 @@ const vastTracker = new VASTTracker(null, ad, creative);
 
 ## Events<a name="events"></a>
 
+
 `VASTTracker` extends a custom [`EventEmitter`](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/event-emitter.md), therefore is possible to add event listeners like this:
+
 
 ```Javascript
 vastTracker.on('exitFullscreen', () => {
   // Deal with the event
+});
+```
+
+In addition, you can add a specific event listener to listen to any errors.
+
+##### TRACKER-error
+
+- `message: String`
+```Javascript
+vastTracker.on('TRACKER-error', ({message}) => {
+  console.log(message)
 });
 ```
 
@@ -181,6 +194,10 @@ Pass `isCustomCode` as true only if you want to use a custom code for the `[ERRO
 - **`macros : Object `** - An optional Object containing macros and their values to be used and replaced in the tracking calls.
 - **`isCustomCode: Boolean`** - Flag to allow custom values on error code.
 
+#### Event emitted
+
+- **`TRACKER-error`**
+
 #### Example
 
 ```Javascript
@@ -206,6 +223,10 @@ Sends a request to the URI provided by the VAST `<Error>` element. If an `[ERROR
 - **`errorCode: String`** - Replaces `[ERRORCODE]` macro. `[ERRORCODE]` values are listed in the VAST specification
 - **`isCustomCode: Boolean`** - Flag to allow custom values on error code.
 
+#### Event emitted
+
+- **`TRACKER-error`**
+
 #### Example
 
 ```Javascript
@@ -228,6 +249,7 @@ Must be called when the player considers that it has loaded and buffered the cre
 #### Events emitted
 
 - **`loaded`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -253,6 +275,7 @@ Must be called when the user watched the linear creative until its end. Calls th
 #### Events emitted
 
 - **`complete`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -280,6 +303,7 @@ Must be called when the user clicks on the creative. Calls the tracking URLs.
 #### Events emitted
 
 - **`clickthrough`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -307,6 +331,7 @@ Must be called when the player or the window is closed during the ad. Calls the 
 
 - **`closeLinear`**
 - **`close`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -338,6 +363,7 @@ Must be called when the skip button is clicked. Calls the skip tracking URLs.
 #### Events emitted
 
 - **`skip`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -360,6 +386,10 @@ Sets the duration of the ad and updates the quartiles based on that.
 
 - **`duration: Number`** - The duration of the ad
 
+#### Event Emitted
+
+- **`TRACKER-error`**
+
 ### setExpand(expanded, macros) <a name="setExpand"></a>
 
 Updates the expand state and calls the expand/collapse as well as playerExpand/playerCollapse for VAST 4.1. tracking URLs.
@@ -375,6 +405,7 @@ Updates the expand state and calls the expand/collapse as well as playerExpand/p
 - **`playerExpand`**
 - **`collapse`**
 - **`playerCollapse`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -413,6 +444,7 @@ Updates the fullscreen state and calls the fullscreen tracking URLs.
 
 - **`fullscreen`**
 - **`exitFullscreen`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -448,6 +480,7 @@ Updates the mute state and calls the mute/unmute tracking URLs.
 
 - **`mute`**
 - **`unmute`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -479,6 +512,7 @@ Update the pause state and call the resume/pause tracking URLs.
 
 - **`pause`**
 - **`resume`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -515,6 +549,7 @@ Sets the duration of the ad and updates the quartiles based on that. This is req
 - **`midpoint`**
 - **`firstQuartile`**
 - **`thirdQuartile`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -539,6 +574,10 @@ Do not call this method if you want to keep the original `Skipoffset` value.
 
 - **`duration: Number`** - The time in seconds until the skip button is displayed
 
+#### Event emitted
+
+- **`TRACKER-error`**
+
 #### Example
 
 ```Javascript
@@ -560,6 +599,7 @@ Reports the impression URI. Can only be called once. Will report the following U
 #### Events emitted
 
 - **`creativeView`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -585,6 +625,10 @@ This method should be used when the ad meets criteria for Viewable impression as
 
 - - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
+#### Event emitted
+
+- **`TRACKER-error`**
+
 #### Example
 
 
@@ -607,6 +651,10 @@ This method should be used when the ad meets criteria for NotViewable impression
 
 - - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
 
+#### Event emitted
+
+- **`TRACKER-error`**
+
 #### Example
 
 
@@ -628,6 +676,10 @@ This method should be used when the ad meets criteria for ViewUndetermined impre
 #### Parameters
 
 - - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+
+#### Event emitted
+
+- **`TRACKER-error`**
 
 #### Example
 
@@ -656,6 +708,7 @@ Calls the notUsed tracking URLs.
 #### Events emitted
 
 - **`notUsed`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -683,6 +736,7 @@ Calls the otherAdInteraction tracking URLs.
 #### Events emitted
 
 - **`otherAdInteraction`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -711,6 +765,7 @@ Calls the acceptInvitation tracking URLs.
 #### Events emitted
 
 - **`acceptInvitation`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -738,6 +793,7 @@ Calls the adExpand tracking URLs.
 #### Events emitted
 
 - **`adExpand`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -765,6 +821,7 @@ Calls the adCollapse tracking URLs.
 #### Events emitted
 
 - **`adCollapse`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -794,6 +851,7 @@ Calls the minimize tracking URLs.
 #### Events emitted
 
 - **`minimize`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -836,6 +894,7 @@ Calls the overlayViewDuration tracking URLs.
 #### Events emitted
 
 - **`overlayViewDuration`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -861,6 +920,7 @@ Calls the verificationNotExecuted trackings URLs.
 #### Events emitted
 
 - **`verificationNotExecuted`**
+- **`TRACKER-error`**
 
 #### Example
 
@@ -886,6 +946,8 @@ Calls the tracking URLs for the given eventName and emits the event.
 #### Events emitted
 
 - **`given eventName`**
+- **`TRACKER-error`**
+
 
 #### Example
 

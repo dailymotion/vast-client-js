@@ -11,15 +11,8 @@ import { util } from '../util/util';
  * @return {Object|undefined}
  */
 function childByName(node, name) {
-  const childNodes = node.childNodes;
-
-  for (const childKey in childNodes) {
-    const child = childNodes[childKey];
-
-    if (child.nodeName === name) {
-      return child;
-    }
-  }
+  const childNodes = Array.from(node.childNodes);
+  return childNodes.find((childNode) => childNode.nodeName === name);
 }
 
 /**
@@ -29,17 +22,8 @@ function childByName(node, name) {
  * @return {Array}
  */
 function childrenByName(node, name) {
-  const children = [];
-  const childNodes = node.childNodes;
-
-  for (const childKey in childNodes) {
-    const child = childNodes[childKey];
-
-    if (child.nodeName === name) {
-      children.push(child);
-    }
-  }
-  return children;
+  const childNodes = Array.from(node.childNodes);
+  return childNodes.filter((childNode) => childNode.nodeName === name);
 }
 
 /**
@@ -53,12 +37,12 @@ function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
     return vastAdTagUrl;
   }
 
-  if (vastAdTagUrl.indexOf('//') === 0) {
+  if (vastAdTagUrl.startsWith('//')) {
     const { protocol } = location;
     return `${protocol}${vastAdTagUrl}`;
   }
 
-  if (vastAdTagUrl.indexOf('://') === -1) {
+  if (!vastAdTagUrl.includes('://')) {
     // Resolve relative URLs (mainly for unit testing)
     const baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
     return `${baseURL}/${vastAdTagUrl}`;
@@ -73,7 +57,7 @@ function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
  * @return {Boolean}
  */
 function parseBoolean(booleanString) {
-  return ['true', 'TRUE', 'True', '1'].indexOf(booleanString) !== -1;
+  return ['true', 'TRUE', 'True', '1'].includes(booleanString);
 }
 
 /**
@@ -105,12 +89,12 @@ function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
  * @returns {Object}
  */
 function parseAttributes(element) {
-  const nodeAttributes = element.attributes;
-  const attributes = {};
-  for (let i = 0; i < nodeAttributes.length; i++) {
-    attributes[nodeAttributes[i].nodeName] = nodeAttributes[i].nodeValue;
-  }
-  return attributes;
+  const nodeAttributes = Array.from(element.attributes);
+
+  return nodeAttributes.reduce((acc, nodeAttribute) => {
+    acc[nodeAttribute.nodeName] = nodeAttribute.nodeValue;
+    return acc;
+  }, {});
 }
 
 /**
@@ -194,22 +178,19 @@ function splitVAST(ads) {
  */
 function assignAttributes(attributes, verificationObject) {
   if (attributes) {
-    for (const attrKey in attributes) {
-      const attribute = attributes[attrKey];
-
+    Array.from(attributes).forEach(({ nodeName, nodeValue }) => {
       if (
-        attribute.nodeName &&
-        attribute.nodeValue &&
-        verificationObject.hasOwnProperty(attribute.nodeName)
+        nodeName &&
+        nodeValue &&
+        verificationObject.hasOwnProperty(nodeName)
       ) {
-        let value = attribute.nodeValue;
-
-        if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+        let value = nodeValue;
+        if (typeof verificationObject[nodeName] === 'boolean') {
           value = parseBoolean(value);
         }
-        verificationObject[attribute.nodeName] = value;
+        verificationObject[nodeName] = value;
       }
-    }
+    });
   }
 }
 

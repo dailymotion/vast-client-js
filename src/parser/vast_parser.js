@@ -451,7 +451,9 @@ export class VASTParser extends EventEmitter {
         // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
         // but no creative was found
         const ad = vastResponse.ads[index];
-        if (ad.errorCode || ad.creatives.length === 0) {
+        if ((ad.errorCode || ad.creatives.length === 0) && !ad.VASTAdTagURI) {
+          // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
+          // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
           this.trackVastError(
             ad.errorURLTemplates.concat(vastResponse.errorURLTemplates),
             { ERRORCODE: ad.errorCode || 303 },

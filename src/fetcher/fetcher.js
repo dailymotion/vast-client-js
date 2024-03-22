@@ -1,6 +1,6 @@
-import { updateEstimatedBitrate } from './parser/bitrate';
+import { updateEstimatedBitrate } from '../parser/bitrate';
 import { urlHandler } from './url_handler';
-import { DEFAULT_TIMEOUT } from './urlhandlers/consts';
+import { DEFAULT_TIMEOUT } from './consts';
 
 /**
  * This class provides a method to fetch a VAST document
@@ -76,7 +76,7 @@ export class Fetcher {
     previousUrl = null,
     wrapperAd = null,
   }) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const timeBeforeGet = Date.now();
 
       // Process url with defined filter
@@ -84,39 +84,38 @@ export class Fetcher {
         url = filter(url);
       });
 
-      emitter('VAST-resolving', {
-        url,
-        previousUrl,
-        wrapperDepth,
-        maxWrapperDepth,
-        timeout: this.fetchingOptions.timeout,
-        wrapperAd,
-      });
+      try {
+        emitter('VAST-resolving', {
+          url,
+          previousUrl,
+          wrapperDepth,
+          maxWrapperDepth: maxWrapperDepth,
+          timeout: this.fetchingOptions.timeout,
+          wrapperAd,
+        });
 
-      this.urlHandler.get(
-        url,
-        this.fetchingOptions,
-        (error, xml, details = {}) => {
-          const requestDuration = Math.round(Date.now() - timeBeforeGet);
+        let data = await this.urlHandler.get(url, this.fetchingOptions);
+        const requestDuration = Math.round(Date.now() - timeBeforeGet);
 
-          emitter('VAST-resolved', {
-            url,
-            previousUrl,
-            wrapperDepth,
-            error,
-            duration: requestDuration,
-            ...details,
-          });
+        emitter('VAST-resolved', {
+          url,
+          previousUrl,
+          wrapperDepth,
+          error: data?.error || null,
+          duration: requestDuration,
+          statusCode: data?.statusCode || null,
+          ...data?.details,
+        });
+        updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
 
-          updateEstimatedBitrate(details.byteLength, requestDuration);
-
-          if (error) {
-            reject(error);
-          } else {
-            resolve(xml);
-          }
+        if (data.error) {
+          reject(data.error);
+        } else {
+          resolve(data.xml);
         }
-      );
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 }

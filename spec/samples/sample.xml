@@ -2,6 +2,7 @@
 <VAST version="4.3">
   <Ad id="ad_id_0001" sequence="1">
     <InLine>
+      <AdServingId>a532d16d-4d7f-4440-bd29-2ec0e693fc80</AdServingId>
       <AdSystem version="2.0"><![CDATA[AdServer]]></AdSystem>
       <AdTitle><![CDATA[Ad title]]></AdTitle>
       <Advertiser id='advertiser-desc'><![CDATA[Advertiser name]]></Advertiser>
@@ -29,6 +30,7 @@
       </AdVerifications>
       <Creatives>
         <Creative id="id130984" adId="adId345690" sequence="1">
+          <UniversalAdId idRegistry="daily-motion-L1">Linear-12345</UniversalAdId>
           <Linear>
             <Duration>00:01:30.123</Duration>
             <TrackingEvents>
@@ -66,6 +68,7 @@
           </Linear>
         </Creative>
         <Creative id="id130985" AdID="adId345691" sequence="2">
+          <UniversalAdId idRegistry="daily-motion-L1">Linear-12345</UniversalAdId>
           <CompanionAds>
             <Companion width="300" height="60">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/companion1-static-resource]]></StaticResource>
@@ -98,6 +101,7 @@
           </CompanionAds>
         </Creative>
         <Creative id="id130986">
+          <UniversalAdId idRegistry="daily-motion-L1">Linear-12345</UniversalAdId>
           <NonLinearAds>
             <NonLinear width="300" height="200" expandedWidth="600" expandedHeight="400" scalable="false" maintainAspectRatio="true" minSuggestedDuration="00:01:40" apiFramework="someAPI">
               <StaticResource creativeType="image/jpeg"><![CDATA[http://example.com/nonlinear-static-resource]]></StaticResource>
@@ -137,11 +141,13 @@
   </Ad>
   <Ad id="ad_id_0002">
     <InLine>
+      <AdServingId>a532d16d-4d7f-4440-bd29-2ec0e693fc80</AdServingId>
       <AdSystem version="2.1"><![CDATA[AdServer2]]></AdSystem>
       <AdTitle><![CDATA[Ad title 2]]></AdTitle>
       <Impression id="sample-ad2-impression1"><![CDATA[http://example.com/impression1]]></Impression>
       <Creatives>
         <Creative id="id873421" adID="adId221144" apiFramework="VPAID">
+          <UniversalAdId idRegistry="daily-motion-L1">Linear-12345</UniversalAdId>
           <Linear skipoffset="00:00:10">
             <Duration>30</Duration>
             <MediaFiles>

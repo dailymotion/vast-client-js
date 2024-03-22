@@ -22,33 +22,39 @@ export function parseAd(
   emit,
   { allowMultipleAds, followAdditionalWrappers } = {}
 ) {
-  const childNodes = adElement.childNodes;
+  const childNodes = Array.from(adElement.childNodes);
 
-  for (const adTypeElementKey in childNodes) {
-    const adTypeElement = childNodes[adTypeElementKey];
+  const filteredChildNodes = childNodes.filter((childNode) => {
+    const childNodeToLowerCase = childNode.nodeName.toLowerCase();
+    return (
+      childNodeToLowerCase === 'inline' ||
+      (followAdditionalWrappers !== false && childNodeToLowerCase === 'wrapper')
+    );
+  });
 
-    if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
-      continue;
-    }
+  for (const node of filteredChildNodes) {
+    parserUtils.copyNodeAttribute('id', adElement, node);
+    parserUtils.copyNodeAttribute('sequence', adElement, node);
+    parserUtils.copyNodeAttribute('adType', adElement, node);
 
-    if (
-      adTypeElement.nodeName === 'Wrapper' &&
-      followAdditionalWrappers === false
-    ) {
-      continue;
-    }
-
-    parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
-    parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-    parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
-    if (adTypeElement.nodeName === 'Wrapper') {
-      return { ad: parseWrapper(adTypeElement, emit), type: 'WRAPPER' };
-    } else if (adTypeElement.nodeName === 'InLine') {
+    if (node.nodeName === 'Wrapper') {
+      return { ad: parseWrapper(node, emit), type: 'WRAPPER' };
+    } else if (node.nodeName === 'InLine') {
       return {
-        ad: parseInLine(adTypeElement, emit, { allowMultipleAds }),
+        ad: parseInLine(node, emit, { allowMultipleAds }),
         type: 'INLINE',
       };
     }
+
+    const wrongNode = node.nodeName.toLowerCase();
+    const message =
+      wrongNode === 'inline'
+        ? `<${node.nodeName}> must be written <InLine>`
+        : `<${node.nodeName}> must be written <Wrapper>`;
+    emit('VAST-warning', {
+      message,
+      wrongNode: node,
+    });
   }
 }
 
@@ -84,11 +90,10 @@ function parseAdElement(adTypeElement, emit) {
     parserVerification.verifyRequiredValues(adTypeElement, emit);
   }
 
-  const childNodes = adTypeElement.childNodes;
+  const childNodes = Array.from(adTypeElement.childNodes);
   const ad = createAd(parserUtils.parseAttributes(adTypeElement));
 
-  for (const nodeKey in childNodes) {
-    const node = childNodes[nodeKey];
+  childNodes.forEach((node) => {
     switch (node.nodeName) {
       case 'Error':
         ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
@@ -191,7 +196,7 @@ function parseAdElement(adTypeElement, emit) {
         });
         break;
     }
-  }
+  });
 
   if (adVerificationsFromExtensions.length) {
     ad.adVerifications = ad.adVerifications.concat(
@@ -246,7 +251,7 @@ function parseWrapper(wrapperElement, emit) {
   }
 
   ad.creatives.forEach((wrapperCreativeElement) => {
-    if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
+    if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
       // TrackingEvents Linear / NonLinear
       if (wrapperCreativeElement.trackingEvents) {
         if (!ad.trackingEvents) {
@@ -255,6 +260,7 @@ function parseWrapper(wrapperElement, emit) {
         if (!ad.trackingEvents[wrapperCreativeElement.type]) {
           ad.trackingEvents[wrapperCreativeElement.type] = {};
         }
+
         for (const eventName in wrapperCreativeElement.trackingEvents) {
           const urls = wrapperCreativeElement.trackingEvents[eventName];
           if (
@@ -312,23 +318,22 @@ export function _parseAdVerifications(verifications) {
 
   verifications.forEach((verificationNode) => {
     const verification = createAdVerification();
-    const childNodes = verificationNode.childNodes;
+    const childNodes = Array.from(verificationNode.childNodes);
 
     parserUtils.assignAttributes(verificationNode.attributes, verification);
-    for (const nodeKey in childNodes) {
-      const node = childNodes[nodeKey];
 
-      switch (node.nodeName) {
+    childNodes.forEach(({ nodeName, textContent, attributes }) => {
+      switch (nodeName) {
         case 'JavaScriptResource':
         case 'ExecutableResource':
-          verification.resource = parserUtils.parseNodeText(node);
-          parserUtils.assignAttributes(node.attributes, verification);
+          verification.resource = textContent.trim();
+          parserUtils.assignAttributes(attributes, verification);
           break;
         case 'VerificationParameters':
-          verification.parameters = parserUtils.parseNodeText(node);
+          verification.parameters = textContent.trim();
           break;
       }
-    }
+    });
 
     const trackingEventsElement = parserUtils.childByName(
       verificationNode,
