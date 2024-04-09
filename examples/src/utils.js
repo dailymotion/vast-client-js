@@ -39,11 +39,11 @@ export const getMediaFileUrl = (creative) => {
  */
 
 export const parsePreroll = async () => {
-  const VAST = 'https://run.mocky.io/v3/e4c75f91-c6fd-4425-ad2b-f346fe13bfb2';
+  const VAST = 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml';
 
   let vastClient = new VASTClient();
   try {
-    return await vastClient.get(VAST);
+    return vastClient.get(VAST);
   } catch (error) {
     console.error(error);
   }
