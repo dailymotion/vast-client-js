@@ -14,7 +14,11 @@ let companionVastTracker = null;
  * Get the first valid creative from an ad
  */
 export const getCreative = (ad) => {
-  return ad.creatives?.find((creative) => creative.mediaFiles) || null;
+  if (!ad.creatives) {
+    return null;
+  }
+
+  return ad.creatives.find((creative) => creative.mediaFiles) || null;
 };
 
 /**
@@ -22,9 +26,12 @@ export const getCreative = (ad) => {
  */
 
 export const getMediaFileUrl = (creative) => {
-  return (
-    creative.mediaFiles?.find((mediaFile) => mediaFile.fileURL)?.fileURL || null
-  );
+  const mediaFiles = creative.mediaFiles;
+  if (!mediaFiles.length) {
+    return null;
+  }
+
+  return mediaFiles.find((mediaFile) => mediaFile.fileURL).fileURL || null;
 };
 
 /**
@@ -248,9 +255,15 @@ const handleErrorTrackers = () => {
  * @returns the first valid companion creative
  */
 const getCreativeCompanion = (ad) => {
-  return (
-    ad.creatives?.find((creative) => creative.type === 'companion') || null
+  if (!ad.creatives) {
+    return null;
+  }
+
+  const validCreative = ad.creatives.find(
+    (creative) => creative.type === 'companion'
   );
+
+  return validCreative || null;
 };
 
 /**
@@ -278,7 +291,11 @@ const getVariationData = (ad) => {
  */
 
 const getVariationUrl = (variation) => {
-  return variation.staticResources?.[0]?.url || null;
+  if (!variation.staticResources.length) {
+    return null;
+  }
+
+  return variation.staticResources[0].url;
 };
 
 const displayVariation = (variationData) => {
