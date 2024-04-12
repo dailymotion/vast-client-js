@@ -1,9 +1,5 @@
-body {
+main {
   display: flex;
   align-items: center;
   flex-direction: column;
-}
-
-.hidden {
-  display: none;
 }

@@ -14,11 +14,7 @@ let companionVastTracker = null;
  * Get the first valid creative from an ad
  */
 export const getCreative = (ad) => {
-  if (!ad.creatives) {
-    return null;
-  }
-  const validCreative = ad.creatives.find((creative) => creative.mediaFiles);
-  return validCreative || null;
+  return ad.creatives?.find((creative) => creative.mediaFiles) || null;
 };
 
 /**
@@ -26,12 +22,9 @@ export const getCreative = (ad) => {
  */
 
 export const getMediaFileUrl = (creative) => {
-  const mediaFiles = creative.mediaFiles;
-  if (!mediaFiles.length) {
-    return null;
-  }
-  const mediafile = mediaFiles.find((mediaFile) => mediaFile.fileURL);
-  return mediafile.fileURL || null;
+  return (
+    creative.mediaFiles?.find((mediaFile) => mediaFile.fileURL)?.fileURL || null
+  );
 };
 
 /**
@@ -41,7 +34,7 @@ export const getMediaFileUrl = (creative) => {
 export const parsePreroll = async () => {
   const VAST = 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml';
 
-  let vastClient = new VASTClient();
+  const vastClient = new VASTClient();
   try {
     return vastClient.get(VAST);
   } catch (error) {
@@ -55,7 +48,7 @@ export const parsePreroll = async () => {
 
 export const playPreroll = async () => {
   const parsedVAST = await parsePreroll();
-  // here we a using the first ad from the parsed vast that contain creatives,
+  // here we are using the first ad from the parsed vast that contain creatives,
   // however, this logic can depend on you player implementation logic
   const validAd = parsedVAST.ads.find((ads) => ads.creatives.length > 0);
   if (!validAd) {
@@ -70,12 +63,10 @@ export const playPreroll = async () => {
   videoPlayer.src = mediaFileUrl;
   videoPlayer.play();
 
-  // listen the the en ended event to stop the ad and remove trackers
-  videoPlayer.addEventListener('ended', (e) => {
-    stopAd();
-  });
+  // listen the ended event to stop the ad and remove trackers
+  videoPlayer.addEventListener('ended', stopAd);
 
-  //once we have the parsed vast we can instanciate the vastTracker
+  // once we have the parsed vast we can instantiate the vastTracker
   vastTracker = new VASTTracker(null, validAd, creative);
 
   //if we have a companion ad we instanciate the companionVastTracker
@@ -100,7 +91,7 @@ export const stopAd = () => {
   videoPlayer.src = mainContent;
   videoPlayer.load();
   videoPlayer.play();
-  variationContainer.classList.add('hidden');
+  variationContainer.style.display = 'none';
   removeTrackers(videoPlayer);
 };
 
@@ -257,18 +248,9 @@ const handleErrorTrackers = () => {
  * @returns the first valid companion creative
  */
 const getCreativeCompanion = (ad) => {
-  if (!ad.creatives) {
-    return null;
-  }
-  const validCreative = ad.creatives.find(
-    (creative) => creative.type === 'companion'
+  return (
+    ad.creatives?.find((creative) => creative.type === 'companion') || null
   );
-
-  if (!validCreative) {
-    return;
-  }
-
-  return validCreative;
 };
 
 /**
@@ -286,7 +268,7 @@ const getVariationData = (ad) => {
   }
 
   return {
-    imgurl: getVariationUrl(validCreative.variations[0]),
+    imgUrl: getVariationUrl(validCreative.variations[0]),
     variation: validCreative.variations[0],
   };
 };
@@ -296,19 +278,15 @@ const getVariationData = (ad) => {
  */
 
 const getVariationUrl = (variation) => {
-  if (!variation.staticResources.length) {
-    return null;
-  }
-  const variationImage = variation.staticResources[0].url;
-  return variationImage;
+  return variation.staticResources?.[0]?.url || null;
 };
 
 const displayVariation = (variationData) => {
-  const { imgurl, variation } = variationData;
+  const { imgUrl, variation } = variationData;
   if (!variation) {
-    return;
+    return null;
   }
-  variationImg.src = imgurl;
+  variationImg.src = imgUrl;
   variationImg.style.height = variation.assetHeight + 'px';
   variationImg.style.assetWIdth = variation.assetWidth + 'px';
   variationContainer.style.width = variation.width + 'px';
