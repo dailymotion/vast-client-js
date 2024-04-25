@@ -6,7 +6,10 @@ const oldDistPath = './dist_old';
 
 const getFileSizes = (folderPath) => {
   return fs.readdirSync(folderPath).reduce((res, fileName) => {
-    res[fileName] = fs.readFileSync(path.join(folderPath, fileName)).byteLength;
+    const stats = fs.statSync(`${folderPath}/${fileName}`);
+    if (stats.isFile()) {
+      res[fileName] = stats.size;
+    }
     return res;
   }, {});
 };

@@ -374,4 +374,48 @@ describe('util', function () {
       expect(replacedUrlMacros).toEqual('http://test.com?bp=-1');
     });
   });
+  describe('#filterUrlTemplates', function () {
+    it('should filtered valid and invalid urls', () => {
+      const urlsToFilter = [
+        {
+          id: 'sample-impression1',
+          url: './example.com',
+        },
+        {
+          id: 'sample-impression2',
+          url: '../example.com',
+        },
+        {
+          id: 'sample-impression3',
+          url: 'https://example.com',
+        },
+        {
+          id: 'sample-impression4',
+          url: 'http://example.com',
+        },
+        {
+          id: 'sample-impression5',
+          url: '//example.com',
+        },
+      ];
+
+      const { validUrls, invalidUrls } = util.filterUrlTemplates(urlsToFilter);
+      expect(validUrls.length).toBe(3);
+      expect(invalidUrls.length).toBe(2);
+    });
+  });
+
+  describe('#isValidUrl', function () {
+    it('should return true if the url is valid', () => {
+      const url = 'http://example.com';
+      const validUrl = util.isValidUrl(url);
+      expect(validUrl).toBe(true);
+    });
+
+    it('should return false if the url is not valid', () => {
+      const url = 'example.com';
+      const isValidUrl = util.isValidUrl(url);
+      expect(isValidUrl).toBe(false);
+    });
+  });
 });
