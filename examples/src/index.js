@@ -1,11 +1,8 @@
 import { playPreroll } from './utils';
 
 const videoPlayer = document.getElementById('myVideo');
-let prerollPlayed = false;
 
-videoPlayer.addEventListener('play', () => {
-  if (!prerollPlayed) {
-    playPreroll();
-    prerollPlayed = true;
-  }
+videoPlayer.addEventListener('play', function handler() {
+  playPreroll();
+  videoPlayer.removeEventListener('play', handler);
 });

@@ -311,12 +311,3 @@ const displayVariation = (variationData) => {
   variationImg.style.maxWidth = variation.expandedWidth + 'px';
   variationImg.style.maxHeight = variation.expandedHeight + 'px';
 };
-
-let prerollPlayed = false;
-
-videoPlayer.addEventListener('play', () => {
-  if (!prerollPlayed) {
-    playPreroll();
-    prerollPlayed = true;
-  }
-});
