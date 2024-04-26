@@ -384,7 +384,7 @@ http://example.dailymotion.com/vast.php?domain=mywebsite.com
 */
 ```
 
-### removeURLTemplateFilter()
+### removeLastURLTemplateFilter()
 
 Removes the last element of the url templates filters array.
 

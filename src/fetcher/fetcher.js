@@ -66,6 +66,8 @@ export class Fetcher {
    * @param {Object} params.wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @param {Number} params.maxWrapperDepth - The maximum number of Wrapper that can be fetch
    * @param {Function} params.emitter - The function used to Emit event
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
   fetchVAST({
@@ -76,7 +78,7 @@ export class Fetcher {
     previousUrl = null,
     wrapperAd = null,
   }) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const timeBeforeGet = Date.now();
 
       // Process url with defined filter
@@ -84,38 +86,38 @@ export class Fetcher {
         url = filter(url);
       });
 
-      try {
-        emitter('VAST-resolving', {
-          url,
-          previousUrl,
-          wrapperDepth,
-          maxWrapperDepth: maxWrapperDepth,
-          timeout: this.fetchingOptions.timeout,
-          wrapperAd,
-        });
+      emitter('VAST-resolving', {
+        url,
+        previousUrl,
+        wrapperDepth,
+        maxWrapperDepth,
+        timeout: this.fetchingOptions.timeout,
+        wrapperAd,
+      });
 
-        let data = await this.urlHandler.get(url, this.fetchingOptions);
-        const requestDuration = Math.round(Date.now() - timeBeforeGet);
+      this.urlHandler
+        .get(url, this.fetchingOptions)
+        .then((data) => {
+          const requestDuration = Math.round(Date.now() - timeBeforeGet);
 
-        emitter('VAST-resolved', {
-          url,
-          previousUrl,
-          wrapperDepth,
-          error: data?.error || null,
-          duration: requestDuration,
-          statusCode: data?.statusCode || null,
-          ...data?.details,
-        });
-        updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
+          emitter('VAST-resolved', {
+            url,
+            previousUrl,
+            wrapperDepth,
+            error: data?.error || null,
+            duration: requestDuration,
+            statusCode: data?.statusCode || null,
+            ...data?.details,
+          });
+          updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
 
-        if (data.error) {
-          reject(data.error);
-        } else {
-          resolve(data.xml);
-        }
-      } catch (error) {
-        reject(error);
-      }
+          if (data.error) {
+            reject(data.error);
+          } else {
+            resolve(data.xml);
+          }
+        })
+        .catch((error) => reject(error));
     });
   }
 }

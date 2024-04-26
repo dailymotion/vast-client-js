@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 const newDistPath = './dist';
 const oldDistPath = './dist_old';
