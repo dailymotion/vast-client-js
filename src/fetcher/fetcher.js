@@ -70,7 +70,7 @@ export class Fetcher {
    * @emits  VASTParser#VAST-resolved
    * @return {Promise}
    */
-  fetchVAST({
+  async fetchVAST({
     url,
     maxWrapperDepth,
     emitter,
@@ -78,14 +78,14 @@ export class Fetcher {
     previousUrl = null,
     wrapperAd = null,
   }) {
-    return new Promise((resolve, reject) => {
-      const timeBeforeGet = Date.now();
+    const timeBeforeGet = Date.now();
 
-      // Process url with defined filter
-      this.URLTemplateFilters.forEach((filter) => {
-        url = filter(url);
-      });
+    // Process url with defined filter
+    this.URLTemplateFilters.forEach((filter) => {
+      url = filter(url);
+    });
 
+    try {
       emitter('VAST-resolving', {
         url,
         previousUrl,
@@ -95,29 +95,27 @@ export class Fetcher {
         wrapperAd,
       });
 
-      this.urlHandler
-        .get(url, this.fetchingOptions)
-        .then((data) => {
-          const requestDuration = Math.round(Date.now() - timeBeforeGet);
+      const data = await this.urlHandler.get(url, this.fetchingOptions);
+      const requestDuration = Math.round(Date.now() - timeBeforeGet);
 
-          emitter('VAST-resolved', {
-            url,
-            previousUrl,
-            wrapperDepth,
-            error: data?.error || null,
-            duration: requestDuration,
-            statusCode: data?.statusCode || null,
-            ...data?.details,
-          });
-          updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
+      emitter('VAST-resolved', {
+        url,
+        previousUrl,
+        wrapperDepth,
+        error: data?.error || null,
+        duration: requestDuration,
+        statusCode: data?.statusCode || null,
+        ...data?.details,
+      });
+      updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
 
-          if (data.error) {
-            reject(data.error);
-          } else {
-            resolve(data.xml);
-          }
-        })
-        .catch((error) => reject(error));
-    });
+      if (data.error) {
+        throw new Error(data.error);
+      } else {
+        return data.xml;
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 }
