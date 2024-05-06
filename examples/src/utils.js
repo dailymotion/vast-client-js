@@ -76,7 +76,7 @@ export const playPreroll = async () => {
   // once we have the parsed vast we can instantiate the vastTracker
   vastTracker = new VASTTracker(null, validAd, creative);
 
-  //if we have a companion ad we instanciate the companionVastTracker
+  //if we have a companion ad we instantiate the companionVastTracker
   if (variationData.variation) {
     companionVastTracker = new VASTTracker(
       null,
