@@ -306,6 +306,7 @@ const displayVariation = (variationData) => {
   variationImg.src = imgUrl;
   variationImg.style.height = variation.assetHeight + 'px';
   variationImg.style.assetWIdth = variation.assetWidth + 'px';
+  variationContainer.style.display = 'block';
   variationContainer.style.width = variation.width + 'px';
   variationContainer.style.height = variation.height + 'px';
   variationImg.style.maxWidth = variation.expandedWidth + 'px';
