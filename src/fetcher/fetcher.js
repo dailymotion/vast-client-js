@@ -85,37 +85,33 @@ export class Fetcher {
       url = filter(url);
     });
 
-    try {
-      emitter('VAST-resolving', {
-        url,
-        previousUrl,
-        wrapperDepth,
-        maxWrapperDepth,
-        timeout: this.fetchingOptions.timeout,
-        wrapperAd,
-      });
+    emitter('VAST-resolving', {
+      url,
+      previousUrl,
+      wrapperDepth,
+      maxWrapperDepth,
+      timeout: this.fetchingOptions.timeout,
+      wrapperAd,
+    });
 
-      const data = await this.urlHandler.get(url, this.fetchingOptions);
-      const requestDuration = Math.round(Date.now() - timeBeforeGet);
+    const data = await this.urlHandler.get(url, this.fetchingOptions);
+    const requestDuration = Math.round(Date.now() - timeBeforeGet);
 
-      emitter('VAST-resolved', {
-        url,
-        previousUrl,
-        wrapperDepth,
-        error: data?.error || null,
-        duration: requestDuration,
-        statusCode: data?.statusCode || null,
-        ...data?.details,
-      });
-      updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
+    emitter('VAST-resolved', {
+      url,
+      previousUrl,
+      wrapperDepth,
+      error: data?.error || null,
+      duration: requestDuration,
+      statusCode: data?.statusCode || null,
+      ...data?.details,
+    });
+    updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
 
-      if (data.error) {
-        throw new Error(data.error);
-      } else {
-        return data.xml;
-      }
-    } catch (error) {
-      throw error;
+    if (data.error) {
+      throw new Error(data.error);
+    } else {
+      return data.xml;
     }
   }
 }
