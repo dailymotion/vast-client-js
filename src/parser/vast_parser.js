@@ -1,10 +1,8 @@
 import { parseAd } from './ad_parser';
 import { EventEmitter } from '../util/event_emitter';
 import { parserUtils } from './parser_utils';
-import { urlHandler } from '../url_handler';
 import { util } from '../util/util';
 import { createVASTResponse } from '../vast_response';
-import { DEFAULT_TIMEOUT } from '../urlhandlers/consts';
 import { updateEstimatedBitrate, estimatedBitrate } from './bitrate';
 
 const DEFAULT_MAX_WRAPPER_DEPTH = 10;
@@ -24,51 +22,11 @@ export class VASTParser extends EventEmitter {
    * Creates an instance of VASTParser.
    * @constructor
    */
-  constructor() {
+  constructor({ fetcher } = {}) {
     super();
-
-    this.remainingAds = [];
-    this.errorURLTemplates = [];
-    this.rootErrorURLTemplates = [];
     this.maxWrapperDepth = null;
-    this.URLTemplateFilters = [];
-    this.fetchingOptions = {};
-    this.parsingOptions = {};
-  }
-
-  /**
-   * Adds a filter function to the array of filters which are called before fetching a VAST document.
-   * @param  {function} filter - The filter function to be added at the end of the array.
-   * @return {void}
-   */
-  addURLTemplateFilter(filter) {
-    if (typeof filter === 'function') {
-      this.URLTemplateFilters.push(filter);
-    }
-  }
-
-  /**
-   * Removes the last element of the url templates filters array.
-   * @return {void}
-   */
-  removeURLTemplateFilter() {
-    this.URLTemplateFilters.pop();
-  }
-
-  /**
-   * Returns the number of filters of the url templates filters array.
-   * @return {Number}
-   */
-  countURLTemplateFilters() {
-    return this.URLTemplateFilters.length;
-  }
-
-  /**
-   * Removes all the filter functions from the url templates filters array.
-   * @return {void}
-   */
-  clearURLTemplateFilters() {
-    this.URLTemplateFilters = [];
+    this.remainingAds = [];
+    this.fetcher = fetcher || null;
   }
 
   /**
@@ -104,83 +62,25 @@ export class VASTParser extends EventEmitter {
   }
 
   /**
-   * Fetches a VAST document for the given url.
-   * Returns a Promise which resolves,rejects according to the result of the request.
-   * @param  {String} url - The url to request the VAST document.
-   * @param {Number} wrapperDepth - How many times the current url has been wrapped.
-   * @param {String} previousUrl - Url of the previous VAST.
-   * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
-   * @emits  VASTParser#VAST-resolving
-   * @emits  VASTParser#VAST-resolved
-   * @return {Promise}
-   */
-  fetchVAST(url, wrapperDepth = 0, previousUrl = null, wrapperAd = null) {
-    return new Promise((resolve, reject) => {
-      // Process url with defined filter
-      this.URLTemplateFilters.forEach((filter) => {
-        url = filter(url);
-      });
-
-      const timeBeforeGet = Date.now();
-      this.emit('VAST-resolving', {
-        url,
-        previousUrl,
-        wrapperDepth,
-        maxWrapperDepth: this.maxWrapperDepth,
-        timeout: this.fetchingOptions.timeout,
-        wrapperAd,
-      });
-
-      this.urlHandler.get(
-        url,
-        this.fetchingOptions,
-        (error, xml, details = {}) => {
-          const deltaTime = Math.round(Date.now() - timeBeforeGet);
-          const info = Object.assign(
-            {
-              url,
-              previousUrl,
-              wrapperDepth,
-              error,
-              duration: deltaTime,
-            },
-            details
-          );
-
-          this.emit('VAST-resolved', info);
-
-          updateEstimatedBitrate(details.byteLength, deltaTime);
-
-          if (error) {
-            reject(error);
-          } else {
-            resolve(xml);
-          }
-        }
-      );
-    });
-  }
-
-  /**
    * Inits the parsing properties of the class with the custom values provided as options.
    * @param {Object} options - The options to initialize a parsing sequence
    */
   initParsingStatus(options = {}) {
-    this.errorURLTemplates = [];
-    this.fetchingOptions = {
-      timeout: options.timeout || DEFAULT_TIMEOUT,
-      withCredentials: options.withCredentials,
-    };
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.parsingOptions = { allowMultipleAds: options.allowMultipleAds };
-    this.remainingAds = [];
-    this.rootErrorURLTemplates = [];
     this.rootURL = '';
-    this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
-    this.vastVersion = null;
+    this.resetParsingStatus();
     updateEstimatedBitrate(options.byteLength, options.requestDuration);
   }
 
+  /**
+   * Reset the parsing property of the class everytime a VAST is parsed
+   */
+  resetParsingStatus() {
+    this.errorURLTemplates = [];
+    this.rootErrorURLTemplates = [];
+    this.vastVersion = null;
+  }
   /**
    * Resolves the next group of ads. If all is true resolves all the remaining ads.
    * @param  {Boolean} all - If true all the remaining ads are resolved
@@ -203,36 +103,6 @@ export class VASTParser extends EventEmitter {
       url: this.rootURL,
     }).then((resolvedAds) => {
       return this.buildVASTResponse(resolvedAds);
-    });
-  }
-
-  /**
-   * Fetches and parses a VAST for the given url.
-   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
-   * @param  {String} url - The url to request the VAST document.
-   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-   * @emits  VASTParser#VAST-resolving
-   * @emits  VASTParser#VAST-resolved
-   * @emits  VASTParser#VAST-warning
-   * @return {Promise}
-   */
-  getAndParseVAST(url, options = {}) {
-    this.initParsingStatus(options);
-
-    this.URLTemplateFilters.forEach((filter) => {
-      url = filter(url);
-    });
-
-    this.rootURL = url;
-
-    return this.fetchVAST(url).then((xml) => {
-      options.previousUrl = url;
-      options.isRootVAST = true;
-      options.url = url;
-
-      return this.parse(xml, options).then((ads) => {
-        return this.buildVASTResponse(ads);
-      });
     });
   }
 
@@ -316,7 +186,6 @@ export class VASTParser extends EventEmitter {
     if (isRootVAST) {
       if (vastVersion) this.vastVersion = vastVersion;
     }
-
     // Fill the VASTResponse object with ads and errorURLTemplates
     for (const nodeKey in childNodes) {
       const node = childNodes[nodeKey];
@@ -432,7 +301,11 @@ export class VASTParser extends EventEmitter {
       ads = this.remainingAds.shift();
     }
 
-    return this.resolveAds(ads, { wrapperDepth, previousUrl, url });
+    return this.resolveAds(ads, {
+      wrapperDepth,
+      previousUrl,
+      url,
+    });
   }
 
   /**
@@ -475,12 +348,14 @@ export class VASTParser extends EventEmitter {
   /**
    * Resolves the wrappers for the given ad in a recursive way.
    * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
-   * @param {Object} ad - An ad object to be unwrapped.
+   * @param {Object} adToUnWrap - An ad object to be unwrapped.
    * @param {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
    * @param {String} previousUrl - The previous vast url.
    * @return {Promise}
    */
-  resolveWrappers(ad, wrapperDepth, previousUrl) {
+  resolveWrappers(adToUnWrap, wrapperDepth, previousUrl) {
+    // Copy ad from parameters to prevent altering given object outside of function scope
+    const ad = { ...adToUnWrap };
     return new Promise((resolve) => {
       // Going one level deeper in the wrapper chain
       wrapperDepth++;
@@ -489,6 +364,13 @@ export class VASTParser extends EventEmitter {
         delete ad.nextWrapperURL;
         return resolve(ad);
       }
+
+      if (!this.fetcher) {
+        ad.VASTAdTagURI = ad.nextWrapperURL;
+        delete ad.nextWrapperURL;
+        return resolve(ad);
+      }
+
       if (wrapperDepth >= this.maxWrapperDepth) {
         // Wrapper limit reached, as defined by the video player.
         // Too many Wrapper responses have been received with no InLine response.
@@ -503,17 +385,19 @@ export class VASTParser extends EventEmitter {
         previousUrl
       );
 
-      this.URLTemplateFilters.forEach((filter) => {
-        ad.nextWrapperURL = filter(ad.nextWrapperURL);
-      });
-
       // If allowMultipleAds is set inside the parameter 'option' of public method
       // override the vast value by the one provided
       const allowMultipleAds =
         this.parsingOptions.allowMultipleAds ?? ad.allowMultipleAds;
       // sequence doesn't carry over in wrapper element
       const wrapperSequence = ad.sequence;
-      this.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl, ad)
+
+      this.fetcher
+        .fetchVAST({
+          url: ad.nextWrapperURL,
+          emitter: this.emit.bind(this),
+          maxWrapperDepth: this.maxWrapperDepth,
+        })
         .then((xml) => {
           return this.parse(xml, {
             url: ad.nextWrapperURL,
@@ -544,7 +428,6 @@ export class VASTParser extends EventEmitter {
           // (URI was either unavailable or reached a timeout as defined by the video player.)
           ad.errorCode = 301;
           ad.errorMessage = err.message;
-
           resolve(ad);
         });
     });
@@ -568,7 +451,9 @@ export class VASTParser extends EventEmitter {
         // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
         // but no creative was found
         const ad = vastResponse.ads[index];
-        if (ad.errorCode || ad.creatives.length === 0) {
+        if ((ad.errorCode || ad.creatives.length === 0) && !ad.VASTAdTagURI) {
+          // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
+          // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
           this.trackVastError(
             ad.errorURLTemplates.concat(vastResponse.errorURLTemplates),
             { ERRORCODE: ad.errorCode || 303 },

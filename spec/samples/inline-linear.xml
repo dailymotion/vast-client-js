@@ -1,4 +1,5 @@
-<VAST version="3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<VAST version="4.3"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <Ad id="20001">
         <InLine>
             <AdSystem version="4.0">iabtechlab</AdSystem>
@@ -17,14 +18,14 @@
                     <Linear>
                         <Duration>00:00:16</Duration>
                         <TrackingEvents>
-                           <Tracking event="start" offset="09:15:23">http://example.com/tracking/start</Tracking>
+                            <Tracking event="start" offset="09:15:23">http://example.com/tracking/start</Tracking>
                             <Tracking event="firstQuartile">http://example.com/tracking/firstQuartile</Tracking>
                             <Tracking event="midpoint">http://example.com/tracking/midpoint</Tracking>
                             <Tracking event="thirdQuartile">http://example.com/tracking/thirdQuartile</Tracking>
                             <Tracking event="complete">http://example.com/tracking/complete</Tracking>
                         </TrackingEvents>
 
-                         <VideoClicks>
+                        <VideoClicks>
                             <ClickTracking id="blog">
                                 <![CDATA[https://iabtechlab.com]]>
                             </ClickTracking>

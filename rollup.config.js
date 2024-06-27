@@ -1,6 +1,5 @@
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
-import alias from '@rollup/plugin-alias';
 import resolve from '@rollup/plugin-node-resolve';
 
 const babelPlugin = babel({
@@ -15,74 +14,76 @@ function onwarn(warning) {
   }
 }
 
-function minify(config) {
-  const minifiedConfig = Object.assign({}, config);
-  minifiedConfig.output = Object.assign({}, config.output);
-  minifiedConfig.plugins = Object.assign([], config.plugins);
+const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
+  const baseConfig = {
+    input: filePath,
+    output: {
+      format: 'cjs',
+      dir: 'dist',
+      manualChunks: {
+        xmldom: ['@xmldom/xmldom'],
+      },
+    },
+    plugins: [
+      resolve({
+        preferBuiltins: true,
+      }),
+      babelPlugin,
+    ],
+    onwarn,
+  };
 
-  const outputFile = minifiedConfig.output.file;
-  const extensionIndex = outputFile.lastIndexOf('.js');
-  minifiedConfig.output.file =
-    outputFile.substr(0, extensionIndex) +
-    '.min' +
-    outputFile.substr(extensionIndex);
+  const nonMinifiedConfig = {
+    ...baseConfig,
+    output: {
+      ...baseConfig.output,
+      entryFileNames: notMinifiedOutput,
+      chunkFileNames: 'chunks/[name]-[hash].js',
+    },
+  };
 
-  minifiedConfig.plugins.push(terser());
+  const minifiedConfig = {
+    ...baseConfig,
+    output: {
+      ...baseConfig.output,
+      entryFileNames: minifiedOutput,
+      chunkFileNames: 'chunks/[name]-[hash].min.js',
+    },
+    plugins: [...baseConfig.plugins, terser()],
+  };
 
-  return minifiedConfig;
-}
-
-const browserConfig = {
-  input: 'src/index.js',
-  output: {
-    name: 'VAST',
-    format: 'umd',
-    file: 'dist/vast-client.js',
-  },
-  plugins: [babelPlugin],
+  return [nonMinifiedConfig, minifiedConfig];
 };
 
-const browserScriptConfig = {
-  input: 'src/index.js',
-  output: {
-    name: 'VAST',
-    format: 'iife',
-    file: 'dist/vast-client-browser.js',
-  },
-  plugins: [babelPlugin],
-};
+const createBrowserConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
+  let config = {
+    input: filePath,
+    output: [
+      {
+        format: 'es',
+        dir: 'dist',
+        entryFileNames: notMinifiedOutput,
+      },
+      {
+        format: 'es',
+        dir: 'dist',
+        entryFileNames: minifiedOutput,
+        plugins: [terser()],
+      },
+    ],
+    plugins: [babelPlugin],
+  };
 
-const nodeConfig = {
-  input: 'src/index.js',
-  output: {
-    format: 'cjs',
-    file: 'dist/vast-client-node.js',
-  },
-  plugins: [
-    alias({
-      entries: [
-        {
-          find: './urlhandlers/mock_node_url_handler',
-          replacement: './urlhandlers/node_url_handler',
-        },
-      ],
-    }),
-    resolve({
-      preferBuiltins: true,
-    }),
-    babelPlugin,
-  ],
-  onwarn,
+  return config;
 };
 
 export default [
-  // Browser-friendly UMD build [package.json "browser"]
-  browserConfig,
-  minify(browserConfig),
-
+  // Browser-friendly build [package.json "browser"]
+  createBrowserConfig('src/index.js', 'vast-client.min.js', 'vast-client.js'),
   // CommonJS build for Node usage [package.json "main"]
-  nodeConfig,
-  minify(nodeConfig),
-
-  minify(browserScriptConfig),
+  ...createNodeConfig(
+    'src/index.js',
+    'vast-client-node.min.js',
+    'vast-client-node.js'
+  ),
 ];

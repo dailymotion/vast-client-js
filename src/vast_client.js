@@ -1,5 +1,6 @@
 import { Storage } from './util/storage';
 import { VASTParser } from './parser/vast_parser';
+import { Fetcher } from './fetcher/fetcher.js';
 
 /**
  * This class provides methods to fetch and parse a VAST document using VASTParser.
@@ -15,16 +16,16 @@ export class VASTClient {
    * @param  {Storage} customStorage - A custom storage to use instead of the default one.
    * @constructor
    */
-  constructor(cappingFreeLunch, cappingMinimumTimeInterval, customStorage) {
-    this.cappingFreeLunch = cappingFreeLunch || 0;
-    this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
-    this.defaultOptions = {
-      withCredentials: false,
-      timeout: 0,
-    };
-    this.vastParser = new VASTParser();
-    this.storage = customStorage || new Storage();
-
+  constructor(
+    cappingFreeLunch = 0,
+    cappingMinimumTimeInterval = 0,
+    customStorage = new Storage()
+  ) {
+    this.cappingFreeLunch = cappingFreeLunch;
+    this.cappingMinimumTimeInterval = cappingMinimumTimeInterval;
+    this.fetcher = new Fetcher();
+    this.vastParser = new VASTParser({ fetcher: this.fetcher });
+    this.storage = customStorage;
     // Init values if not already set
     if (this.lastSuccessfulAd === undefined) {
       this.lastSuccessfulAd = 0;
@@ -36,6 +37,39 @@ export class VASTClient {
     if (this.totalCallsTimeout === undefined) {
       this.totalCallsTimeout = 0;
     }
+  }
+
+  /**
+   * Adds a filter function to the array of filters which are called before fetching a VAST document.
+   * @param  {function} filter - The filter function to be added at the end of the array.
+   * @return {void}
+   */
+  addURLTemplateFilter(filter) {
+    this.fetcher.addURLTemplateFilter(filter);
+  }
+
+  /**
+   * Removes the last element of the url templates filters array.
+   * @return {void}
+   */
+  removeLastURLTemplateFilter() {
+    this.fetcher.removeLastURLTemplateFilter();
+  }
+
+  /**
+   * Returns the number of filters of the url templates filters array.
+   * @return {Number}
+   */
+  countURLTemplateFilters() {
+    return this.fetcher.countURLTemplateFilters();
+  }
+
+  /**
+   * Removes all the filter functions from the url templates filters array.
+   * @return {void}
+   */
+  clearURLTemplateFilters() {
+    this.fetcher.clearURLTemplateFilters();
   }
 
   getParser() {
@@ -84,6 +118,17 @@ export class VASTClient {
   }
 
   /**
+   * Parses the given xml Object into a VASTResponse.
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param {Object} xml - An object representing a vast xml document.
+   * @param {Object} options - An optional Object of parameters to be used in the parsing and fetching process.
+   * @returns {Promise}
+   */
+  parseVAST(xml, options = {}) {
+    this.fetcher.setOptions(options);
+    return this.vastParser.parseVAST(xml, options);
+  }
+  /**
    * Gets a parsed VAST document for the given url, applying the skipping rules defined.
    * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
    * @param  {String} url - The url to use to fecth the VAST document.
@@ -92,7 +137,6 @@ export class VASTClient {
    */
   get(url, options = {}) {
     const now = Date.now();
-    options = Object.assign({}, this.defaultOptions, options);
 
     // By default the client resolves only the first Ad or AdPod
     if (!options.hasOwnProperty('resolveAll')) {
@@ -132,9 +176,25 @@ export class VASTClient {
         );
       }
 
-      this.vastParser
-        .getAndParseVAST(url, options)
-        .then((response) => resolve(response))
+      this.vastParser.initParsingStatus(options);
+      this.fetcher.setOptions(options);
+      this.vastParser.rootURL = url;
+
+      this.fetcher
+        .fetchVAST({
+          url,
+          emitter: this.vastParser.emit.bind(this.vastParser),
+          maxWrapperDepth: this.vastParser.maxWrapperDepth,
+        })
+        .then((xml) => {
+          options.previousUrl = url;
+          options.isRootVAST = true;
+          options.url = url;
+          return this.vastParser.parse(xml, options).then((resolvedAd) => {
+            const vastResponse = this.vastParser.buildVASTResponse(resolvedAd);
+            resolve(vastResponse);
+          });
+        })
         .catch((err) => reject(err));
     });
   }

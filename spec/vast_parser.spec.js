@@ -1,19 +1,26 @@
 import { VASTParser } from '../src/parser/vast_parser';
-import { nodeURLHandler } from '../src/urlhandlers/node_url_handler';
-import { urlFor, fetchXml } from './utils/utils';
+import { urlFor, getNodesFromXml } from './utils/utils';
 import { util } from '../src/util/util';
 import { parserUtils } from '../src/parser/parser_utils';
 import * as Bitrate from '../src/parser/bitrate';
+import { Fetcher } from '../src/fetcher/fetcher';
+import { linearAd } from './samples/linear_ads';
+import { VASTClient } from '../src/vast_client';
+import { readFile } from 'fs/promises';
 
-const xml = new DOMParser().parseFromString('<VAST></VAST>', 'text/xml');
-const urlHandlerSuccess = {
-  get: (url, options, cb) => {
-    cb(null, xml, { byteLength: 1234, statusCode: 200 });
-  },
-};
-const urlHandlerFailure = {
-  get: (url, options, cb) => {
-    cb(new Error('timeout'), null, { statusCode: 408 });
+const xml = getNodesFromXml(`<VAST>${linearAd}</VAST>`, 'text/xml');
+
+const nodeUrlHandler = {
+  get: async (file) => {
+    try {
+      const response = await readFile(file, 'utf-8');
+      return {
+        xml: new DOMParser().parseFromString(response, 'text/xml'),
+        details: { byteLength: 1234, statusCode: 200 },
+      };
+    } catch (err) {
+      return { error: err, statusCode: 400 };
+    }
   },
 };
 
@@ -48,170 +55,37 @@ const ad = {
 };
 
 describe('VASTParser', () => {
+  let vastClient;
   let VastParser;
+  let fetcher;
   let inlineXml, invalidXml, errorXml, wrapperXml;
 
-  beforeAll((done) => {
-    return Promise.all([
-      fetchXml(inlineInvalidVastUrl),
-      fetchXml(inlineSampleVastUrl),
-      fetchXml(vastWithErrorUrl),
-      fetchXml(wrapperWithAttributesVastUrl),
-    ]).then(([invalid, inline, error, wrapper]) => {
-      invalidXml = invalid.xml;
-      inlineXml = inline.xml;
-      errorXml = error.xml;
-      wrapperXml = wrapper.xml;
-      done();
-    });
+  beforeAll(async () => {
+    inlineXml = await nodeUrlHandler.get('./spec/samples/sample.xml');
+    errorXml = await nodeUrlHandler.get('./spec/samples/empty-no-ad.xml');
+    wrapperXml = await nodeUrlHandler.get(
+      './spec/samples/wrapper-attributes-multiple-ads.xml'
+    );
+    invalidXml = await nodeUrlHandler.get('./spec/samples/invalid-xmlfile.xml');
   });
 
   beforeEach(() => {
-    VastParser = new VASTParser();
+    vastClient = new VASTClient();
+    fetcher = new Fetcher();
+    VastParser = new VASTParser({ fetcher });
     jest.spyOn(VastParser, 'emit');
   });
 
-  describe('fetchVAST', () => {
-    describe('on resolved', () => {
-      beforeEach(() => {
-        VastParser.initParsingStatus({
-          wrapperLimit: 8,
-          urlHandler: urlHandlerSuccess,
-        });
-      });
-
-      it('applies url filters', (done) => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
-
-        VastParser.fetchVAST('www.foo.foo').then(() => {
-          expect(urlHandlerSpy).toHaveBeenCalledWith(
-            'www.bar.foo',
-            expect.anything(),
-            expect.anything()
-          );
-          done();
-        });
-      });
-
-      it('emits VAST-resolving and VAST-resolved events with filtered url', () => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        return VastParser.fetchVAST(
-          'www.foo.foo',
-          2,
-          'www.original.foo',
-          ad
-        ).finally(() => {
-          expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            maxWrapperDepth: 8,
-            timeout: 120000,
-            wrapperAd: ad,
-          });
-
-          expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            error: null,
-            duration: expect.any(Number),
-            byteLength: 1234,
-            statusCode: 200,
-          });
-        });
-      });
-
-      it('updates the estimated bitrate', () => {
-        jest.spyOn(Bitrate, 'updateEstimatedBitrate');
-
-        return VastParser.fetchVAST('www.foo.foo').finally(() => {
-          expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
-            1234,
-            expect.any(Number)
-          );
-        });
-      });
-
-      it('resolves with xml', () => {
-        return expect(
-          VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo')
-        ).resolves.toEqual(xml);
-      });
-    });
-
-    describe('on rejected', () => {
-      beforeEach(() => {
-        VastParser.initParsingStatus({
-          wrapperLimit: 8,
-          urlHandler: urlHandlerFailure,
-        });
-      });
-
-      it('applies url filters', () => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        const urlHandlerSpy = jest.spyOn(VastParser.urlHandler, 'get');
-
-        return VastParser.fetchVAST('www.foo.foo').catch(() => {
-          expect(urlHandlerSpy).toHaveBeenCalledWith(
-            'www.bar.foo',
-            expect.anything(),
-            expect.anything()
-          );
-        });
-      });
-
-      it('emits VAST-resolving and VAST-resolved events with filtered url', () => {
-        VastParser.URLTemplateFilters = [(url) => url.replace('foo', 'bar')];
-
-        return VastParser.fetchVAST(
-          'www.foo.foo',
-          2,
-          'www.original.foo',
-          ad
-        ).catch(() => {
-          expect(VastParser.emit).toHaveBeenNthCalledWith(1, 'VAST-resolving', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            maxWrapperDepth: 8,
-            timeout: 120000,
-            wrapperAd: ad,
-          });
-
-          expect(VastParser.emit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
-            url: 'www.bar.foo',
-            previousUrl: 'www.original.foo',
-            wrapperDepth: 2,
-            error: new Error('timeout'),
-            duration: expect.any(Number),
-            statusCode: 408,
-          });
-        });
-      });
-
-      it('rejects with error', () => {
-        return expect(
-          VastParser.fetchVAST('www.foo.foo', 2, 'www.original.foo')
-        ).rejects.toEqual(new Error('timeout'));
-      });
-    });
-  });
-
   describe('initParsingStatus', () => {
+    beforeEach(() => {
+      jest.spyOn(VastParser, 'resetParsingStatus');
+    });
+
     it('assigns options to properties', () => {
-      const urlHandler = jest.fn();
       jest.spyOn(Bitrate, 'updateEstimatedBitrate');
 
       VastParser.initParsingStatus({
         wrapperLimit: 5,
-        timeout: 1000,
-        withCredentials: true,
-        urlHandler,
         allowMultipleAds: true,
         byteLength: 1000,
         requestDuration: 200,
@@ -222,14 +96,10 @@ describe('VASTParser', () => {
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(5);
-      expect(VastParser.fetchingOptions).toEqual({
-        timeout: 1000,
-        withCredentials: true,
-      });
-      expect(VastParser.urlHandler).toEqual(urlHandler);
       expect(VastParser.vastVersion).toBeNull();
       expect(VastParser.parsingOptions).toEqual({ allowMultipleAds: true });
       expect(Bitrate.updateEstimatedBitrate).toBeCalledWith(1000, 200);
+      expect(VastParser.resetParsingStatus).toHaveBeenCalled();
     });
 
     it('uses default values if no options are passed', () => {
@@ -240,377 +110,22 @@ describe('VASTParser', () => {
       expect(VastParser.errorURLTemplates).toEqual([]);
       expect(VastParser.rootErrorURLTemplates).toEqual([]);
       expect(VastParser.maxWrapperDepth).toBe(10);
-      expect(VastParser.fetchingOptions).toEqual({
-        timeout: 120000,
-        withCredentials: undefined,
-      });
       expect(VastParser.vastVersion).toBeNull();
       expect(VastParser.parsingOptions).toEqual({
         allowMultipleAds: undefined,
       });
-    });
-  });
-
-  describe('getAndParseVAST', () => {
-    beforeEach(() => {
-      jest.spyOn(VastParser, 'initParsingStatus');
-      jest.spyOn(VastParser, 'fetchVAST');
-      jest.spyOn(VastParser, 'parse');
-      jest.spyOn(VastParser, 'buildVASTResponse');
-    });
-
-    it('passes options to initParsingStatus and assigns rootUrl', () => {
-      VastParser.getAndParseVAST(wrapperAVastUrl, {
-        wrapperLimit: 8,
-        urlHandler: nodeURLHandler,
-      });
-
-      expect(VastParser.initParsingStatus).toHaveBeenCalledWith({
-        wrapperLimit: 8,
-        urlHandler: nodeURLHandler,
-      });
-      expect(VastParser.rootURL).toBe(wrapperAVastUrl);
-    });
-
-    describe('on success', () => {
-      it('calls fetchVast with correct params multiple times', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.fetchVAST).toHaveBeenCalledTimes(4);
-          expect(VastParser.fetchVAST.mock.calls).toEqual(
-            expect.arrayContaining([
-              [wrapperAVastUrl],
-              [wrapperBVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
-              [inlineVpaidVastUrl, 1, wrapperAVastUrl, expect.any(Object)],
-              [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
-              [inlineSampleVastUrl, 2, wrapperBVastUrl, expect.any(Object)],
-            ])
-          );
-        });
-      });
-
-      it('emits events in the right order', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.emit).toHaveBeenCalledTimes(14);
-          expect(VastParser.emit.mock.calls).toEqual(
-            expect.arrayContaining([
-              // WRAPPER A
-              [
-                'VAST-resolving',
-                {
-                  url: wrapperAVastUrl,
-                  previousUrl: null,
-                  wrapperDepth: 0,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              [
-                'VAST-resolved',
-                {
-                  url: wrapperAVastUrl,
-                  previousUrl: null,
-                  wrapperDepth: 0,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'WRAPPER',
-                  url: wrapperAVastUrl,
-                  wrapperDepth: 0,
-                  adIndex: 0,
-                  vastVersion: '2.0',
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'WRAPPER',
-                  url: wrapperAVastUrl,
-                  wrapperDepth: 0,
-                  adIndex: 1,
-                  vastVersion: '2.0',
-                },
-              ],
-              // RESOLVING AD 1 (WRAPPER B) IN WRAPPER A
-              [
-                'VAST-resolving',
-                {
-                  url: wrapperBVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              // RESOLVING AD 2 (WRAPPER VPAID) IN WRAPPER A
-              [
-                'VAST-resolving',
-                {
-                  url: inlineVpaidVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              // AD 1 (WRAPPER B) IN WRAPPER A
-              [
-                'VAST-resolved',
-                {
-                  url: wrapperBVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'WRAPPER',
-                  url: wrapperBVastUrl,
-                  wrapperDepth: 1,
-                  adIndex: 0,
-                  vastVersion: '2.0',
-                },
-              ],
-              // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
-              [
-                'VAST-resolving',
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  maxWrapperDepth: 8,
-                  timeout: 120000,
-                  wrapperAd: expect.any(Object),
-                },
-              ],
-              // AD 2 (WRAPPER VPAID) IN WRAPPER A
-              [
-                'VAST-resolved',
-                {
-                  url: inlineVpaidVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'INLINE',
-                  url: inlineVpaidVastUrl,
-                  wrapperDepth: 1,
-                  adIndex: 0,
-                  vastVersion: '2.0',
-                },
-              ],
-              // AD 1 (WRAPPER SAMPLE) IN WRAPPER B
-              [
-                'VAST-resolved',
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  error: null,
-                  duration: expect.any(Number),
-                  byteLength: expect.any(Number),
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'INLINE',
-                  url: inlineSampleVastUrl,
-                  wrapperDepth: 2,
-                  adIndex: 0,
-                  vastVersion: '2.1',
-                },
-              ],
-              [
-                'VAST-ad-parsed',
-                {
-                  type: 'INLINE',
-                  url: inlineSampleVastUrl,
-                  wrapperDepth: 2,
-                  adIndex: 1,
-                  vastVersion: '2.1',
-                },
-              ],
-            ])
-          );
-        });
-      });
-
-      it('calls parse with correct params multiple times', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.parse).toHaveBeenCalledTimes(4);
-          expect(VastParser.parse.mock.calls).toEqual(
-            expect.arrayContaining([
-              [
-                jasmine.any(Object),
-                {
-                  wrapperLimit: 8,
-                  urlHandler: nodeURLHandler,
-                  previousUrl: wrapperAVastUrl,
-                  isRootVAST: true,
-                  url: wrapperAVastUrl,
-                },
-              ],
-              [
-                jasmine.any(Object),
-                {
-                  url: wrapperBVastUrl,
-                  previousUrl: wrapperAVastUrl,
-                  wrapperDepth: 1,
-                  wrapperSequence: null,
-                  allowMultipleAds: false,
-                  followAdditionalWrappers: true,
-                },
-              ],
-              [
-                jasmine.any(Object),
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  wrapperSequence: null,
-                  allowMultipleAds: false,
-                  followAdditionalWrappers: true,
-                },
-              ],
-              [
-                jasmine.any(Object),
-                {
-                  url: inlineSampleVastUrl,
-                  previousUrl: wrapperBVastUrl,
-                  wrapperDepth: 2,
-                  wrapperSequence: null,
-                  allowMultipleAds: false,
-                  followAdditionalWrappers: true,
-                },
-              ],
-            ])
-          );
-        });
-      });
-
-      it('calls buildVASTResponse with correct params one time', () => {
-        return VastParser.getAndParseVAST(wrapperAVastUrl, {
-          wrapperLimit: 8,
-          urlHandler: nodeURLHandler,
-        }).finally(() => {
-          expect(VastParser.buildVASTResponse).toBeCalledTimes(1);
-        });
-      });
-    });
-
-    describe('on failure', () => {
-      it('fails on bad fetch request', () => {
-        return VastParser.getAndParseVAST('badUrl', {
-          urlHandler: nodeURLHandler,
-        })
-          .then(() => {
-            expect(true).toBeFalsy();
-          })
-          .catch((e) => {
-            expect(e).toBeTruthy();
-            expect(VastParser.parse).not.toBeCalled();
-          });
-      });
-
-      describe('invalid VAST xml', () => {
-        it('when inline, rejects with error', () => {
-          return VastParser.getAndParseVAST(inlineInvalidVastUrl, {
-            urlHandler: nodeURLHandler,
-          })
-            .then(() => {
-              expect(true).toBeFalsy();
-            })
-            .catch((e) => {
-              expect(e.message).toEqual('Invalid VAST XMLDocument');
-              expect(VastParser.buildVASTResponse).not.toBeCalled();
-            });
-        });
-        it('when wrapped, emits a VAST-error & track', (done) => {
-          const errorData = [];
-          const trackCalls = [];
-          VastParser.on('VAST-error', (data) => errorData.push(data));
-          jest
-            .spyOn(util, 'track')
-            .mockImplementation((templates, variables) => {
-              trackCalls.push({ templates, variables });
-            });
-
-          return VastParser.getAndParseVAST(wrapperInvalidVastUrl, {
-            urlHandler: nodeURLHandler,
-          }).then((res) => {
-            expect(res.ads).toHaveLength(0);
-            expect(errorData).toHaveLength(1);
-            expect(errorData[0]).toEqual({
-              ERRORCODE: 301,
-              ERRORMESSAGE: 'Invalid VAST XMLDocument',
-              extensions: [
-                {
-                  attributes: {},
-                  name: 'Extension',
-                  value: null,
-                  children: [
-                    {
-                      attributes: {},
-                      name: 'paramWrapperInvalidXmlfile',
-                      value: 'valueWrapperInvalidXmlfile',
-                      children: [],
-                    },
-                  ],
-                },
-              ],
-              system: { value: 'VAST', version: null },
-            });
-
-            expect(trackCalls).toHaveLength(1);
-            expect(trackCalls[0]).toEqual({
-              templates: [
-                'http://example.com/wrapper-invalid-xmlfile_wrapper-error',
-              ],
-              variables: { ERRORCODE: 301 },
-            });
-            done();
-          });
-        });
-      });
+      expect(VastParser.resetParsingStatus).toHaveBeenCalled();
     });
   });
 
   describe('parseVastXml', () => {
     it('handles invalid XML vast', () => {
       try {
-        VastParser.parseVastXml(invalidXml, {
+        VastParser.parseVastXml(invalidXml.xml, {
           isRootVAST: true,
           url: inlineInvalidVastUrl,
           wrapperDepth: 0,
         });
-        expect(true).toBeFalsy();
       } catch (e) {
         expect(e.message).toBe('Invalid VAST XMLDocument');
         expect(VastParser.emit).toHaveBeenLastCalledWith('VAST-ad-parsed', {
@@ -622,30 +137,33 @@ describe('VASTParser', () => {
     });
 
     it('gets vast version from original vast', () => {
-      VastParser.parseVastXml(inlineXml, {
+      VastParser.parseVastXml(inlineXml.xml, {
         isRootVAST: true,
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
       });
-      expect(VastParser.vastVersion).toBe('2.1');
+      expect(VastParser.vastVersion).toBe('4.3');
     });
 
     it('handles Error tag for root VAST', () => {
-      VastParser.parseVastXml(errorXml, { isRootVAST: true });
+      //initParsingStatus always  will be called before parseVastXml
+      VastParser.rootErrorURLTemplates = [];
+      VastParser.parseVastXml(errorXml.xml, { isRootVAST: true });
       expect(VastParser.rootErrorURLTemplates).toEqual([
         'http://example.com/empty-no-ad',
       ]);
     });
 
     it('handles Error tag for not root VAST', () => {
-      VastParser.parseVastXml(errorXml, { isRootVAST: false });
+      VastParser.initParsingStatus();
+      VastParser.parseVastXml(errorXml.xml, { isRootVAST: false });
       expect(VastParser.errorURLTemplates).toEqual([
         'http://example.com/empty-no-ad',
       ]);
     });
 
     it('handles Ad tag', () => {
-      const ads = VastParser.parseVastXml(inlineXml, {
+      const ads = VastParser.parseVastXml(inlineXml.xml, {
         isRootVAST: true,
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
@@ -654,28 +172,20 @@ describe('VASTParser', () => {
 
       expect(ads).toHaveLength(2);
       expect(VastParser.emit).toHaveBeenCalledTimes(2);
-      expect(VastParser.emit.mock.calls).toEqual([
-        [
-          'VAST-ad-parsed',
-          {
-            adIndex: 0,
-            type: 'INLINE',
-            url: inlineSampleVastUrl,
-            wrapperDepth: 0,
-            vastVersion: '2.1',
-          },
-        ],
-        [
-          'VAST-ad-parsed',
-          {
-            adIndex: 1,
-            type: 'INLINE',
-            url: inlineSampleVastUrl,
-            wrapperDepth: 0,
-            vastVersion: '2.1',
-          },
-        ],
-      ]);
+      expect(VastParser.emit).toHaveBeenCalledWith('VAST-ad-parsed', {
+        adIndex: 0,
+        type: 'INLINE',
+        url: inlineSampleVastUrl,
+        wrapperDepth: 0,
+        vastVersion: '4.3',
+      });
+      expect(VastParser.emit).toHaveBeenCalledWith('VAST-ad-parsed', {
+        adIndex: 1,
+        type: 'INLINE',
+        url: inlineSampleVastUrl,
+        wrapperDepth: 0,
+        vastVersion: '4.3',
+      });
     });
   });
 
@@ -683,7 +193,7 @@ describe('VASTParser', () => {
     it('calls parseVastXml with passed options', () => {
       jest.spyOn(VastParser, 'parseVastXml');
 
-      return VastParser.parse(inlineXml, {
+      return VastParser.parse(inlineXml.xml, {
         url: inlineSampleVastUrl,
         previousUrl: wrapperBVastUrl,
         resolveAll: true,
@@ -691,7 +201,7 @@ describe('VASTParser', () => {
         wrapperDepth: 0,
         isRootVAST: true,
       }).then(() => {
-        expect(VastParser.parseVastXml).toHaveBeenCalledWith(inlineXml, {
+        expect(VastParser.parseVastXml).toHaveBeenCalledWith(inlineXml.xml, {
           isRootVAST: true,
           url: inlineSampleVastUrl,
           wrapperDepth: 0,
@@ -702,24 +212,20 @@ describe('VASTParser', () => {
     it('rejects if parsing xml failed', () => {
       jest.spyOn(VastParser, 'parseVastXml');
 
-      return VastParser.parse(invalidXml, {
+      return VastParser.parse(invalidXml.xml, {
         url: inlineInvalidVastUrl,
         previousUrl: wrapperBVastUrl,
         resolveAll: true,
         wrapperSequence: 1,
         wrapperDepth: 0,
         isRootVAST: true,
-      })
-        .then(() => {
-          expect(true).toBeFalsy();
-        })
-        .catch((e) => {
-          expect(e.message).toBe('Invalid VAST XMLDocument');
-        });
+      }).catch((e) => {
+        expect(e.message).toBe('Invalid VAST XMLDocument');
+      });
     });
 
     it('resolves first ad and saves remaining ads if resolveAll is false', () => {
-      return VastParser.parse(inlineXml, {
+      return VastParser.parse(inlineXml.xml, {
         url: inlineSampleVastUrl,
         previousUrl: wrapperBVastUrl,
         resolveAll: false,
@@ -734,7 +240,7 @@ describe('VASTParser', () => {
     });
 
     it('parse wrapper sub elements based on allowMultipleAds and followAdditionalWrappers values', () => {
-      return VastParser.parse(wrapperXml).then((ads) => {
+      return VastParser.parse(wrapperXml.xml).then((ads) => {
         expect(ads.length).toEqual(4);
       });
     });
@@ -762,11 +268,328 @@ describe('VASTParser', () => {
     });
   });
 
+  describe('parseVAST', () => {
+    let options;
+    beforeEach(() => {
+      options = {
+        wrapperLimit: 5,
+        allowMultipleAds: true,
+        byteLength: 1234,
+        requestDuration: 12000,
+      };
+      jest.spyOn(VastParser, 'initParsingStatus');
+      jest
+        .spyOn(VastParser, 'parse')
+        .mockReturnValue(Promise.resolve([linearAd]));
+      jest.spyOn(VastParser, 'buildVASTResponse').mockReturnValue({
+        ads: [linearAd],
+        errorURLTemplates: [],
+        version: null,
+      });
+      jest.spyOn(Bitrate, 'updateEstimatedBitrate');
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return a VAST response object', (done) => {
+      VastParser.parseVAST(xml, options).then((response) => {
+        expect(response).toEqual({
+          ads: [linearAd],
+          errorURLTemplates: [],
+          version: null,
+        });
+        expect(VastParser.initParsingStatus).toHaveBeenCalled();
+        expect(VastParser.parse).toHaveBeenCalled();
+        expect(VastParser.buildVASTResponse).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('should have set the options if given', (done) => {
+      VastParser.parseVAST(xml, options).then(() => {
+        expect(VastParser.maxWrapperDepth).toBe(5);
+        expect(VastParser.parsingOptions).toEqual({ allowMultipleAds: true });
+        expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
+          1234,
+          12000
+        );
+        done();
+      });
+    });
+
+    it('should have set the default options if not given', (done) => {
+      VastParser.parseVAST(xml).then(() => {
+        expect(VastParser.maxWrapperDepth).toBe(10);
+        expect(VastParser.parsingOptions).toEqual({
+          allowMultipleAds: undefined,
+        });
+      });
+      done();
+    });
+  });
+
+  describe('Tracking', () => {
+    let trackCalls = null;
+    let dataTriggered = null;
+    const options = {
+      urlhandler: nodeUrlHandler,
+    };
+
+    beforeEach(() => {
+      VastParser.removeAllListeners();
+      dataTriggered = [];
+      trackCalls = [];
+
+      VastParser.on('VAST-error', (variables) => dataTriggered.push(variables));
+
+      util.track = (templates, variables) => {
+        trackCalls.push({
+          templates,
+          variables,
+        });
+      };
+    });
+
+    describe('No Ad', () => {
+      it('should emits a VAST-error & track', (done) => {
+        let vast = new DOMParser().parseFromString(
+          `<VAST><Error>http://example.com/empty-no-ad</Error></VAST>`,
+          'text/xml'
+        );
+        VastParser.parseVAST(vast)
+          .then((response) => {
+            // Response doesn't have any ads
+            expect(response.ads).toEqual([]);
+            expect(dataTriggered.length).toBe(1);
+            // Error has been triggered
+            expect(dataTriggered.length).toBe(1);
+            expect(dataTriggered[0].ERRORCODE).toBe(303);
+            expect(dataTriggered[0].extensions).toEqual([]);
+            // Tracking has been done
+            expect(trackCalls.length).toBe(1);
+            expect(trackCalls[0].templates).toEqual([
+              'http://example.com/empty-no-ad',
+            ]);
+            expect(trackCalls[0].variables).toEqual({ ERRORCODE: 303 });
+            done();
+          })
+          .catch((error) => {
+            console.error(error);
+            done(error);
+          });
+      });
+
+      it('should emits VAST-error & track when wrapped', async () => {
+        const url = './spec/samples/wrapper-empty.xml';
+        const response = await nodeUrlHandler.get(
+          './spec/samples/wrapper-empty.xml'
+        );
+
+        fetcher.setOptions({ ...options, url: url, previousUrl: url });
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
+
+        const vastXML = await VastParser.parseVAST(response.xml, {
+          url: url,
+          previousUrl: url,
+        });
+        // Response doesn't have any ads
+
+        expect(vastXML.ads).toEqual([]);
+        // error has been triggered
+        expect(dataTriggered.length).toBe(1);
+        expect(dataTriggered[0].ERRORCODE).toBe(303);
+        expect(dataTriggered[0].extensions[0].children[0].name).toBe(
+          'paramWrapperEmptyNoAd'
+        );
+        expect(dataTriggered[0].extensions[0].children[0].value).toBe(
+          'valueWrapperEmptyNoAd'
+        );
+        // TRacking has been done
+        expect(trackCalls.length).toBe(1);
+        expect(trackCalls[0].templates).toEqual([
+          'http://example.com/wrapper-empty_wrapper-error',
+          'http://example.com/empty-no-ad',
+        ]);
+        expect(trackCalls[0].variables).toEqual({ ERRORCODE: 303 });
+      });
+    });
+
+    describe('Ad with no creatives', () => {
+      it('should emits a VAST-error & track', async () => {
+        const url = './spec/samples/empty-no-creative.xml';
+        const response = await nodeUrlHandler.get(url);
+
+        const vastXML = await VastParser.parseVAST(response.xml);
+        // Response doesn't have any ads
+        expect(vastXML.ads).toEqual([]);
+        // Error has been triggered
+        expect(dataTriggered.length).toBe(1);
+        expect(dataTriggered[0].ERRORCODE).toBe(303);
+        expect(dataTriggered[0].extensions[0].children[0].name).toBe(
+          'paramEmptyNoCreative'
+        );
+        expect(dataTriggered[0].extensions[0].children[0].value).toBe(
+          'valueEmptyNoCreative'
+        );
+        // Tracking has been done;
+        expect(trackCalls.length).toBe(1);
+        expect(trackCalls[0].templates).toEqual([
+          'http://example.com/empty-no-creative_inline-error',
+        ]);
+        expect(trackCalls[0].variables).toEqual({ ERRORCODE: 303 });
+      });
+
+      it('should emits a VAST-ERROR & track when wrapped', async () => {
+        const url = './spec/samples/wrapper-empty-no-creative.xml';
+        const response = await nodeUrlHandler.get(url);
+
+        fetcher.setOptions({ ...options, url: url, previousUrl: url });
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
+
+        const vastXML = await VastParser.parseVAST(response.xml, {
+          url: url,
+          previousUrl: url,
+        });
+        // Response doesn't have any ads
+        expect(vastXML.ads).toEqual([]);
+        // Error has been triggered
+        expect(dataTriggered.length).toBe(1);
+        expect(dataTriggered[0].ERRORCODE).toBe(303);
+        expect(dataTriggered[0].extensions[0].children[0].name).toBe(
+          'paramWrapperEmptyNoCreative'
+        );
+        expect(dataTriggered[0].extensions[0].children[0].value).toBe(
+          'valueWrapperEmptyNoCreative'
+        );
+        expect(dataTriggered[0].extensions[1].children[0].name).toBe(
+          'paramEmptyNoCreative'
+        );
+        expect(dataTriggered[0].extensions[1].children[0].value).toBe(
+          'valueEmptyNoCreative'
+        );
+        // Tracking has been done
+        expect(trackCalls.length).toBe(1);
+        expect(trackCalls[0].templates).toEqual([
+          'http://example.com/wrapper-no-creative_wrapper-error',
+          'http://example.com/empty-no-creative_inline-error',
+        ]);
+        expect(trackCalls[0].variables).toEqual({ ERRORCODE: 303 });
+      });
+    });
+
+    describe('Wrapper URL unavailable/timeout', () => {
+      it('sould emits a VAST-error and track', async () => {
+        const url = './spec/samples/wrapper-unavailable-url.xml';
+
+        const response = await nodeUrlHandler.get(url);
+
+        fetcher.setOptions({ ...options, url: url, previousUrl: url });
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
+
+        const vastXML = await VastParser.parseVAST(response.xml, {
+          url: url,
+          previousUrl: url,
+        });
+        // Response doesn't have any ads
+        expect(vastXML.ads).toEqual([]);
+        // Error has been trigered
+        expect(dataTriggered.length).toBe(1);
+        expect(dataTriggered[0].ERRORCODE).toBe(301);
+        expect(dataTriggered[0].extensions[0].children[0].name).toBe(
+          'paramWrapperInvalidXmlfile'
+        );
+        expect(dataTriggered[0].extensions[0].children[0].value).toBe(
+          'valueWrapperInvalidXmlfile'
+        );
+        // Tracking has been done
+        expect(trackCalls.length).toBe(1);
+        expect(trackCalls[0].templates).toEqual([
+          'http://example.com/wrapper-invalid-xmlfile_wrapper-error',
+        ]);
+        expect(trackCalls[0].variables).toEqual({ ERRORCODE: 301 });
+      });
+    });
+
+    describe('Wrapper limit reached', () => {
+      it('should emits a VAST-error & track', async () => {
+        const url = './spec/samples/wrapper-b.xml';
+
+        const response = await nodeUrlHandler.get(url);
+
+        fetcher.setOptions({ ...options, url: url, previousUrl: url });
+        VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
+
+        const vastXML = await VastParser.parseVAST(response.xml, {
+          url: url,
+          previousUrl: url,
+          wrapperLimit: 1,
+        });
+        // Response doesn't have any ads
+        expect(vastXML.ads).toEqual([]);
+        // Error has been triggered
+        expect(dataTriggered.length).toBe(1);
+        expect(dataTriggered[0].ERRORCODE).toBe(302);
+        expect(dataTriggered[0].extensions.length).toBe(0);
+        // Tracking has been done
+        expect(trackCalls.length).toBe(1);
+        expect(trackCalls[0].templates).toEqual([
+          'http://example.com/wrapperB-error',
+        ]);
+        expect(trackCalls[0].variables).toEqual({ ERRORCODE: 302 });
+      });
+    });
+    describe('Legacy', () => {
+      let response = null;
+
+      beforeEach((done) => {
+        VastParser.removeAllListeners();
+        vastClient
+          .get('./spec/samples/wrapper-legacy.xml', options)
+          .then((res) => {
+            response = res;
+            done();
+          });
+      });
+      describe('should correctly loads a wrapped ad, even with the VASTAdTagURL-Tag', () => {
+        it('should have found 1 ad', () => {
+          expect(response.ads.length).toBe(1);
+        });
+
+        it('should have returned a VAST response object', () => {
+          expect(response.ads.length).toBe(1);
+          expect(response).toHaveProperty('ads');
+          expect(response).toHaveProperty('errorURLTemplates');
+          expect(response).toHaveProperty('version');
+        });
+
+        it('should have found 2 creatives', () => {
+          expect(response.ads[0].creatives.length).toBe(2);
+        });
+
+        it('should have parsed mediafile attribute', () => {
+          const mediafile = response.ads[0].creatives[1].mediaFiles[0];
+          expect(mediafile.mimeType).toBe('video/mp4');
+          expect(mediafile.width).toBe(400);
+          expect(mediafile.height).toBe(300);
+          expect(mediafile.fileURL).toBe(
+            'https://iabtechlab.com/wp-content/uploads/2016/07/VAST-4.0-Short-Intro.mp4'
+          );
+          expect(mediafile.bitrate).toBe(500);
+          expect(mediafile.minBitrate).toBe(360);
+          expect(mediafile.maxBitrate).toBe(1080);
+          expect(mediafile.scalable).toBe(true);
+        });
+      });
+    });
+  });
+
   describe('resolveAds', () => {
     it('updates previousUrl value and calls resolveWrappers for each ad', () => {
       jest
         .spyOn(VastParser, 'resolveWrappers')
-        .mockImplementation(() => Promise.resolve(['ad1', 'ad2']));
+        .mockReturnValue(Promise.resolve(['ad1', 'ad2']));
       return VastParser.resolveAds(['ad1', 'ad2'], {
         wrapperDepth: 1,
         previousUrl: wrapperBVastUrl,
@@ -804,7 +627,7 @@ describe('VASTParser', () => {
 
     beforeEach(() => {
       VastParser.previousUrl = wrapperAVastUrl;
-      VastParser.initParsingStatus({ urlHandler: urlHandlerSuccess });
+      VastParser.initParsingStatus();
     });
 
     it('resolves with ad if there is no more wrappers', () => {
@@ -815,15 +638,24 @@ describe('VASTParser', () => {
 
     it('will add errorcode to resolved ad if parsing has reached maximum amount of unwrapping', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: 'http://example.com/foo' };
+      VastParser.fetchingCallback = () => {};
       VastParser.maxWrapperDepth = 10;
-      return VastParser.resolveWrappers(adWithWrapper, 10).then((res) => {
-        expect(res).toEqual({ ...ad, errorCode: 302 });
+      return VastParser.resolveWrappers(adWithWrapper, 10, null).then((res) => {
+        expect(res).toEqual({
+          ...ad,
+          errorCode: 302,
+        });
       });
     });
 
     it('will successfully fetch the next wrapper url if it is provided', () => {
       const adWithWrapper = { ...ad, nextWrapperURL: wrapperBVastUrl };
-      jest.spyOn(VastParser, 'fetchVAST');
+
+      jest
+        .spyOn(fetcher, 'fetchVAST')
+        .mockReturnValue(Promise.resolve(expect.any(Object)));
+      VastParser.fetchingCallback = fetcher.fetchVAST;
+
       jest
         .spyOn(VastParser, 'parse')
         .mockImplementation(() => Promise.resolve([ad]));
@@ -832,12 +664,11 @@ describe('VASTParser', () => {
 
       return VastParser.resolveWrappers(adWithWrapper, 0, wrapperAVastUrl).then(
         (res) => {
-          expect(VastParser.fetchVAST).toHaveBeenCalledWith(
-            wrapperBVastUrl,
-            1,
-            wrapperAVastUrl,
-            adWithWrapper
-          );
+          expect(fetcher.fetchVAST).toHaveBeenCalledWith({
+            url: wrapperBVastUrl,
+            maxWrapperDepth: VastParser.maxWrapperDepth,
+            emitter: expect.any(Function),
+          });
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
             previousUrl: wrapperAVastUrl,
@@ -851,21 +682,22 @@ describe('VASTParser', () => {
     });
 
     it('will pass timeout error to ad if fetching next wrapper fails', () => {
-      VastParser.initParsingStatus({ urlHandler: urlHandlerFailure });
       const adWithWrapper = { ...ad, nextWrapperURL: wrapperBVastUrl };
-      jest.spyOn(VastParser, 'fetchVAST');
+      jest.spyOn(fetcher, 'fetchVAST').mockImplementation(() => {
+        return Promise.reject(new Error('timeout'));
+      });
+      VastParser.fetchingCallback = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse');
       jest.spyOn(parserUtils, 'mergeWrapperAdData');
       VastParser.maxWrapperDepth = 10;
 
       return VastParser.resolveWrappers(adWithWrapper, 0, wrapperAVastUrl).then(
         (res) => {
-          expect(VastParser.fetchVAST).toHaveBeenCalledWith(
-            wrapperBVastUrl,
-            1,
-            wrapperAVastUrl,
-            adWithWrapper
-          );
+          expect(fetcher.fetchVAST).toHaveBeenCalledWith({
+            url: wrapperBVastUrl,
+            maxWrapperDepth: VastParser.maxWrapperDepth,
+            emitter: expect.any(Function),
+          });
           expect(VastParser.parse).not.toHaveBeenCalled();
           expect(parserUtils.mergeWrapperAdData).not.toBeCalled();
           expect(res).toEqual(
@@ -880,8 +712,9 @@ describe('VASTParser', () => {
 
     it('will take the allowMultipleAds value from the option', () => {
       jest
-        .spyOn(VastParser, 'fetchVAST')
+        .spyOn(fetcher, 'fetchVAST')
         .mockReturnValue(Promise.resolve('<xml></xml>'));
+      VastParser.fetchingCallback = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
 
       const adWithWrapper = {
@@ -903,8 +736,9 @@ describe('VASTParser', () => {
 
     it('will take the allowMultipleAds value from the ad if does not set in the option', () => {
       jest
-        .spyOn(VastParser, 'fetchVAST')
+        .spyOn(fetcher, 'fetchVAST')
         .mockReturnValue(Promise.resolve('<xml></xml>'));
+      VastParser.fetchingCallback = fetcher.fetchVAST;
       jest.spyOn(VastParser, 'parse').mockReturnValue(Promise.resolve());
 
       const expectedValue = { allowMultipleAds: true };

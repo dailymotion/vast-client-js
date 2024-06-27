@@ -3,3 +3,6 @@
 node_modules/*
 npm-debug.log
 dist_old
+examples/node_modules/*
+examples/.parcel-cache/*
+examples/dist/*

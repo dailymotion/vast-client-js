@@ -19,6 +19,12 @@
   "engines": {
     "node": ">=12.22.1"
   },
+  "browserslist": [
+    "chrome >= 63",
+    "firefox >= 67",
+    "edge >= 79",
+    "safari >= 12.1"
+  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -28,11 +34,11 @@
     "performance": "node performance/performance_test.js",
     "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
     "build": "rollup -c",
+    "watch": "rollup -c --watch",
     "postbuild": "node bundle_size.js",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
-    "test": "mocha --require @babel/register && jest",
-    "jest": "jest"
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
@@ -50,7 +56,6 @@
     "eslint-plugin-import": "^2.25.4",
     "husky": "^8.0.3",
     "jest": "^26.6.3",
-    "mocha": "^10.0.0",
     "path": "^0.12.7",
     "prettier": "^2.5.1",
     "pretty-quick": "^3.1.3",
