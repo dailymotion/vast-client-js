@@ -1,0 +1,13 @@
+main {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 25px;
+}
+
+#variationContainer {
+  display: none;
+}
