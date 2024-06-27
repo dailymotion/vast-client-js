@@ -1,4 +1,6 @@
+//eslint-disable-next-line
 import { VASTClient, VASTTracker } from '@dailymotion/vast-client';
+
 const mainContent =
   'https://dmplayer.storage.googleapis.com/tech_test/midnight_sun_720p.mp4';
 const videoPlayer = document.getElementById('myVideo');
@@ -45,6 +47,7 @@ export const parsePreroll = async () => {
   try {
     return vastClient.get(VAST);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
   }
 };
@@ -165,7 +168,7 @@ const handleClickTrackers = (e) => {
 /**
  * Send companion click trackers using the vastTracker
  */
-const handleCompanionClickTrackers = (e) => {
+const handleCompanionClickTrackers = () => {
   if (!companionVastTracker) {
     return;
   }
@@ -304,11 +307,11 @@ const displayVariation = (variationData) => {
     return null;
   }
   variationImg.src = imgUrl;
-  variationImg.style.height = variation.assetHeight + 'px';
-  variationImg.style.assetWIdth = variation.assetWidth + 'px';
+  variationImg.style.height = `${variation.assetHeight}px`;
+  variationImg.style.assetWIdth = `${variation.assetWidth}px`;
   variationContainer.style.display = 'block';
-  variationContainer.style.width = variation.width + 'px';
-  variationContainer.style.height = variation.height + 'px';
-  variationImg.style.maxWidth = variation.expandedWidth + 'px';
-  variationImg.style.maxHeight = variation.expandedHeight + 'px';
+  variationContainer.style.width = `${variation.width}px`;
+  variationContainer.style.height = `${variation.height}px`;
+  variationImg.style.maxWidth = `${variation.expandedWidth}px`;
+  variationImg.style.maxHeight = `${variation.expandedHeight}px`;
 };
