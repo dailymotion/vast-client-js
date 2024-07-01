@@ -2,182 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    enumerableOnly && (symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    })), keys.push.apply(keys, symbols);
-  }
-  return keys;
-}
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = null != arguments[i] ? arguments[i] : {};
-    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
-      _defineProperty(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
-      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-    });
-  }
-  return target;
-}
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
-}
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
-  }
-}
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-function _defineProperty(obj, key, value) {
-  key = _toPropertyKey(key);
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
-  });
-  if (superClass) _setPrototypeOf(subClass, superClass);
-}
-function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-  return _setPrototypeOf(o, p);
-}
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _possibleConstructorReturn(self, call) {
-  if (call && (typeof call === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized(self);
-}
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf(Derived),
-      result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn(this, result);
-  };
-}
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-}
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-}
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-}
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-  return arr2;
-}
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _toPrimitive(input, hint) {
-  if (typeof input !== "object" || input === null) return input;
-  var prim = input[Symbol.toPrimitive];
-  if (prim !== undefined) {
-    var res = prim.call(input, hint || "default");
-    if (typeof res !== "object") return res;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
-  }
-  return (hint === "string" ? String : Number)(input);
-}
-function _toPropertyKey(arg) {
-  var key = _toPrimitive(arg, "string");
-  return typeof key === "symbol" ? key : String(key);
-}
-
 function createAd() {
-  var adAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  let adAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
     id: adAttributes.id || null,
     sequence: adAttributes.sequence || null,
@@ -218,7 +44,7 @@ function createAdVerification() {
 }
 
 function createCompanionAd() {
-  var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  let creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
     id: creativeAttributes.id || null,
     adType: 'companionAd',
@@ -247,7 +73,7 @@ function isCompanionAd(ad) {
 }
 
 function createCreative() {
-  var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  let creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
     id: creativeAttributes.id || null,
     adId: creativeAttributes.adId || null,
@@ -259,32 +85,33 @@ function createCreative() {
 }
 
 function createCreativeCompanion() {
-  var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _createCreative = createCreative(creativeAttributes),
-    id = _createCreative.id,
-    adId = _createCreative.adId,
-    sequence = _createCreative.sequence,
-    apiFramework = _createCreative.apiFramework;
+  let creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  const {
+    id,
+    adId,
+    sequence,
+    apiFramework
+  } = createCreative(creativeAttributes);
   return {
-    id: id,
-    adId: adId,
-    sequence: sequence,
-    apiFramework: apiFramework,
+    id,
+    adId,
+    sequence,
+    apiFramework,
     type: 'companion',
     required: null,
     variations: []
   };
 }
 
-var supportedMacros = ['ADCATEGORIES', 'ADCOUNT', 'ADPLAYHEAD', 'ADSERVINGID', 'ADTYPE', 'APIFRAMEWORKS', 'APPBUNDLE', 'ASSETURI', 'BLOCKEDADCATEGORIES', 'BREAKMAXADLENGTH', 'BREAKMAXADS', 'BREAKMAXDURATION', 'BREAKMINADLENGTH', 'BREAKMINDURATION', 'BREAKPOSITION', 'CLICKPOS', 'CLICKTYPE', 'CLIENTUA', 'CONTENTID', 'CONTENTPLAYHEAD',
+const supportedMacros = ['ADCATEGORIES', 'ADCOUNT', 'ADPLAYHEAD', 'ADSERVINGID', 'ADTYPE', 'APIFRAMEWORKS', 'APPBUNDLE', 'ASSETURI', 'BLOCKEDADCATEGORIES', 'BREAKMAXADLENGTH', 'BREAKMAXADS', 'BREAKMAXDURATION', 'BREAKMINADLENGTH', 'BREAKMINDURATION', 'BREAKPOSITION', 'CLICKPOS', 'CLICKTYPE', 'CLIENTUA', 'CONTENTID', 'CONTENTPLAYHEAD',
 // @deprecated VAST 4.1
 'CONTENTURI', 'DEVICEIP', 'DEVICEUA', 'DOMAIN', 'EXTENSIONS', 'GDPRCONSENT', 'IFA', 'IFATYPE', 'INVENTORYSTATE', 'LATLONG', 'LIMITADTRACKING', 'MEDIAMIME', 'MEDIAPLAYHEAD', 'OMIDPARTNER', 'PAGEURL', 'PLACEMENTTYPE', 'PLAYERCAPABILITIES', 'PLAYERSIZE', 'PLAYERSTATE', 'PODSEQUENCE', 'REGULATIONS', 'SERVERSIDE', 'SERVERUA', 'TRANSACTIONID', 'UNIVERSALADID', 'VASTVERSIONS', 'VERIFICATIONVENDORS'];
 
 function track(URLTemplates, macros, options) {
-  var URLs = resolveURLTemplates(URLTemplates, macros, options);
-  URLs.forEach(function (URL) {
+  const URLs = resolveURLTemplates(URLTemplates, macros, options);
+  URLs.forEach(URL => {
     if (typeof window !== 'undefined' && window !== null) {
-      var i = new Image();
+      const i = new Image();
       i.src = URL;
     }
   });
@@ -298,10 +125,10 @@ function track(URLTemplates, macros, options) {
  * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
  */
 function resolveURLTemplates(URLTemplates) {
-  var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var resolvedURLs = [];
-  var URLArray = extractURLsFromTemplates(URLTemplates);
+  let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  const resolvedURLs = [];
+  const URLArray = extractURLsFromTemplates(URLTemplates);
 
   // Set default value for invalid ERRORCODE
   if (macros['ERRORCODE'] && !options.isCustomCode && !/^[0-9]{3}$/.test(macros['ERRORCODE'])) {
@@ -314,11 +141,11 @@ function resolveURLTemplates(URLTemplates) {
 
   // RANDOM/random is not defined in VAST 3/4 as a valid macro tho it's used by some adServer (Auditude)
   macros['RANDOM'] = macros['random'] = macros['CACHEBUSTING'];
-  for (var macro in macros) {
+  for (const macro in macros) {
     macros[macro] = encodeURIComponentRFC3986(macros[macro]);
   }
-  for (var URLTemplateKey in URLArray) {
-    var resolveURL = URLArray[URLTemplateKey];
+  for (const URLTemplateKey in URLArray) {
+    const resolveURL = URLArray[URLTemplateKey];
     if (typeof resolveURL !== 'string') {
       continue;
     }
@@ -338,17 +165,15 @@ function resolveURLTemplates(URLTemplates) {
 function replaceUrlMacros(url, macros) {
   url = replaceMacrosValues(url, macros);
   // match any macros from the url that was not replaced
-  var remainingMacros = url.match(/[^[\]]+(?=])/g);
+  const remainingMacros = url.match(/[^[\]]+(?=])/g);
   if (!remainingMacros) {
     return url;
   }
-  var supportedRemainingMacros = remainingMacros.filter(function (macro) {
-    return supportedMacros.indexOf(macro) > -1;
-  });
+  let supportedRemainingMacros = remainingMacros.filter(macro => supportedMacros.indexOf(macro) > -1);
   if (supportedRemainingMacros.length === 0) {
     return url;
   }
-  supportedRemainingMacros = supportedRemainingMacros.reduce(function (accumulator, macro) {
+  supportedRemainingMacros = supportedRemainingMacros.reduce((accumulator, macro) => {
     accumulator[macro] = -1;
     return accumulator;
   }, {});
@@ -362,9 +187,9 @@ function replaceUrlMacros(url, macros) {
  * @param {Object} macros - Object of macros to be replaced in the tracking calls
  */
 function replaceMacrosValues(url, macros) {
-  var replacedMacrosUrl = url;
-  for (var key in macros) {
-    var value = macros[key];
+  let replacedMacrosUrl = url;
+  for (const key in macros) {
+    const value = macros[key];
     // this will match [${key}] and %%${key}%% and replace it
     replacedMacrosUrl = replacedMacrosUrl.replace(new RegExp("(?:\\[|%%)(".concat(key, ")(?:\\]|%%)"), 'g'), value);
   }
@@ -381,7 +206,7 @@ function replaceMacrosValues(url, macros) {
  */
 function extractURLsFromTemplates(URLTemplates) {
   if (Array.isArray(URLTemplates)) {
-    return URLTemplates.map(function (URLTemplate) {
+    return URLTemplates.map(URLTemplate => {
       return URLTemplate && URLTemplate.hasOwnProperty('url') ? URLTemplate.url : URLTemplate;
     });
   }
@@ -389,25 +214,32 @@ function extractURLsFromTemplates(URLTemplates) {
 }
 
 /**
- * Filter URLTemplates elements to keep only valid and safe URL templates.
+ * Filter URLTemplates elements .
  *   To be valid, urls should:
  *   - have the same protocol as the client
  *   or
  *   - be protocol-relative urls
  *
+ * Returns an object with two arrays
+ *    - validUrls : An array of valid URLs
+ *    - invalidUrls: An array of invalid URLs
+ *
  * @param {Array} URLTemplates - A Array of string/object containing urls templates.
+ * @returns {Object}
+ *
  */
-function filterValidUrlTemplates(URLTemplates) {
-  if (Array.isArray(URLTemplates)) {
-    return URLTemplates.filter(function (urlTemplate) {
-      var url = urlTemplate.hasOwnProperty('url') ? urlTemplate.url : urlTemplate;
-      return isValidUrl(url);
-    });
-  }
-  return isValidUrl(URLTemplates);
+function filterUrlTemplates(URLTemplates) {
+  return URLTemplates.reduce((acc, urlTemplate) => {
+    const url = urlTemplate.url || urlTemplate;
+    isValidUrl(url) ? acc.validUrls.push(url) : acc.invalidUrls.push(url);
+    return acc;
+  }, {
+    validUrls: [],
+    invalidUrls: []
+  });
 }
 function isValidUrl(url) {
-  var regex = /^(https?:\/\/|\/\/)/;
+  const regex = /^(https?:\/\/|\/\/)/;
   return regex.test(url);
 }
 
@@ -419,7 +251,7 @@ function isValidUrl(url) {
  * @param {Array} list - List of objects.
  */
 function containsTemplateObject(obj, list) {
-  for (var i = 0; i < list.length; i++) {
+  for (let i = 0; i < list.length; i++) {
     if (isTemplateObjectEqual(list[i], obj)) {
       return true;
     }
@@ -436,8 +268,8 @@ function containsTemplateObject(obj, list) {
  */
 function isTemplateObjectEqual(obj1, obj2) {
   if (obj1 && obj2) {
-    var obj1Properties = Object.getOwnPropertyNames(obj1);
-    var obj2Properties = Object.getOwnPropertyNames(obj2);
+    const obj1Properties = Object.getOwnPropertyNames(obj1);
+    const obj2Properties = Object.getOwnPropertyNames(obj2);
 
     // If number of properties is different, objects are not equivalent
     if (obj1Properties.length !== obj2Properties.length) {
@@ -453,9 +285,7 @@ function isTemplateObjectEqual(obj1, obj2) {
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
 function encodeURIComponentRFC3986(str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-    return "%".concat(c.charCodeAt(0).toString(16));
-  });
+  return encodeURIComponent(str).replace(/[!'()*]/g, c => "%".concat(c.charCodeAt(0).toString(16)));
 }
 
 /**
@@ -467,14 +297,14 @@ function encodeURIComponentRFC3986(str) {
  * @return {String}
  */
 function addLeadingZeros(input) {
-  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
+  let length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 8;
   return input.toString().padStart(length, '0');
 }
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 function flatten(arr) {
-  return arr.reduce(function (flat, toFlatten) {
+  return arr.reduce((flat, toFlatten) => {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
   }, []);
 }
@@ -488,12 +318,12 @@ function flatten(arr) {
  * @return {Array}
  */
 function joinArrayOfUniqueTemplateObjs() {
-  var arr1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var arr2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  var firstArr = Array.isArray(arr1) ? arr1 : [];
-  var secondArr = Array.isArray(arr2) ? arr2 : [];
-  var arr = firstArr.concat(secondArr);
-  return arr.reduce(function (res, val) {
+  let arr1 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  let arr2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  const firstArr = Array.isArray(arr1) ? arr1 : [];
+  const secondArr = Array.isArray(arr2) ? arr2 : [];
+  const arr = firstArr.concat(secondArr);
+  return arr.reduce((res, val) => {
     if (!containsTemplateObject(val, res)) {
       res.push(val);
     }
@@ -512,20 +342,34 @@ function joinArrayOfUniqueTemplateObjs() {
 function isValidTimeValue(time) {
   return Number.isFinite(time) && time >= -2;
 }
-var util = {
-  track: track,
-  resolveURLTemplates: resolveURLTemplates,
-  extractURLsFromTemplates: extractURLsFromTemplates,
-  filterValidUrlTemplates: filterValidUrlTemplates,
-  containsTemplateObject: containsTemplateObject,
-  isTemplateObjectEqual: isTemplateObjectEqual,
-  encodeURIComponentRFC3986: encodeURIComponentRFC3986,
-  replaceUrlMacros: replaceUrlMacros,
-  isNumeric: isNumeric,
-  flatten: flatten,
-  joinArrayOfUniqueTemplateObjs: joinArrayOfUniqueTemplateObjs,
-  isValidTimeValue: isValidTimeValue,
-  addLeadingZeros: addLeadingZeros
+
+/**
+ * Check if we are in a browser environment
+ * @returns {Boolean}
+ */
+function isBrowserEnvironment() {
+  return typeof window !== 'undefined';
+}
+function formatMacrosValues(macros) {
+  return typeof macros !== 'object' ? macros : JSON.stringify(macros);
+}
+const util = {
+  track,
+  resolveURLTemplates,
+  extractURLsFromTemplates,
+  filterUrlTemplates,
+  containsTemplateObject,
+  isTemplateObjectEqual,
+  encodeURIComponentRFC3986,
+  replaceUrlMacros,
+  isNumeric,
+  flatten,
+  joinArrayOfUniqueTemplateObjs,
+  isValidTimeValue,
+  addLeadingZeros,
+  isValidUrl,
+  isBrowserEnvironment,
+  formatMacrosValues
 };
 
 /**
@@ -539,13 +383,8 @@ var util = {
  * @return {Object|undefined}
  */
 function childByName(node, name) {
-  var childNodes = node.childNodes;
-  for (var childKey in childNodes) {
-    var child = childNodes[childKey];
-    if (child.nodeName === name) {
-      return child;
-    }
-  }
+  const childNodes = Array.from(node.childNodes);
+  return childNodes.find(childNode => childNode.nodeName === name);
 }
 
 /**
@@ -555,15 +394,8 @@ function childByName(node, name) {
  * @return {Array}
  */
 function childrenByName(node, name) {
-  var children = [];
-  var childNodes = node.childNodes;
-  for (var childKey in childNodes) {
-    var child = childNodes[childKey];
-    if (child.nodeName === name) {
-      children.push(child);
-    }
-  }
-  return children;
+  const childNodes = Array.from(node.childNodes);
+  return childNodes.filter(childNode => childNode.nodeName === name);
 }
 
 /**
@@ -576,14 +408,15 @@ function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
   if (!originalUrl) {
     return vastAdTagUrl;
   }
-  if (vastAdTagUrl.indexOf('//') === 0) {
-    var _location = location,
-      protocol = _location.protocol;
+  if (vastAdTagUrl.startsWith('//')) {
+    const {
+      protocol
+    } = location;
     return "".concat(protocol).concat(vastAdTagUrl);
   }
-  if (vastAdTagUrl.indexOf('://') === -1) {
+  if (!vastAdTagUrl.includes('://')) {
     // Resolve relative URLs (mainly for unit testing)
-    var baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
+    const baseURL = originalUrl.slice(0, originalUrl.lastIndexOf('/'));
     return "".concat(baseURL, "/").concat(vastAdTagUrl);
   }
   return vastAdTagUrl;
@@ -595,7 +428,7 @@ function resolveVastAdTagURI(vastAdTagUrl, originalUrl) {
  * @return {Boolean}
  */
 function parseBoolean(booleanString) {
-  return ['true', 'TRUE', 'True', '1'].indexOf(booleanString) !== -1;
+  return ['true', 'TRUE', 'True', '1'].includes(booleanString);
 }
 
 /**
@@ -614,7 +447,7 @@ function parseNodeText(node) {
  * @param  {Object} nodeDestination - The destination node to copy the attribute at.
  */
 function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
-  var attributeValue = nodeSource.getAttribute(attributeName);
+  const attributeValue = nodeSource.getAttribute(attributeName);
   if (attributeValue) {
     nodeDestination.setAttribute(attributeName, attributeValue);
   }
@@ -627,12 +460,11 @@ function copyNodeAttribute(attributeName, nodeSource, nodeDestination) {
  * @returns {Object}
  */
 function parseAttributes(element) {
-  var nodeAttributes = element.attributes;
-  var attributes = {};
-  for (var i = 0; i < nodeAttributes.length; i++) {
-    attributes[nodeAttributes[i].nodeName] = nodeAttributes[i].nodeValue;
-  }
-  return attributes;
+  const nodeAttributes = Array.from(element.attributes);
+  return nodeAttributes.reduce((acc, nodeAttribute) => {
+    acc[nodeAttribute.nodeName] = nodeAttribute.nodeValue;
+    return acc;
+  }, {});
 }
 
 /**
@@ -648,17 +480,17 @@ function parseDuration(durationString) {
   if (util.isNumeric(durationString)) {
     return parseInt(durationString);
   }
-  var durationComponents = durationString.split(':');
+  const durationComponents = durationString.split(':');
   if (durationComponents.length !== 3) {
     return -1;
   }
-  var secondsAndMS = durationComponents[2].split('.');
-  var seconds = parseInt(secondsAndMS[0]);
+  const secondsAndMS = durationComponents[2].split('.');
+  let seconds = parseInt(secondsAndMS[0]);
   if (secondsAndMS.length === 2) {
     seconds += parseFloat("0.".concat(secondsAndMS[1]));
   }
-  var minutes = parseInt(durationComponents[1] * 60);
-  var hours = parseInt(durationComponents[0] * 60 * 60);
+  const minutes = parseInt(durationComponents[1] * 60);
+  const hours = parseInt(durationComponents[0] * 60 * 60);
   if (isNaN(hours) || isNaN(minutes) || isNaN(seconds) || minutes > 60 * 60 || seconds > 60) {
     return -1;
   }
@@ -672,15 +504,15 @@ function parseDuration(durationString) {
  * @return {Array}
  */
 function splitVAST(ads) {
-  var splittedVAST = [];
-  var lastAdPod = null;
-  ads.forEach(function (ad, i) {
+  const splittedVAST = [];
+  let lastAdPod = null;
+  ads.forEach((ad, i) => {
     if (ad.sequence) {
       ad.sequence = parseInt(ad.sequence, 10);
     }
     // The current Ad may be the next Ad of an AdPod
     if (ad.sequence > 1) {
-      var lastAd = ads[i - 1];
+      const lastAd = ads[i - 1];
       // check if the current Ad is exactly the next one in the AdPod
       if (lastAd && lastAd.sequence === ad.sequence - 1) {
         lastAdPod && lastAdPod.push(ad);
@@ -703,16 +535,19 @@ function splitVAST(ads) {
  */
 function assignAttributes(attributes, verificationObject) {
   if (attributes) {
-    for (var attrKey in attributes) {
-      var attribute = attributes[attrKey];
-      if (attribute.nodeName && attribute.nodeValue && verificationObject.hasOwnProperty(attribute.nodeName)) {
-        var value = attribute.nodeValue;
-        if (typeof verificationObject[attribute.nodeName] === 'boolean') {
+    Array.from(attributes).forEach(_ref => {
+      let {
+        nodeName,
+        nodeValue
+      } = _ref;
+      if (nodeName && nodeValue && verificationObject.hasOwnProperty(nodeName)) {
+        let value = nodeValue;
+        if (typeof verificationObject[nodeName] === 'boolean') {
           value = parseBoolean(value);
         }
-        verificationObject[attribute.nodeName] = value;
+        verificationObject[nodeName] = value;
       }
-    }
+    });
   }
 }
 
@@ -728,19 +563,17 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   unwrappedAd.impressionURLTemplates = wrapper.impressionURLTemplates.concat(unwrappedAd.impressionURLTemplates);
   unwrappedAd.extensions = wrapper.extensions.concat(unwrappedAd.extensions);
   if (wrapper.viewableImpression.length > 0) {
-    unwrappedAd.viewableImpression = [].concat(_toConsumableArray(unwrappedAd.viewableImpression), _toConsumableArray(wrapper.viewableImpression));
+    unwrappedAd.viewableImpression = [...unwrappedAd.viewableImpression, ...wrapper.viewableImpression];
   }
 
   // values from the child wrapper will be overridden
   unwrappedAd.followAdditionalWrappers = wrapper.followAdditionalWrappers;
   unwrappedAd.allowMultipleAds = wrapper.allowMultipleAds;
   unwrappedAd.fallbackOnNoAd = wrapper.fallbackOnNoAd;
-  var wrapperCompanions = (wrapper.creatives || []).filter(function (creative) {
-    return creative && creative.type === 'companion';
-  });
-  var wrapperCompanionClickTracking = wrapperCompanions.reduce(function (result, creative) {
-    (creative.variations || []).forEach(function (variation) {
-      (variation.companionClickTrackingURLTemplates || []).forEach(function (companionClickTrackingURLTemplate) {
+  const wrapperCompanions = (wrapper.creatives || []).filter(creative => creative && creative.type === 'companion');
+  const wrapperCompanionClickTracking = wrapperCompanions.reduce((result, creative) => {
+    (creative.variations || []).forEach(variation => {
+      (variation.companionClickTrackingURLTemplates || []).forEach(companionClickTrackingURLTemplate => {
         if (!util.containsTemplateObject(companionClickTrackingURLTemplate, result)) {
           result.push(companionClickTrackingURLTemplate);
         }
@@ -749,13 +582,13 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     return result;
   }, []);
   unwrappedAd.creatives = wrapperCompanions.concat(unwrappedAd.creatives);
-  var wrapperHasVideoClickTracking = wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length;
-  var wrapperHasVideoCustomClick = wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length;
-  unwrappedAd.creatives.forEach(function (creative) {
+  const wrapperHasVideoClickTracking = wrapper.videoClickTrackingURLTemplates && wrapper.videoClickTrackingURLTemplates.length;
+  const wrapperHasVideoCustomClick = wrapper.videoCustomClickURLTemplates && wrapper.videoCustomClickURLTemplates.length;
+  unwrappedAd.creatives.forEach(creative => {
     // merge tracking events
     if (wrapper.trackingEvents && wrapper.trackingEvents[creative.type]) {
-      for (var eventName in wrapper.trackingEvents[creative.type]) {
-        var urls = wrapper.trackingEvents[creative.type][eventName];
+      for (const eventName in wrapper.trackingEvents[creative.type]) {
+        const urls = wrapper.trackingEvents[creative.type][eventName];
         if (!Array.isArray(creative.trackingEvents[eventName])) {
           creative.trackingEvents[eventName] = [];
         }
@@ -781,7 +614,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
 
     // pass wrapper companion trackers to all companions
     if (creative.type === 'companion' && wrapperCompanionClickTracking.length) {
-      (creative.variations || []).forEach(function (variation) {
+      (creative.variations || []).forEach(variation => {
         variation.companionClickTrackingURLTemplates = util.joinArrayOfUniqueTemplateObjs(variation.companionClickTrackingURLTemplates, wrapperCompanionClickTracking);
       });
     }
@@ -797,7 +630,7 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
   // Merge Wrapper's creatives containing icon elements
   if ((_wrapper$creatives = wrapper.creatives) !== null && _wrapper$creatives !== void 0 && _wrapper$creatives.length) {
     // As specified by VAST specs, wrapper should not contain any mediafiles
-    var wrapperCreativesWithIconsNode = wrapper.creatives.filter(function (creative) {
+    const wrapperCreativesWithIconsNode = wrapper.creatives.filter(creative => {
       var _creative$icons;
       return ((_creative$icons = creative.icons) === null || _creative$icons === void 0 ? void 0 : _creative$icons.length) && !creative.mediaFiles.length;
     });
@@ -806,18 +639,18 @@ function mergeWrapperAdData(unwrappedAd, wrapper) {
     }
   }
 }
-var parserUtils = {
-  childByName: childByName,
-  childrenByName: childrenByName,
-  resolveVastAdTagURI: resolveVastAdTagURI,
-  parseBoolean: parseBoolean,
-  parseNodeText: parseNodeText,
-  copyNodeAttribute: copyNodeAttribute,
-  parseAttributes: parseAttributes,
-  parseDuration: parseDuration,
-  splitVAST: splitVAST,
-  assignAttributes: assignAttributes,
-  mergeWrapperAdData: mergeWrapperAdData
+const parserUtils = {
+  childByName,
+  childrenByName,
+  resolveVastAdTagURI,
+  parseBoolean,
+  parseNodeText,
+  copyNodeAttribute,
+  parseAttributes,
+  parseDuration,
+  splitVAST,
+  assignAttributes,
+  mergeWrapperAdData
 };
 
 /**
@@ -831,31 +664,31 @@ var parserUtils = {
  * @return {Object} creative - The creative object.
  */
 function parseCreativeCompanion(creativeElement, creativeAttributes) {
-  var creative = createCreativeCompanion(creativeAttributes);
+  const creative = createCreativeCompanion(creativeAttributes);
   creative.required = creativeElement.getAttribute('required') || null;
-  creative.variations = parserUtils.childrenByName(creativeElement, 'Companion').map(function (companionResource) {
-    var companionAd = createCompanionAd(parserUtils.parseAttributes(companionResource));
-    companionAd.htmlResources = parserUtils.childrenByName(companionResource, 'HTMLResource').reduce(function (urls, resource) {
-      var url = parserUtils.parseNodeText(resource);
+  creative.variations = parserUtils.childrenByName(creativeElement, 'Companion').map(companionResource => {
+    const companionAd = createCompanionAd(parserUtils.parseAttributes(companionResource));
+    companionAd.htmlResources = parserUtils.childrenByName(companionResource, 'HTMLResource').reduce((urls, resource) => {
+      const url = parserUtils.parseNodeText(resource);
       return url ? urls.concat(url) : urls;
     }, []);
-    companionAd.iframeResources = parserUtils.childrenByName(companionResource, 'IFrameResource').reduce(function (urls, resource) {
-      var url = parserUtils.parseNodeText(resource);
+    companionAd.iframeResources = parserUtils.childrenByName(companionResource, 'IFrameResource').reduce((urls, resource) => {
+      const url = parserUtils.parseNodeText(resource);
       return url ? urls.concat(url) : urls;
     }, []);
-    companionAd.staticResources = parserUtils.childrenByName(companionResource, 'StaticResource').reduce(function (urls, resource) {
-      var url = parserUtils.parseNodeText(resource);
+    companionAd.staticResources = parserUtils.childrenByName(companionResource, 'StaticResource').reduce((urls, resource) => {
+      const url = parserUtils.parseNodeText(resource);
       return url ? urls.concat({
-        url: url,
+        url,
         creativeType: resource.getAttribute('creativeType') || null
       }) : urls;
     }, []);
     companionAd.altText = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'AltText')) || null;
-    var trackingEventsElement = parserUtils.childByName(companionResource, 'TrackingEvents');
+    const trackingEventsElement = parserUtils.childByName(companionResource, 'TrackingEvents');
     if (trackingEventsElement) {
-      parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
-        var eventName = trackingElement.getAttribute('event');
-        var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+      parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(trackingElement => {
+        const eventName = trackingElement.getAttribute('event');
+        const trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
         if (eventName && trackingURLTemplate) {
           if (!Array.isArray(companionAd.trackingEvents[eventName])) {
             companionAd.trackingEvents[eventName] = [];
@@ -864,14 +697,14 @@ function parseCreativeCompanion(creativeElement, creativeAttributes) {
         }
       });
     }
-    companionAd.companionClickTrackingURLTemplates = parserUtils.childrenByName(companionResource, 'CompanionClickTracking').map(function (clickTrackingElement) {
+    companionAd.companionClickTrackingURLTemplates = parserUtils.childrenByName(companionResource, 'CompanionClickTracking').map(clickTrackingElement => {
       return {
         id: clickTrackingElement.getAttribute('id') || null,
         url: parserUtils.parseNodeText(clickTrackingElement)
       };
     });
     companionAd.companionClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(companionResource, 'CompanionClickThrough')) || null;
-    var adParametersElement = parserUtils.childByName(companionResource, 'AdParameters');
+    const adParametersElement = parserUtils.childByName(companionResource, 'AdParameters');
     if (adParametersElement) {
       companionAd.adParameters = {
         value: parserUtils.parseNodeText(adParametersElement),
@@ -884,17 +717,18 @@ function parseCreativeCompanion(creativeElement, creativeAttributes) {
 }
 
 function createCreativeLinear() {
-  var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _createCreative = createCreative(creativeAttributes),
-    id = _createCreative.id,
-    adId = _createCreative.adId,
-    sequence = _createCreative.sequence,
-    apiFramework = _createCreative.apiFramework;
+  let creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  const {
+    id,
+    adId,
+    sequence,
+    apiFramework
+  } = createCreative(creativeAttributes);
   return {
-    id: id,
-    adId: adId,
-    sequence: sequence,
-    apiFramework: apiFramework,
+    id,
+    adId,
+    sequence,
+    apiFramework,
     type: 'linear',
     duration: 0,
     skipDelay: null,
@@ -915,7 +749,7 @@ function isCreativeLinear(ad) {
 }
 
 function createClosedCaptionFile() {
-  var closedCaptionAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  let closedCaptionAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
     type: closedCaptionAttributes.type || null,
     language: closedCaptionAttributes.language || null,
@@ -946,7 +780,7 @@ function createIcon() {
 }
 
 function createInteractiveCreativeFile() {
-  var interactiveCreativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  let interactiveCreativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
     type: interactiveCreativeAttributes.type || null,
     apiFramework: interactiveCreativeAttributes.apiFramework || null,
@@ -1001,21 +835,21 @@ function createMezzanine() {
  * @return {Object} creative - The creativeLinear object.
  */
 function parseCreativeLinear(creativeElement, creativeAttributes) {
-  var offset;
-  var creative = createCreativeLinear(creativeAttributes);
+  let offset;
+  const creative = createCreativeLinear(creativeAttributes);
   creative.duration = parserUtils.parseDuration(parserUtils.parseNodeText(parserUtils.childByName(creativeElement, 'Duration')));
-  var skipOffset = creativeElement.getAttribute('skipoffset');
+  const skipOffset = creativeElement.getAttribute('skipoffset');
   if (typeof skipOffset === 'undefined' || skipOffset === null) {
     creative.skipDelay = null;
   } else if (skipOffset.charAt(skipOffset.length - 1) === '%' && creative.duration !== -1) {
-    var percent = parseInt(skipOffset, 10);
+    const percent = parseInt(skipOffset, 10);
     creative.skipDelay = creative.duration * (percent / 100);
   } else {
     creative.skipDelay = parserUtils.parseDuration(skipOffset);
   }
-  var videoClicksElement = parserUtils.childByName(creativeElement, 'VideoClicks');
+  const videoClicksElement = parserUtils.childByName(creativeElement, 'VideoClicks');
   if (videoClicksElement) {
-    var videoClickThroughElement = parserUtils.childByName(videoClicksElement, 'ClickThrough');
+    const videoClickThroughElement = parserUtils.childByName(videoClicksElement, 'ClickThrough');
     if (videoClickThroughElement) {
       creative.videoClickThroughURLTemplate = {
         id: videoClickThroughElement.getAttribute('id') || null,
@@ -1024,30 +858,30 @@ function parseCreativeLinear(creativeElement, creativeAttributes) {
     } else {
       creative.videoClickThroughURLTemplate = null;
     }
-    parserUtils.childrenByName(videoClicksElement, 'ClickTracking').forEach(function (clickTrackingElement) {
+    parserUtils.childrenByName(videoClicksElement, 'ClickTracking').forEach(clickTrackingElement => {
       creative.videoClickTrackingURLTemplates.push({
         id: clickTrackingElement.getAttribute('id') || null,
         url: parserUtils.parseNodeText(clickTrackingElement)
       });
     });
-    parserUtils.childrenByName(videoClicksElement, 'CustomClick').forEach(function (customClickElement) {
+    parserUtils.childrenByName(videoClicksElement, 'CustomClick').forEach(customClickElement => {
       creative.videoCustomClickURLTemplates.push({
         id: customClickElement.getAttribute('id') || null,
         url: parserUtils.parseNodeText(customClickElement)
       });
     });
   }
-  var adParamsElement = parserUtils.childByName(creativeElement, 'AdParameters');
+  const adParamsElement = parserUtils.childByName(creativeElement, 'AdParameters');
   if (adParamsElement) {
     creative.adParameters = {
       value: parserUtils.parseNodeText(adParamsElement),
       xmlEncoded: adParamsElement.getAttribute('xmlEncoded') || null
     };
   }
-  parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
-    parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
-      var eventName = trackingElement.getAttribute('event');
-      var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+  parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(trackingEventsElement => {
+    parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(trackingElement => {
+      let eventName = trackingElement.getAttribute('event');
+      const trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
       if (eventName && trackingURLTemplate) {
         if (eventName === 'progress') {
           offset = trackingElement.getAttribute('offset');
@@ -1067,26 +901,26 @@ function parseCreativeLinear(creativeElement, creativeAttributes) {
       }
     });
   });
-  parserUtils.childrenByName(creativeElement, 'MediaFiles').forEach(function (mediaFilesElement) {
-    parserUtils.childrenByName(mediaFilesElement, 'MediaFile').forEach(function (mediaFileElement) {
+  parserUtils.childrenByName(creativeElement, 'MediaFiles').forEach(mediaFilesElement => {
+    parserUtils.childrenByName(mediaFilesElement, 'MediaFile').forEach(mediaFileElement => {
       creative.mediaFiles.push(parseMediaFile(mediaFileElement));
     });
-    var interactiveCreativeElement = parserUtils.childByName(mediaFilesElement, 'InteractiveCreativeFile');
+    const interactiveCreativeElement = parserUtils.childByName(mediaFilesElement, 'InteractiveCreativeFile');
     if (interactiveCreativeElement) {
       creative.interactiveCreativeFile = parseInteractiveCreativeFile(interactiveCreativeElement);
     }
-    var closedCaptionElements = parserUtils.childByName(mediaFilesElement, 'ClosedCaptionFiles');
+    const closedCaptionElements = parserUtils.childByName(mediaFilesElement, 'ClosedCaptionFiles');
     if (closedCaptionElements) {
-      parserUtils.childrenByName(closedCaptionElements, 'ClosedCaptionFile').forEach(function (closedCaptionElement) {
-        var closedCaptionFile = createClosedCaptionFile(parserUtils.parseAttributes(closedCaptionElement));
+      parserUtils.childrenByName(closedCaptionElements, 'ClosedCaptionFile').forEach(closedCaptionElement => {
+        const closedCaptionFile = createClosedCaptionFile(parserUtils.parseAttributes(closedCaptionElement));
         closedCaptionFile.fileURL = parserUtils.parseNodeText(closedCaptionElement);
         creative.closedCaptionFiles.push(closedCaptionFile);
       });
     }
-    var mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
-    var requiredAttributes = getRequiredAttributes(mezzanineElement, ['delivery', 'type', 'width', 'height']);
+    const mezzanineElement = parserUtils.childByName(mediaFilesElement, 'Mezzanine');
+    const requiredAttributes = getRequiredAttributes(mezzanineElement, ['delivery', 'type', 'width', 'height']);
     if (requiredAttributes) {
-      var mezzanine = createMezzanine();
+      const mezzanine = createMezzanine();
       mezzanine.id = mezzanineElement.getAttribute('id');
       mezzanine.fileURL = parserUtils.parseNodeText(mezzanineElement);
       mezzanine.delivery = requiredAttributes.delivery;
@@ -1099,9 +933,9 @@ function parseCreativeLinear(creativeElement, creativeAttributes) {
       creative.mezzanine = mezzanine;
     }
   });
-  var iconsElement = parserUtils.childByName(creativeElement, 'Icons');
+  const iconsElement = parserUtils.childByName(creativeElement, 'Icons');
   if (iconsElement) {
-    parserUtils.childrenByName(iconsElement, 'Icon').forEach(function (iconElement) {
+    parserUtils.childrenByName(iconsElement, 'Icon').forEach(iconElement => {
       creative.icons.push(parseIcon(iconElement));
     });
   }
@@ -1114,7 +948,7 @@ function parseCreativeLinear(creativeElement, creativeAttributes) {
  * @return {Object} - Parsed mediaFile object.
  */
 function parseMediaFile(mediaFileElement) {
-  var mediaFile = createMediaFile();
+  const mediaFile = createMediaFile();
   mediaFile.id = mediaFileElement.getAttribute('id');
   mediaFile.fileURL = parserUtils.parseNodeText(mediaFileElement);
   mediaFile.deliveryType = mediaFileElement.getAttribute('delivery');
@@ -1128,11 +962,11 @@ function parseMediaFile(mediaFileElement) {
   mediaFile.maxBitrate = parseInt(mediaFileElement.getAttribute('maxBitrate') || 0);
   mediaFile.width = parseInt(mediaFileElement.getAttribute('width') || 0);
   mediaFile.height = parseInt(mediaFileElement.getAttribute('height') || 0);
-  var scalable = mediaFileElement.getAttribute('scalable');
+  const scalable = mediaFileElement.getAttribute('scalable');
   if (scalable && typeof scalable === 'string') {
     mediaFile.scalable = parserUtils.parseBoolean(scalable);
   }
-  var maintainAspectRatio = mediaFileElement.getAttribute('maintainAspectRatio');
+  const maintainAspectRatio = mediaFileElement.getAttribute('maintainAspectRatio');
   if (maintainAspectRatio && typeof maintainAspectRatio === 'string') {
     mediaFile.maintainAspectRatio = parserUtils.parseBoolean(maintainAspectRatio);
   }
@@ -1145,7 +979,7 @@ function parseMediaFile(mediaFileElement) {
  * @return {Object} - Parsed interactiveCreativeFile object.
  */
 function parseInteractiveCreativeFile(interactiveCreativeElement) {
-  var interactiveCreativeFile = createInteractiveCreativeFile(parserUtils.parseAttributes(interactiveCreativeElement));
+  const interactiveCreativeFile = createInteractiveCreativeFile(parserUtils.parseAttributes(interactiveCreativeElement));
   interactiveCreativeFile.fileURL = parserUtils.parseNodeText(interactiveCreativeElement);
   return interactiveCreativeFile;
 }
@@ -1156,7 +990,7 @@ function parseInteractiveCreativeFile(interactiveCreativeElement) {
  * @return {Object} - Parsed icon object.
  */
 function parseIcon(iconElement) {
-  var icon = createIcon();
+  const icon = createIcon();
   icon.program = iconElement.getAttribute('program');
   icon.height = parseInt(iconElement.getAttribute('height') || 0);
   icon.width = parseInt(iconElement.getAttribute('width') || 0);
@@ -1166,30 +1000,30 @@ function parseIcon(iconElement) {
   icon.pxratio = iconElement.getAttribute('pxratio') || '1';
   icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
   icon.duration = parserUtils.parseDuration(iconElement.getAttribute('duration'));
-  parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(function (htmlElement) {
+  parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(htmlElement => {
     icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
     icon.htmlResource = parserUtils.parseNodeText(htmlElement);
   });
-  parserUtils.childrenByName(iconElement, 'IFrameResource').forEach(function (iframeElement) {
+  parserUtils.childrenByName(iconElement, 'IFrameResource').forEach(iframeElement => {
     icon.type = iframeElement.getAttribute('creativeType') || 0;
     icon.iframeResource = parserUtils.parseNodeText(iframeElement);
   });
-  parserUtils.childrenByName(iconElement, 'StaticResource').forEach(function (staticElement) {
+  parserUtils.childrenByName(iconElement, 'StaticResource').forEach(staticElement => {
     icon.type = staticElement.getAttribute('creativeType') || 0;
     icon.staticResource = parserUtils.parseNodeText(staticElement);
   });
-  var iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
+  const iconClicksElement = parserUtils.childByName(iconElement, 'IconClicks');
   if (iconClicksElement) {
     icon.iconClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(iconClicksElement, 'IconClickThrough'));
-    parserUtils.childrenByName(iconClicksElement, 'IconClickTracking').forEach(function (iconClickTrackingElement) {
+    parserUtils.childrenByName(iconClicksElement, 'IconClickTracking').forEach(iconClickTrackingElement => {
       icon.iconClickTrackingURLTemplates.push({
         id: iconClickTrackingElement.getAttribute('id') || null,
         url: parserUtils.parseNodeText(iconClickTrackingElement)
       });
     });
-    var iconClickFallbackImagesElement = parserUtils.childByName(iconClicksElement, 'IconClickFallbackImages');
+    const iconClickFallbackImagesElement = parserUtils.childByName(iconClicksElement, 'IconClickFallbackImages');
     if (iconClickFallbackImagesElement) {
-      parserUtils.childrenByName(iconClickFallbackImagesElement, 'IconClickFallbackImage').forEach(function (iconClickFallbackImageElement) {
+      parserUtils.childrenByName(iconClickFallbackImagesElement, 'IconClickFallbackImage').forEach(iconClickFallbackImageElement => {
         icon.iconClickFallbackImages.push({
           url: parserUtils.parseNodeText(iconClickFallbackImageElement) || null,
           width: iconClickFallbackImageElement.getAttribute('width') || null,
@@ -1233,9 +1067,9 @@ function parseYPosition(yPosition) {
  * @return {Object|null} null if a least one element not present
  */
 function getRequiredAttributes(element, attributes) {
-  var values = {};
-  var error = false;
-  attributes.forEach(function (name) {
+  const values = {};
+  let error = false;
+  attributes.forEach(name => {
     if (!element || !element.getAttribute(name)) {
       error = true;
     } else {
@@ -1246,17 +1080,18 @@ function getRequiredAttributes(element, attributes) {
 }
 
 function createCreativeNonLinear() {
-  var creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var _createCreative = createCreative(creativeAttributes),
-    id = _createCreative.id,
-    adId = _createCreative.adId,
-    sequence = _createCreative.sequence,
-    apiFramework = _createCreative.apiFramework;
+  let creativeAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  const {
+    id,
+    adId,
+    sequence,
+    apiFramework
+  } = createCreative(creativeAttributes);
   return {
-    id: id,
-    adId: adId,
-    sequence: sequence,
-    apiFramework: apiFramework,
+    id,
+    adId,
+    sequence,
+    apiFramework,
     type: 'nonlinear',
     variations: [],
     trackingEvents: {}
@@ -1299,10 +1134,10 @@ function isNonLinearAd(ad) {
  * @return {Object} creative - The CreativeNonLinear object.
  */
 function parseCreativeNonLinear(creativeElement, creativeAttributes) {
-  var creative = createCreativeNonLinear(creativeAttributes);
-  parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(function (trackingEventsElement) {
-    var eventName, trackingURLTemplate;
-    parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
+  const creative = createCreativeNonLinear(creativeAttributes);
+  parserUtils.childrenByName(creativeElement, 'TrackingEvents').forEach(trackingEventsElement => {
+    let eventName, trackingURLTemplate;
+    parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(trackingElement => {
       eventName = trackingElement.getAttribute('event');
       trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
       if (eventName && trackingURLTemplate) {
@@ -1313,8 +1148,8 @@ function parseCreativeNonLinear(creativeElement, creativeAttributes) {
       }
     });
   });
-  parserUtils.childrenByName(creativeElement, 'NonLinear').forEach(function (nonlinearResource) {
-    var nonlinearAd = createNonLinearAd();
+  parserUtils.childrenByName(creativeElement, 'NonLinear').forEach(nonlinearResource => {
+    const nonlinearAd = createNonLinearAd();
     nonlinearAd.id = nonlinearResource.getAttribute('id') || null;
     nonlinearAd.width = nonlinearResource.getAttribute('width');
     nonlinearAd.height = nonlinearResource.getAttribute('height');
@@ -1324,19 +1159,19 @@ function parseCreativeNonLinear(creativeElement, creativeAttributes) {
     nonlinearAd.maintainAspectRatio = parserUtils.parseBoolean(nonlinearResource.getAttribute('maintainAspectRatio'));
     nonlinearAd.minSuggestedDuration = parserUtils.parseDuration(nonlinearResource.getAttribute('minSuggestedDuration'));
     nonlinearAd.apiFramework = nonlinearResource.getAttribute('apiFramework');
-    parserUtils.childrenByName(nonlinearResource, 'HTMLResource').forEach(function (htmlElement) {
+    parserUtils.childrenByName(nonlinearResource, 'HTMLResource').forEach(htmlElement => {
       nonlinearAd.type = htmlElement.getAttribute('creativeType') || 'text/html';
       nonlinearAd.htmlResource = parserUtils.parseNodeText(htmlElement);
     });
-    parserUtils.childrenByName(nonlinearResource, 'IFrameResource').forEach(function (iframeElement) {
+    parserUtils.childrenByName(nonlinearResource, 'IFrameResource').forEach(iframeElement => {
       nonlinearAd.type = iframeElement.getAttribute('creativeType') || 0;
       nonlinearAd.iframeResource = parserUtils.parseNodeText(iframeElement);
     });
-    parserUtils.childrenByName(nonlinearResource, 'StaticResource').forEach(function (staticElement) {
+    parserUtils.childrenByName(nonlinearResource, 'StaticResource').forEach(staticElement => {
       nonlinearAd.type = staticElement.getAttribute('creativeType') || 0;
       nonlinearAd.staticResource = parserUtils.parseNodeText(staticElement);
     });
-    var adParamsElement = parserUtils.childByName(nonlinearResource, 'AdParameters');
+    const adParamsElement = parserUtils.childByName(nonlinearResource, 'AdParameters');
     if (adParamsElement) {
       nonlinearAd.adParameters = {
         value: parserUtils.parseNodeText(adParamsElement),
@@ -1344,7 +1179,7 @@ function parseCreativeNonLinear(creativeElement, creativeAttributes) {
       };
     }
     nonlinearAd.nonlinearClickThroughURLTemplate = parserUtils.parseNodeText(parserUtils.childByName(nonlinearResource, 'NonLinearClickThrough'));
-    parserUtils.childrenByName(nonlinearResource, 'NonLinearClickTracking').forEach(function (clickTrackingElement) {
+    parserUtils.childrenByName(nonlinearResource, 'NonLinearClickTracking').forEach(clickTrackingElement => {
       nonlinearAd.nonlinearClickTrackingURLTemplates.push({
         id: clickTrackingElement.getAttribute('id') || null,
         url: parserUtils.parseNodeText(clickTrackingElement)
@@ -1374,9 +1209,9 @@ function isEmptyExtension(extension) {
  * @return {AdExtension[]|CreativeExtension[]} - The nodes parsed to extensions
  */
 function parseExtensions(extensions) {
-  var exts = [];
-  extensions.forEach(function (extNode) {
-    var ext = _parseExtension(extNode);
+  const exts = [];
+  extensions.forEach(extNode => {
+    const ext = _parseExtension(extNode);
     if (ext) {
       exts.push(ext);
     }
@@ -1392,16 +1227,16 @@ function parseExtensions(extensions) {
 function _parseExtension(extNode) {
   // Ignore comments
   if (extNode.nodeName === '#comment') return null;
-  var ext = createExtension();
-  var extNodeAttrs = extNode.attributes;
-  var childNodes = extNode.childNodes;
+  const ext = createExtension();
+  const extNodeAttrs = extNode.attributes;
+  const childNodes = extNode.childNodes;
   ext.name = extNode.nodeName;
 
   // Parse attributes
   if (extNode.attributes) {
-    for (var extNodeAttrKey in extNodeAttrs) {
+    for (const extNodeAttrKey in extNodeAttrs) {
       if (extNodeAttrs.hasOwnProperty(extNodeAttrKey)) {
-        var extNodeAttr = extNodeAttrs[extNodeAttrKey];
+        const extNodeAttr = extNodeAttrs[extNodeAttrKey];
         if (extNodeAttr.nodeName && extNodeAttr.nodeValue) {
           ext.attributes[extNodeAttr.nodeName] = extNodeAttr.nodeValue;
         }
@@ -1410,9 +1245,9 @@ function _parseExtension(extNode) {
   }
 
   // Parse all children
-  for (var childNodeKey in childNodes) {
+  for (const childNodeKey in childNodes) {
     if (childNodes.hasOwnProperty(childNodeKey)) {
-      var parsedChild = _parseExtension(childNodes[childNodeKey]);
+      const parsedChild = _parseExtension(childNodes[childNodeKey]);
       if (parsedChild) {
         ext.children.push(parsedChild);
       }
@@ -1424,7 +1259,7 @@ function _parseExtension(extNode) {
     to avoid useless parsing that would result to a concatenation of all children
   */
   if (ext.children.length === 0 || ext.children.length === 1 && ['#cdata-section', '#text'].indexOf(ext.children[0].name) >= 0) {
-    var txt = parserUtils.parseNodeText(extNode);
+    const txt = parserUtils.parseNodeText(extNode);
     if (txt !== '') {
       ext.value = txt;
     }
@@ -1443,31 +1278,31 @@ function _parseExtension(extNode) {
  * @return {Array<Creative>} - An array of Creative objects.
  */
 function parseCreatives(creativeNodes) {
-  var creatives = [];
-  creativeNodes.forEach(function (creativeElement) {
-    var creativeAttributes = {
+  const creatives = [];
+  creativeNodes.forEach(creativeElement => {
+    const creativeAttributes = {
       id: creativeElement.getAttribute('id') || null,
       adId: parseCreativeAdIdAttribute(creativeElement),
       sequence: creativeElement.getAttribute('sequence') || null,
       apiFramework: creativeElement.getAttribute('apiFramework') || null
     };
-    var universalAdIds = [];
-    var universalAdIdElements = parserUtils.childrenByName(creativeElement, 'UniversalAdId');
-    universalAdIdElements.forEach(function (universalAdIdElement) {
-      var universalAdId = {
+    const universalAdIds = [];
+    const universalAdIdElements = parserUtils.childrenByName(creativeElement, 'UniversalAdId');
+    universalAdIdElements.forEach(universalAdIdElement => {
+      const universalAdId = {
         idRegistry: universalAdIdElement.getAttribute('idRegistry') || 'unknown',
         value: parserUtils.parseNodeText(universalAdIdElement)
       };
       universalAdIds.push(universalAdId);
     });
-    var creativeExtensions;
-    var creativeExtensionsElement = parserUtils.childByName(creativeElement, 'CreativeExtensions');
+    let creativeExtensions;
+    const creativeExtensionsElement = parserUtils.childByName(creativeElement, 'CreativeExtensions');
     if (creativeExtensionsElement) {
       creativeExtensions = parseExtensions(parserUtils.childrenByName(creativeExtensionsElement, 'CreativeExtension'));
     }
-    for (var creativeTypeElementKey in creativeElement.childNodes) {
-      var creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
-      var parsedCreative = void 0;
+    for (const creativeTypeElementKey in creativeElement.childNodes) {
+      const creativeTypeElement = creativeElement.childNodes[creativeTypeElementKey];
+      let parsedCreative;
       switch (creativeTypeElement.nodeName) {
         case 'Linear':
           parsedCreative = parseCreativeLinear(creativeTypeElement, creativeAttributes);
@@ -1508,7 +1343,7 @@ function parseCreativeAdIdAttribute(creativeElement) {
   null;
 }
 
-var requiredValues = {
+const requiredValues = {
   Wrapper: {
     subElements: ['VASTAdTagURI', 'Impression']
   },
@@ -1595,7 +1430,7 @@ function verifyRequiredValues(node, emit, isAdInline) {
   verifyRequiredAttributes(node, emit);
   if (hasSubElements(node)) {
     verifyRequiredSubElements(node, emit, isAdInline);
-    for (var i = 0; i < node.children.length; i++) {
+    for (let i = 0; i < node.children.length; i++) {
       verifyRequiredValues(node.children[i], emit, isAdInline);
     }
   } else if (parserUtils.parseNodeText(node).length === 0) {
@@ -1616,10 +1451,8 @@ function verifyRequiredAttributes(node, emit) {
   if (!requiredValues[node.nodeName] || !requiredValues[node.nodeName].attributes) {
     return;
   }
-  var requiredAttributes = requiredValues[node.nodeName].attributes;
-  var missingAttributes = requiredAttributes.filter(function (attributeName) {
-    return !node.getAttribute(attributeName);
-  });
+  const requiredAttributes = requiredValues[node.nodeName].attributes;
+  const missingAttributes = requiredAttributes.filter(attributeName => !node.getAttribute(attributeName));
   if (missingAttributes.length > 0) {
     emitMissingValueWarning({
       name: node.nodeName,
@@ -1637,18 +1470,16 @@ function verifyRequiredAttributes(node, emit) {
  * @emits  VASTParser#VAST-warning
  */
 function verifyRequiredSubElements(node, emit, isAdInline) {
-  var required = requiredValues[node.nodeName];
+  const required = requiredValues[node.nodeName];
   // Do not verify subelement if node is a child of wrapper, but verify it if node is the Wrapper itself
   // Wrapper child have no required subElement. (Only InLine does)
-  var isInWrapperButNotWrapperItself = !isAdInline && node.nodeName !== 'Wrapper';
+  const isInWrapperButNotWrapperItself = !isAdInline && node.nodeName !== 'Wrapper';
   if (!required || isInWrapperButNotWrapperItself) {
     return;
   }
   if (required.subElements) {
-    var requiredSubElements = required.subElements;
-    var missingSubElements = requiredSubElements.filter(function (subElementName) {
-      return !parserUtils.childByName(node, subElementName);
-    });
+    const requiredSubElements = required.subElements;
+    const missingSubElements = requiredSubElements.filter(subElementName => !parserUtils.childByName(node, subElementName));
     if (missingSubElements.length > 0) {
       emitMissingValueWarning({
         name: node.nodeName,
@@ -1663,7 +1494,7 @@ function verifyRequiredSubElements(node, emit, isAdInline) {
   if (!isAdInline || !required.oneOfinLineResources) {
     return;
   }
-  var resourceFound = required.oneOfinLineResources.some(function (resource) {
+  const resourceFound = required.oneOfinLineResources.some(resource => {
     return parserUtils.childByName(node, resource);
   });
   if (!resourceFound) {
@@ -1696,12 +1527,14 @@ function hasSubElements(node) {
  * @emits  VastParser#VAST-warning
  */
 function emitMissingValueWarning(_ref, emit) {
-  var name = _ref.name,
-    parentName = _ref.parentName,
-    attributes = _ref.attributes,
-    subElements = _ref.subElements,
-    oneOfResources = _ref.oneOfResources;
-  var message = "Element '".concat(name, "'");
+  let {
+    name,
+    parentName,
+    attributes,
+    subElements,
+    oneOfResources
+  } = _ref;
+  let message = "Element '".concat(name, "'");
   if (attributes) {
     message += " missing required attribute(s) '".concat(attributes.join(', '), "' ");
   } else if (subElements) {
@@ -1712,17 +1545,17 @@ function emitMissingValueWarning(_ref, emit) {
     message += " is empty";
   }
   emit('VAST-warning', {
-    message: message,
+    message,
     parentElement: parentName,
     specVersion: 4.1
   });
 }
-var parserVerification = {
-  verifyRequiredValues: verifyRequiredValues,
-  hasSubElements: hasSubElements,
-  emitMissingValueWarning: emitMissingValueWarning,
-  verifyRequiredAttributes: verifyRequiredAttributes,
-  verifyRequiredSubElements: verifyRequiredSubElements
+const parserVerification = {
+  verifyRequiredValues,
+  hasSubElements,
+  emitMissingValueWarning,
+  verifyRequiredAttributes,
+  verifyRequiredSubElements
 };
 
 /**
@@ -1738,34 +1571,38 @@ var parserVerification = {
  * @return {Object|undefined} - Object containing the ad and if it is wrapper/inline
  */
 function parseAd(adElement, emit) {
-  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-    allowMultipleAds = _ref.allowMultipleAds,
-    followAdditionalWrappers = _ref.followAdditionalWrappers;
-  var childNodes = adElement.childNodes;
-  for (var adTypeElementKey in childNodes) {
-    var adTypeElement = childNodes[adTypeElementKey];
-    if (['Wrapper', 'InLine'].indexOf(adTypeElement.nodeName) === -1) {
-      continue;
-    }
-    if (adTypeElement.nodeName === 'Wrapper' && followAdditionalWrappers === false) {
-      continue;
-    }
-    parserUtils.copyNodeAttribute('id', adElement, adTypeElement);
-    parserUtils.copyNodeAttribute('sequence', adElement, adTypeElement);
-    parserUtils.copyNodeAttribute('adType', adElement, adTypeElement);
-    if (adTypeElement.nodeName === 'Wrapper') {
+  let {
+    allowMultipleAds,
+    followAdditionalWrappers
+  } = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  const childNodes = Array.from(adElement.childNodes);
+  const filteredChildNodes = childNodes.filter(childNode => {
+    const childNodeToLowerCase = childNode.nodeName.toLowerCase();
+    return childNodeToLowerCase === 'inline' || followAdditionalWrappers !== false && childNodeToLowerCase === 'wrapper';
+  });
+  for (const node of filteredChildNodes) {
+    parserUtils.copyNodeAttribute('id', adElement, node);
+    parserUtils.copyNodeAttribute('sequence', adElement, node);
+    parserUtils.copyNodeAttribute('adType', adElement, node);
+    if (node.nodeName === 'Wrapper') {
       return {
-        ad: parseWrapper(adTypeElement, emit),
+        ad: parseWrapper(node, emit),
         type: 'WRAPPER'
       };
-    } else if (adTypeElement.nodeName === 'InLine') {
+    } else if (node.nodeName === 'InLine') {
       return {
-        ad: parseInLine(adTypeElement, emit, {
-          allowMultipleAds: allowMultipleAds
+        ad: parseInLine(node, emit, {
+          allowMultipleAds
         }),
         type: 'INLINE'
       };
     }
+    const wrongNode = node.nodeName.toLowerCase();
+    const message = wrongNode === 'inline' ? "<".concat(node.nodeName, "> must be written <InLine>") : "<".concat(node.nodeName, "> must be written <Wrapper>");
+    emit('VAST-warning', {
+      message,
+      wrongNode: node
+    });
   }
 }
 
@@ -1778,8 +1615,9 @@ function parseAd(adElement, emit) {
  * @return {Object} ad - The ad object.
  */
 function parseInLine(adElement, emit) {
-  var _ref2 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-    allowMultipleAds = _ref2.allowMultipleAds;
+  let {
+    allowMultipleAds
+  } = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   // if allowMultipleAds is set to false by wrapper attribute
   // only the first stand-alone Ad (with no sequence values) in the
   // requested VAST response is allowed so we won't parse ads with sequence
@@ -1797,14 +1635,13 @@ function parseInLine(adElement, emit) {
  * @return {Object} ad - The ad object.
  */
 function parseAdElement(adTypeElement, emit) {
-  var adVerificationsFromExtensions = [];
+  let adVerificationsFromExtensions = [];
   if (emit) {
     parserVerification.verifyRequiredValues(adTypeElement, emit);
   }
-  var childNodes = adTypeElement.childNodes;
-  var ad = createAd(parserUtils.parseAttributes(adTypeElement));
-  for (var nodeKey in childNodes) {
-    var node = childNodes[nodeKey];
+  const childNodes = Array.from(adTypeElement.childNodes);
+  const ad = createAd(parserUtils.parseAttributes(adTypeElement));
+  childNodes.forEach(node => {
     switch (node.nodeName) {
       case 'Error':
         ad.errorURLTemplates.push(parserUtils.parseNodeText(node));
@@ -1820,7 +1657,7 @@ function parseAdElement(adTypeElement, emit) {
         break;
       case 'Extensions':
         {
-          var extNodes = parserUtils.childrenByName(node, 'Extension');
+          const extNodes = parserUtils.childrenByName(node, 'Extension');
           ad.extensions = parseExtensions(extNodes);
 
           /*
@@ -1889,7 +1726,7 @@ function parseAdElement(adTypeElement, emit) {
         });
         break;
     }
-  }
+  });
   if (adVerificationsFromExtensions.length) {
     ad.adVerifications = ad.adVerifications.concat(adVerificationsFromExtensions);
   }
@@ -1904,14 +1741,14 @@ function parseAdElement(adTypeElement, emit) {
  * @return {Ad}
  */
 function parseWrapper(wrapperElement, emit) {
-  var ad = parseAdElement(wrapperElement, emit);
-  var followAdditionalWrappersValue = wrapperElement.getAttribute('followAdditionalWrappers');
-  var allowMultipleAdsValue = wrapperElement.getAttribute('allowMultipleAds');
-  var fallbackOnNoAdValue = wrapperElement.getAttribute('fallbackOnNoAd');
+  const ad = parseAdElement(wrapperElement, emit);
+  const followAdditionalWrappersValue = wrapperElement.getAttribute('followAdditionalWrappers');
+  const allowMultipleAdsValue = wrapperElement.getAttribute('allowMultipleAds');
+  const fallbackOnNoAdValue = wrapperElement.getAttribute('fallbackOnNoAd');
   ad.followAdditionalWrappers = followAdditionalWrappersValue ? parserUtils.parseBoolean(followAdditionalWrappersValue) : true;
   ad.allowMultipleAds = allowMultipleAdsValue ? parserUtils.parseBoolean(allowMultipleAdsValue) : false;
   ad.fallbackOnNoAd = fallbackOnNoAdValue ? parserUtils.parseBoolean(fallbackOnNoAdValue) : null;
-  var wrapperURLElement = parserUtils.childByName(wrapperElement, 'VASTAdTagURI');
+  let wrapperURLElement = parserUtils.childByName(wrapperElement, 'VASTAdTagURI');
   if (wrapperURLElement) {
     ad.nextWrapperURL = parserUtils.parseNodeText(wrapperURLElement);
   } else {
@@ -1920,8 +1757,8 @@ function parseWrapper(wrapperElement, emit) {
       ad.nextWrapperURL = parserUtils.parseNodeText(parserUtils.childByName(wrapperURLElement, 'URL'));
     }
   }
-  ad.creatives.forEach(function (wrapperCreativeElement) {
-    if (['linear', 'nonlinear'].indexOf(wrapperCreativeElement.type) !== -1) {
+  ad.creatives.forEach(wrapperCreativeElement => {
+    if (['linear', 'nonlinear'].includes(wrapperCreativeElement.type)) {
       // TrackingEvents Linear / NonLinear
       if (wrapperCreativeElement.trackingEvents) {
         if (!ad.trackingEvents) {
@@ -1930,17 +1767,14 @@ function parseWrapper(wrapperElement, emit) {
         if (!ad.trackingEvents[wrapperCreativeElement.type]) {
           ad.trackingEvents[wrapperCreativeElement.type] = {};
         }
-        var _loop = function _loop(eventName) {
-          var urls = wrapperCreativeElement.trackingEvents[eventName];
+        for (const eventName in wrapperCreativeElement.trackingEvents) {
+          const urls = wrapperCreativeElement.trackingEvents[eventName];
           if (!Array.isArray(ad.trackingEvents[wrapperCreativeElement.type][eventName])) {
             ad.trackingEvents[wrapperCreativeElement.type][eventName] = [];
           }
-          urls.forEach(function (url) {
+          urls.forEach(url => {
             ad.trackingEvents[wrapperCreativeElement.type][eventName].push(url);
           });
-        };
-        for (var eventName in wrapperCreativeElement.trackingEvents) {
-          _loop(eventName);
         }
       }
       // ClickTracking
@@ -1948,7 +1782,7 @@ function parseWrapper(wrapperElement, emit) {
         if (!Array.isArray(ad.videoClickTrackingURLTemplates)) {
           ad.videoClickTrackingURLTemplates = [];
         } // tmp property to save wrapper tracking URLs until they are merged
-        wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(function (item) {
+        wrapperCreativeElement.videoClickTrackingURLTemplates.forEach(item => {
           ad.videoClickTrackingURLTemplates.push(item);
         });
       }
@@ -1961,7 +1795,7 @@ function parseWrapper(wrapperElement, emit) {
         if (!Array.isArray(ad.videoCustomClickURLTemplates)) {
           ad.videoCustomClickURLTemplates = [];
         } // tmp property to save wrapper tracking URLs until they are merged
-        wrapperCreativeElement.videoCustomClickURLTemplates.forEach(function (item) {
+        wrapperCreativeElement.videoCustomClickURLTemplates.forEach(item => {
           ad.videoCustomClickURLTemplates.push(item);
         });
       }
@@ -1978,29 +1812,33 @@ function parseWrapper(wrapperElement, emit) {
  * @return {Array<Object>}
  */
 function _parseAdVerifications(verifications) {
-  var ver = [];
-  verifications.forEach(function (verificationNode) {
-    var verification = createAdVerification();
-    var childNodes = verificationNode.childNodes;
+  const ver = [];
+  verifications.forEach(verificationNode => {
+    const verification = createAdVerification();
+    const childNodes = Array.from(verificationNode.childNodes);
     parserUtils.assignAttributes(verificationNode.attributes, verification);
-    for (var nodeKey in childNodes) {
-      var node = childNodes[nodeKey];
-      switch (node.nodeName) {
+    childNodes.forEach(_ref => {
+      let {
+        nodeName,
+        textContent,
+        attributes
+      } = _ref;
+      switch (nodeName) {
         case 'JavaScriptResource':
         case 'ExecutableResource':
-          verification.resource = parserUtils.parseNodeText(node);
-          parserUtils.assignAttributes(node.attributes, verification);
+          verification.resource = textContent.trim();
+          parserUtils.assignAttributes(attributes, verification);
           break;
         case 'VerificationParameters':
-          verification.parameters = parserUtils.parseNodeText(node);
+          verification.parameters = textContent.trim();
           break;
       }
-    }
-    var trackingEventsElement = parserUtils.childByName(verificationNode, 'TrackingEvents');
+    });
+    const trackingEventsElement = parserUtils.childByName(verificationNode, 'TrackingEvents');
     if (trackingEventsElement) {
-      parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(function (trackingElement) {
-        var eventName = trackingElement.getAttribute('event');
-        var trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
+      parserUtils.childrenByName(trackingEventsElement, 'Tracking').forEach(trackingElement => {
+        const eventName = trackingElement.getAttribute('event');
+        const trackingURLTemplate = parserUtils.parseNodeText(trackingElement);
         if (eventName && trackingURLTemplate) {
           if (!Array.isArray(verification.trackingEvents[eventName])) {
             verification.trackingEvents[eventName] = [];
@@ -2020,11 +1858,11 @@ function _parseAdVerifications(verifications) {
  * @return {Array<Object>}
  */
 function _parseAdVerificationsFromExtensions(extensions) {
-  var adVerificationsNode = null,
+  let adVerificationsNode = null,
     adVerifications = [];
 
   // Find the first (and only) AdVerifications node from extensions
-  extensions.some(function (extension) {
+  extensions.some(extension => {
     return adVerificationsNode = parserUtils.childByName(extension, 'AdVerifications');
   });
 
@@ -2041,8 +1879,8 @@ function _parseAdVerificationsFromExtensions(extensions) {
  * @return {Object} viewableImpression - The viewableImpression object
  */
 function _parseViewableImpression(viewableImpressionNode) {
-  var regroupNodesUrl = function regroupNodesUrl(urls, node) {
-    var url = parserUtils.parseNodeText(node);
+  const regroupNodesUrl = (urls, node) => {
+    const url = parserUtils.parseNodeText(node);
     url && urls.push(url);
     return urls;
   };
@@ -2054,9 +1892,8 @@ function _parseViewableImpression(viewableImpressionNode) {
   };
 }
 
-var EventEmitter = /*#__PURE__*/function () {
-  function EventEmitter() {
-    _classCallCheck(this, EventEmitter);
+class EventEmitter {
+  constructor() {
     this._handlers = [];
   }
 
@@ -2069,140 +1906,116 @@ var EventEmitter = /*#__PURE__*/function () {
    * @param {Function} handler
    * @returns {EventEmitter}
    */
-  _createClass(EventEmitter, [{
-    key: "on",
-    value: function on(event, handler) {
-      if (typeof handler !== 'function') {
-        throw new TypeError("The handler argument must be of type Function. Received type ".concat(_typeof(handler)));
+  on(event, handler) {
+    if (typeof handler !== 'function') {
+      throw new TypeError("The handler argument must be of type Function. Received type ".concat(typeof handler));
+    }
+    if (!event) {
+      throw new TypeError("The event argument must be of type String. Received type ".concat(typeof event));
+    }
+    this._handlers.push({
+      event,
+      handler
+    });
+    return this;
+  }
+
+  /**
+   * Adds a one-time handler function for the named event.
+   * The next time event is triggered, this handler is removed and then invoked.
+   * @param {String} event
+   * @param {Function} handler
+   * @returns {EventEmitter}
+   */
+  once(event, handler) {
+    return this.on(event, onceWrap(this, event, handler));
+  }
+
+  /**
+   * Removes all instances for the specified handler from the handler array for the named event.
+   * @param {String} event
+   * @param {Function} handler
+   * @returns {EventEmitter}
+   */
+  off(event, handler) {
+    this._handlers = this._handlers.filter(item => {
+      return item.event !== event || item.handler !== handler;
+    });
+    return this;
+  }
+
+  /**
+   * Synchronously calls each of the handlers registered for the named event,
+   * in the order they were registered, passing the supplied arguments to each.
+   * @param {String} event
+   * @param  {...any} args list of arguments that will be used by the event handler
+   * @returns {Boolean} true if the event had handlers, false otherwise.
+   */
+  emit(event) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+    let called = false;
+    this._handlers.forEach(item => {
+      if (item.event === '*') {
+        called = true;
+        item.handler(event, ...args);
       }
-      if (!event) {
-        throw new TypeError("The event argument must be of type String. Received type ".concat(_typeof(event)));
+      if (item.event === event) {
+        called = true;
+        item.handler(...args);
       }
-      this._handlers.push({
-        event: event,
-        handler: handler
-      });
+    });
+    return called;
+  }
+
+  /**
+   * Removes all listeners, or those of the specified named event.
+   * @param {String} event
+   * @returns {EventEmitter}
+   */
+  removeAllListeners(event) {
+    if (!event) {
+      this._handlers = [];
       return this;
     }
+    this._handlers = this._handlers.filter(item => item.event !== event);
+    return this;
+  }
 
-    /**
-     * Adds a one-time handler function for the named event.
-     * The next time event is triggered, this handler is removed and then invoked.
-     * @param {String} event
-     * @param {Function} handler
-     * @returns {EventEmitter}
-     */
-  }, {
-    key: "once",
-    value: function once(event, handler) {
-      return this.on(event, onceWrap(this, event, handler));
-    }
+  /**
+   * Returns the number of listeners listening to the named event.
+   * @param {String} event
+   * @returns {Number}
+   */
+  listenerCount(event) {
+    return this._handlers.filter(item => item.event === event).length;
+  }
 
-    /**
-     * Removes all instances for the specified handler from the handler array for the named event.
-     * @param {String} event
-     * @param {Function} handler
-     * @returns {EventEmitter}
-     */
-  }, {
-    key: "off",
-    value: function off(event, handler) {
-      this._handlers = this._handlers.filter(function (item) {
-        return item.event !== event || item.handler !== handler;
-      });
-      return this;
-    }
-
-    /**
-     * Synchronously calls each of the handlers registered for the named event,
-     * in the order they were registered, passing the supplied arguments to each.
-     * @param {String} event
-     * @param  {...any} args list of arguments that will be used by the event handler
-     * @returns {Boolean} true if the event had handlers, false otherwise.
-     */
-  }, {
-    key: "emit",
-    value: function emit(event) {
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
+  /**
+   * Returns a copy of the array of listeners for the named event including those created by .once().
+   * @param {String} event
+   * @returns {Function[]}
+   */
+  listeners(event) {
+    return this._handlers.reduce((listeners, item) => {
+      if (item.event === event) {
+        listeners.push(item.handler);
       }
-      var called = false;
-      this._handlers.forEach(function (item) {
-        if (item.event === '*') {
-          called = true;
-          item.handler.apply(item, [event].concat(args));
-        }
-        if (item.event === event) {
-          called = true;
-          item.handler.apply(item, args);
-        }
-      });
-      return called;
-    }
+      return listeners;
+    }, []);
+  }
 
-    /**
-     * Removes all listeners, or those of the specified named event.
-     * @param {String} event
-     * @returns {EventEmitter}
-     */
-  }, {
-    key: "removeAllListeners",
-    value: function removeAllListeners(event) {
-      if (!event) {
-        this._handlers = [];
-        return this;
-      }
-      this._handlers = this._handlers.filter(function (item) {
-        return item.event !== event;
-      });
-      return this;
-    }
-
-    /**
-     * Returns the number of listeners listening to the named event.
-     * @param {String} event
-     * @returns {Number}
-     */
-  }, {
-    key: "listenerCount",
-    value: function listenerCount(event) {
-      return this._handlers.filter(function (item) {
-        return item.event === event;
-      }).length;
-    }
-
-    /**
-     * Returns a copy of the array of listeners for the named event including those created by .once().
-     * @param {String} event
-     * @returns {Function[]}
-     */
-  }, {
-    key: "listeners",
-    value: function listeners(event) {
-      return this._handlers.reduce(function (listeners, item) {
-        if (item.event === event) {
-          listeners.push(item.handler);
-        }
-        return listeners;
-      }, []);
-    }
-
-    /**
-     * Returns an array listing the events for which the emitter has registered handlers.
-     * @returns {String[]}
-     */
-  }, {
-    key: "eventNames",
-    value: function eventNames() {
-      return this._handlers.map(function (item) {
-        return item.event;
-      });
-    }
-  }]);
-  return EventEmitter;
-}();
+  /**
+   * Returns an array listing the events for which the emitter has registered handlers.
+   * @returns {String[]}
+   */
+  eventNames() {
+    return this._handlers.map(item => item.event);
+  }
+}
 function onceWrap(target, event, handler) {
-  var state = {
+  const state = {
     fired: false,
     wrapFn: undefined
   };
@@ -2210,161 +2023,19 @@ function onceWrap(target, event, handler) {
     if (!state.fired) {
       target.off(event, state.wrapFn);
       state.fired = true;
-      handler.bind(target).apply(void 0, arguments);
+      handler.bind(target)(...arguments);
     }
   }
   state.wrapFn = onceWrapper;
   return onceWrapper;
 }
 
-var DEFAULT_TIMEOUT = 120000;
-
-var uri = require('url');
-var fs = require('fs');
-var http = require('http');
-var https = require('https');
-var DOMParser = require('@xmldom/xmldom').DOMParser;
-function get$2(url, options, cb) {
-  url = uri.parse(url);
-  var httpModule = url.protocol === 'https:' ? https : http;
-  if (url.protocol === 'file:') {
-    fs.readFile(uri.fileURLToPath(url.href), 'utf8', function (err, data) {
-      if (err) {
-        return cb(err);
-      }
-      var xml = new DOMParser().parseFromString(data);
-      cb(null, xml, {
-        byteLength: Buffer.from(data).byteLength
-      });
-    });
-  } else {
-    var timeoutId;
-    var data = '';
-    var timeout = options.timeout || DEFAULT_TIMEOUT;
-    var req = httpModule.get(url.href, function (res) {
-      res.on('data', function (chunk) {
-        data += chunk;
-        clearTimeout(timeoutId);
-        timeoutId = startTimeout();
-      });
-      res.on('end', function () {
-        clearTimeout(timeoutId);
-        var xml = new DOMParser().parseFromString(data);
-        cb(null, xml, {
-          byteLength: Buffer.from(data).byteLength,
-          statusCode: res.statusCode
-        });
-      });
-    });
-    req.on('error', function (err) {
-      clearTimeout(timeoutId);
-      if (req.aborted) {
-        cb(new Error("NodeURLHandler: Request timed out after ".concat(timeout, " ms.")), null, {
-          statusCode: 408 // Request timeout
-        });
-      } else {
-        cb(err);
-      }
-    });
-    var startTimeout = function startTimeout() {
-      return setTimeout(function () {
-        return req.abort();
-      }, timeout);
-    };
-    timeoutId = startTimeout();
-  }
-}
-var nodeURLHandler = {
-  get: get$2
-};
-
-function xhr() {
-  try {
-    var request = new window.XMLHttpRequest();
-    if ('withCredentials' in request) {
-      // check CORS support
-      return request;
-    }
-    return null;
-  } catch (err) {
-    return null;
-  }
-}
-function supported() {
-  return !!xhr();
-}
-function handleLoad(request, cb) {
-  if (request.status === 200) {
-    cb(null, request.responseXML, {
-      byteLength: request.response.length,
-      statusCode: request.status
-    });
-  } else {
-    handleFail(request, cb, false);
-  }
-}
-function handleFail(request, cb, isTimeout) {
-  var statusCode = !isTimeout ? request.status : 408; // Request timeout
-  var msg = isTimeout ? "XHRURLHandler: Request timed out after ".concat(request.timeout, " ms (").concat(statusCode, ")") : "XHRURLHandler: ".concat(request.statusText, " (").concat(statusCode, ")");
-  cb(new Error(msg), null, {
-    statusCode: statusCode
-  });
-}
-function get$1(url, options, cb) {
-  if (window.location.protocol === 'https:' && url.indexOf('http://') === 0) {
-    return cb(new Error('XHRURLHandler: Cannot go from HTTPS to HTTP.'));
-  }
-  try {
-    var request = xhr();
-    request.open('GET', url);
-    request.timeout = options.timeout || DEFAULT_TIMEOUT;
-    request.withCredentials = options.withCredentials || false;
-    request.overrideMimeType && request.overrideMimeType('text/xml');
-    request.onload = function () {
-      return handleLoad(request, cb);
-    };
-    request.onerror = function () {
-      return handleFail(request, cb, false);
-    };
-    request.onabort = function () {
-      return handleFail(request, cb, false);
-    };
-    request.ontimeout = function () {
-      return handleFail(request, cb, true);
-    };
-    request.send();
-  } catch (error) {
-    cb(new Error('XHRURLHandler: Unexpected error'));
-  }
-}
-var XHRURLHandler = {
-  get: get$1,
-  supported: supported
-};
-
-function get(url, options, cb) {
-  // Allow skip of the options param
-  if (!cb) {
-    if (typeof options === 'function') {
-      cb = options;
-    }
-    options = {};
-  }
-  if (typeof window === 'undefined' || window === null) {
-    return nodeURLHandler.get(url, options, cb);
-  } else if (XHRURLHandler.supported()) {
-    return XHRURLHandler.get(url, options, cb);
-  }
-  return cb(new Error('Current context is not supported by any of the default URLHandlers. Please provide a custom URLHandler'));
-}
-var urlHandler = {
-  get: get
-};
-
 function createVASTResponse(_ref) {
-  var ads = _ref.ads,
-    errorURLTemplates = _ref.errorURLTemplates,
-    version = _ref.version;
+  let {
+    ads,
+    errorURLTemplates,
+    version
+  } = _ref;
   return {
     ads: ads || [],
     errorURLTemplates: errorURLTemplates || [],
@@ -2376,26 +2047,26 @@ function createVASTResponse(_ref) {
   We decided to put the estimated bitrate separated from classes to persist it between different instances of vast client/parser
 */
 
-var estimatedBitrateCount = 0;
-var estimatedBitrate = 0;
+let estimatedBitrateCount = 0;
+let estimatedBitrate = 0;
 
 /**
  * Calculate average estimated bitrate from the previous values and new entries
  * @param {Number} byteLength - The length of the response in bytes.
  * @param {Number} duration - The duration of the request in ms.
  */
-var updateEstimatedBitrate = function updateEstimatedBitrate(byteLength, duration) {
+const updateEstimatedBitrate = (byteLength, duration) => {
   if (!byteLength || !duration || byteLength <= 0 || duration <= 0) {
     return;
   }
 
   // We want the bitrate in kb/s, byteLength are in bytes and duration in ms, just need to convert the byteLength because kb/s = b/ms
-  var bitrate = byteLength * 8 / duration;
+  const bitrate = byteLength * 8 / duration;
   estimatedBitrate = (estimatedBitrate * estimatedBitrateCount + bitrate) / ++estimatedBitrateCount;
 };
 
-var DEFAULT_MAX_WRAPPER_DEPTH = 10;
-var DEFAULT_EVENT_DATA = {
+const DEFAULT_MAX_WRAPPER_DEPTH = 10;
+const DEFAULT_EVENT_DATA = {
   ERRORCODE: 900,
   extensions: []
 };
@@ -2406,604 +2077,448 @@ var DEFAULT_EVENT_DATA = {
  * @class VASTParser
  * @extends EventEmitter
  */
-var VASTParser = /*#__PURE__*/function (_EventEmitter) {
-  _inherits(VASTParser, _EventEmitter);
-  var _super = _createSuper(VASTParser);
+class VASTParser extends EventEmitter {
   /**
    * Creates an instance of VASTParser.
    * @constructor
    */
-  function VASTParser() {
-    var _this;
-    _classCallCheck(this, VASTParser);
-    _this = _super.call(this);
-    _this.remainingAds = [];
-    _this.errorURLTemplates = [];
-    _this.rootErrorURLTemplates = [];
-    _this.maxWrapperDepth = null;
-    _this.URLTemplateFilters = [];
-    _this.fetchingOptions = {};
-    _this.parsingOptions = {};
-    return _this;
+  constructor() {
+    let {
+      fetcher
+    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    super();
+    this.maxWrapperDepth = null;
+    this.remainingAds = [];
+    this.fetcher = fetcher || null;
   }
 
   /**
-   * Adds a filter function to the array of filters which are called before fetching a VAST document.
-   * @param  {function} filter - The filter function to be added at the end of the array.
+   * Tracks the error provided in the errorCode parameter and emits a VAST-error event for the given error.
+   * @param  {Array} urlTemplates - An Array of url templates to use to make the tracking call.
+   * @param  {Object} errorCode - An Object containing the error data.
+   * @param  {Object} data - One (or more) Object containing additional data.
+   * @emits  VASTParser#VAST-error
    * @return {void}
    */
-  _createClass(VASTParser, [{
-    key: "addURLTemplateFilter",
-    value: function addURLTemplateFilter(filter) {
-      if (typeof filter === 'function') {
-        this.URLTemplateFilters.push(filter);
-      }
+  trackVastError(urlTemplates, errorCode) {
+    for (var _len = arguments.length, data = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      data[_key - 2] = arguments[_key];
     }
+    this.emit('VAST-error', Object.assign({}, DEFAULT_EVENT_DATA, errorCode, ...data));
+    util.track(urlTemplates, errorCode);
+  }
 
-    /**
-     * Removes the last element of the url templates filters array.
-     * @return {void}
-     */
-  }, {
-    key: "removeURLTemplateFilter",
-    value: function removeURLTemplateFilter() {
-      this.URLTemplateFilters.pop();
+  /**
+   * Returns an array of errorURLTemplates for the VAST being parsed.
+   * @return {Array}
+   */
+  getErrorURLTemplates() {
+    return this.rootErrorURLTemplates.concat(this.errorURLTemplates);
+  }
+
+  /**
+   * Returns the estimated bitrate calculated from all previous requests
+   * @returns The average of all estimated bitrates in kb/s.
+   */
+  getEstimatedBitrate() {
+    return estimatedBitrate;
+  }
+
+  /**
+   * Inits the parsing properties of the class with the custom values provided as options.
+   * @param {Object} options - The options to initialize a parsing sequence
+   */
+  initParsingStatus() {
+    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
+    this.parsingOptions = {
+      allowMultipleAds: options.allowMultipleAds
+    };
+    this.rootURL = '';
+    this.resetParsingStatus();
+    updateEstimatedBitrate(options.byteLength, options.requestDuration);
+  }
+
+  /**
+   * Reset the parsing property of the class everytime a VAST is parsed
+   */
+  resetParsingStatus() {
+    this.errorURLTemplates = [];
+    this.rootErrorURLTemplates = [];
+    this.vastVersion = null;
+  }
+  /**
+   * Resolves the next group of ads. If all is true resolves all the remaining ads.
+   * @param  {Boolean} all - If true all the remaining ads are resolved
+   * @return {Promise}
+   */
+  getRemainingAds(all) {
+    if (this.remainingAds.length === 0) {
+      return Promise.reject(new Error('No more ads are available for the given VAST'));
     }
+    const ads = all ? util.flatten(this.remainingAds) : this.remainingAds.shift();
+    this.errorURLTemplates = [];
+    return this.resolveAds(ads, {
+      wrapperDepth: 0,
+      url: this.rootURL
+    }).then(resolvedAds => {
+      return this.buildVASTResponse(resolvedAds);
+    });
+  }
 
-    /**
-     * Returns the number of filters of the url templates filters array.
-     * @return {Number}
-     */
-  }, {
-    key: "countURLTemplateFilters",
-    value: function countURLTemplateFilters() {
-      return this.URLTemplateFilters.length;
-    }
+  /**
+   * Parses the given xml Object into a VASTResponse.
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param  {Object} vastXml - An object representing a vast xml document.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
+   * @emits  VASTParser#VAST-warning
+   * @return {Promise}
+   */
+  parseVAST(vastXml) {
+    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    this.initParsingStatus(options);
+    options.isRootVAST = true;
+    return this.parse(vastXml, options).then(ads => {
+      return this.buildVASTResponse(ads);
+    });
+  }
 
-    /**
-     * Removes all the filter functions from the url templates filters array.
-     * @return {void}
-     */
-  }, {
-    key: "clearURLTemplateFilters",
-    value: function clearURLTemplateFilters() {
-      this.URLTemplateFilters = [];
-    }
+  /**
+   * Builds a VASTResponse which can be returned.
+   * @param  {Array} ads - An Array of unwrapped ads
+   * @return {Object}
+   */
+  buildVASTResponse(ads) {
+    const response = createVASTResponse({
+      ads,
+      errorURLTemplates: this.getErrorURLTemplates(),
+      version: this.vastVersion
+    });
+    this.completeWrapperResolving(response);
+    return response;
+  }
 
-    /**
-     * Tracks the error provided in the errorCode parameter and emits a VAST-error event for the given error.
-     * @param  {Array} urlTemplates - An Array of url templates to use to make the tracking call.
-     * @param  {Object} errorCode - An Object containing the error data.
-     * @param  {Object} data - One (or more) Object containing additional data.
-     * @emits  VASTParser#VAST-error
-     * @return {void}
-     */
-  }, {
-    key: "trackVastError",
-    value: function trackVastError(urlTemplates, errorCode) {
-      for (var _len = arguments.length, data = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        data[_key - 2] = arguments[_key];
-      }
-      this.emit('VAST-error', Object.assign.apply(Object, [{}, DEFAULT_EVENT_DATA, errorCode].concat(data)));
-      util.track(urlTemplates, errorCode);
-    }
-
-    /**
-     * Returns an array of errorURLTemplates for the VAST being parsed.
-     * @return {Array}
-     */
-  }, {
-    key: "getErrorURLTemplates",
-    value: function getErrorURLTemplates() {
-      return this.rootErrorURLTemplates.concat(this.errorURLTemplates);
-    }
-
-    /**
-     * Returns the estimated bitrate calculated from all previous requests
-     * @returns The average of all estimated bitrates in kb/s.
-     */
-  }, {
-    key: "getEstimatedBitrate",
-    value: function getEstimatedBitrate() {
-      return estimatedBitrate;
-    }
-
-    /**
-     * Fetches a VAST document for the given url.
-     * Returns a Promise which resolves,rejects according to the result of the request.
-     * @param  {String} url - The url to request the VAST document.
-     * @param {Number} wrapperDepth - How many times the current url has been wrapped.
-     * @param {String} previousUrl - Url of the previous VAST.
-     * @param {Object} wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
-     * @emits  VASTParser#VAST-resolving
-     * @emits  VASTParser#VAST-resolved
-     * @return {Promise}
-     */
-  }, {
-    key: "fetchVAST",
-    value: function fetchVAST(url) {
-      var _this2 = this;
-      var wrapperDepth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      var previousUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-      var wrapperAd = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-      return new Promise(function (resolve, reject) {
-        // Process url with defined filter
-        _this2.URLTemplateFilters.forEach(function (filter) {
-          url = filter(url);
-        });
-        var timeBeforeGet = Date.now();
-        _this2.emit('VAST-resolving', {
-          url: url,
-          previousUrl: previousUrl,
-          wrapperDepth: wrapperDepth,
-          maxWrapperDepth: _this2.maxWrapperDepth,
-          timeout: _this2.fetchingOptions.timeout,
-          wrapperAd: wrapperAd
-        });
-        _this2.urlHandler.get(url, _this2.fetchingOptions, function (error, xml) {
-          var details = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-          var deltaTime = Math.round(Date.now() - timeBeforeGet);
-          var info = Object.assign({
-            url: url,
-            previousUrl: previousUrl,
-            wrapperDepth: wrapperDepth,
-            error: error,
-            duration: deltaTime
-          }, details);
-          _this2.emit('VAST-resolved', info);
-          updateEstimatedBitrate(details.byteLength, deltaTime);
-          if (error) {
-            reject(error);
-          } else {
-            resolve(xml);
-          }
-        });
+  /**
+   * Parses the given xml Object into an array of ads
+   * Returns the array or throws an `Error` if an invalid VAST XML is provided
+   * @param  {Object} vastXml - An object representing an xml document.
+   * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits  VASTParser#VAST-warning
+   * @emits VASTParser#VAST-ad-parsed
+   * @return {Array}
+   * @throws {Error} `vastXml` must be a valid VAST XMLDocument
+   */
+  parseVastXml(vastXml, _ref) {
+    let {
+      isRootVAST = false,
+      url = null,
+      wrapperDepth = 0,
+      allowMultipleAds,
+      followAdditionalWrappers
+    } = _ref;
+    // check if is a valid VAST document
+    if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
+      this.emit('VAST-ad-parsed', {
+        type: 'ERROR',
+        url,
+        wrapperDepth
       });
+      throw new Error('Invalid VAST XMLDocument');
     }
+    const ads = [];
+    const childNodes = vastXml.documentElement.childNodes;
 
-    /**
-     * Inits the parsing properties of the class with the custom values provided as options.
-     * @param {Object} options - The options to initialize a parsing sequence
+    /* Only parse the version of the Root VAST for now because we don't know yet how to
+     * handle some cases like multiple wrappers in the same vast
      */
-  }, {
-    key: "initParsingStatus",
-    value: function initParsingStatus() {
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      this.errorURLTemplates = [];
-      this.fetchingOptions = {
-        timeout: options.timeout || DEFAULT_TIMEOUT,
-        withCredentials: options.withCredentials
-      };
-      this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
-      this.parsingOptions = {
-        allowMultipleAds: options.allowMultipleAds
-      };
-      this.remainingAds = [];
-      this.rootErrorURLTemplates = [];
-      this.rootURL = '';
-      this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
-      this.vastVersion = null;
-      updateEstimatedBitrate(options.byteLength, options.requestDuration);
+    const vastVersion = vastXml.documentElement.getAttribute('version');
+    if (isRootVAST) {
+      if (vastVersion) this.vastVersion = vastVersion;
     }
+    // Fill the VASTResponse object with ads and errorURLTemplates
+    for (const nodeKey in childNodes) {
+      const node = childNodes[nodeKey];
+      if (node.nodeName === 'Error') {
+        const errorURLTemplate = parserUtils.parseNodeText(node);
 
-    /**
-     * Resolves the next group of ads. If all is true resolves all the remaining ads.
-     * @param  {Boolean} all - If true all the remaining ads are resolved
-     * @return {Promise}
-     */
-  }, {
-    key: "getRemainingAds",
-    value: function getRemainingAds(all) {
-      var _this3 = this;
-      if (this.remainingAds.length === 0) {
-        return Promise.reject(new Error('No more ads are available for the given VAST'));
-      }
-      var ads = all ? util.flatten(this.remainingAds) : this.remainingAds.shift();
-      this.errorURLTemplates = [];
-      return this.resolveAds(ads, {
-        wrapperDepth: 0,
-        url: this.rootURL
-      }).then(function (resolvedAds) {
-        return _this3.buildVASTResponse(resolvedAds);
-      });
-    }
-
-    /**
-     * Fetches and parses a VAST for the given url.
-     * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
-     * @param  {String} url - The url to request the VAST document.
-     * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-     * @emits  VASTParser#VAST-resolving
-     * @emits  VASTParser#VAST-resolved
-     * @emits  VASTParser#VAST-warning
-     * @return {Promise}
-     */
-  }, {
-    key: "getAndParseVAST",
-    value: function getAndParseVAST(url) {
-      var _this4 = this;
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.initParsingStatus(options);
-      this.URLTemplateFilters.forEach(function (filter) {
-        url = filter(url);
-      });
-      this.rootURL = url;
-      return this.fetchVAST(url).then(function (xml) {
-        options.previousUrl = url;
-        options.isRootVAST = true;
-        options.url = url;
-        return _this4.parse(xml, options).then(function (ads) {
-          return _this4.buildVASTResponse(ads);
-        });
-      });
-    }
-
-    /**
-     * Parses the given xml Object into a VASTResponse.
-     * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
-     * @param  {Object} vastXml - An object representing a vast xml document.
-     * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-     * @emits  VASTParser#VAST-resolving
-     * @emits  VASTParser#VAST-resolved
-     * @emits  VASTParser#VAST-warning
-     * @return {Promise}
-     */
-  }, {
-    key: "parseVAST",
-    value: function parseVAST(vastXml) {
-      var _this5 = this;
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.initParsingStatus(options);
-      options.isRootVAST = true;
-      return this.parse(vastXml, options).then(function (ads) {
-        return _this5.buildVASTResponse(ads);
-      });
-    }
-
-    /**
-     * Builds a VASTResponse which can be returned.
-     * @param  {Array} ads - An Array of unwrapped ads
-     * @return {Object}
-     */
-  }, {
-    key: "buildVASTResponse",
-    value: function buildVASTResponse(ads) {
-      var response = createVASTResponse({
-        ads: ads,
-        errorURLTemplates: this.getErrorURLTemplates(),
-        version: this.vastVersion
-      });
-      this.completeWrapperResolving(response);
-      return response;
-    }
-
-    /**
-     * Parses the given xml Object into an array of ads
-     * Returns the array or throws an `Error` if an invalid VAST XML is provided
-     * @param  {Object} vastXml - An object representing an xml document.
-     * @param  {Object} options - An optional Object of parameters to be used in the parsing process.
-     * @emits  VASTParser#VAST-warning
-     * @emits VASTParser#VAST-ad-parsed
-     * @return {Array}
-     * @throws {Error} `vastXml` must be a valid VAST XMLDocument
-     */
-  }, {
-    key: "parseVastXml",
-    value: function parseVastXml(vastXml, _ref) {
-      var _ref$isRootVAST = _ref.isRootVAST,
-        isRootVAST = _ref$isRootVAST === void 0 ? false : _ref$isRootVAST,
-        _ref$url = _ref.url,
-        url = _ref$url === void 0 ? null : _ref$url,
-        _ref$wrapperDepth = _ref.wrapperDepth,
-        wrapperDepth = _ref$wrapperDepth === void 0 ? 0 : _ref$wrapperDepth,
-        allowMultipleAds = _ref.allowMultipleAds,
-        followAdditionalWrappers = _ref.followAdditionalWrappers;
-      // check if is a valid VAST document
-      if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
-        this.emit('VAST-ad-parsed', {
-          type: 'ERROR',
-          url: url,
-          wrapperDepth: wrapperDepth
-        });
-        throw new Error('Invalid VAST XMLDocument');
-      }
-      var ads = [];
-      var childNodes = vastXml.documentElement.childNodes;
-
-      /* Only parse the version of the Root VAST for now because we don't know yet how to
-       * handle some cases like multiple wrappers in the same vast
-       */
-      var vastVersion = vastXml.documentElement.getAttribute('version');
-      if (isRootVAST) {
-        if (vastVersion) this.vastVersion = vastVersion;
-      }
-
-      // Fill the VASTResponse object with ads and errorURLTemplates
-      for (var nodeKey in childNodes) {
-        var node = childNodes[nodeKey];
-        if (node.nodeName === 'Error') {
-          var errorURLTemplate = parserUtils.parseNodeText(node);
-
-          // Distinguish root VAST url templates from ad specific ones
-          isRootVAST ? this.rootErrorURLTemplates.push(errorURLTemplate) : this.errorURLTemplates.push(errorURLTemplate);
-        } else if (node.nodeName === 'Ad') {
-          // allowMultipleAds was introduced in VAST 3
-          // for retrocompatibility set it to true
-          if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
-            allowMultipleAds = true;
-          } else if (allowMultipleAds === false && ads.length > 1) {
-            // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
-            // (with no sequence values) in the requested VAST response is allowed
-            break;
-          }
-          var result = parseAd(node, this.emit.bind(this), {
-            allowMultipleAds: allowMultipleAds,
-            followAdditionalWrappers: followAdditionalWrappers
-          });
-          if (result.ad) {
-            ads.push(result.ad);
-            this.emit('VAST-ad-parsed', {
-              type: result.type,
-              url: url,
-              wrapperDepth: wrapperDepth,
-              adIndex: ads.length - 1,
-              vastVersion: vastVersion
-            });
-          } else {
-            // VAST version of response not supported.
-            this.trackVastError(this.getErrorURLTemplates(), {
-              ERRORCODE: 101
-            });
-          }
+        // Distinguish root VAST url templates from ad specific ones
+        isRootVAST ? this.rootErrorURLTemplates.push(errorURLTemplate) : this.errorURLTemplates.push(errorURLTemplate);
+      } else if (node.nodeName === 'Ad') {
+        // allowMultipleAds was introduced in VAST 3
+        // for retrocompatibility set it to true
+        if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
+          allowMultipleAds = true;
+        } else if (allowMultipleAds === false && ads.length > 1) {
+          // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
+          // (with no sequence values) in the requested VAST response is allowed
+          break;
         }
-      }
-      return ads;
-    }
-
-    /**
-     * Parses the given xml Object into an array of unwrapped ads.
-     * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
-     * @param {Object} vastXml - An object representing an xml document.
-     * @param {Object} options - An optional Object of parameters to be used in the parsing process.
-     * @emits VASTParser#VAST-resolving
-     * @emits VASTParser#VAST-resolved
-     * @emits VASTParser#VAST-warning
-     * @return {Promise}
-     */
-  }, {
-    key: "parse",
-    value: function parse(vastXml) {
-      var _ref2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref2$url = _ref2.url,
-        url = _ref2$url === void 0 ? null : _ref2$url,
-        _ref2$resolveAll = _ref2.resolveAll,
-        resolveAll = _ref2$resolveAll === void 0 ? true : _ref2$resolveAll,
-        _ref2$wrapperSequence = _ref2.wrapperSequence,
-        wrapperSequence = _ref2$wrapperSequence === void 0 ? null : _ref2$wrapperSequence,
-        _ref2$previousUrl = _ref2.previousUrl,
-        previousUrl = _ref2$previousUrl === void 0 ? null : _ref2$previousUrl,
-        _ref2$wrapperDepth = _ref2.wrapperDepth,
-        wrapperDepth = _ref2$wrapperDepth === void 0 ? 0 : _ref2$wrapperDepth,
-        _ref2$isRootVAST = _ref2.isRootVAST,
-        isRootVAST = _ref2$isRootVAST === void 0 ? false : _ref2$isRootVAST,
-        followAdditionalWrappers = _ref2.followAdditionalWrappers,
-        allowMultipleAds = _ref2.allowMultipleAds;
-      var ads = [];
-      // allowMultipleAds was introduced in VAST 3 as wrapper attribute
-      // for retrocompatibility set it to true for vast pre-version 3
-      if (this.vastVersion && parseFloat(this.vastVersion) < 3 && isRootVAST) {
-        allowMultipleAds = true;
-      }
-      try {
-        ads = this.parseVastXml(vastXml, {
-          isRootVAST: isRootVAST,
-          url: url,
-          wrapperDepth: wrapperDepth,
-          allowMultipleAds: allowMultipleAds,
-          followAdditionalWrappers: followAdditionalWrappers
+        const result = parseAd(node, this.emit.bind(this), {
+          allowMultipleAds,
+          followAdditionalWrappers
         });
-      } catch (e) {
-        return Promise.reject(e);
-      }
-
-      /* Keep wrapper sequence value to not break AdPod when wrapper contain only one Ad.
-      e.g,for a AdPod containing :
-      - Inline with sequence=1
-      - Inline with sequence=2
-      - Wrapper with sequence=3 wrapping a Inline with sequence=1
-      once parsed we will obtain :
-      - Inline sequence 1,
-      - Inline sequence 2,
-      - Inline sequence 3
-      */
-      if (ads.length === 1 && wrapperSequence !== undefined && wrapperSequence !== null) {
-        ads[0].sequence = wrapperSequence;
-      }
-
-      // Split the VAST in case we don't want to resolve everything at the first time
-      if (resolveAll === false) {
-        this.remainingAds = parserUtils.splitVAST(ads);
-        // Remove the first element from the remaining ads array, since we're going to resolve that element
-        ads = this.remainingAds.shift();
-      }
-      return this.resolveAds(ads, {
-        wrapperDepth: wrapperDepth,
-        previousUrl: previousUrl,
-        url: url
-      });
-    }
-
-    /**
-     * Resolves an Array of ads, recursively calling itself with the remaining ads if a no ad
-     * response is returned for the given array.
-     * @param {Array} ads - An array of ads to resolve
-     * @param {Object} options - An options Object containing resolving parameters
-     * @return {Promise}
-     */
-  }, {
-    key: "resolveAds",
-    value: function resolveAds() {
-      var _this6 = this;
-      var ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var _ref3 = arguments.length > 1 ? arguments[1] : undefined,
-        wrapperDepth = _ref3.wrapperDepth,
-        previousUrl = _ref3.previousUrl,
-        url = _ref3.url;
-      var resolveWrappersPromises = [];
-      previousUrl = url;
-      ads.forEach(function (ad) {
-        var resolveWrappersPromise = _this6.resolveWrappers(ad, wrapperDepth, previousUrl);
-        resolveWrappersPromises.push(resolveWrappersPromise);
-      });
-      return Promise.all(resolveWrappersPromises).then(function (unwrappedAds) {
-        var resolvedAds = util.flatten(unwrappedAds);
-        if (!resolvedAds && _this6.remainingAds.length > 0) {
-          var remainingAdsToResolve = _this6.remainingAds.shift();
-          return _this6.resolveAds(remainingAdsToResolve, {
-            wrapperDepth: wrapperDepth,
-            previousUrl: previousUrl,
-            url: url
+        if (result.ad) {
+          ads.push(result.ad);
+          this.emit('VAST-ad-parsed', {
+            type: result.type,
+            url,
+            wrapperDepth,
+            adIndex: ads.length - 1,
+            vastVersion
+          });
+        } else {
+          // VAST version of response not supported.
+          this.trackVastError(this.getErrorURLTemplates(), {
+            ERRORCODE: 101
           });
         }
-        return resolvedAds;
+      }
+    }
+    return ads;
+  }
+
+  /**
+   * Parses the given xml Object into an array of unwrapped ads.
+   * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
+   * @param {Object} vastXml - An object representing an xml document.
+   * @param {Object} options - An optional Object of parameters to be used in the parsing process.
+   * @emits VASTParser#VAST-resolving
+   * @emits VASTParser#VAST-resolved
+   * @emits VASTParser#VAST-warning
+   * @return {Promise}
+   */
+  parse(vastXml) {
+    let {
+      url = null,
+      resolveAll = true,
+      wrapperSequence = null,
+      previousUrl = null,
+      wrapperDepth = 0,
+      isRootVAST = false,
+      followAdditionalWrappers,
+      allowMultipleAds
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    let ads = [];
+    // allowMultipleAds was introduced in VAST 3 as wrapper attribute
+    // for retrocompatibility set it to true for vast pre-version 3
+    if (this.vastVersion && parseFloat(this.vastVersion) < 3 && isRootVAST) {
+      allowMultipleAds = true;
+    }
+    try {
+      ads = this.parseVastXml(vastXml, {
+        isRootVAST,
+        url,
+        wrapperDepth,
+        allowMultipleAds,
+        followAdditionalWrappers
       });
+    } catch (e) {
+      return Promise.reject(e);
     }
 
-    /**
-     * Resolves the wrappers for the given ad in a recursive way.
-     * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
-     * @param {Object} ad - An ad object to be unwrapped.
-     * @param {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
-     * @param {String} previousUrl - The previous vast url.
-     * @return {Promise}
-     */
-  }, {
-    key: "resolveWrappers",
-    value: function resolveWrappers(ad, wrapperDepth, previousUrl) {
-      var _this7 = this;
-      return new Promise(function (resolve) {
-        var _this7$parsingOptions;
-        // Going one level deeper in the wrapper chain
-        wrapperDepth++;
-        // We already have a resolved VAST ad, no need to resolve wrapper
-        if (!ad.nextWrapperURL) {
-          delete ad.nextWrapperURL;
-          return resolve(ad);
-        }
-        if (wrapperDepth >= _this7.maxWrapperDepth) {
-          // Wrapper limit reached, as defined by the video player.
-          // Too many Wrapper responses have been received with no InLine response.
-          ad.errorCode = 302;
-          delete ad.nextWrapperURL;
-          return resolve(ad);
-        }
+    /* Keep wrapper sequence value to not break AdPod when wrapper contain only one Ad.
+    e.g,for a AdPod containing :
+    - Inline with sequence=1
+    - Inline with sequence=2
+    - Wrapper with sequence=3 wrapping a Inline with sequence=1
+    once parsed we will obtain :
+    - Inline sequence 1,
+    - Inline sequence 2,
+    - Inline sequence 3
+    */
+    if (ads.length === 1 && wrapperSequence !== undefined && wrapperSequence !== null) {
+      ads[0].sequence = wrapperSequence;
+    }
 
-        // Get full URL
-        ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(ad.nextWrapperURL, previousUrl);
-        _this7.URLTemplateFilters.forEach(function (filter) {
-          ad.nextWrapperURL = filter(ad.nextWrapperURL);
+    // Split the VAST in case we don't want to resolve everything at the first time
+    if (resolveAll === false) {
+      this.remainingAds = parserUtils.splitVAST(ads);
+      // Remove the first element from the remaining ads array, since we're going to resolve that element
+      ads = this.remainingAds.shift();
+    }
+    return this.resolveAds(ads, {
+      wrapperDepth,
+      previousUrl,
+      url
+    });
+  }
+
+  /**
+   * Resolves an Array of ads, recursively calling itself with the remaining ads if a no ad
+   * response is returned for the given array.
+   * @param {Array} ads - An array of ads to resolve
+   * @param {Object} options - An options Object containing resolving parameters
+   * @return {Promise}
+   */
+  resolveAds() {
+    let ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    let {
+      wrapperDepth,
+      previousUrl,
+      url
+    } = arguments.length > 1 ? arguments[1] : undefined;
+    const resolveWrappersPromises = [];
+    previousUrl = url;
+    ads.forEach(ad => {
+      const resolveWrappersPromise = this.resolveWrappers(ad, wrapperDepth, previousUrl);
+      resolveWrappersPromises.push(resolveWrappersPromise);
+    });
+    return Promise.all(resolveWrappersPromises).then(unwrappedAds => {
+      const resolvedAds = util.flatten(unwrappedAds);
+      if (!resolvedAds.length && this.remainingAds.length > 0) {
+        const remainingAdsToResolve = this.remainingAds.shift();
+        return this.resolveAds(remainingAdsToResolve, {
+          wrapperDepth,
+          previousUrl,
+          url
         });
+      }
+      return resolvedAds;
+    });
+  }
 
-        // If allowMultipleAds is set inside the parameter 'option' of public method
-        // override the vast value by the one provided
-        var allowMultipleAds = (_this7$parsingOptions = _this7.parsingOptions.allowMultipleAds) !== null && _this7$parsingOptions !== void 0 ? _this7$parsingOptions : ad.allowMultipleAds;
-        // sequence doesn't carry over in wrapper element
-        var wrapperSequence = ad.sequence;
-        _this7.fetchVAST(ad.nextWrapperURL, wrapperDepth, previousUrl, ad).then(function (xml) {
-          return _this7.parse(xml, {
-            url: ad.nextWrapperURL,
-            previousUrl: previousUrl,
-            wrapperSequence: wrapperSequence,
-            wrapperDepth: wrapperDepth,
-            followAdditionalWrappers: ad.followAdditionalWrappers,
-            allowMultipleAds: allowMultipleAds
-          }).then(function (unwrappedAds) {
-            delete ad.nextWrapperURL;
-            if (unwrappedAds.length === 0) {
-              // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
-              ad.creatives = [];
-              return resolve(ad);
+  /**
+   * Resolves the wrappers for the given ad in a recursive way.
+   * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
+   * @param {Object} adToUnWrap - An ad object to be unwrapped.
+   * @param {Number} wrapperDepth - The reached depth in the wrapper resolving chain.
+   * @param {String} previousUrl - The previous vast url.
+   * @return {Promise}
+   */
+  resolveWrappers(adToUnWrap, wrapperDepth, previousUrl) {
+    // Copy ad from parameters to prevent altering given object outside of function scope
+    const ad = {
+      ...adToUnWrap
+    };
+    return new Promise(resolve => {
+      var _this$parsingOptions$;
+      // Going one level deeper in the wrapper chain
+      wrapperDepth++;
+      // We already have a resolved VAST ad, no need to resolve wrapper
+      if (!ad.nextWrapperURL) {
+        delete ad.nextWrapperURL;
+        return resolve(ad);
+      }
+      if (!this.fetcher) {
+        ad.VASTAdTagURI = ad.nextWrapperURL;
+        delete ad.nextWrapperURL;
+        return resolve(ad);
+      }
+      if (wrapperDepth >= this.maxWrapperDepth) {
+        // Wrapper limit reached, as defined by the video player.
+        // Too many Wrapper responses have been received with no InLine response.
+        ad.errorCode = 302;
+        delete ad.nextWrapperURL;
+        return resolve(ad);
+      }
+
+      // Get full URL
+      ad.nextWrapperURL = parserUtils.resolveVastAdTagURI(ad.nextWrapperURL, previousUrl);
+
+      // If allowMultipleAds is set inside the parameter 'option' of public method
+      // override the vast value by the one provided
+      const allowMultipleAds = (_this$parsingOptions$ = this.parsingOptions.allowMultipleAds) !== null && _this$parsingOptions$ !== void 0 ? _this$parsingOptions$ : ad.allowMultipleAds;
+      // sequence doesn't carry over in wrapper element
+      const wrapperSequence = ad.sequence;
+      this.fetcher.fetchVAST({
+        url: ad.nextWrapperURL,
+        emitter: this.emit.bind(this),
+        maxWrapperDepth: this.maxWrapperDepth
+      }).then(xml => {
+        return this.parse(xml, {
+          url: ad.nextWrapperURL,
+          previousUrl,
+          wrapperSequence,
+          wrapperDepth,
+          followAdditionalWrappers: ad.followAdditionalWrappers,
+          allowMultipleAds
+        }).then(unwrappedAds => {
+          delete ad.nextWrapperURL;
+          if (unwrappedAds.length === 0) {
+            // No ads returned by the wrappedResponse, discard current <Ad><Wrapper> creatives
+            ad.creatives = [];
+            return resolve(ad);
+          }
+          unwrappedAds.forEach(unwrappedAd => {
+            if (unwrappedAd) {
+              parserUtils.mergeWrapperAdData(unwrappedAd, ad);
             }
-            unwrappedAds.forEach(function (unwrappedAd) {
-              if (unwrappedAd) {
-                parserUtils.mergeWrapperAdData(unwrappedAd, ad);
-              }
-            });
-            resolve(unwrappedAds);
           });
-        })["catch"](function (err) {
-          // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-          // (URI was either unavailable or reached a timeout as defined by the video player.)
-          ad.errorCode = 301;
-          ad.errorMessage = err.message;
-          resolve(ad);
+          resolve(unwrappedAds);
         });
+      }).catch(err => {
+        // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
+        // (URI was either unavailable or reached a timeout as defined by the video player.)
+        ad.errorCode = 301;
+        ad.errorMessage = err.message;
+        resolve(ad);
       });
-    }
+    });
+  }
 
-    /**
-     * Takes care of handling errors when the wrappers are resolved.
-     * @param {Object} vastResponse - A resolved VASTResponse.
-     */
-  }, {
-    key: "completeWrapperResolving",
-    value: function completeWrapperResolving(vastResponse) {
-      // We've to wait for all <Ad> elements to be parsed before handling error so we can:
-      // - Send computed extensions data
-      // - Ping all <Error> URIs defined across VAST files
+  /**
+   * Takes care of handling errors when the wrappers are resolved.
+   * @param {Object} vastResponse - A resolved VASTResponse.
+   */
+  completeWrapperResolving(vastResponse) {
+    // We've to wait for all <Ad> elements to be parsed before handling error so we can:
+    // - Send computed extensions data
+    // - Ping all <Error> URIs defined across VAST files
 
-      // No Ad case - The parser never bump into an <Ad> element
-      if (vastResponse.ads.length === 0) {
-        this.trackVastError(vastResponse.errorURLTemplates, {
-          ERRORCODE: 303
-        });
-      } else {
-        for (var index = vastResponse.ads.length - 1; index >= 0; index--) {
-          // - Error encountered while parsing
-          // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
-          // but no creative was found
-          var ad = vastResponse.ads[index];
-          if (ad.errorCode || ad.creatives.length === 0) {
-            this.trackVastError(ad.errorURLTemplates.concat(vastResponse.errorURLTemplates), {
-              ERRORCODE: ad.errorCode || 303
-            }, {
-              ERRORMESSAGE: ad.errorMessage || ''
-            }, {
-              extensions: ad.extensions
-            }, {
-              system: ad.system
-            });
-            vastResponse.ads.splice(index, 1);
-          }
+    // No Ad case - The parser never bump into an <Ad> element
+    if (vastResponse.ads.length === 0) {
+      this.trackVastError(vastResponse.errorURLTemplates, {
+        ERRORCODE: 303
+      });
+    } else {
+      for (let index = vastResponse.ads.length - 1; index >= 0; index--) {
+        // - Error encountered while parsing
+        // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
+        // but no creative was found
+        const ad = vastResponse.ads[index];
+        if ((ad.errorCode || ad.creatives.length === 0) && !ad.VASTAdTagURI) {
+          // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
+          // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
+          this.trackVastError(ad.errorURLTemplates.concat(vastResponse.errorURLTemplates), {
+            ERRORCODE: ad.errorCode || 303
+          }, {
+            ERRORMESSAGE: ad.errorMessage || ''
+          }, {
+            extensions: ad.extensions
+          }, {
+            system: ad.system
+          });
+          vastResponse.ads.splice(index, 1);
         }
       }
     }
-  }]);
-  return VASTParser;
-}(EventEmitter);
+  }
+}
 
-var storage = null;
+let storage = null;
 
 /**
  * This Object represents a default storage to be used in case no other storage is available.
  * @constant
  * @type {Object}
  */
-var DEFAULT_STORAGE = {
+const DEFAULT_STORAGE = {
   data: {},
   length: 0,
-  getItem: function getItem(key) {
+  getItem(key) {
     return this.data[key];
   },
-  setItem: function setItem(key, value) {
+  setItem(key, value) {
     this.data[key] = value;
     this.length = Object.keys(this.data).length;
   },
-  removeItem: function removeItem(key) {
+  removeItem(key) {
     delete this.data[key];
     this.length = Object.keys(this.data).length;
   },
-  clear: function clear() {
+  clear() {
     this.data = {};
     this.length = 0;
   }
@@ -3015,13 +2530,12 @@ var DEFAULT_STORAGE = {
  * @export
  * @class Storage
  */
-var Storage = /*#__PURE__*/function () {
+class Storage {
   /**
    * Creates an instance of Storage.
    * @constructor
    */
-  function Storage() {
-    _classCallCheck(this, Storage);
+  constructor() {
     this.storage = this.initStorage();
   }
 
@@ -3029,93 +2543,268 @@ var Storage = /*#__PURE__*/function () {
    * Provides a singleton instance of the wrapped storage.
    * @return {Object}
    */
-  _createClass(Storage, [{
-    key: "initStorage",
-    value: function initStorage() {
-      if (storage) {
-        return storage;
-      }
-      try {
-        storage = typeof window !== 'undefined' && window !== null ? window.localStorage || window.sessionStorage : null;
-      } catch (storageError) {
-        storage = null;
-      }
-      if (!storage || this.isStorageDisabled(storage)) {
-        storage = DEFAULT_STORAGE;
-        storage.clear();
-      }
+  initStorage() {
+    if (storage) {
       return storage;
     }
+    try {
+      storage = typeof window !== 'undefined' && window !== null ? window.localStorage || window.sessionStorage : null;
+    } catch (storageError) {
+      storage = null;
+    }
+    if (!storage || this.isStorageDisabled(storage)) {
+      storage = DEFAULT_STORAGE;
+      storage.clear();
+    }
+    return storage;
+  }
 
-    /**
-     * Check if storage is disabled (like in certain cases with private browsing).
-     * In Safari (Mac + iOS) when private browsing is ON, localStorage is read only
-     * http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
-     * @param {Object} testStorage - The storage to check.
-     * @return {Boolean}
-     */
-  }, {
-    key: "isStorageDisabled",
-    value: function isStorageDisabled(testStorage) {
-      var testValue = '__VASTStorage__';
-      try {
-        testStorage.setItem(testValue, testValue);
-        if (testStorage.getItem(testValue) !== testValue) {
-          testStorage.removeItem(testValue);
-          return true;
-        }
-      } catch (e) {
+  /**
+   * Check if storage is disabled (like in certain cases with private browsing).
+   * In Safari (Mac + iOS) when private browsing is ON, localStorage is read only
+   * http://spin.atomicobject.com/2013/01/23/ios-private-browsing-localstorage/
+   * @param {Object} testStorage - The storage to check.
+   * @return {Boolean}
+   */
+  isStorageDisabled(testStorage) {
+    const testValue = '__VASTStorage__';
+    try {
+      testStorage.setItem(testValue, testValue);
+      if (testStorage.getItem(testValue) !== testValue) {
+        testStorage.removeItem(testValue);
         return true;
       }
-      testStorage.removeItem(testValue);
-      return false;
+    } catch (e) {
+      return true;
     }
+    testStorage.removeItem(testValue);
+    return false;
+  }
 
-    /**
-     * Returns the value for the given key. If the key does not exist, null is returned.
-     * @param  {String} key - The key to retrieve the value.
-     * @return {any}
-     */
-  }, {
-    key: "getItem",
-    value: function getItem(key) {
-      return this.storage.getItem(key);
-    }
+  /**
+   * Returns the value for the given key. If the key does not exist, null is returned.
+   * @param  {String} key - The key to retrieve the value.
+   * @return {any}
+   */
+  getItem(key) {
+    return this.storage.getItem(key);
+  }
 
-    /**
-     * Adds or updates the value for the given key.
-     * @param  {String} key - The key to modify the value.
-     * @param  {any} value - The value to be associated with the key.
-     * @return {any}
-     */
-  }, {
-    key: "setItem",
-    value: function setItem(key, value) {
-      return this.storage.setItem(key, value);
-    }
+  /**
+   * Adds or updates the value for the given key.
+   * @param  {String} key - The key to modify the value.
+   * @param  {any} value - The value to be associated with the key.
+   * @return {any}
+   */
+  setItem(key, value) {
+    return this.storage.setItem(key, value);
+  }
 
-    /**
-     * Removes an item for the given key.
-     * @param  {String} key - The key to remove the value.
-     * @return {any}
-     */
-  }, {
-    key: "removeItem",
-    value: function removeItem(key) {
-      return this.storage.removeItem(key);
-    }
+  /**
+   * Removes an item for the given key.
+   * @param  {String} key - The key to remove the value.
+   * @return {any}
+   */
+  removeItem(key) {
+    return this.storage.removeItem(key);
+  }
 
-    /**
-     * Removes all the items from the storage.
-     */
-  }, {
-    key: "clear",
-    value: function clear() {
-      return this.storage.clear();
+  /**
+   * Removes all the items from the storage.
+   */
+  clear() {
+    return this.storage.clear();
+  }
+}
+
+const DEFAULT_TIMEOUT = 120000;
+
+/**
+ * Return an object containing an XML document.
+ * in addition to the byteLength and the statusCode of the response.
+ * @param {Object} response the response of the fetch request.
+ * @returns {Object}
+ */
+async function handleResponse(response) {
+  const textXml = await response.text();
+  let parser;
+  if (!util.isBrowserEnvironment()) {
+    const xmlDom = await Promise.resolve().then(function () { return require('./chunks/xmldom-ac2d7d04.js'); });
+    parser = new xmlDom.DOMParser();
+  } else {
+    parser = new DOMParser();
+  }
+  const xml = parser.parseFromString(textXml, 'text/xml');
+  return {
+    xml,
+    details: {
+      byteLength: textXml.length,
+      statusCode: response.status,
+      rawXml: textXml
     }
-  }]);
-  return Storage;
-}();
+  };
+}
+
+/**
+ * Return a custom message if an error occured
+ * @param {Object} response The response of fetch request
+ * @returns {String | null}
+ */
+function handleError(response) {
+  if (window.location.protocol === 'https:' && response.url.includes('http://')) {
+    return 'URLHandler: Cannot go from HTTPS to HTTP.';
+  }
+  if (response.status !== 200 || !response.ok) {
+    return "URLHandler: ".concat(response.statusText, " (").concat(response.status, ")");
+  }
+  return null;
+}
+async function get(url, options) {
+  try {
+    // fetch does not have "timeout" option, we are using AbortController
+    // to abort the request if it reach the timeout.
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      controller.abort();
+      throw new Error("URLHandler: Request timed out after ".concat(options.timeout || DEFAULT_TIMEOUT, " ms (408)"));
+    }, options.timeout || DEFAULT_TIMEOUT);
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      credentials: options.withCredentials ? 'include' : 'omit'
+    });
+    clearTimeout(timer);
+    const error = handleError(response);
+    if (error) {
+      return {
+        error: new Error(error),
+        statusCode: response.status
+      };
+    }
+    return handleResponse(response);
+  } catch (error) {
+    return {
+      error,
+      statusCode: error.name === 'AbortError' ? 408 : null
+    };
+  }
+}
+const urlHandler = {
+  get
+};
+
+/**
+ * This class provides a method to fetch a VAST document
+ * @exports
+ * @class Fetcher
+ */
+
+class Fetcher {
+  constructor() {
+    this.URLTemplateFilters = [];
+  }
+
+  /**
+   * Inits the fetching properties of the class with the custom values provided as options
+   * @param {Object} options - The options to initialize before fetching
+   */
+  setOptions() {
+    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
+    this.fetchingOptions = {
+      timeout: options.timeout || DEFAULT_TIMEOUT,
+      withCredentials: Boolean(options.withCredentials)
+    };
+  }
+
+  /**
+   * Adds a filter function to the array of filters which are called before fetching a VAST document.
+   * @param  {function} filter - The filter function to be added at the end of the array.
+   */
+  addURLTemplateFilter(filter) {
+    if (typeof filter === 'function') {
+      this.URLTemplateFilters.push(filter);
+    }
+  }
+
+  /**
+   * Removes the latest URL template filter added.
+   */
+  removeLastURLTemplateFilter() {
+    this.URLTemplateFilters.pop();
+  }
+
+  /**
+   * Returns the number of URL template filters added.
+   * @return {Number}
+   */
+  countURLTemplateFilters() {
+    return this.URLTemplateFilters.length;
+  }
+
+  /**
+   * Removes all the URL template filters added.
+   */
+  clearURLTemplateFilters() {
+    this.URLTemplateFilters = [];
+  }
+
+  /**
+   * Fetches a VAST document for the given url.
+   * @param {Object} params
+   * @param {String} params.url - The url to request the VAST document.
+   * @param {Number} params.wrapperDepth - How many times the current url has been wrapped.
+   * @param {(String | null)} params.previousUrl - Url of the previous VAST.
+   * @param {Object} params.wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
+   * @param {Number} params.maxWrapperDepth - The maximum number of Wrapper that can be fetch
+   * @param {Function} params.emitter - The function used to Emit event
+   * @emits  VASTParser#VAST-resolving
+   * @emits  VASTParser#VAST-resolved
+   * @return {Promise}
+   */
+  async fetchVAST(_ref) {
+    var _data$details;
+    let {
+      url,
+      maxWrapperDepth,
+      emitter,
+      wrapperDepth = 0,
+      previousUrl = null,
+      wrapperAd = null
+    } = _ref;
+    const timeBeforeGet = Date.now();
+
+    // Process url with defined filter
+    this.URLTemplateFilters.forEach(filter => {
+      url = filter(url);
+    });
+    emitter('VAST-resolving', {
+      url,
+      previousUrl,
+      wrapperDepth,
+      maxWrapperDepth,
+      timeout: this.fetchingOptions.timeout,
+      wrapperAd
+    });
+    const data = await this.urlHandler.get(url, this.fetchingOptions);
+    const requestDuration = Math.round(Date.now() - timeBeforeGet);
+    emitter('VAST-resolved', {
+      url,
+      previousUrl,
+      wrapperDepth,
+      error: (data === null || data === void 0 ? void 0 : data.error) || null,
+      duration: requestDuration,
+      statusCode: (data === null || data === void 0 ? void 0 : data.statusCode) || null,
+      ...(data === null || data === void 0 ? void 0 : data.details)
+    });
+    updateEstimatedBitrate(data === null || data === void 0 || (_data$details = data.details) === null || _data$details === void 0 ? void 0 : _data$details.byteLength, requestDuration);
+    if (data.error) {
+      throw new Error(data.error);
+    } else {
+      return data.xml;
+    }
+  }
+}
 
 /**
  * This class provides methods to fetch and parse a VAST document using VASTParser.
@@ -3123,7 +2812,7 @@ var Storage = /*#__PURE__*/function () {
  * @export
  * @class VASTClient
  */
-var VASTClient = /*#__PURE__*/function () {
+class VASTClient {
   /**
    * Creates an instance of VASTClient.
    * @param  {Number} cappingFreeLunch - The number of first calls to skip.
@@ -3131,17 +2820,17 @@ var VASTClient = /*#__PURE__*/function () {
    * @param  {Storage} customStorage - A custom storage to use instead of the default one.
    * @constructor
    */
-  function VASTClient(cappingFreeLunch, cappingMinimumTimeInterval, customStorage) {
-    _classCallCheck(this, VASTClient);
-    this.cappingFreeLunch = cappingFreeLunch || 0;
-    this.cappingMinimumTimeInterval = cappingMinimumTimeInterval || 0;
-    this.defaultOptions = {
-      withCredentials: false,
-      timeout: 0
-    };
-    this.vastParser = new VASTParser();
-    this.storage = customStorage || new Storage();
-
+  constructor() {
+    let cappingFreeLunch = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    let cappingMinimumTimeInterval = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    let customStorage = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Storage();
+    this.cappingFreeLunch = cappingFreeLunch;
+    this.cappingMinimumTimeInterval = cappingMinimumTimeInterval;
+    this.fetcher = new Fetcher();
+    this.vastParser = new VASTParser({
+      fetcher: this.fetcher
+    });
+    this.storage = customStorage;
     // Init values if not already set
     if (this.lastSuccessfulAd === undefined) {
       this.lastSuccessfulAd = 0;
@@ -3153,116 +2842,154 @@ var VASTClient = /*#__PURE__*/function () {
       this.totalCallsTimeout = 0;
     }
   }
-  _createClass(VASTClient, [{
-    key: "getParser",
-    value: function getParser() {
-      return this.vastParser;
-    }
-  }, {
-    key: "lastSuccessfulAd",
-    get: function get() {
-      return this.storage.getItem('vast-client-last-successful-ad');
-    },
-    set: function set(value) {
-      this.storage.setItem('vast-client-last-successful-ad', value);
-    }
-  }, {
-    key: "totalCalls",
-    get: function get() {
-      return this.storage.getItem('vast-client-total-calls');
-    },
-    set: function set(value) {
-      this.storage.setItem('vast-client-total-calls', value);
-    }
-  }, {
-    key: "totalCallsTimeout",
-    get: function get() {
-      return this.storage.getItem('vast-client-total-calls-timeout');
-    },
-    set: function set(value) {
-      this.storage.setItem('vast-client-total-calls-timeout', value);
+
+  /**
+   * Adds a filter function to the array of filters which are called before fetching a VAST document.
+   * @param  {function} filter - The filter function to be added at the end of the array.
+   * @return {void}
+   */
+  addURLTemplateFilter(filter) {
+    this.fetcher.addURLTemplateFilter(filter);
+  }
+
+  /**
+   * Removes the last element of the url templates filters array.
+   * @return {void}
+   */
+  removeLastURLTemplateFilter() {
+    this.fetcher.removeLastURLTemplateFilter();
+  }
+
+  /**
+   * Returns the number of filters of the url templates filters array.
+   * @return {Number}
+   */
+  countURLTemplateFilters() {
+    return this.fetcher.countURLTemplateFilters();
+  }
+
+  /**
+   * Removes all the filter functions from the url templates filters array.
+   * @return {void}
+   */
+  clearURLTemplateFilters() {
+    this.fetcher.clearURLTemplateFilters();
+  }
+  getParser() {
+    return this.vastParser;
+  }
+  get lastSuccessfulAd() {
+    return this.storage.getItem('vast-client-last-successful-ad');
+  }
+  set lastSuccessfulAd(value) {
+    this.storage.setItem('vast-client-last-successful-ad', value);
+  }
+  get totalCalls() {
+    return this.storage.getItem('vast-client-total-calls');
+  }
+  set totalCalls(value) {
+    this.storage.setItem('vast-client-total-calls', value);
+  }
+  get totalCallsTimeout() {
+    return this.storage.getItem('vast-client-total-calls-timeout');
+  }
+  set totalCallsTimeout(value) {
+    this.storage.setItem('vast-client-total-calls-timeout', value);
+  }
+
+  /**
+   * Returns a boolean indicating if there are more ads to resolve for the current parsing.
+   * @return {Boolean}
+   */
+  hasRemainingAds() {
+    return this.vastParser.remainingAds.length > 0;
+  }
+
+  /**
+   * Resolves the next group of ads. If all is true resolves all the remaining ads.
+   * @param  {Boolean} all - If true all the remaining ads are resolved
+   * @return {Promise}
+   */
+  getNextAds(all) {
+    return this.vastParser.getRemainingAds(all);
+  }
+
+  /**
+   * Parses the given xml Object into a VASTResponse.
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param {Object} xml - An object representing a vast xml document.
+   * @param {Object} options - An optional Object of parameters to be used in the parsing and fetching process.
+   * @returns {Promise}
+   */
+  parseVAST(xml) {
+    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    this.fetcher.setOptions(options);
+    return this.vastParser.parseVAST(xml, options);
+  }
+  /**
+   * Gets a parsed VAST document for the given url, applying the skipping rules defined.
+   * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
+   * @param  {String} url - The url to use to fecth the VAST document.
+   * @param  {Object} options - An optional Object of parameters to be applied in the process.
+   * @return {Promise}
+   */
+  get(url) {
+    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    const now = Date.now();
+
+    // By default the client resolves only the first Ad or AdPod
+    if (!options.hasOwnProperty('resolveAll')) {
+      options.resolveAll = false;
     }
 
-    /**
-     * Returns a boolean indicating if there are more ads to resolve for the current parsing.
-     * @return {Boolean}
-     */
-  }, {
-    key: "hasRemainingAds",
-    value: function hasRemainingAds() {
-      return this.vastParser.remainingAds.length > 0;
+    // Check totalCallsTimeout (first call + 1 hour), if older than now,
+    // reset totalCalls number, by this way the client will be eligible again
+    // for freelunch capping
+    if (this.totalCallsTimeout < now) {
+      this.totalCalls = 1;
+      this.totalCallsTimeout = now + 60 * 60 * 1000;
+    } else {
+      this.totalCalls++;
     }
-
-    /**
-     * Resolves the next group of ads. If all is true resolves all the remaining ads.
-     * @param  {Boolean} all - If true all the remaining ads are resolved
-     * @return {Promise}
-     */
-  }, {
-    key: "getNextAds",
-    value: function getNextAds(all) {
-      return this.vastParser.getRemainingAds(all);
-    }
-
-    /**
-     * Gets a parsed VAST document for the given url, applying the skipping rules defined.
-     * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
-     * @param  {String} url - The url to use to fecth the VAST document.
-     * @param  {Object} options - An optional Object of parameters to be applied in the process.
-     * @return {Promise}
-     */
-  }, {
-    key: "get",
-    value: function get(url) {
-      var _this = this;
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var now = Date.now();
-      options = Object.assign({}, this.defaultOptions, options);
-
-      // By default the client resolves only the first Ad or AdPod
-      if (!options.hasOwnProperty('resolveAll')) {
-        options.resolveAll = false;
+    return new Promise((resolve, reject) => {
+      if (this.cappingFreeLunch >= this.totalCalls) {
+        return reject(new Error("VAST call canceled \u2013 FreeLunch capping not reached yet ".concat(this.totalCalls, "/").concat(this.cappingFreeLunch)));
       }
+      const timeSinceLastCall = now - this.lastSuccessfulAd;
 
-      // Check totalCallsTimeout (first call + 1 hour), if older than now,
-      // reset totalCalls number, by this way the client will be eligible again
-      // for freelunch capping
-      if (this.totalCallsTimeout < now) {
-        this.totalCalls = 1;
-        this.totalCallsTimeout = now + 60 * 60 * 1000;
-      } else {
-        this.totalCalls++;
+      // Check timeSinceLastCall to be a positive number. If not, this mean the
+      // previous was made in the future. We reset lastSuccessfulAd value
+      if (timeSinceLastCall < 0) {
+        this.lastSuccessfulAd = 0;
+      } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
+        return reject(new Error("VAST call canceled \u2013 (".concat(this.cappingMinimumTimeInterval, ")ms minimum interval reached")));
       }
-      return new Promise(function (resolve, reject) {
-        if (_this.cappingFreeLunch >= _this.totalCalls) {
-          return reject(new Error("VAST call canceled \u2013 FreeLunch capping not reached yet ".concat(_this.totalCalls, "/").concat(_this.cappingFreeLunch)));
-        }
-        var timeSinceLastCall = now - _this.lastSuccessfulAd;
-
-        // Check timeSinceLastCall to be a positive number. If not, this mean the
-        // previous was made in the future. We reset lastSuccessfulAd value
-        if (timeSinceLastCall < 0) {
-          _this.lastSuccessfulAd = 0;
-        } else if (timeSinceLastCall < _this.cappingMinimumTimeInterval) {
-          return reject(new Error("VAST call canceled \u2013 (".concat(_this.cappingMinimumTimeInterval, ")ms minimum interval reached")));
-        }
-        _this.vastParser.getAndParseVAST(url, options).then(function (response) {
-          return resolve(response);
-        })["catch"](function (err) {
-          return reject(err);
+      this.vastParser.initParsingStatus(options);
+      this.fetcher.setOptions(options);
+      this.vastParser.rootURL = url;
+      this.fetcher.fetchVAST({
+        url,
+        emitter: this.vastParser.emit.bind(this.vastParser),
+        maxWrapperDepth: this.vastParser.maxWrapperDepth
+      }).then(xml => {
+        options.previousUrl = url;
+        options.isRootVAST = true;
+        options.url = url;
+        return this.vastParser.parse(xml, options).then(resolvedAd => {
+          const vastResponse = this.vastParser.buildVASTResponse(resolvedAd);
+          resolve(vastResponse);
         });
-      });
-    }
-  }]);
-  return VASTClient;
-}();
+      }).catch(err => reject(err));
+    });
+  }
+}
 
 /**
  * The default skip delay used in case a custom one is not provided
  * @constant
  * @type {Number}
  */
-var DEFAULT_SKIP_DELAY = -1;
+const DEFAULT_SKIP_DELAY = -1;
 
 /**
  * This class provides methods to track an ad execution.
@@ -3271,9 +2998,7 @@ var DEFAULT_SKIP_DELAY = -1;
  * @class VASTTracker
  * @extends EventEmitter
  */
-var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
-  _inherits(VASTTracker, _EventEmitter);
-  var _super = _createSuper(VASTTracker);
+class VASTTracker extends EventEmitter {
   /**
    * Creates an instance of VASTTracker.
    *
@@ -3284,50 +3009,47 @@ var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
    * @param {Boolean} [muted=false] - The initial muted state of the video.
    * @constructor
    */
-  function VASTTracker(client, ad, creative) {
-    var _this;
-    var variation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-    var muted = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-    _classCallCheck(this, VASTTracker);
-    _this = _super.call(this);
-    _this.ad = ad;
-    _this.creative = creative;
-    _this.variation = variation;
-    _this.muted = muted;
-    _this.impressed = false;
-    _this.skippable = false;
-    _this.trackingEvents = {};
+  constructor(client, ad, creative) {
+    let variation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+    let muted = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    super();
+    this.ad = ad;
+    this.creative = creative;
+    this.variation = variation;
+    this.muted = muted;
+    this.impressed = false;
+    this.skippable = false;
+    this.trackingEvents = {};
     // We need to keep the last percentage of the tracker in order to
     // calculate to trigger the events when the VAST duration is short
-    _this.lastPercentage = 0;
-    _this._alreadyTriggeredQuartiles = {};
+    this.lastPercentage = 0;
+    this._alreadyTriggeredQuartiles = {};
     // Tracker listeners should be notified with some events
     // no matter if there is a tracking URL or not
-    _this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'];
+    this.emitAlwaysEvents = ['creativeView', 'start', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete', 'resume', 'pause', 'rewind', 'skip', 'closeLinear', 'close'];
 
     // Duplicate the creative's trackingEvents property so we can alter it
-    for (var eventName in _this.creative.trackingEvents) {
-      var events = _this.creative.trackingEvents[eventName];
-      _this.trackingEvents[eventName] = events.slice(0);
+    for (const eventName in this.creative.trackingEvents) {
+      const events = this.creative.trackingEvents[eventName];
+      this.trackingEvents[eventName] = events.slice(0);
     }
 
     // Nonlinear and companion creatives provide some tracking information at a variation level
     // While linear creatives provided that at a creative level. That's why we need to
     // differentiate how we retrieve some tracking information.
-    if (isCreativeLinear(_this.creative)) {
-      _this._initLinearTracking();
+    if (isCreativeLinear(this.creative)) {
+      this._initLinearTracking();
     } else {
-      _this._initVariationTracking();
+      this._initVariationTracking();
     }
 
     // If the tracker is associated with a client we add a listener to the start event
     // to update the lastSuccessfulAd property.
     if (client) {
-      _this.on('start', function () {
+      this.on('start', () => {
         client.lastSuccessfulAd = Date.now();
       });
     }
-    return _this;
   }
 
   /**
@@ -3335,808 +3057,825 @@ var VASTTracker = /*#__PURE__*/function (_EventEmitter) {
    *
    * @return {void}
    */
-  _createClass(VASTTracker, [{
-    key: "_initLinearTracking",
-    value: function _initLinearTracking() {
-      this.linear = true;
-      this.skipDelay = this.creative.skipDelay;
-      this.setDuration(this.creative.duration);
-      this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
-      this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
+  _initLinearTracking() {
+    this.linear = true;
+    this.skipDelay = this.creative.skipDelay;
+    this.setDuration(this.creative.duration);
+    this.clickThroughURLTemplate = this.creative.videoClickThroughURLTemplate;
+    this.clickTrackingURLTemplates = this.creative.videoClickTrackingURLTemplates;
+  }
+
+  /**
+   * Init the custom tracking options for nonlinear and companion creatives.
+   * These options are provided in the variation Object.
+   *
+   * @return {void}
+   */
+  _initVariationTracking() {
+    this.linear = false;
+    this.skipDelay = DEFAULT_SKIP_DELAY;
+
+    // If no variation has been provided there's nothing else to set
+    if (!this.variation) {
+      return;
     }
 
-    /**
-     * Init the custom tracking options for nonlinear and companion creatives.
-     * These options are provided in the variation Object.
-     *
-     * @return {void}
-     */
-  }, {
-    key: "_initVariationTracking",
-    value: function _initVariationTracking() {
-      this.linear = false;
-      this.skipDelay = DEFAULT_SKIP_DELAY;
+    // Duplicate the variation's trackingEvents property so we can alter it
+    for (const eventName in this.variation.trackingEvents) {
+      const events = this.variation.trackingEvents[eventName];
 
-      // If no variation has been provided there's nothing else to set
-      if (!this.variation) {
-        return;
+      // If for the given eventName we already had some trackingEvents provided by the creative
+      // we want to keep both the creative trackingEvents and the variation ones
+      if (this.trackingEvents[eventName]) {
+        this.trackingEvents[eventName] = this.trackingEvents[eventName].concat(events.slice(0));
+      } else {
+        this.trackingEvents[eventName] = events.slice(0);
       }
+    }
+    if (isNonLinearAd(this.variation)) {
+      this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
+      this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
+      this.setDuration(this.variation.minSuggestedDuration);
+    } else if (isCompanionAd(this.variation)) {
+      this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
+      this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
+    }
+  }
 
-      // Duplicate the variation's trackingEvents property so we can alter it
-      for (var eventName in this.variation.trackingEvents) {
-        var events = this.variation.trackingEvents[eventName];
+  /**
+   * Sets the duration of the ad and updates the quartiles based on that.
+   *
+   * @param  {Number} duration - The duration of the ad.
+   */
+  setDuration(duration) {
+    // check if duration is a valid time input
+    if (!util.isValidTimeValue(duration)) {
+      this.emit('TRACKER-error', {
+        message: "the duration provided is not valid. duration: ".concat(duration)
+      });
+      return;
+    }
+    this.assetDuration = duration;
+    // beware of key names, theses are also used as event names
+    this.quartiles = {
+      firstQuartile: Math.round(25 * this.assetDuration) / 100,
+      midpoint: Math.round(50 * this.assetDuration) / 100,
+      thirdQuartile: Math.round(75 * this.assetDuration) / 100
+    };
+  }
 
-        // If for the given eventName we already had some trackingEvents provided by the creative
-        // we want to keep both the creative trackingEvents and the variation ones
-        if (this.trackingEvents[eventName]) {
-          this.trackingEvents[eventName] = this.trackingEvents[eventName].concat(events.slice(0));
-        } else {
-          this.trackingEvents[eventName] = events.slice(0);
+  /**
+   * Sets the duration of the ad and updates the quartiles based on that.
+   * This is required for tracking time related events.
+   *
+   * @param {Number} progress - Current playback time in seconds.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#start
+   * @emits VASTTracker#skip-countdown
+   * @emits VASTTracker#progress-[0-100]%
+   * @emits VASTTracker#progress-[currentTime]
+   * @emits VASTTracker#rewind
+   * @emits VASTTracker#firstQuartile
+   * @emits VASTTracker#midpoint
+   * @emits VASTTracker#thirdQuartile
+   */
+  setProgress(progress) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    let trackOnce = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    // check if progress is a valid time input
+    if (!util.isValidTimeValue(progress) || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given setProgress parameter has the wrong type. progress: ".concat(progress, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    const skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
+    if (skipDelay !== -1 && !this.skippable) {
+      if (skipDelay > progress) {
+        this.emit('skip-countdown', skipDelay - progress);
+      } else {
+        this.skippable = true;
+        this.emit('skip-countdown', 0);
+      }
+    }
+    if (this.assetDuration > 0) {
+      const percent = Math.round(progress / this.assetDuration * 100);
+      const events = [];
+      if (progress > 0) {
+        events.push('start');
+        for (let i = this.lastPercentage; i < percent; i++) {
+          events.push("progress-".concat(i + 1, "%"));
         }
-      }
-      if (isNonLinearAd(this.variation)) {
-        this.clickThroughURLTemplate = this.variation.nonlinearClickThroughURLTemplate;
-        this.clickTrackingURLTemplates = this.variation.nonlinearClickTrackingURLTemplates;
-        this.setDuration(this.variation.minSuggestedDuration);
-      } else if (isCompanionAd(this.variation)) {
-        this.clickThroughURLTemplate = this.variation.companionClickThroughURLTemplate;
-        this.clickTrackingURLTemplates = this.variation.companionClickTrackingURLTemplates;
-      }
-    }
-
-    /**
-     * Sets the duration of the ad and updates the quartiles based on that.
-     *
-     * @param  {Number} duration - The duration of the ad.
-     */
-  }, {
-    key: "setDuration",
-    value: function setDuration(duration) {
-      // check if duration is a valid time input
-      if (!util.isValidTimeValue(duration)) {
-        return;
-      }
-      this.assetDuration = duration;
-      // beware of key names, theses are also used as event names
-      this.quartiles = {
-        firstQuartile: Math.round(25 * this.assetDuration) / 100,
-        midpoint: Math.round(50 * this.assetDuration) / 100,
-        thirdQuartile: Math.round(75 * this.assetDuration) / 100
-      };
-    }
-
-    /**
-     * Sets the duration of the ad and updates the quartiles based on that.
-     * This is required for tracking time related events.
-     *
-     * @param {Number} progress - Current playback time in seconds.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#start
-     * @emits VASTTracker#skip-countdown
-     * @emits VASTTracker#progress-[0-100]%
-     * @emits VASTTracker#progress-[currentTime]
-     * @emits VASTTracker#rewind
-     * @emits VASTTracker#firstQuartile
-     * @emits VASTTracker#midpoint
-     * @emits VASTTracker#thirdQuartile
-     */
-  }, {
-    key: "setProgress",
-    value: function setProgress(progress) {
-      var _this2 = this;
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      // check if progress is a valid time input
-      if (!util.isValidTimeValue(progress) || _typeof(macros) !== 'object') {
-        return;
-      }
-      var skipDelay = this.skipDelay || DEFAULT_SKIP_DELAY;
-      if (skipDelay !== -1 && !this.skippable) {
-        if (skipDelay > progress) {
-          this.emit('skip-countdown', skipDelay - progress);
-        } else {
-          this.skippable = true;
-          this.emit('skip-countdown', 0);
-        }
-      }
-      if (this.assetDuration > 0) {
-        var percent = Math.round(progress / this.assetDuration * 100);
-        var events = [];
-        if (progress > 0) {
-          events.push('start');
-          for (var i = this.lastPercentage; i < percent; i++) {
-            events.push("progress-".concat(i + 1, "%"));
+        events.push("progress-".concat(Math.round(progress)));
+        for (const quartile in this.quartiles) {
+          if (this.isQuartileReached(quartile, this.quartiles[quartile], progress)) {
+            events.push(quartile);
+            this._alreadyTriggeredQuartiles[quartile] = true;
           }
-          events.push("progress-".concat(Math.round(progress)));
-          for (var quartile in this.quartiles) {
-            if (this.isQuartileReached(quartile, this.quartiles[quartile], progress)) {
-              events.push(quartile);
-              this._alreadyTriggeredQuartiles[quartile] = true;
-            }
-          }
-          this.lastPercentage = percent;
         }
-        events.forEach(function (eventName) {
-          _this2.track(eventName, {
-            macros: macros,
-            once: true
-          });
+        this.lastPercentage = percent;
+      }
+      events.forEach(eventName => {
+        this.track(eventName, {
+          macros,
+          once: trackOnce
         });
-        if (progress < this.progress) {
-          this.track('rewind', {
-            macros: macros
-          });
-        }
-      }
-      this.progress = progress;
-    }
-
-    /**
-     * Checks if a quartile has been reached without have being triggered already.
-     *
-     * @param {String} quartile - Quartile name
-     * @param {Number} time - Time offset of the quartile, when this quartile is reached in seconds.
-     * @param {Number} progress - Current progress of the ads in seconds.
-     *
-     * @return {Boolean}
-     */
-  }, {
-    key: "isQuartileReached",
-    value: function isQuartileReached(quartile, time, progress) {
-      var quartileReached = false;
-      // if quartile time already reached and never triggered
-      if (time <= progress && !this._alreadyTriggeredQuartiles[quartile]) {
-        quartileReached = true;
-      }
-      return quartileReached;
-    }
-
-    /**
-     * Updates the mute state and calls the mute/unmute tracking URLs.
-     *
-     * @param {Boolean} muted - Indicates if the video is muted or not.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#mute
-     * @emits VASTTracker#unmute
-     */
-  }, {
-    key: "setMuted",
-    value: function setMuted(muted) {
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (typeof muted !== 'boolean' || _typeof(macros) !== 'object') {
-        return;
-      }
-      if (this.muted !== muted) {
-        this.track(muted ? 'mute' : 'unmute', {
-          macros: macros
-        });
-      }
-      this.muted = muted;
-    }
-
-    /**
-     * Update the pause state and call the resume/pause tracking URLs.
-     *
-     * @param {Boolean} paused - Indicates if the video is paused or not.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#pause
-     * @emits VASTTracker#resume
-     */
-  }, {
-    key: "setPaused",
-    value: function setPaused(paused) {
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (typeof paused !== 'boolean' || _typeof(macros) !== 'object') {
-        return;
-      }
-      if (this.paused !== paused) {
-        this.track(paused ? 'pause' : 'resume', {
-          macros: macros
-        });
-      }
-      this.paused = paused;
-    }
-
-    /**
-     * Updates the fullscreen state and calls the fullscreen tracking URLs.
-     *
-     * @param {Boolean} fullscreen - Indicates if the video is in fulscreen mode or not.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#fullscreen
-     * @emits VASTTracker#exitFullscreen
-     */
-  }, {
-    key: "setFullscreen",
-    value: function setFullscreen(fullscreen) {
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (typeof fullscreen !== 'boolean' || _typeof(macros) !== 'object') {
-        return;
-      }
-      if (this.fullscreen !== fullscreen) {
-        this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', {
-          macros: macros
-        });
-      }
-      this.fullscreen = fullscreen;
-    }
-
-    /**
-     * Updates the expand state and calls the expand/collapse tracking URLs.
-     *
-     * @param {Boolean} expanded - Indicates if the video is expanded or not.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#expand
-     * @emits VASTTracker#playerExpand
-     * @emits VASTTracker#collapse
-     * @emits VASTTracker#playerCollapse
-     */
-  }, {
-    key: "setExpand",
-    value: function setExpand(expanded) {
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (typeof expanded !== 'boolean' || _typeof(macros) !== 'object') {
-        return;
-      }
-      if (this.expanded !== expanded) {
-        this.track(expanded ? 'expand' : 'collapse', {
-          macros: macros
-        });
-        this.track(expanded ? 'playerExpand' : 'playerCollapse', {
-          macros: macros
-        });
-      }
-      this.expanded = expanded;
-    }
-
-    /**
-     * Must be called if you want to overwrite the <Linear> Skipoffset value.
-     * This will init the skip countdown duration. Then, every time setProgress() is called,
-     * it will decrease the countdown and emit a skip-countdown event with the remaining time.
-     * Do not call this method if you want to keep the original Skipoffset value.
-     *
-     * @param {Number} duration - The time in seconds until the skip button is displayed.
-     */
-  }, {
-    key: "setSkipDelay",
-    value: function setSkipDelay(duration) {
-      if (!util.isValidTimeValue(duration)) {
-        return;
-      }
-      this.skipDelay = duration;
-    }
-
-    /**
-     * Tracks an impression (can be called only once).
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#creativeView
-     */
-  }, {
-    key: "trackImpression",
-    value: function trackImpression() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      if (!this.impressed) {
-        this.impressed = true;
-        this.trackURLs(this.ad.impressionURLTemplates, macros);
-        this.track('creativeView', {
-          macros: macros
+      });
+      if (progress < this.progress) {
+        this.track('rewind', {
+          macros
         });
       }
     }
+    this.progress = progress;
+  }
 
-    /**
-     * Tracks Viewable impression
-     * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     */
-  }, {
-    key: "trackViewableImpression",
-    value: function trackViewableImpression() {
-      var _this3 = this;
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
+  /**
+   * Checks if a quartile has been reached without have being triggered already.
+   *
+   * @param {String} quartile - Quartile name
+   * @param {Number} time - Time offset of the quartile, when this quartile is reached in seconds.
+   * @param {Number} progress - Current progress of the ads in seconds.
+   *
+   * @return {Boolean}
+   */
+  isQuartileReached(quartile, time, progress) {
+    let quartileReached = false;
+    // if quartile time already reached and never triggered
+    if (time <= progress && !this._alreadyTriggeredQuartiles[quartile]) {
+      quartileReached = true;
+    }
+    return quartileReached;
+  }
+
+  /**
+   * Updates the mute state and calls the mute/unmute tracking URLs.
+   *
+   * @param {Boolean} muted - Indicates if the video is muted or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#mute
+   * @emits VASTTracker#unmute
+   */
+  setMuted(muted) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof muted !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given setMuted parameter has the wrong type. muted: ".concat(muted, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    if (this.muted !== muted) {
+      this.track(muted ? 'mute' : 'unmute', {
+        macros
+      });
+    }
+    this.muted = muted;
+  }
+
+  /**
+   * Update the pause state and call the resume/pause tracking URLs.
+   *
+   * @param {Boolean} paused - Indicates if the video is paused or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#pause
+   * @emits VASTTracker#resume
+   */
+  setPaused(paused) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof paused !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given setPaused parameter has the wrong type. paused: ".concat(paused, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    if (this.paused !== paused) {
+      this.track(paused ? 'pause' : 'resume', {
+        macros
+      });
+    }
+    this.paused = paused;
+  }
+
+  /**
+   * Updates the fullscreen state and calls the fullscreen tracking URLs.
+   *
+   * @param {Boolean} fullscreen - Indicates if the video is in fulscreen mode or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#fullscreen
+   * @emits VASTTracker#exitFullscreen
+   */
+  setFullscreen(fullscreen) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof fullscreen !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given setFullScreen parameter has the wrong type. fullscreen: ".concat(fullscreen, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    if (this.fullscreen !== fullscreen) {
+      this.track(fullscreen ? 'fullscreen' : 'exitFullscreen', {
+        macros
+      });
+    }
+    this.fullscreen = fullscreen;
+  }
+
+  /**
+   * Updates the expand state and calls the expand/collapse tracking URLs.
+   *
+   * @param {Boolean} expanded - Indicates if the video is expanded or not.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#expand
+   * @emits VASTTracker#playerExpand
+   * @emits VASTTracker#collapse
+   * @emits VASTTracker#playerCollapse
+   */
+  setExpand(expanded) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof expanded !== 'boolean' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given setExpand parameter has the wrong type. expanded: ".concat(expanded, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    if (this.expanded !== expanded) {
+      this.track(expanded ? 'expand' : 'collapse', {
+        macros
+      });
+      this.track(expanded ? 'playerExpand' : 'playerCollapse', {
+        macros
+      });
+    }
+    this.expanded = expanded;
+  }
+
+  /**
+   * Must be called if you want to overwrite the <Linear> Skipoffset value.
+   * This will init the skip countdown duration. Then, every time setProgress() is called,
+   * it will decrease the countdown and emit a skip-countdown event with the remaining time.
+   * Do not call this method if you want to keep the original Skipoffset value.
+   *
+   * @param {Number} duration - The time in seconds until the skip button is displayed.
+   */
+  setSkipDelay(duration) {
+    if (!util.isValidTimeValue(duration)) {
+      this.emit('TRACKER-error', {
+        message: "setSkipDelay parameter does not have a valid value. duration: ".concat(duration)
+      });
+      return;
+    }
+    this.skipDelay = duration;
+  }
+
+  /**
+   * Tracks an impression (can be called only once).
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#creativeView
+   */
+  trackImpression() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "trackImpression parameter has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    if (!this.impressed) {
+      this.impressed = true;
+      this.trackURLs(this.ad.impressionURLTemplates, macros);
+      this.track('creativeView', {
+        macros
+      });
+    }
+  }
+
+  /**
+   * Tracks Viewable impression
+   * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   */
+  trackViewableImpression() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "trackViewableImpression given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.ad.viewableImpression.forEach(impression => {
+      this.trackURLs(impression.viewable, macros);
+    });
+  }
+
+  /**
+   * Tracks NotViewable impression
+   * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   */
+
+  trackNotViewableImpression() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "trackNotViewableImpression given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.ad.viewableImpression.forEach(impression => {
+      this.trackURLs(impression.notViewable, macros);
+    });
+  }
+
+  /**
+   * Tracks ViewUndetermined impression
+   * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   */
+  trackUndeterminedImpression() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "trackUndeterminedImpression given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.ad.viewableImpression.forEach(impression => {
+      this.trackURLs(impression.viewUndetermined, macros);
+    });
+  }
+
+  /**
+   * Send a request to the URI provided by the VAST <Error> element.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
+   */
+  error() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    let isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    if (typeof macros !== 'object' || typeof isCustomCode !== 'boolean') {
+      this.emit('TRACKER-error', {
+        message: "One given error parameter has the wrong type. macros: ".concat(util.formatMacrosValues(macros), ", isCustomCode: ").concat(isCustomCode)
+      });
+      return;
+    }
+    this.trackURLs(this.ad.errorURLTemplates, macros, {
+      isCustomCode
+    });
+  }
+
+  /**
+   * Send a request to the URI provided by the VAST <Error> element.
+   * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
+   * @deprecated
+   * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
+   * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
+   */
+  errorWithCode(errorCode) {
+    let isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    if (typeof errorCode !== 'string' || typeof isCustomCode !== 'boolean') {
+      this.emit('TRACKER-error', {
+        message: "One given errorWithCode parameter has the wrong type. errorCode: ".concat(errorCode, ", isCustomCode: ").concat(isCustomCode)
+      });
+      return;
+    }
+    this.error({
+      ERRORCODE: errorCode
+    }, isCustomCode);
+    //eslint-disable-next-line
+    console.log('The method errorWithCode is deprecated, please use vast tracker error method instead');
+  }
+
+  /**
+   * Must be called when the user watched the linear creative until its end.
+   * Calls the complete tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#complete
+   */
+  complete() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "complete given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('complete', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called if the ad was not and will not be played
+   * This is a terminal event; no other tracking events should be sent when this is used.
+   * Calls the notUsed tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#notUsed
+   */
+  notUsed() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "notUsed given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('notUsed', {
+      macros
+    });
+    this.trackingEvents = [];
+  }
+
+  /**
+   * An optional metric that can capture all other user interactions
+   * under one metric such as hover-overs, or custom clicks. It should NOT replace
+   * clickthrough events or other existing events like mute, unmute, pause, etc.
+   * Calls the otherAdInteraction tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#otherAdInteraction
+   */
+  otherAdInteraction() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "otherAdInteraction given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('otherAdInteraction', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called if the user clicked or otherwise activated a control used to
+   * pause streaming content,* which either expands the ad within the player’s
+   * viewable area or “takes-over” the streaming content area by launching
+   * additional portion of the ad.
+   * Calls the acceptInvitation tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#acceptInvitation
+   */
+  acceptInvitation() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "acceptInvitation given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('acceptInvitation', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called if user activated a control to expand the creative.
+   * Calls the adExpand tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#adExpand
+   */
+  adExpand() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "adExpand given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('adExpand', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called when the user activated a control to reduce the creative to its original dimensions.
+   * Calls the adCollapse tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#adCollapse
+   */
+  adCollapse() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "adCollapse given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('adCollapse', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called if the user clicked or otherwise activated a control used to minimize the ad.
+   * Calls the minimize tracking URLs.
+   *
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#minimize
+   */
+  minimize() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "minimize given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('minimize', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called if the player did not or was not able to execute the provided
+   * verification code.The [REASON] macro must be filled with reason code
+   * Calls the verificationNotExecuted tracking URL of associated verification vendor.
+   *
+   * @param {String} vendor - An identifier for the verification vendor. The recommended format is [domain]-[useCase], to avoid name collisions. For example, "company.com-omid".
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#verificationNotExecuted
+   */
+  verificationNotExecuted(vendor) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof vendor !== 'string' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given verificationNotExecuted parameter has to wrong type. vendor: ".concat(vendor, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    if (!this.ad || !this.ad.adVerifications || !this.ad.adVerifications.length) {
+      throw new Error('No adVerifications provided');
+    }
+    if (!vendor) {
+      throw new Error('No vendor provided, unable to find associated verificationNotExecuted');
+    }
+    const vendorVerification = this.ad.adVerifications.find(verifications => verifications.vendor === vendor);
+    if (!vendorVerification) {
+      throw new Error("No associated verification element found for vendor: ".concat(vendor));
+    }
+    const vendorTracking = vendorVerification.trackingEvents;
+    if (vendorTracking && vendorTracking.verificationNotExecuted) {
+      const verifsNotExecuted = vendorTracking.verificationNotExecuted;
+      this.trackURLs(verifsNotExecuted, macros);
+      this.emit('verificationNotExecuted', {
+        trackingURLTemplates: verifsNotExecuted
+      });
+    }
+  }
+
+  /**
+   * The time that the initial ad is displayed. This time is based on
+   * the time between the impression and either the completed length of display based
+   * on the agreement between transactional parties or a close, minimize, or accept
+   * invitation event.
+   * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
+   * Calls the overlayViewDuration tracking URLs.
+   *
+   * @param {String} formattedDuration - The time that the initial ad is displayed.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#overlayViewDuration
+   */
+  overlayViewDuration(formattedDuration) {
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof formattedDuration !== 'string' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given overlayViewDuration parameters has the wrong type. formattedDuration: ".concat(formattedDuration, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    macros['ADPLAYHEAD'] = formattedDuration;
+    this.track('overlayViewDuration', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called when the player or the window is closed during the ad.
+   * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   *
+   * @emits VASTTracker#closeLinear
+   * @emits VASTTracker#close
+   */
+  close() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "close given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track(this.linear ? 'closeLinear' : 'close', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called when the skip button is clicked. Calls the skip tracking URLs.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   *
+   * @emits VASTTracker#skip
+   */
+  skip() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "skip given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('skip', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called then loaded and buffered the creative’s media and assets either fully
+   * or to the extent that it is ready to play the media
+   * Calls the loaded tracking URLs.
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   *
+   * @emits VASTTracker#loaded
+   */
+  load() {
+    let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "load given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    this.track('loaded', {
+      macros
+    });
+  }
+
+  /**
+   * Must be called when the user clicks on the creative.
+   * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
+   * clickthrough URL when done.
+   *
+   * @param {?String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
+   * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
+   * @emits VASTTracker#clickthrough
+   */
+  click() {
+    let fallbackClickThroughURL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (fallbackClickThroughURL !== null && typeof fallbackClickThroughURL !== 'string' || typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "One given click parameter has the wrong type. fallbackClickThroughURL: ".concat(fallbackClickThroughURL, ", macros: ").concat(util.formatMacrosValues(macros))
+      });
+      return;
+    }
+    if (this.clickTrackingURLTemplates && this.clickTrackingURLTemplates.length) {
+      this.trackURLs(this.clickTrackingURLTemplates, macros);
+    }
+
+    // Use the provided fallbackClickThroughURL as a fallback
+    const clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL;
+    // clone second usage of macros, which get mutated inside resolveURLTemplates
+    const clonedMacros = {
+      ...macros
+    };
+    if (clickThroughURLTemplate) {
+      if (this.progress) {
+        clonedMacros['ADPLAYHEAD'] = this.progressFormatted();
       }
-      this.ad.viewableImpression.forEach(function (impression) {
-        _this3.trackURLs(impression.viewable, macros);
+      const clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], clonedMacros)[0];
+      this.emit('clickthrough', clickThroughURL);
+    }
+  }
+
+  /**
+   * Calls the tracking URLs for the given eventName and emits the event.
+   *
+   * @param {String} eventName - The name of the event.
+   * @param {Object} options
+   * @param {Object} [options.macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
+   * @param {Boolean} [options.once=false] - Boolean to define if the event has to be tracked only once.
+   *
+   */
+  track(eventName) {
+    let {
+      macros = {},
+      once = false
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (typeof macros !== 'object') {
+      this.emit('TRACKER-error', {
+        message: "track given macros has the wrong type. macros: ".concat(macros)
+      });
+      return;
+    }
+    // closeLinear event was introduced in VAST 3.0
+    // Fallback to vast 2.0 close event if necessary
+    if (eventName === 'closeLinear' && !this.trackingEvents[eventName] && this.trackingEvents['close']) {
+      eventName = 'close';
+    }
+    const trackingURLTemplates = this.trackingEvents[eventName];
+    const isAlwaysEmitEvent = this.emitAlwaysEvents.indexOf(eventName) > -1;
+    if (trackingURLTemplates) {
+      this.emit(eventName, {
+        trackingURLTemplates
+      });
+      this.trackURLs(trackingURLTemplates, macros);
+    } else if (isAlwaysEmitEvent) {
+      this.emit(eventName, null);
+    }
+    if (once) {
+      delete this.trackingEvents[eventName];
+      if (isAlwaysEmitEvent) {
+        this.emitAlwaysEvents.splice(this.emitAlwaysEvents.indexOf(eventName), 1);
+      }
+    }
+  }
+
+  /**
+   * Calls the tracking urls templates with the given macros .
+   *
+   * @param {Array} URLTemplates - An array of tracking url templates.
+   * @param {Object} [macros ={}] - An optional Object of parameters to be used in the tracking calls.
+   * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
+   */
+  trackURLs(URLTemplates) {
+    var _this$creative;
+    let macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    const {
+      validUrls,
+      invalidUrls
+    } = util.filterUrlTemplates(URLTemplates);
+    if (invalidUrls.length) {
+      this.emit('TRACKER-error', {
+        message: "Provided urls are malformed. url: ".concat(invalidUrls)
       });
     }
 
-    /**
-     * Tracks NotViewable impression
-     * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     */
-  }, {
-    key: "trackNotViewableImpression",
-    value: function trackNotViewableImpression() {
-      var _this4 = this;
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
+    //Avoid mutating the object received in parameters.
+    const givenMacros = {
+      ...macros
+    };
+    if (this.linear) {
+      if (this.creative && this.creative.mediaFiles && this.creative.mediaFiles[0] && this.creative.mediaFiles[0].fileURL) {
+        givenMacros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
       }
-      this.ad.viewableImpression.forEach(function (impression) {
-        _this4.trackURLs(impression.notViewable, macros);
-      });
-    }
-
-    /**
-     * Tracks ViewUndetermined impression
-     * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     */
-  }, {
-    key: "trackUndeterminedImpression",
-    value: function trackUndeterminedImpression() {
-      var _this5 = this;
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.ad.viewableImpression.forEach(function (impression) {
-        _this5.trackURLs(impression.viewUndetermined, macros);
-      });
-    }
-
-    /**
-     * Send a request to the URI provided by the VAST <Error> element.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
-     */
-  }, {
-    key: "error",
-    value: function error() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      if (_typeof(macros) !== 'object' || typeof isCustomCode !== 'boolean') {
-        return;
-      }
-      this.trackURLs(this.ad.errorURLTemplates, macros, {
-        isCustomCode: isCustomCode
-      });
-    }
-
-    /**
-     * Send a request to the URI provided by the VAST <Error> element.
-     * If an [ERRORCODE] macro is included, it will be substitute with errorCode.
-     * @deprecated
-     * @param {String} errorCode - Replaces [ERRORCODE] macro. [ERRORCODE] values are listed in the VAST specification.
-     * @param {Boolean} [isCustomCode=false] - Flag to allow custom values on error code.
-     */
-  }, {
-    key: "errorWithCode",
-    value: function errorWithCode(errorCode) {
-      var isCustomCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      if (typeof errorCode !== 'string' || typeof isCustomCode !== 'boolean') {
-        return;
-      }
-      this.error({
-        ERRORCODE: errorCode
-      }, isCustomCode);
-      //eslint-disable-next-line
-      console.log('The method errorWithCode is deprecated, please use vast tracker error method instead');
-    }
-
-    /**
-     * Must be called when the user watched the linear creative until its end.
-     * Calls the complete tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#complete
-     */
-  }, {
-    key: "complete",
-    value: function complete() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('complete', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called if the ad was not and will not be played
-     * This is a terminal event; no other tracking events should be sent when this is used.
-     * Calls the notUsed tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#notUsed
-     */
-  }, {
-    key: "notUsed",
-    value: function notUsed() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('notUsed', {
-        macros: macros
-      });
-      this.trackingEvents = [];
-    }
-
-    /**
-     * An optional metric that can capture all other user interactions
-     * under one metric such as hover-overs, or custom clicks. It should NOT replace
-     * clickthrough events or other existing events like mute, unmute, pause, etc.
-     * Calls the otherAdInteraction tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#otherAdInteraction
-     */
-  }, {
-    key: "otherAdInteraction",
-    value: function otherAdInteraction() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('otherAdInteraction', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called if the user clicked or otherwise activated a control used to
-     * pause streaming content,* which either expands the ad within the player’s
-     * viewable area or “takes-over” the streaming content area by launching
-     * additional portion of the ad.
-     * Calls the acceptInvitation tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#acceptInvitation
-     */
-  }, {
-    key: "acceptInvitation",
-    value: function acceptInvitation() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('acceptInvitation', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called if user activated a control to expand the creative.
-     * Calls the adExpand tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#adExpand
-     */
-  }, {
-    key: "adExpand",
-    value: function adExpand() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('adExpand', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called when the user activated a control to reduce the creative to its original dimensions.
-     * Calls the adCollapse tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#adCollapse
-     */
-  }, {
-    key: "adCollapse",
-    value: function adCollapse() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('adCollapse', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called if the user clicked or otherwise activated a control used to minimize the ad.
-     * Calls the minimize tracking URLs.
-     *
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#minimize
-     */
-  }, {
-    key: "minimize",
-    value: function minimize() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      this.track('minimize', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called if the player did not or was not able to execute the provided
-     * verification code.The [REASON] macro must be filled with reason code
-     * Calls the verificationNotExecuted tracking URL of associated verification vendor.
-     *
-     * @param {String} vendor - An identifier for the verification vendor. The recommended format is [domain]-[useCase], to avoid name collisions. For example, "company.com-omid".
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#verificationNotExecuted
-     */
-  }, {
-    key: "verificationNotExecuted",
-    value: function verificationNotExecuted(vendor) {
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (typeof vendor !== 'string' || _typeof(macros) !== 'object') {
-        return;
-      }
-      if (!this.ad || !this.ad.adVerifications || !this.ad.adVerifications.length) {
-        throw new Error('No adVerifications provided');
-      }
-      if (!vendor) {
-        throw new Error('No vendor provided, unable to find associated verificationNotExecuted');
-      }
-      var vendorVerification = this.ad.adVerifications.find(function (verifications) {
-        return verifications.vendor === vendor;
-      });
-      if (!vendorVerification) {
-        throw new Error("No associated verification element found for vendor: ".concat(vendor));
-      }
-      var vendorTracking = vendorVerification.trackingEvents;
-      if (vendorTracking && vendorTracking.verificationNotExecuted) {
-        var verifsNotExecuted = vendorTracking.verificationNotExecuted;
-        this.trackURLs(verifsNotExecuted, macros);
-        this.emit('verificationNotExecuted', {
-          trackingURLTemplates: verifsNotExecuted
-        });
+      if (this.progress) {
+        givenMacros['ADPLAYHEAD'] = this.progressFormatted();
       }
     }
-
-    /**
-     * The time that the initial ad is displayed. This time is based on
-     * the time between the impression and either the completed length of display based
-     * on the agreement between transactional parties or a close, minimize, or accept
-     * invitation event.
-     * The time will be passed using [ADPLAYHEAD] macros for VAST 4.1
-     * Calls the overlayViewDuration tracking URLs.
-     *
-     * @param {String} formattedDuration - The time that the initial ad is displayed.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#overlayViewDuration
-     */
-  }, {
-    key: "overlayViewDuration",
-    value: function overlayViewDuration(formattedDuration) {
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (typeof formattedDuration !== 'string' || _typeof(macros) !== 'object') {
-        return;
-      }
-      macros['ADPLAYHEAD'] = formattedDuration;
-      this.track('overlayViewDuration', {
-        macros: macros
-      });
+    if ((_this$creative = this.creative) !== null && _this$creative !== void 0 && (_this$creative = _this$creative.universalAdIds) !== null && _this$creative !== void 0 && _this$creative.length) {
+      givenMacros['UNIVERSALADID'] = this.creative.universalAdIds.map(universalAdId => universalAdId.idRegistry.concat(' ', universalAdId.value)).join(',');
     }
-
-    /**
-     * Must be called when the player or the window is closed during the ad.
-     * Calls the `closeLinear` (in VAST 3.0 and 4.1) and `close` tracking URLs.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     *
-     * @emits VASTTracker#closeLinear
-     * @emits VASTTracker#close
-     */
-  }, {
-    key: "close",
-    value: function close() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
+    if (this.ad) {
+      if (this.ad.sequence) {
+        givenMacros['PODSEQUENCE'] = this.ad.sequence;
       }
-      this.track(this.linear ? 'closeLinear' : 'close', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called when the skip button is clicked. Calls the skip tracking URLs.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     *
-     * @emits VASTTracker#skip
-     */
-  }, {
-    key: "skip",
-    value: function skip() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
+      if (this.ad.adType) {
+        givenMacros['ADTYPE'] = this.ad.adType;
       }
-      this.track('skip', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called then loaded and buffered the creative’s media and assets either fully
-     * or to the extent that it is ready to play the media
-     * Calls the loaded tracking URLs.
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     *
-     * @emits VASTTracker#loaded
-     */
-  }, {
-    key: "load",
-    value: function load() {
-      var macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (_typeof(macros) !== 'object') {
-        return;
+      if (this.ad.adServingId) {
+        givenMacros['ADSERVINGID'] = this.ad.adServingId;
       }
-      this.track('loaded', {
-        macros: macros
-      });
-    }
-
-    /**
-     * Must be called when the user clicks on the creative.
-     * It calls the tracking URLs and emits a 'clickthrough' event with the resolved
-     * clickthrough URL when done.
-     *
-     * @param {?String} [fallbackClickThroughURL=null] - an optional clickThroughURL template that could be used as a fallback
-     * @param {Object} [macros={}] - An optional Object containing macros and their values to be used and replaced in the tracking calls.
-     * @emits VASTTracker#clickthrough
-     */
-  }, {
-    key: "click",
-    value: function click() {
-      var fallbackClickThroughURL = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (fallbackClickThroughURL !== null && typeof fallbackClickThroughURL !== 'string' || _typeof(macros) !== 'object') {
-        return;
+      if (this.ad.categories && this.ad.categories.length) {
+        givenMacros['ADCATEGORIES'] = this.ad.categories.map(category => category.value).join(',');
       }
-      if (this.clickTrackingURLTemplates && this.clickTrackingURLTemplates.length) {
-        this.trackURLs(this.clickTrackingURLTemplates, macros);
-      }
-
-      // Use the provided fallbackClickThroughURL as a fallback
-      var clickThroughURLTemplate = this.clickThroughURLTemplate || fallbackClickThroughURL;
-      // clone second usage of macros, which get mutated inside resolveURLTemplates
-      var clonedMacros = _objectSpread2({}, macros);
-      if (clickThroughURLTemplate) {
-        if (this.progress) {
-          clonedMacros['ADPLAYHEAD'] = this.progressFormatted();
-        }
-        var clickThroughURL = util.resolveURLTemplates([clickThroughURLTemplate], clonedMacros)[0];
-        this.emit('clickthrough', clickThroughURL);
+      if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
+        givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories.map(blockedCategorie => blockedCategorie.value).join(',');
       }
     }
+    util.track(validUrls, givenMacros, options);
+  }
 
-    /**
-     * Calls the tracking URLs for the given eventName and emits the event.
-     *
-     * @param {String} eventName - The name of the event.
-     * @param {Object} options
-     * @param {Object} [options.macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
-     * @param {Boolean} [options.once=false] - Boolean to define if the event has to be tracked only once.
-     *
-     */
-  }, {
-    key: "track",
-    value: function track(eventName) {
-      var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref$macros = _ref.macros,
-        macros = _ref$macros === void 0 ? {} : _ref$macros,
-        _ref$once = _ref.once,
-        once = _ref$once === void 0 ? false : _ref$once;
-      if (_typeof(macros) !== 'object') {
-        return;
-      }
-      // closeLinear event was introduced in VAST 3.0
-      // Fallback to vast 2.0 close event if necessary
-      if (eventName === 'closeLinear' && !this.trackingEvents[eventName] && this.trackingEvents['close']) {
-        eventName = 'close';
-      }
-      var trackingURLTemplates = this.trackingEvents[eventName];
-      var isAlwaysEmitEvent = this.emitAlwaysEvents.indexOf(eventName) > -1;
-      if (trackingURLTemplates) {
-        this.emit(eventName, {
-          trackingURLTemplates: trackingURLTemplates
-        });
-        this.trackURLs(trackingURLTemplates, macros);
-      } else if (isAlwaysEmitEvent) {
-        this.emit(eventName, null);
-      }
-      if (once) {
-        delete this.trackingEvents[eventName];
-        if (isAlwaysEmitEvent) {
-          this.emitAlwaysEvents.splice(this.emitAlwaysEvents.indexOf(eventName), 1);
-        }
-      }
+  /**
+   * Formats time in seconds to VAST timecode (e.g. 00:00:10.000)
+   *
+   * @param {Number} timeInSeconds - Number in seconds
+   * @return {String}
+   */
+  convertToTimecode(timeInSeconds) {
+    if (!util.isValidTimeValue(timeInSeconds)) {
+      return '';
     }
+    const progress = timeInSeconds * 1000;
+    const hours = Math.floor(progress / (60 * 60 * 1000));
+    const minutes = Math.floor(progress / (60 * 1000) % 60);
+    const seconds = Math.floor(progress / 1000 % 60);
+    const milliseconds = Math.floor(progress % 1000);
+    return "".concat(util.addLeadingZeros(hours, 2), ":").concat(util.addLeadingZeros(minutes, 2), ":").concat(util.addLeadingZeros(seconds, 2), ".").concat(util.addLeadingZeros(milliseconds, 3));
+  }
 
-    /**
-     * Calls the tracking urls templates with the given macros .
-     *
-     * @param {Array} URLTemplates - An array of tracking url templates.
-     * @param {Object} [macros ={}] - An optional Object of parameters to be used in the tracking calls.
-     * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
-     */
-  }, {
-    key: "trackURLs",
-    value: function trackURLs(URLTemplates) {
-      var _this$creative;
-      var macros = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      var validUrlTemplates = util.filterValidUrlTemplates(URLTemplates);
-      //Avoid mutating the object received in parameters.
-      var givenMacros = _objectSpread2({}, macros);
-      if (this.linear) {
-        if (this.creative && this.creative.mediaFiles && this.creative.mediaFiles[0] && this.creative.mediaFiles[0].fileURL) {
-          givenMacros['ASSETURI'] = this.creative.mediaFiles[0].fileURL;
-        }
-        if (this.progress) {
-          givenMacros['ADPLAYHEAD'] = this.progressFormatted();
-        }
-      }
-      if ((_this$creative = this.creative) !== null && _this$creative !== void 0 && (_this$creative = _this$creative.universalAdIds) !== null && _this$creative !== void 0 && _this$creative.length) {
-        givenMacros['UNIVERSALADID'] = this.creative.universalAdIds.map(function (universalAdId) {
-          return universalAdId.idRegistry.concat(' ', universalAdId.value);
-        }).join(',');
-      }
-      if (this.ad) {
-        if (this.ad.sequence) {
-          givenMacros['PODSEQUENCE'] = this.ad.sequence;
-        }
-        if (this.ad.adType) {
-          givenMacros['ADTYPE'] = this.ad.adType;
-        }
-        if (this.ad.adServingId) {
-          givenMacros['ADSERVINGID'] = this.ad.adServingId;
-        }
-        if (this.ad.categories && this.ad.categories.length) {
-          givenMacros['ADCATEGORIES'] = this.ad.categories.map(function (category) {
-            return category.value;
-          }).join(',');
-        }
-        if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
-          givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories;
-        }
-      }
-      util.track(validUrlTemplates, givenMacros, options);
-    }
-
-    /**
-     * Formats time in seconds to VAST timecode (e.g. 00:00:10.000)
-     *
-     * @param {Number} timeInSeconds - Number in seconds
-     * @return {String}
-     */
-  }, {
-    key: "convertToTimecode",
-    value: function convertToTimecode(timeInSeconds) {
-      if (!util.isValidTimeValue(timeInSeconds)) {
-        return '';
-      }
-      var progress = timeInSeconds * 1000;
-      var hours = Math.floor(progress / (60 * 60 * 1000));
-      var minutes = Math.floor(progress / (60 * 1000) % 60);
-      var seconds = Math.floor(progress / 1000 % 60);
-      var milliseconds = Math.floor(progress % 1000);
-      return "".concat(util.addLeadingZeros(hours, 2), ":").concat(util.addLeadingZeros(minutes, 2), ":").concat(util.addLeadingZeros(seconds, 2), ".").concat(util.addLeadingZeros(milliseconds, 3));
-    }
-
-    /**
-     * Formats time progress in a readable string.
-     *
-     * @return {String}
-     */
-  }, {
-    key: "progressFormatted",
-    value: function progressFormatted() {
-      return this.convertToTimecode(this.progress);
-    }
-  }]);
-  return VASTTracker;
-}(EventEmitter);
+  /**
+   * Formats time progress in a readable string.
+   *
+   * @return {String}
+   */
+  progressFormatted() {
+    return this.convertToTimecode(this.progress);
+  }
+}
 
 exports.VASTClient = VASTClient;
 exports.VASTParser = VASTParser;
