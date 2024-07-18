@@ -66,8 +66,10 @@ async function get(url, options) {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit',
+    })
+    .finally(()=>{
+      clearTimeout(timer);
     });
-    clearTimeout(timer);
 
     const error = handleError(response);
     if (error) {
