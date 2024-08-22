@@ -286,6 +286,7 @@ export class VASTParser extends EventEmitter {
     - Inline sequence 2,
     - Inline sequence 3
   */
+
     if (
       ads.length === 1 &&
       wrapperSequence !== undefined &&
@@ -329,19 +330,7 @@ export class VASTParser extends EventEmitter {
     });
 
     return Promise.all(resolveWrappersPromises).then((unwrappedAds) => {
-      const resolvedAds = util.flatten(unwrappedAds);
-
-      if (!resolvedAds.length && this.remainingAds.length > 0) {
-        const remainingAdsToResolve = this.remainingAds.shift();
-
-        return this.resolveAds(remainingAdsToResolve, {
-          wrapperDepth,
-          previousUrl,
-          url,
-        });
-      }
-
-      return resolvedAds;
+      return util.flatten(unwrappedAds);
     });
   }
 
