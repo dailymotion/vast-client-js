@@ -27,42 +27,18 @@ const nodeUrlHandler = {
 const wrapperAVastUrl = urlFor('wrapper-a.xml');
 const wrapperBVastUrl = urlFor('wrapper-b.xml');
 const inlineSampleVastUrl = urlFor('sample.xml');
-const inlineVpaidVastUrl = urlFor('vpaid.xml');
 const inlineInvalidVastUrl = urlFor('invalid-xmlfile.xml');
-const wrapperWithAttributesVastUrl = urlFor(
-  'wrapper-attributes-multiple-ads.xml'
-);
-const wrapperInvalidVastUrl = urlFor('wrapper-invalid-xmlfile.xml');
-const vastWithErrorUrl = urlFor('empty-no-ad.xml');
-const ad = {
-  id: null,
-  sequence: 1,
-  system: { value: 'VAST', version: null },
-  title: null,
-  description: null,
-  advertiser: null,
-  pricing: null,
-  survey: null,
-  errorURLTemplates: ['http://example.com/wrapperA-error'],
-  impressionURLTemplates: [],
-  creatives: [],
-  extensions: [],
-  adVerifications: [],
-  trackingEvents: { nonlinear: [], linear: [] },
-  videoClickTrackingURLTemplates: [],
-  videoCustomClickURLTemplates: [],
-  viewableImpression: [],
-};
 
 describe('VASTParser', () => {
   let vastClient;
   let VastParser;
   let fetcher;
-  let inlineXml, invalidXml, errorXml, wrapperXml;
+  let inlineXml, invalidXml, errorXml, wrapperXml, outdatedXml;
 
   beforeAll(async () => {
     inlineXml = await nodeUrlHandler.get('./spec/samples/sample.xml');
     errorXml = await nodeUrlHandler.get('./spec/samples/empty-no-ad.xml');
+    outdatedXml = await nodeUrlHandler.get('./spec/samples/outdated-vast.xml');
     wrapperXml = await nodeUrlHandler.get(
       './spec/samples/wrapper-attributes-multiple-ads.xml'
     );
@@ -131,6 +107,23 @@ describe('VASTParser', () => {
         expect(VastParser.emit).toHaveBeenLastCalledWith('VAST-ad-parsed', {
           type: 'ERROR',
           url: inlineInvalidVastUrl,
+          wrapperDepth: 0,
+        });
+      }
+    });
+
+    it('throw a error for non supported XML vast', () => {
+      try {
+        VastParser.parseVastXml(outdatedXml.xml, {
+          isRootVAST: true,
+          url: null,
+          wrapperDepth: 0,
+        });
+      } catch (e) {
+        expect(e.message).toBe('VAST response version not supported');
+        expect(VastParser.emit).toHaveBeenLastCalledWith('VAST-ad-parsed', {
+          type: 'ERROR',
+          url: null,
           wrapperDepth: 0,
         });
       }
@@ -480,7 +473,7 @@ describe('VASTParser', () => {
     });
 
     describe('Wrapper URL unavailable/timeout', () => {
-      it('sould emits a VAST-error and track', async () => {
+      it('should emits a VAST-error and track', async () => {
         const url = './spec/samples/wrapper-unavailable-url.xml';
 
         const response = await nodeUrlHandler.get(url);
@@ -488,12 +481,12 @@ describe('VASTParser', () => {
         fetcher.setOptions({ ...options, url: url, previousUrl: url });
         VastParser.fetchingCallback = fetcher.fetchVAST.bind(fetcher);
 
-        const vastXML = await VastParser.parseVAST(response.xml, {
+        const vast = await VastParser.parseVAST(response.xml, {
           url: url,
           previousUrl: url,
         });
         // Response doesn't have any ads
-        expect(vastXML.ads).toEqual([]);
+        expect(vast.ads).toEqual([]);
         // Error has been trigered
         expect(dataTriggered.length).toBe(1);
         expect(dataTriggered[0].ERRORCODE).toBe(301);

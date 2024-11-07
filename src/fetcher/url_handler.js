@@ -36,7 +36,7 @@ async function handleResponse(response) {
  */
 function handleError(response) {
   if (
-    window.location.protocol === 'https:' &&
+    window?.location?.protocol === 'https:' &&
     response.url.includes('http://')
   ) {
     return 'URLHandler: Cannot go from HTTPS to HTTP.';
@@ -66,8 +66,7 @@ async function get(url, options) {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit',
-    })
-    .finally(()=>{
+    }).finally(() => {
       clearTimeout(timer);
     });
 
