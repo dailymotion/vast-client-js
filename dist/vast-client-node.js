@@ -2621,7 +2621,7 @@ async function handleResponse(response) {
   const textXml = await response.text();
   let parser;
   if (!util.isBrowserEnvironment()) {
-    const xmlDom = await Promise.resolve().then(function () { return require('./chunks/xmldom-ac2d7d04.js'); });
+    const xmlDom = await Promise.resolve().then(function () { return require('./chunks/xmldom-a624052b.js'); }).then(function (n) { return n.index; });
     parser = new xmlDom.DOMParser();
   } else {
     parser = new DOMParser();
