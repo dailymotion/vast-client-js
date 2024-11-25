@@ -2639,7 +2639,7 @@ async function handleResponse(response) {
  * @returns {String | null}
  */
 function handleError(response) {
-  if (window.location.protocol === 'https:' && response.url.includes('http://')) {
+  if (util.isBrowserEnvironment() && window.location.protocol === 'https:' && response.url.includes('http://')) {
     return 'URLHandler: Cannot go from HTTPS to HTTP.';
   }
   if (response.status !== 200 || !response.ok) {
@@ -2660,8 +2660,9 @@ async function get(url, options) {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit'
+    }).finally(() => {
+      clearTimeout(timer);
     });
-    clearTimeout(timer);
     const error = handleError(response);
     if (error) {
       return {

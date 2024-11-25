@@ -36,6 +36,7 @@ async function handleResponse(response) {
  */
 function handleError(response) {
   if (
+    util.isBrowserEnvironment() &&
     window.location.protocol === 'https:' &&
     response.url.includes('http://')
   ) {
