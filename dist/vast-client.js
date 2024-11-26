@@ -2066,7 +2066,8 @@ const DEFAULT_EVENT_DATA = {
   ERRORCODE: 900,
   extensions: []
 };
-
+const INVALID_VAST_ERROR = 'Invalid VAST XMLDocument';
+const NON_SUPPORTED_VAST_VERSION = 'VAST response version not supported';
 /**
  * This class provides methods to fetch and parse a VAST document.
  * @export
@@ -2084,7 +2085,10 @@ class VASTParser extends EventEmitter {
     } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     super();
     this.maxWrapperDepth = null;
+    this.rootErrorURLTemplates = [];
+    this.errorURLTemplates = [];
     this.remainingAds = [];
+    this.parsingOptions = {};
     this.fetcher = fetcher || null;
   }
 
@@ -2216,12 +2220,15 @@ class VASTParser extends EventEmitter {
     } = _ref;
     // check if is a valid VAST document
     if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
+      var _vastXml$documentElem;
       this.emit('VAST-ad-parsed', {
         type: 'ERROR',
         url,
         wrapperDepth
       });
-      throw new Error('Invalid VAST XMLDocument');
+      // VideoAdServingTemplate node is used for VAST 1.0
+      const isNonSupportedVast = (vastXml === null || vastXml === void 0 || (_vastXml$documentElem = vastXml.documentElement) === null || _vastXml$documentElem === void 0 ? void 0 : _vastXml$documentElem.nodeName) === 'VideoAdServingTemplate';
+      throw new Error(isNonSupportedVast ? NON_SUPPORTED_VAST_VERSION : INVALID_VAST_ERROR);
     }
     const ads = [];
     const childNodes = vastXml.documentElement.childNodes;
@@ -2438,8 +2445,8 @@ class VASTParser extends EventEmitter {
         });
       }).catch(err => {
         // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-        // (URI was either unavailable or reached a timeout as defined by the video player.)
-        ad.errorCode = 301;
+        // (URI was either unavailable or reached a timeout as defined by the video player)
+        ad.errorCode = err.message === NON_SUPPORTED_VAST_VERSION ? 102 : 301;
         ad.errorMessage = err.message;
         resolve(ad);
       });
@@ -2466,7 +2473,11 @@ class VASTParser extends EventEmitter {
         // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
         // but no creative was found
         const ad = vastResponse.ads[index];
-        if ((ad.errorCode || ad.creatives.length === 0) && !ad.VASTAdTagURI) {
+        const noMediaFilesAvailable = !ad.creatives.some(creative => {
+          var _creative$mediaFiles;
+          return ((_creative$mediaFiles = creative.mediaFiles) === null || _creative$mediaFiles === void 0 ? void 0 : _creative$mediaFiles.length) > 0;
+        });
+        if ((ad.errorCode || noMediaFilesAvailable) && !ad.VASTAdTagURI) {
           // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
           // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
           this.trackVastError(ad.errorURLTemplates.concat(vastResponse.errorURLTemplates), {
@@ -2639,7 +2650,8 @@ async function handleResponse(response) {
  * @returns {String | null}
  */
 function handleError(response) {
-  if (window.location.protocol === 'https:' && response.url.includes('http://')) {
+  var _window;
+  if (((_window = window) === null || _window === void 0 || (_window = _window.location) === null || _window === void 0 ? void 0 : _window.protocol) === 'https:' && response.url.includes('http://')) {
     return 'URLHandler: Cannot go from HTTPS to HTTP.';
   }
   if (response.status !== 200 || !response.ok) {
@@ -2660,8 +2672,9 @@ async function get(url, options) {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit'
+    }).finally(() => {
+      clearTimeout(timer);
     });
-    clearTimeout(timer);
     const error = handleError(response);
     if (error) {
       return {
