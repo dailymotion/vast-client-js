@@ -67,8 +67,7 @@ async function get(url, options) {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit',
-    })
-    .finally(()=>{
+    }).finally(() => {
       clearTimeout(timer);
     });
 

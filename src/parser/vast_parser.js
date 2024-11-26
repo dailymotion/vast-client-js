@@ -10,7 +10,8 @@ const DEFAULT_EVENT_DATA = {
   ERRORCODE: 900,
   extensions: [],
 };
-
+const INVALID_VAST_ERROR = 'Invalid VAST XMLDocument';
+const NON_SUPPORTED_VAST_VERSION = 'VAST response version not supported';
 /**
  * This class provides methods to fetch and parse a VAST document.
  * @export
@@ -25,7 +26,10 @@ export class VASTParser extends EventEmitter {
   constructor({ fetcher } = {}) {
     super();
     this.maxWrapperDepth = null;
+    this.rootErrorURLTemplates = [];
+    this.errorURLTemplates = [];
     this.remainingAds = [];
+    this.parsingOptions = {};
     this.fetcher = fetcher || null;
   }
 
@@ -173,7 +177,12 @@ export class VASTParser extends EventEmitter {
         url,
         wrapperDepth,
       });
-      throw new Error('Invalid VAST XMLDocument');
+      // VideoAdServingTemplate node is used for VAST 1.0
+      const isNonSupportedVast =
+        vastXml?.documentElement?.nodeName === 'VideoAdServingTemplate';
+      throw new Error(
+        isNonSupportedVast ? NON_SUPPORTED_VAST_VERSION : INVALID_VAST_ERROR
+      );
     }
 
     const ads = [];
@@ -414,8 +423,8 @@ export class VASTParser extends EventEmitter {
         })
         .catch((err) => {
           // Timeout of VAST URI provided in Wrapper element, or of VAST URI provided in a subsequent Wrapper element.
-          // (URI was either unavailable or reached a timeout as defined by the video player.)
-          ad.errorCode = 301;
+          // (URI was either unavailable or reached a timeout as defined by the video player)
+          ad.errorCode = err.message === NON_SUPPORTED_VAST_VERSION ? 102 : 301;
           ad.errorMessage = err.message;
           resolve(ad);
         });
@@ -440,7 +449,10 @@ export class VASTParser extends EventEmitter {
         // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
         // but no creative was found
         const ad = vastResponse.ads[index];
-        if ((ad.errorCode || ad.creatives.length === 0) && !ad.VASTAdTagURI) {
+        const noMediaFilesAvailable = !ad.creatives.some(
+          (creative) => creative.mediaFiles?.length > 0
+        );
+        if ((ad.errorCode || noMediaFilesAvailable) && !ad.VASTAdTagURI) {
           // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
           // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
           this.trackVastError(
