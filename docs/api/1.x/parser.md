@@ -7,8 +7,6 @@ Whenever an error occurs during the VAST parsing, the parser will call on his ow
 
 * VAST error `101`: VAST schema validation error.
 
-* VAST error `102`: VAST version of response not supported.
-
 * VAST error `301`: Timeout of VAST URI provided in Wrapper element.
 
 * VAST error `302`: Wrapper limit reached.
