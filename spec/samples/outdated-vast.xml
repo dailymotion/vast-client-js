@@ -1,0 +1,18 @@
+<VideoAdServingTemplate>
+    <Ad id="preroll-1">
+        <InLine>
+            <AdSystem>example-1</AdSystem>
+            <AdTitle>123456</AdTitle>
+            <Video>
+                <Duration>00:00:15</Duration>
+                <AdID>preroll-1</AdID>
+                <MediaFiles>
+                    <MediaFile width="600" type="video/x-flv" height="396" delivery="progressive"
+                        bitrate="496">
+                        <URL><![CDATA[http://example.com/ads/mediafile1.flv]]></URL>
+                    </MediaFile>
+                </MediaFiles>
+            </Video>
+        </InLine>
+    </Ad>
+</VideoAdServingTemplate>
