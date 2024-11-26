@@ -1,6 +1,7 @@
 import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
 const babelPlugin = babel({
   babelrc: false,
@@ -29,6 +30,10 @@ const createNodeConfig = (filePath, minifiedOutput, notMinifiedOutput) => {
         preferBuiltins: true,
       }),
       babelPlugin,
+      // We need commonjs for xmldom: https://github.com/xmldom/xmldom/issues/316
+      commonjs({
+        include: ["./node_modules/@xmldom/xmldom/lib/*.js"]
+    })
     ],
     onwarn,
   };

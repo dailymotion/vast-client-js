@@ -2632,7 +2632,7 @@ async function handleResponse(response) {
   const textXml = await response.text();
   let parser;
   if (!util.isBrowserEnvironment()) {
-    const xmlDom = await Promise.resolve().then(function () { return require('./chunks/xmldom-ac2d7d04.js'); });
+    const xmlDom = await Promise.resolve().then(function () { return require('./chunks/xmldom-a624052b.js'); }).then(function (n) { return n.index; });
     parser = new xmlDom.DOMParser();
   } else {
     parser = new DOMParser();
@@ -2654,8 +2654,7 @@ async function handleResponse(response) {
  * @returns {String | null}
  */
 function handleError(response) {
-  var _window;
-  if (((_window = window) === null || _window === void 0 || (_window = _window.location) === null || _window === void 0 ? void 0 : _window.protocol) === 'https:' && response.url.includes('http://')) {
+  if (util.isBrowserEnvironment() && window.location.protocol === 'https:' && response.url.includes('http://')) {
     return 'URLHandler: Cannot go from HTTPS to HTTP.';
   }
   if (response.status !== 200 || !response.ok) {

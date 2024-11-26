@@ -2650,8 +2650,7 @@ async function handleResponse(response) {
  * @returns {String | null}
  */
 function handleError(response) {
-  var _window;
-  if (((_window = window) === null || _window === void 0 || (_window = _window.location) === null || _window === void 0 ? void 0 : _window.protocol) === 'https:' && response.url.includes('http://')) {
+  if (util.isBrowserEnvironment() && window.location.protocol === 'https:' && response.url.includes('http://')) {
     return 'URLHandler: Cannot go from HTTPS to HTTP.';
   }
   if (response.status !== 200 || !response.ok) {
