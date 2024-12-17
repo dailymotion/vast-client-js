@@ -1,5 +1,5 @@
 {
-  "name": "test-node",
+  "name": "VASTClient-node-example",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -7,7 +7,7 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "author": "Dailymotion <vast-client@dailymotion.com> (https://developer.dailymotion.com/)"
+  "license": "MIT",
+  "description": "VAST Client node usage example"
 }
