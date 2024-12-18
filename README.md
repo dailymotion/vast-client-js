@@ -15,7 +15,7 @@ This library provides three components:
 For the full API documentation go [here](#api).
 For the full Class reference go [here](https://github.com/dailymotion/vast-client-js/blob/master/docs/api/class-reference.md)
 
-To explore a practical example of how the vast client can be implemented, please visit this [link](https://githubbox.com/dailymotion/vast-client-js/tree/master/examples).
+To explore a practical example of how the VAST client can be implemented in web applications please visit this [link](https://githubbox.com/dailymotion/vast-client-js/tree/master/examples/web). Additionally, use this [link](https://githubbox.com/dailymotion/vast-client-js/tree/master/examples/node) to learn how to use the VAST client in a basic Node application.
 
 Complies with the [VAST 4.3 specification](https://iabtechlab.com/wp-content/uploads/2022/09/VAST_4.3.pdf) provided by the [Interactive Advertising Bureau (IAB)](https://www.iab.com/).
 
