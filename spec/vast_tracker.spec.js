@@ -523,7 +523,7 @@ describe('VASTTracker', function () {
         expect(spyEmitter).toHaveBeenCalledWith('skip-countdown', 0);
       });
 
-      it('should track rewind  when set to 2', () => {
+      it('should track rewind when set to 2', () => {
         vastTracker.setProgress(2);
         expect(spyTrack).toHaveBeenCalledWith('rewind', expect.any(Object));
       });
