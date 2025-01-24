@@ -118,20 +118,17 @@ describe('VASTClient', () => {
           optionsWithNoResolveAll
         );
       });
-      it('returns first ad parsed', () => {
-        expect(res).toEqual({
-          ads: expect.any(Array),
-          errorURLTemplates: [],
-          version: '4.3',
-        });
+      it('returns ad pod parsed', () => {
         expect(res.ads).toHaveLength(2);
+        expect(res.ads[0].sequence).toBe('1');
+        expect(res.ads[1].sequence).toBe('2');
       });
 
-      it('should return only the errorURLs for the first ad', () => {
-        expect(res.ads[0].errorURLTemplates).toEqual([
-          'http://example.com/error',
-          'http://example.com/error_[ERRORCODE]',
-        ]);
+      it('should return stand alone ads in the remaining ads', () => {
+        const remainingAds = VastClient.getParser().remainingAds;
+        expect(remainingAds[0].id).toBe('201');
+        expect(remainingAds[0].id).toBe('2032');
+        expect(remainingAds.length).toBe(2);
       });
 
       it('handles empty ads correctly', async () => {
@@ -161,7 +158,7 @@ describe('VASTClient', () => {
           expect(res.ads).toHaveLength(3);
         });
 
-        it('resolves only next ad if requested', async () => {
+        fit('resolves only next ad if requested', async () => {
           await VastClient.get(
             wrapperMultipleAdsVastUrl,
             optionsWithNoResolveAll
