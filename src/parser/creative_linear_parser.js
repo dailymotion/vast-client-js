@@ -105,9 +105,9 @@ export function parseCreativeLinear(creativeElement, creativeAttributes) {
               if (offset.charAt(offset.length - 1) === '%') {
                 eventName = `progress-${offset}`;
               } else {
-                eventName = `progress-${Math.round(
+                eventName = `progress-${
                   parserUtils.parseDuration(offset)
-                )}`;
+                }`;
               }
             }
 

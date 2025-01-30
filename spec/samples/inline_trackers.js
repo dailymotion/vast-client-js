@@ -191,6 +191,7 @@ export const inlineTrackersParsed = {
             close: ['http://example.com/linear-close'],
             thirdQuartile: ['http://example.com/linear-thirdQuartile'],
             'progress-30': ['http://example.com/linear-progress-30sec'],
+            'progress-42.333': ['http://example.com/linear-progress-42.333sec'],
             'progress-60%': ['http://example.com/linear-progress-60%'],
             otherAdInteraction: [
               'http://example.com/linear-otherAdInteraction',
