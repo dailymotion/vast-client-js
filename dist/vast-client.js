@@ -887,7 +887,7 @@ function parseCreativeLinear(creativeElement, creativeAttributes) {
           if (offset.charAt(offset.length - 1) === '%') {
             eventName = "progress-".concat(offset);
           } else {
-            eventName = "progress-".concat(Math.round(parserUtils.parseDuration(offset)));
+            eventName = "progress-".concat(parserUtils.parseDuration(offset));
           }
         }
         if (!Array.isArray(creative.trackingEvents[eventName])) {
@@ -2650,8 +2650,7 @@ async function handleResponse(response) {
  * @returns {String | null}
  */
 function handleError(response) {
-  var _window;
-  if (((_window = window) === null || _window === void 0 || (_window = _window.location) === null || _window === void 0 ? void 0 : _window.protocol) === 'https:' && response.url.includes('http://')) {
+  if (util.isBrowserEnvironment() && window.location.protocol === 'https:' && response.url.includes('http://')) {
     return 'URLHandler: Cannot go from HTTPS to HTTP.';
   }
   if (response.status !== 200 || !response.ok) {
@@ -3021,6 +3020,7 @@ class VASTTracker extends EventEmitter {
     this.impressed = false;
     this.skippable = false;
     this.trackingEvents = {};
+    this.trackedProgressEvents = [];
     // We need to keep the last percentage of the tracker in order to
     // calculate to trigger the events when the VAST duration is short
     this.lastPercentage = 0;
@@ -3167,7 +3167,7 @@ class VASTTracker extends EventEmitter {
         for (let i = this.lastPercentage; i < percent; i++) {
           events.push("progress-".concat(i + 1, "%"));
         }
-        events.push("progress-".concat(Math.round(progress)));
+        events.push("progress-".concat(progress));
         for (const quartile in this.quartiles) {
           if (this.isQuartileReached(quartile, this.quartiles[quartile], progress)) {
             events.push(quartile);
@@ -3186,6 +3186,9 @@ class VASTTracker extends EventEmitter {
         this.track('rewind', {
           macros
         });
+        if (this.trackedProgressEvents) {
+          this.trackedProgressEvents.splice(0);
+        }
       }
     }
     this.progress = progress;
@@ -3752,11 +3755,56 @@ class VASTTracker extends EventEmitter {
   }
 
   /**
+   * Calls the tracking URLs for progress events for the given eventName and emits the event.
+   *
+   * @param {String} eventName - The name of the event.
+   * @param macros - An optional Object of parameters (vast macros) to be used in the tracking calls.
+   * @param once - Boolean to define if the event has to be tracked only once.
+   */
+  trackProgressEvents(eventName, macros, once) {
+    const eventTime = parseFloat(eventName.split('-')[1]);
+    const progressEvents = Object.entries(this.trackingEvents).filter(_ref => {
+      let [key] = _ref;
+      return key.startsWith('progress-');
+    }).map(_ref2 => {
+      let [key, value] = _ref2;
+      return {
+        name: key,
+        time: parseFloat(key.split('-')[1]),
+        urls: value
+      };
+    }).filter(_ref3 => {
+      let {
+        time
+      } = _ref3;
+      return time <= eventTime && time > this.progress;
+    });
+    progressEvents.forEach(_ref4 => {
+      let {
+        name,
+        urls
+      } = _ref4;
+      if (!once && this.trackedProgressEvents.includes(name)) {
+        return;
+      }
+      this.emit(name, {
+        trackingURLTemplates: urls
+      });
+      this.trackURLs(urls, macros);
+      if (once) {
+        delete this.trackingEvents[name];
+      } else {
+        this.trackedProgressEvents.push(name);
+      }
+    });
+  }
+
+  /**
    * Calls the tracking URLs for the given eventName and emits the event.
    *
    * @param {String} eventName - The name of the event.
    * @param {Object} options
-   * @param {Object} [options.macros={}] - An optional Object of parameters(vast macros) to be used in the tracking calls.
+   * @param {Object} [options.macros={}] - An optional Object of parameters (vast macros) to be used in the tracking calls.
    * @param {Boolean} [options.once=false] - Boolean to define if the event has to be tracked only once.
    *
    */
@@ -3775,6 +3823,9 @@ class VASTTracker extends EventEmitter {
     // Fallback to vast 2.0 close event if necessary
     if (eventName === 'closeLinear' && !this.trackingEvents[eventName] && this.trackingEvents['close']) {
       eventName = 'close';
+    }
+    if (eventName.startsWith('progress-') && !eventName.endsWith("%")) {
+      this.trackProgressEvents(eventName, macros, once);
     }
     const trackingURLTemplates = this.trackingEvents[eventName];
     const isAlwaysEmitEvent = this.emitAlwaysEvents.indexOf(eventName) > -1;
