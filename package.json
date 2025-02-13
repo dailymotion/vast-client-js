@@ -36,6 +36,7 @@
     "build": "rollup -c",
     "watch": "rollup -c --watch",
     "postbuild": "node bundle_size.js",
+    "deploy": "bash deployment-scripts/deploy-release.sh",
     "lint": "eslint .",
     "precommit": "eslint . --max-warnings 0 && pretty-quick --staged",
     "test": "jest"
