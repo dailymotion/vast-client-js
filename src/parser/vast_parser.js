@@ -96,10 +96,7 @@ export class VASTParser extends EventEmitter {
         new Error('No more ads are available for the given VAST')
       );
     }
-
-    const ads = all
-      ? util.flatten(this.remainingAds)
-      : this.remainingAds.shift();
+    const ads = all ? this.remainingAds : [this.remainingAds.shift()];
     this.errorURLTemplates = [];
 
     return this.resolveAds(ads, {
@@ -240,7 +237,6 @@ export class VASTParser extends EventEmitter {
         }
       }
     }
-
     return ads;
   }
 
@@ -303,12 +299,17 @@ export class VASTParser extends EventEmitter {
     ) {
       ads[0].sequence = wrapperSequence;
     }
-
-    // Split the VAST in case we don't want to resolve everything at the first time
     if (resolveAll === false) {
-      this.remainingAds = parserUtils.splitVAST(ads);
-      // Remove the first element from the remaining ads array, since we're going to resolve that element
-      ads = this.remainingAds.shift();
+      const adPods = parserUtils.getSortedAdPods(ads);
+      const standAloneAds = parserUtils.getStandAloneAds(ads);
+      // Resolve only AdPod found first, if no AdPod found resolve only the first stand alone Ad
+      if (adPods.length) {
+        ads = adPods;
+      } else if (standAloneAds.length) {
+        ads = [standAloneAds.shift()];
+      }
+
+      this.remainingAds = standAloneAds;
     }
 
     return this.resolveAds(ads, {

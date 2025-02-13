@@ -116,7 +116,7 @@ By default the fully parsed `VASTResponse` contains all the Ads contained in the
   - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
   - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
-  - `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse them ad by ad or adPod by adPod (default `true`)
+  - `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse: only the AdPod, or stand alone ad per stand alone ad (default `true`)
   - `allowMultipleAds: Boolean` - A Boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
   - `followAdditionalWrappers: Boolean` - a Boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
 
@@ -225,12 +225,13 @@ Using `get` method with default `options` will return a [`VASTResponse`](https:/
 }
 ```
 
-The `resolveAll` parameter allows to request only the first Ad or AdPod. If we pass it as `false` the response would look like:
+The `resolveAll` parameter allows to request only the AdPod or first Ad. If we pass it as `false` the response would look like:
 
 ```Javascript
 {
   ads: [
-    ad1
+    ad2,
+    ad3
   ],
   errorURLTemplates,
   version

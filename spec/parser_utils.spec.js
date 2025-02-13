@@ -1,173 +1,69 @@
 import { parserUtils } from '../src/parser/parser_utils.js';
 
 describe('ParserUtils', function () {
-  describe('splitVAST', function () {
-    it('should parse normally defined vast pods', () => {
-      const input = [
-        { id: 2, sequence: 1 },
-        { id: 3, sequence: 2 },
-        { id: 4 },
-        { id: 5, sequence: 1 },
-        { id: 6, sequence: 2 },
-        { id: 7, sequence: 3 },
-        { id: 8, sequence: 1 },
-        { id: 9, sequence: 2 },
-        { id: 10 },
-        { id: 11, sequence: 1 },
-        { id: 12 },
+  describe('getSortedAdPods', function () {
+    it('should return sorted ad pods based on sequence attribute', function () {
+      const ads = [
+        { sequence: '3', id: 'ad3' },
+        { sequence: '1', id: 'ad1' },
+        { sequence: '2', id: 'ad2' },
       ];
-
-      const expectedOutput = [
-        [
-          { id: 2, sequence: 1 },
-          { id: 3, sequence: 2 },
-        ],
-        [{ id: 4 }],
-        [
-          { id: 5, sequence: 1 },
-          { id: 6, sequence: 2 },
-          { id: 7, sequence: 3 },
-        ],
-        [
-          { id: 8, sequence: 1 },
-          { id: 9, sequence: 2 },
-        ],
-        [{ id: 10 }],
-        [{ id: 11, sequence: 1 }],
-        [{ id: 12 }],
-      ];
-
-      const output = parserUtils.splitVAST(input);
-
-      expect(output).toEqual(expectedOutput);
+      const sortedAds = parserUtils.getSortedAdPods(ads);
+      expect(sortedAds).toEqual([
+        { sequence: '1', id: 'ad1' },
+        { sequence: '2', id: 'ad2' },
+        { sequence: '3', id: 'ad3' },
+      ]);
     });
 
-    it('should parse vast pods with single sequence', () => {
-      const input = [
-        { id: 1, sequence: 1 },
-        { id: 2, sequence: 1 },
-        { id: 3, sequence: 1 },
+    it('should filter out ads without sequence attribute', function () {
+      const ads = [
+        { sequence: '3', id: 'ad3' },
+        { id: 'adWithoutSequence' },
+        { sequence: '2', id: 'ad2' },
+        { sequence: '1', id: 'ad1' },
       ];
-
-      const expectedOutput = [
-        [{ id: 1, sequence: 1 }],
-        [{ id: 2, sequence: 1 }],
-        [{ id: 3, sequence: 1 }],
-      ];
-
-      const output = parserUtils.splitVAST(input);
-
-      expect(output).toEqual(expectedOutput);
+      const sortedAds = parserUtils.getSortedAdPods(ads);
+      expect(sortedAds).toEqual([
+        { sequence: '1', id: 'ad1' },
+        { sequence: '2', id: 'ad2' },
+        { sequence: '3', id: 'ad3' },
+      ]);
     });
 
-    it('should parse vast pods with no pods', () => {
-      const input = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    it('should return an empty array if no adPods are provided', function () {
+      const ads = [
+        { id: 'adWithoutSequence1' },
+        { id: 'adWithoutSequence2' },
+        { id: 'adWithoutSequence3' },
+      ];
+      const sortedAds = parserUtils.getSortedAdPods(ads);
+      expect(sortedAds).toEqual([]);
+    });
+  });
 
-      const expectedOutput = [[{ id: 1 }], [{ id: 2 }], [{ id: 3 }]];
-
-      const output = parserUtils.splitVAST(input);
-
-      expect(output).toEqual(expectedOutput);
+  describe('getStandAloneAds', function () {
+    it('should return standalone ads without sequence attribute', function () {
+      const ads = [
+        { sequence: '3', id: 'ad3' },
+        { id: 'adWithoutSequence1' },
+        { sequence: '1', id: 'ad1' },
+        { id: 'adWithoutSequence2' },
+      ];
+      const standAloneAds = parserUtils.getStandAloneAds(ads);
+      expect(standAloneAds).toEqual([
+        { id: 'adWithoutSequence1' },
+        { id: 'adWithoutSequence2' },
+      ]);
     });
 
-    it('should parse vast pods with weird sequences', () => {
-      const input = [
-        { id: 1, sequence: 99 },
-        { id: 2, sequence: 99 },
-        { id: 3, sequence: 99 },
+    it('should return an empty array if all ads have sequence attribute', function () {
+      const ads = [
+        { sequence: '1', id: 'ad1' },
+        { sequence: '2', id: 'ad2' },
       ];
-
-      const expectedOutput = [[{ id: 1 }], [{ id: 2 }], [{ id: 3 }]];
-
-      const output = parserUtils.splitVAST(input);
-
-      expect(output).toEqual(expectedOutput);
-    });
-
-    it('should parse vast pods with sequences that not start with index = 1', () => {
-      const input = [
-        { id: 1, sequence: 2 },
-        { id: 4 },
-        { id: 98, sequence: 3 },
-        { id: 99, sequence: 4 },
-        { id: 5, sequence: 1 },
-        { id: 6, sequence: 2 },
-        { id: 7, sequence: 3 },
-        { id: 8, sequence: 1 },
-        { id: 9, sequence: 2 },
-        { id: 10 },
-        { id: 11, sequence: 1 },
-        { id: 12 },
-      ];
-
-      const expectedOutput = [
-        [{ id: 1 }],
-        [{ id: 4 }],
-        [{ id: 98 }],
-        [{ id: 99 }],
-        [
-          { id: 5, sequence: 1 },
-          { id: 6, sequence: 2 },
-          { id: 7, sequence: 3 },
-        ],
-        [
-          { id: 8, sequence: 1 },
-          { id: 9, sequence: 2 },
-        ],
-        [{ id: 10 }],
-        [{ id: 11, sequence: 1 }],
-        [{ id: 12 }],
-      ];
-
-      const output = parserUtils.splitVAST(input);
-
-      expect(output).toEqual(expectedOutput);
-    });
-
-    it('should parse vast pods with sequences that not start with index = 1, and not following incrementally', () => {
-      const input = [
-        { id: 1, sequence: 2 },
-        { id: 2, sequence: 4 },
-        { id: 4 },
-        { id: 98, sequence: 3 },
-        { id: 99, sequence: 4 },
-        { id: 100, sequence: 17 },
-        { id: 101, sequence: 18 },
-        { id: 5, sequence: 1 },
-        { id: 6, sequence: 2 },
-        { id: 7, sequence: 3 },
-        { id: 8, sequence: 1 },
-        { id: 9, sequence: 2 },
-        { id: 10 },
-        { id: 11, sequence: 1 },
-        { id: 12 },
-      ];
-
-      const expectedOutput = [
-        [{ id: 1 }],
-        [{ id: 2 }],
-        [{ id: 4 }],
-        [{ id: 98 }],
-        [{ id: 99 }],
-        [{ id: 100 }],
-        [{ id: 101 }],
-        [
-          { id: 5, sequence: 1 },
-          { id: 6, sequence: 2 },
-          { id: 7, sequence: 3 },
-        ],
-        [
-          { id: 8, sequence: 1 },
-          { id: 9, sequence: 2 },
-        ],
-        [{ id: 10 }],
-        [{ id: 11, sequence: 1 }],
-        [{ id: 12 }],
-      ];
-
-      const output = parserUtils.splitVAST(input);
-
-      expect(output).toEqual(expectedOutput);
+      const standAloneAds = parserUtils.getStandAloneAds(ads);
+      expect(standAloneAds).toEqual([]);
     });
   });
 

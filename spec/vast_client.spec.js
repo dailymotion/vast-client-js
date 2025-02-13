@@ -118,38 +118,22 @@ describe('VASTClient', () => {
           optionsWithNoResolveAll
         );
       });
-      it('returns first ad parsed', () => {
-        expect(res).toEqual({
-          ads: expect.any(Array),
-          errorURLTemplates: [],
-          version: '4.3',
-        });
+      it('returns ad pod parsed', () => {
         expect(res.ads).toHaveLength(2);
+        expect(res.ads[0].sequence).toBe('1');
+        expect(res.ads[1].sequence).toBe('2');
       });
 
-      it('should return only the errorURLs for the first ad', () => {
-        expect(res.ads[0].errorURLTemplates).toEqual([
-          'http://example.com/error',
-          'http://example.com/error_[ERRORCODE]',
-        ]);
-      });
-
-      it('handles empty ads correctly', async () => {
-        const response = await VastClient.get(
-          emptyVastUrl,
-          optionsWithNoResolveAll
-        );
-        expect(response).toEqual({
-          ads: [],
-          errorURLTemplates: ['http://example.com/empty-no-ad'],
-          version: '4.3',
-        });
+      it('should return stand alone ads in the remaining ads', () => {
+        const remainingAds = VastClient.getParser().remainingAds;
+        expect(remainingAds[0].id).toBe('201');
+        expect(remainingAds[1].id).toBe('2032');
+        expect(remainingAds.length).toBe(2);
       });
 
       it('returns true for hasRemainingAds', () => {
         expect(VastClient.hasRemainingAds()).toBeTruthy();
       });
-
       describe('getNextAds', () => {
         it('resolves all next ads if requested', async () => {
           const res = await VastClient.getNextAds(true);
@@ -173,6 +157,18 @@ describe('VASTClient', () => {
             version: '4.3',
           });
           expect(response.ads).toHaveLength(2);
+        });
+      });
+
+      it('handles empty ads correctly', async () => {
+        const response = await VastClient.get(
+          emptyVastUrl,
+          optionsWithNoResolveAll
+        );
+        expect(response).toEqual({
+          ads: [],
+          errorURLTemplates: ['http://example.com/empty-no-ad'],
+          version: '4.3',
         });
       });
     });

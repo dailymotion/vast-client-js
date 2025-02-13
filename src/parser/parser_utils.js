@@ -138,37 +138,23 @@ export function parseDuration(durationString) {
 }
 
 /**
- * Splits an Array of ads into an Array of Arrays of ads.
- * Each subarray contains either one ad or multiple ads (an AdPod)
- * @param  {Array} ads - An Array of ads to split
- * @return {Array}
+ * Sorts and filters ads that are part of an Ad Pod.
+ * @param {Array} ads - An array of ad objects.
+ * @returns {Array} An array of sorted ad objects based on the sequence attribute.
  */
-function splitVAST(ads) {
-  const splittedVAST = [];
-  let lastAdPod = null;
+function getSortedAdPods(ads = []) {
+  return ads
+    .filter((ad) => parseInt(ad.sequence, 10))
+    .sort((a, b) => a.sequence - b.sequence);
+}
 
-  ads.forEach((ad, i) => {
-    if (ad.sequence) {
-      ad.sequence = parseInt(ad.sequence, 10);
-    }
-    // The current Ad may be the next Ad of an AdPod
-    if (ad.sequence > 1) {
-      const lastAd = ads[i - 1];
-      // check if the current Ad is exactly the next one in the AdPod
-      if (lastAd && lastAd.sequence === ad.sequence - 1) {
-        lastAdPod && lastAdPod.push(ad);
-        return;
-      }
-      // If the ad had a sequence attribute but it was not part of a correctly formed
-      // AdPod, let's remove the sequence attribute
-      delete ad.sequence;
-    }
-
-    lastAdPod = [ad];
-    splittedVAST.push(lastAdPod);
-  });
-
-  return splittedVAST;
+/**
+ * Filters out AdPods of given ads array and returns only standalone ads without sequence attribute.
+ * @param {Array} ads - An array of ad objects.
+ * @returns {Array} An array of standalone ad.
+ */
+function getStandAloneAds(ads = []) {
+  return ads.filter((ad) => !parseInt(ad.sequence, 10));
 }
 
 /**
@@ -343,7 +329,8 @@ export const parserUtils = {
   copyNodeAttribute,
   parseAttributes,
   parseDuration,
-  splitVAST,
+  getStandAloneAds,
+  getSortedAdPods,
   assignAttributes,
   mergeWrapperAdData,
 };
