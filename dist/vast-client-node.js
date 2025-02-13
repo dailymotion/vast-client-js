@@ -498,34 +498,23 @@ function parseDuration(durationString) {
 }
 
 /**
- * Splits an Array of ads into an Array of Arrays of ads.
- * Each subarray contains either one ad or multiple ads (an AdPod)
- * @param  {Array} ads - An Array of ads to split
- * @return {Array}
+ * Sorts and filters ads that are part of an Ad Pod.
+ * @param {Array} ads - An array of ad objects.
+ * @returns {Array} An array of sorted ad objects based on the sequence attribute.
  */
-function splitVAST(ads) {
-  const splittedVAST = [];
-  let lastAdPod = null;
-  ads.forEach((ad, i) => {
-    if (ad.sequence) {
-      ad.sequence = parseInt(ad.sequence, 10);
-    }
-    // The current Ad may be the next Ad of an AdPod
-    if (ad.sequence > 1) {
-      const lastAd = ads[i - 1];
-      // check if the current Ad is exactly the next one in the AdPod
-      if (lastAd && lastAd.sequence === ad.sequence - 1) {
-        lastAdPod && lastAdPod.push(ad);
-        return;
-      }
-      // If the ad had a sequence attribute but it was not part of a correctly formed
-      // AdPod, let's remove the sequence attribute
-      delete ad.sequence;
-    }
-    lastAdPod = [ad];
-    splittedVAST.push(lastAdPod);
-  });
-  return splittedVAST;
+function getSortedAdPods() {
+  let ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  return ads.filter(ad => parseInt(ad.sequence, 10)).sort((a, b) => a.sequence - b.sequence);
+}
+
+/**
+ * Filters out AdPods of given ads array and returns only standalone ads without sequence attribute.
+ * @param {Array} ads - An array of ad objects.
+ * @returns {Array} An array of standalone ad.
+ */
+function getStandAloneAds() {
+  let ads = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  return ads.filter(ad => !parseInt(ad.sequence, 10));
 }
 
 /**
@@ -648,7 +637,8 @@ const parserUtils = {
   copyNodeAttribute,
   parseAttributes,
   parseDuration,
-  splitVAST,
+  getStandAloneAds,
+  getSortedAdPods,
   assignAttributes,
   mergeWrapperAdData
 };
@@ -2160,7 +2150,7 @@ class VASTParser extends EventEmitter {
     if (this.remainingAds.length === 0) {
       return Promise.reject(new Error('No more ads are available for the given VAST'));
     }
-    const ads = all ? util.flatten(this.remainingAds) : this.remainingAds.shift();
+    const ads = all ? this.remainingAds : [this.remainingAds.shift()];
     this.errorURLTemplates = [];
     return this.resolveAds(ads, {
       wrapperDepth: 0,
@@ -2339,12 +2329,16 @@ class VASTParser extends EventEmitter {
     if (ads.length === 1 && wrapperSequence !== undefined && wrapperSequence !== null) {
       ads[0].sequence = wrapperSequence;
     }
-
-    // Split the VAST in case we don't want to resolve everything at the first time
     if (resolveAll === false) {
-      this.remainingAds = parserUtils.splitVAST(ads);
-      // Remove the first element from the remaining ads array, since we're going to resolve that element
-      ads = this.remainingAds.shift();
+      const adPods = parserUtils.getSortedAdPods(ads);
+      const standAloneAds = parserUtils.getStandAloneAds(ads);
+      // Resolve only AdPod found first, if no AdPod found resolve only the first stand alone Ad
+      if (adPods.length) {
+        ads = adPods;
+      } else if (standAloneAds.length) {
+        ads = [standAloneAds.shift()];
+      }
+      this.remainingAds = standAloneAds;
     }
     return this.resolveAds(ads, {
       wrapperDepth,
