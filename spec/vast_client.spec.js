@@ -127,26 +127,13 @@ describe('VASTClient', () => {
       it('should return stand alone ads in the remaining ads', () => {
         const remainingAds = VastClient.getParser().remainingAds;
         expect(remainingAds[0].id).toBe('201');
-        expect(remainingAds[0].id).toBe('2032');
+        expect(remainingAds[1].id).toBe('2032');
         expect(remainingAds.length).toBe(2);
-      });
-
-      it('handles empty ads correctly', async () => {
-        const response = await VastClient.get(
-          emptyVastUrl,
-          optionsWithNoResolveAll
-        );
-        expect(response).toEqual({
-          ads: [],
-          errorURLTemplates: ['http://example.com/empty-no-ad'],
-          version: '4.3',
-        });
       });
 
       it('returns true for hasRemainingAds', () => {
         expect(VastClient.hasRemainingAds()).toBeTruthy();
       });
-
       describe('getNextAds', () => {
         it('resolves all next ads if requested', async () => {
           const res = await VastClient.getNextAds(true);
@@ -158,7 +145,7 @@ describe('VASTClient', () => {
           expect(res.ads).toHaveLength(3);
         });
 
-        fit('resolves only next ad if requested', async () => {
+        it('resolves only next ad if requested', async () => {
           await VastClient.get(
             wrapperMultipleAdsVastUrl,
             optionsWithNoResolveAll
@@ -170,6 +157,18 @@ describe('VASTClient', () => {
             version: '4.3',
           });
           expect(response.ads).toHaveLength(2);
+        });
+      });
+
+      it('handles empty ads correctly', async () => {
+        const response = await VastClient.get(
+          emptyVastUrl,
+          optionsWithNoResolveAll
+        );
+        expect(response).toEqual({
+          ads: [],
+          errorURLTemplates: ['http://example.com/empty-no-ad'],
+          version: '4.3',
         });
       });
     });

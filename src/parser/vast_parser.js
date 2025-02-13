@@ -237,7 +237,6 @@ export class VASTParser extends EventEmitter {
         }
       }
     }
-
     return ads;
   }
 
@@ -304,7 +303,12 @@ export class VASTParser extends EventEmitter {
       const adPods = parserUtils.getSortedAdPods(ads);
       const standAloneAds = parserUtils.getStandAloneAds(ads);
       // Resolve only AdPod found first, if no AdPod found resolve only the first stand alone Ad
-      ads = adPods.length ? adPods : [standAloneAds.shift()];
+      if (adPods.length) {
+        ads = adPods;
+      } else if (standAloneAds.length) {
+        ads = [standAloneAds.shift()];
+      }
+
       this.remainingAds = standAloneAds;
     }
 
