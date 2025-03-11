@@ -45,6 +45,8 @@ describe('CreativesParser', function () {
       expect(icon.apiFramework).toEqual('VPAID');
       expect(icon.offset).toEqual(15);
       expect(icon.duration).toEqual(90);
+      expect(icon.altText).toEqual("AltText");
+      expect(icon.hoverText).toEqual("HoverText");
       expect(icon.type).toEqual('image/gif');
       expect(icon.staticResource).toEqual('http://example.com/linear-icon.gif');
       expect(icon.htmlResource).toBeNull();

@@ -271,6 +271,8 @@ function parseIcon(iconElement) {
   icon.duration = parserUtils.parseDuration(
     iconElement.getAttribute('duration')
   );
+  icon.altText = iconElement.getAttribute('altText');
+  icon.hoverText = iconElement.getAttribute('hoverText')
 
   parserUtils
     .childrenByName(iconElement, 'HTMLResource')

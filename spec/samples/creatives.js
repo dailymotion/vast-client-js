@@ -42,7 +42,7 @@ export const creatives = `<Creatives>
         <Mezzanine id="mezzanine-id-165468451" type="video/mp4" width="1080" height="720" delivery="progressive" codec="h264" fileSize="700"><![CDATA[http://example.com/linear-mezzanine.mp4]]></Mezzanine>
       </MediaFiles>
       <Icons>
-        <Icon program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID" pxratio="2">
+        <Icon altText="AltText" hoverText="HoverText" program="ad1" width="60" height="20" xPosition="left" yPosition="bottom" duration="00:01:30.000" offset="00:00:15.000" apiFramework="VPAID" pxratio="2">
           <StaticResource creativeType="image/gif"><![CDATA[http://example.com/linear-icon.gif]]></StaticResource>
           <IconViewTracking><![CDATA[http://example.com/linear-viewtracking]]></IconViewTracking>
           <IconClicks>
@@ -61,7 +61,7 @@ export const creatives = `<Creatives>
               <IconClickFallbackImage width="10px">
                 <![CDATA[http://adserver.com/fallback.png]]>
               </IconClickFallbackImage>
-            </IconClickFallbackImages> 
+            </IconClickFallbackImages>
           </IconClicks>
         </Icon>
       </Icons>
