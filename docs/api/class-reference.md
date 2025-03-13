@@ -173,6 +173,8 @@ This object represents a generic Creative. It's used as a parent object for more
 - `iconClickTrackingURLTemplates: Array<Object>`
 - `iconViewTrackingURLTemplate: String|null`
 - `iconClickFallbackImages: Array<object>` [go to object](#iconclickfallbackimage)
+- `altText: String|null`
+- `hoverText: String|null`
 
 ## Extension<a name="extension"></a>
 
