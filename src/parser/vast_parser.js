@@ -447,12 +447,14 @@ export class VASTParser extends EventEmitter {
     } else {
       for (let index = vastResponse.ads.length - 1; index >= 0; index--) {
         // - Error encountered while parsing
-        // - No Creative case - The parser has dealt with soma <Ad><Wrapper> or/and an <Ad><Inline> elements
+        // - No Creative case - The parser has dealt with some <Ad><Wrapper> or/and an <Ad><Inline> elements
         // but no creative was found
         const ad = vastResponse.ads[index];
         const noMediaFilesAvailable = !ad.creatives.some(
-          (creative) => creative.mediaFiles?.length > 0
+          (creative) =>
+            creative.mediaFiles?.length > 0 || creative.variations?.length > 0
         );
+
         if ((ad.errorCode || noMediaFilesAvailable) && !ad.VASTAdTagURI) {
           // If VASTAdTagURI is in the vastResponse, it means we are dealing with a Wrapper when using parseVAST from the VASTParser.
           // In that case, we dont want to modify the vastResponse since the creatives node is not required in a wrapper.
