@@ -761,7 +761,9 @@ function createIcon() {
     iconClickThroughURLTemplate: null,
     iconClickTrackingURLTemplates: [],
     iconViewTrackingURLTemplate: null,
-    iconClickFallbackImages: []
+    iconClickFallbackImages: [],
+    altText: null,
+    hoverText: null
   };
 }
 
@@ -986,6 +988,8 @@ function parseIcon(iconElement) {
   icon.pxratio = iconElement.getAttribute('pxratio') || '1';
   icon.offset = parserUtils.parseDuration(iconElement.getAttribute('offset'));
   icon.duration = parserUtils.parseDuration(iconElement.getAttribute('duration'));
+  icon.altText = iconElement.getAttribute('altText');
+  icon.hoverText = iconElement.getAttribute('hoverText');
   parserUtils.childrenByName(iconElement, 'HTMLResource').forEach(htmlElement => {
     icon.type = htmlElement.getAttribute('creativeType') || 'text/html';
     icon.htmlResource = parserUtils.parseNodeText(htmlElement);
