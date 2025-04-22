@@ -20,6 +20,7 @@ export class Fetcher {
   setOptions(options = {}) {
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.fetchingOptions = {
+      ...options.fetchOptions,
       timeout: options.timeout || DEFAULT_TIMEOUT,
       withCredentials: Boolean(options.withCredentials),
     };
