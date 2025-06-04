@@ -851,6 +851,16 @@ describe('VASTTracker', function () {
             message: `trackViewableImpression given macros has the wrong type. macros: ${wrongTrackerValue}`,
           });
         });
+
+        it('should not call Viewable URLs if already called', () => {
+          vastTracker.trackViewableImpression(macros, true);
+          vastTracker.trackViewableImpression(macros, true);
+          expect(spyTrackUrl).toHaveBeenCalledWith(
+            ['http://example.com/viewable', 'http://example.com/viewable2'],
+            macros
+          );
+          expect(spyTrackUrl).toHaveBeenCalledTimes(1);
+        });
       });
 
       describe('#trackNotViewableImpression', () => {
@@ -871,6 +881,19 @@ describe('VASTTracker', function () {
             message: `trackNotViewableImpression given macros has the wrong type. macros: ${wrongTrackerValue}`,
           });
         });
+
+        it('should not call NotViewable URLs if already called', () => {
+          vastTracker.trackNotViewableImpression(macros, true);
+          vastTracker.trackNotViewableImpression(macros, true);
+          expect(spyTrackUrl).toHaveBeenCalledWith(
+            [
+              'http://example.com/notviewable',
+              'http://example.com/notviewable2',
+            ],
+            macros
+          );
+          expect(spyTrackUrl).toHaveBeenCalledTimes(1);
+        });
       });
 
       describe('#trackUndeterminedImpression', () => {
@@ -890,6 +913,19 @@ describe('VASTTracker', function () {
           expect(spyEmitter).toHaveBeenCalledWith('TRACKER-error', {
             message: `trackUndeterminedImpression given macros has the wrong type. macros: ${wrongTrackerValue}`,
           });
+        });
+
+        it('should not call ViewUndetermined URLs if already called', () => {
+          vastTracker.trackUndeterminedImpression(macros, true);
+          vastTracker.trackUndeterminedImpression(macros, true);
+          expect(spyTrackUrl).toHaveBeenCalledWith(
+            [
+              'http://example.com/undertermined',
+              'http://example.com/undertermined2',
+            ],
+            macros
+          );
+          expect(spyTrackUrl).toHaveBeenCalledTimes(1);
         });
       });
     });

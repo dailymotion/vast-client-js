@@ -66,6 +66,23 @@ export class VASTTracker extends EventEmitter {
       this.trackingEvents[eventName] = events.slice(0);
     }
 
+    // ViewableImpression node can contain notViewable, viewUndetermined, viewable traking urls
+    // to benefit the 'once' tracking feature we need to merge them into other trackingEvents
+    this.viewableImpressionTrackers =
+      this.ad.viewableImpression?.reduce(
+        (accumulator, trackers) => {
+          accumulator.notViewable.push(...trackers.notViewable);
+          accumulator.viewUndetermined.push(...trackers.viewUndetermined);
+          accumulator.viewable.push(...trackers.viewable);
+          return accumulator;
+        },
+        { notViewable: [], viewUndetermined: [], viewable: [] }
+      ) || [];
+
+    Object.entries(this.viewableImpressionTrackers).forEach(([key, value]) => {
+      if (value.length) this.trackingEvents[key] = value;
+    });
+
     // Nonlinear and companion creatives provide some tracking information at a variation level
     // While linear creatives provided that at a creative level. That's why we need to
     // differentiate how we retrieve some tracking information.
@@ -394,16 +411,15 @@ export class VASTTracker extends EventEmitter {
    * Tracks Viewable impression
    * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
    */
-  trackViewableImpression(macros = {}) {
+  trackViewableImpression(macros = {}, once = false) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
         message: `trackViewableImpression given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
-    this.ad.viewableImpression.forEach((impression) => {
-      this.trackURLs(impression.viewable, macros);
-    });
+
+    this.track('viewable', { macros, once });
   }
 
   /**
@@ -411,34 +427,28 @@ export class VASTTracker extends EventEmitter {
    * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
    */
 
-  trackNotViewableImpression(macros = {}) {
+  trackNotViewableImpression(macros = {}, once = false) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
         message: `trackNotViewableImpression given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
-
-    this.ad.viewableImpression.forEach((impression) => {
-      this.trackURLs(impression.notViewable, macros);
-    });
+    this.track('notViewable', { macros, once });
   }
 
   /**
    * Tracks ViewUndetermined impression
    * @param {Object} [macros = {}] An optional Object containing macros and their values to be used and replaced in the tracking calls.
    */
-  trackUndeterminedImpression(macros = {}) {
+  trackUndeterminedImpression(macros = {}, once = false) {
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
         message: `trackUndeterminedImpression given macros has the wrong type. macros: ${macros}`,
       });
       return;
     }
-
-    this.ad.viewableImpression.forEach((impression) => {
-      this.trackURLs(impression.viewUndetermined, macros);
-    });
+    this.track('viewUndetermined', { macros, once });
   }
 
   /**
@@ -794,7 +804,11 @@ export class VASTTracker extends EventEmitter {
 
     const progressEvents = Object.entries(this.trackingEvents)
       .filter(([key]) => key.startsWith('progress-'))
-      .map(([key, value]) => ({ name: key, time: parseFloat(key.split('-')[1]), urls: value }))
+      .map(([key, value]) => ({
+        name: key,
+        time: parseFloat(key.split('-')[1]),
+        urls: value,
+      }))
       .filter(({ time }) => time <= eventTime && time > this.progress);
 
     progressEvents.forEach(({ name, urls }) => {
@@ -838,7 +852,7 @@ export class VASTTracker extends EventEmitter {
       eventName = 'close';
     }
 
-    if (eventName.startsWith('progress-') && !eventName.endsWith("%")) {
+    if (eventName.startsWith('progress-') && !eventName.endsWith('%')) {
       this.trackProgressEvents(eventName, macros, once);
     }
 
