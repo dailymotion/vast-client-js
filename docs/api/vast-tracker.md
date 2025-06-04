@@ -624,7 +624,9 @@ This method should be used when the ad meets criteria for Viewable impression as
 
 #### Parameters
 
-- - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`once: Boolean`** - An optional Boolean to define if the event has to be tracked only once. Set to `false` by default
+
 
 #### Event emitted
 
@@ -650,7 +652,9 @@ This method should be used when the ad meets criteria for NotViewable impression
 
 #### Parameters
 
-- - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`once: Boolean`** - An optional Boolean to define if the event has to be tracked only once. Set to `false` by default
+
 
 #### Event emitted
 
@@ -676,7 +680,9 @@ This method should be used when the ad meets criteria for ViewUndetermined impre
 
 #### Parameters
 
-- - **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`macros: Object`** - Optional parameter. Object containing macros and their values to be replaced. Macros must be supported by VAST specification.
+- **`once: Boolean`** - An optional Boolean to define if the event has to be tracked only once. Set to `false` by default
+
 
 #### Event emitted
 
