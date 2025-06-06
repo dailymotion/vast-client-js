@@ -77,7 +77,7 @@ export class VASTTracker extends EventEmitter {
           return accumulator;
         },
         { notViewable: [], viewUndetermined: [], viewable: [] }
-      ) || [];
+      ) || {};
 
     Object.entries(this.viewableImpressionTrackers).forEach(([key, value]) => {
       if (value.length) this.trackingEvents[key] = value;
