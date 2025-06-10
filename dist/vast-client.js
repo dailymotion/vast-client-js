@@ -2710,6 +2710,7 @@ class Fetcher {
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.urlHandler = options.urlHandler || options.urlhandler || urlHandler;
     this.fetchingOptions = {
+      ...options.fetchOptions,
       timeout: options.timeout || DEFAULT_TIMEOUT,
       withCredentials: Boolean(options.withCredentials)
     };
@@ -3008,6 +3009,7 @@ class VASTTracker extends EventEmitter {
    * @constructor
    */
   constructor(client, ad, creative) {
+    var _this$ad$viewableImpr;
     let variation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
     let muted = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
     super();
@@ -3032,6 +3034,23 @@ class VASTTracker extends EventEmitter {
       const events = this.creative.trackingEvents[eventName];
       this.trackingEvents[eventName] = events.slice(0);
     }
+
+    // ViewableImpression node can contain notViewable, viewUndetermined, viewable traking urls
+    // to benefit the 'once' tracking feature we need to merge them into other trackingEvents
+    this.viewableImpressionTrackers = ((_this$ad$viewableImpr = this.ad.viewableImpression) === null || _this$ad$viewableImpr === void 0 ? void 0 : _this$ad$viewableImpr.reduce((accumulator, trackers) => {
+      accumulator.notViewable.push(...trackers.notViewable);
+      accumulator.viewUndetermined.push(...trackers.viewUndetermined);
+      accumulator.viewable.push(...trackers.viewable);
+      return accumulator;
+    }, {
+      notViewable: [],
+      viewUndetermined: [],
+      viewable: []
+    })) || {};
+    Object.entries(this.viewableImpressionTrackers).forEach(_ref => {
+      let [key, value] = _ref;
+      if (value.length) this.trackingEvents[key] = value;
+    });
 
     // Nonlinear and companion creatives provide some tracking information at a variation level
     // While linear creatives provided that at a creative level. That's why we need to
@@ -3357,14 +3376,16 @@ class VASTTracker extends EventEmitter {
    */
   trackViewableImpression() {
     let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    let once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
         message: "trackViewableImpression given macros has the wrong type. macros: ".concat(macros)
       });
       return;
     }
-    this.ad.viewableImpression.forEach(impression => {
-      this.trackURLs(impression.viewable, macros);
+    this.track('viewable', {
+      macros,
+      once
     });
   }
 
@@ -3375,14 +3396,16 @@ class VASTTracker extends EventEmitter {
 
   trackNotViewableImpression() {
     let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    let once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
         message: "trackNotViewableImpression given macros has the wrong type. macros: ".concat(macros)
       });
       return;
     }
-    this.ad.viewableImpression.forEach(impression => {
-      this.trackURLs(impression.notViewable, macros);
+    this.track('notViewable', {
+      macros,
+      once
     });
   }
 
@@ -3392,14 +3415,16 @@ class VASTTracker extends EventEmitter {
    */
   trackUndeterminedImpression() {
     let macros = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    let once = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     if (typeof macros !== 'object') {
       this.emit('TRACKER-error', {
         message: "trackUndeterminedImpression given macros has the wrong type. macros: ".concat(macros)
       });
       return;
     }
-    this.ad.viewableImpression.forEach(impression => {
-      this.trackURLs(impression.viewUndetermined, macros);
+    this.track('viewUndetermined', {
+      macros,
+      once
     });
   }
 
@@ -3761,27 +3786,27 @@ class VASTTracker extends EventEmitter {
    */
   trackProgressEvents(eventName, macros, once) {
     const eventTime = parseFloat(eventName.split('-')[1]);
-    const progressEvents = Object.entries(this.trackingEvents).filter(_ref => {
-      let [key] = _ref;
+    const progressEvents = Object.entries(this.trackingEvents).filter(_ref2 => {
+      let [key] = _ref2;
       return key.startsWith('progress-');
-    }).map(_ref2 => {
-      let [key, value] = _ref2;
+    }).map(_ref3 => {
+      let [key, value] = _ref3;
       return {
         name: key,
         time: parseFloat(key.split('-')[1]),
         urls: value
       };
-    }).filter(_ref3 => {
+    }).filter(_ref4 => {
       let {
         time
-      } = _ref3;
+      } = _ref4;
       return time <= eventTime && time > this.progress;
     });
-    progressEvents.forEach(_ref4 => {
+    progressEvents.forEach(_ref5 => {
       let {
         name,
         urls
-      } = _ref4;
+      } = _ref5;
       if (!once && this.trackedProgressEvents.includes(name)) {
         return;
       }
@@ -3822,7 +3847,7 @@ class VASTTracker extends EventEmitter {
     if (eventName === 'closeLinear' && !this.trackingEvents[eventName] && this.trackingEvents['close']) {
       eventName = 'close';
     }
-    if (eventName.startsWith('progress-') && !eventName.endsWith("%")) {
+    if (eventName.startsWith('progress-') && !eventName.endsWith('%')) {
       this.trackProgressEvents(eventName, macros, once);
     }
     const trackingURLTemplates = this.trackingEvents[eventName];
