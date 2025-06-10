@@ -113,6 +113,7 @@ By default the fully parsed `VASTResponse` contains all the Ads contained in the
 - **`options: Object`** - An optional Object to configure the request:
   - `timeout: Number` - A custom timeout for the requests (default `120000 ms`)
   - `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR URLHandler (default `false`)
+  - `fetchOptions: Object` - Additional options to pass to the fetch request, like headers, cache, etc.
   - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
   - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
@@ -136,7 +137,13 @@ vastClient.get('http://example.dailymotion.com/vast.xml')
 // With the options optional parameter
 const options = {
   withCredentials: true,
-  wrapperLimit: 7
+  wrapperLimit: 7,
+  fetchOptions: {
+    headers: {
+      'User-Agent': 'My Custom User Agent',
+      'Cache-Control': 'no-cache'
+    }
+  }
 };
 
 vastClient.get('http://example.dailymotion.com/vast.xml', options)
@@ -161,6 +168,7 @@ If you just need to parse an inline VAST or you want to parse the first VAST doc
 - **`options: Object`** - An optional Object of parameters to be used in the parsing process
   - `timeout: Number` - A custom timeout for the possible wrapper resolving requests (default `120000`)
   - `withCredentials: Boolean` - A boolean to enable the withCredentials options for the XHR URLHandler (default `false`)
+  - `fetchOptions: Object` - Additional options to pass to the fetch request, like headers, cache, etc.
   - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
   - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use

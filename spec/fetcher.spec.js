@@ -44,7 +44,7 @@ describe('Fetcher', () => {
         const expectedUrl = 'www.bar.foo';
 
         fetcher
-          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => {} })
+          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => { } })
           .then(() => {
             expect(urlHandlerSpy).toHaveBeenCalledWith(
               expectedUrl,
@@ -87,7 +87,7 @@ describe('Fetcher', () => {
       it('should updates the estimated bitrate', () => {
         jest.spyOn(Bitrate, 'updateEstimatedBitrate');
         fetcher
-          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => {} })
+          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => { } })
           .then(() => {
             expect(Bitrate.updateEstimatedBitrate).toHaveBeenCalledWith(
               1234,
@@ -100,7 +100,7 @@ describe('Fetcher', () => {
         let result = fetcher.fetchVAST({
           url: url,
           maxWrapperDepth: 5,
-          emitter: () => {},
+          emitter: () => { },
         });
         return expect(result).resolves.toEqual(xml);
       });
@@ -120,7 +120,7 @@ describe('Fetcher', () => {
         const expectedUrl = 'www.bar.foo';
 
         fetcher
-          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => {} })
+          .fetchVAST({ url: url, maxWrapperDepth: 5, emitter: () => { } })
           .catch(() => {
             expect(urlHandlerSpy).toHaveBeenCalledWith(
               expectedUrl,
@@ -173,7 +173,7 @@ describe('Fetcher', () => {
         let result = fetcher.fetchVAST({
           url: url,
           maxWrapperDepth: 5,
-          emitter: () => {},
+          emitter: () => { },
         });
         return expect(result).rejects.toEqual({
           error: new Error('AbortError'),
@@ -201,6 +201,43 @@ describe('Fetcher', () => {
       expect(fetcher.urlHandler).toEqual(urlHandler);
       expect(fetcher.fetchingOptions.timeout).toEqual(120000);
       expect(fetcher.fetchingOptions.withCredentials).toEqual(false);
+    });
+
+    it('should spread fetchOptions into fetchingOptions', () => {
+      const fetchOptions = {
+        headers: {
+          'User-Agent': 'Custom User Agent',
+          'Cache-Control': 'no-cache',
+        },
+        cache: 'no-store',
+      };
+
+      fetcher.setOptions({
+        fetchOptions,
+      });
+
+      expect(fetcher.fetchingOptions.headers).toEqual(fetchOptions.headers);
+      expect(fetcher.fetchingOptions.cache).toEqual(fetchOptions.cache);
+    });
+
+    it('should not override timeout and withCredentials when using fetchOptions', () => {
+      const fetchOptions = {
+        timeout: 30000,
+        withCredentials: false,
+        headers: {
+          'User-Agent': 'Custom User Agent',
+        },
+      };
+
+      fetcher.setOptions({
+        timeout: 60000,
+        withCredentials: true,
+        fetchOptions,
+      });
+
+      expect(fetcher.fetchingOptions.timeout).toEqual(60000);
+      expect(fetcher.fetchingOptions.withCredentials).toEqual(true);
+      expect(fetcher.fetchingOptions.headers).toEqual(fetchOptions.headers);
     });
   });
 
