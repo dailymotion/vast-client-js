@@ -29,11 +29,12 @@
     "registry": "https://registry.npmjs.org"
   },
   "main": "dist/vast-client-node.min.js",
+  "types": "./dist/types/index.d.ts",
   "browser": "dist/vast-client.min.js",
   "scripts": {
     "performance": "node performance/performance_test.js",
     "prebuild": "rm -rf dist_old && mkdir dist_old && cp -a dist/. dist_old/",
-    "build": "rollup -c",
+    "build": "rollup -c && tsc",
     "watch": "rollup -c --watch",
     "postbuild": "node bundle_size.js",
     "deploy": "bash deployment-scripts/deploy-release.sh",
@@ -49,6 +50,7 @@
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
+    "@types/node": "^24.0.1",
     "babel-eslint": "^10.1.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
@@ -63,7 +65,8 @@
     "rollup": "^2.66.1",
     "rollup-plugin-terser": "^7.0.2",
     "should": "^13.2.3",
-    "sinon": "^2.4.1"
+    "sinon": "^2.4.1",
+    "typescript": "^5.4.3"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.8.3"
