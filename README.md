@@ -1,6 +1,6 @@
-[![npm version](https://badgen.net/npm/v/vast-client)](https://badgen.net/npm/v/vast-client)
-[![downloads per week](https://badgen.net/npm/dw/vast-client)](https://badgen.net/npm/dw/vast-client)
-[![license](https://badgen.net/npm/license/vast-client)](https://badgen.net/npm/license/vast-client)
+[![npm version](https://badgen.net/npm/v/@dailymotion/vast-client)](https://badgen.net/npm/v/@dailymotion/vast-client)
+[![downloads per week](https://badgen.net/npm/dw/@dailymotion/vast-client)](https://badgen.net/npm/dw/@dailymotion/vast-client)
+[![license](https://badgen.net/npm/license/@dailymotion/vast-client)](https://badgen.net/npm/license/@dailymotion/vast-client)
 
 # VAST Client JS
 
