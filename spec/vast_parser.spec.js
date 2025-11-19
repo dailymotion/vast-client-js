@@ -757,4 +757,183 @@ describe('VASTParser', () => {
       expect(VastParser.getEstimatedBitrate()).toEqual(42);
     });
   });
+
+  describe('keepFailedAdPod option', () => {
+    describe('when keepFailedAdPod is false (default)', () => {
+      it('should remove ads with errors from the response', async () => {
+        fetcher.setOptions({ urlHandler: nodeUrlHandler });
+        VastParser = new VASTParser({ fetcher });
+
+        const parser = new DOMParser();
+        const adWithSequence = parser.parseFromString(
+          `<VAST version="4.3">
+            <Ad sequence="1">
+              <InLine>
+                <AdSystem>Test</AdSystem>
+                <AdTitle>Failed Ad</AdTitle>
+                <Creatives>
+                </Creatives>
+              </InLine>
+            </Ad>
+          </VAST>`,
+          'text/xml'
+        );
+
+        const response = await VastParser.parseVAST(adWithSequence, {
+          keepFailedAdPod: false
+        })
+
+        expect(response.ads.length).toBe(0);
+      });
+
+      it('should remove ads that failed to unwrap', async () => {
+        fetcher.setOptions({ urlHandler: nodeUrlHandler });
+        VastParser = new VASTParser({ fetcher });
+
+        const wrapperFailXml = await nodeUrlHandler.get(
+          './spec/samples/wrapper-empty-no-creative.xml'
+        );
+
+        const response = await VastParser.parseVAST(wrapperFailXml.xml);
+
+        expect(response.ads.length).toBe(0);
+      });
+    });
+
+    describe('when keepFailedAdPod is true', () => {
+      it('should keep ads with errors that have a sequence (ad pod)', async () => {
+        fetcher.setOptions({ urlHandler: nodeUrlHandler });
+        VastParser = new VASTParser({ fetcher });
+
+        const parser = new DOMParser();
+        const adPodWithFailure = parser.parseFromString(
+          `<VAST version="4.3">
+            <Ad sequence="1">
+              <InLine>
+                <AdSystem>Test</AdSystem>
+                <AdTitle>Failed Ad in Pod</AdTitle>
+                <Creatives>
+                </Creatives>
+              </InLine>
+            </Ad>
+          </VAST>`,
+          'text/xml'
+        );
+
+        const response = await VastParser.parseVAST(adPodWithFailure, {
+          keepFailedAdPod: true
+        });
+
+        expect(response.ads.length).toBe(1);
+        const ad = response.ads[0];
+        expect(ad.hasFailed).toBe(true);
+        expect(ad.sequence).toBe('1');
+        const hasValidCreatives = ad.creatives.some(
+          (creative) =>
+            creative.mediaFiles?.length > 0 || creative.variations?.length > 0
+        );
+        expect(hasValidCreatives).toBe(false);
+      });
+
+      it('should remove standalone ads without sequence even when keepFailedAdPod is true', async () => {
+        fetcher.setOptions({ urlHandler: nodeUrlHandler });
+        VastParser = new VASTParser({ fetcher });
+
+        const parser = new DOMParser();
+        const standaloneFailedAd = parser.parseFromString(
+          `<VAST version="4.3">
+            <Ad>
+              <InLine>
+                <AdSystem>Test</AdSystem>
+                <AdTitle>Failed Standalone Ad</AdTitle>
+                <Creatives>
+                </Creatives>
+              </InLine>
+            </Ad>
+          </VAST>`,
+          'text/xml'
+        );
+
+        const response = await VastParser.parseVAST(standaloneFailedAd, {
+          keepFailedAdPod: true
+        });
+
+        expect(response.ads.length).toBe(0);
+      });
+
+      it('should maintain ad pod sequence with failed ads', async () => {
+        const parser = new DOMParser();
+        const adPodWithFailureXml = parser.parseFromString(
+          `<VAST version="4.3">
+            <Ad sequence="1">
+              <InLine>
+                <AdSystem>Test</AdSystem>
+                <AdTitle>Ad 1</AdTitle>
+                <Creatives>
+                  <Creative>
+                    <Linear>
+                      <Duration>00:00:15</Duration>
+                      <MediaFiles>
+                        <MediaFile delivery="progressive" type="video/mp4" width="1280" height="720">
+                          <![CDATA[http://example.com/video.mp4]]>
+                        </MediaFile>
+                      </MediaFiles>
+                    </Linear>
+                  </Creative>
+                </Creatives>
+              </InLine>
+            </Ad>
+            <Ad sequence="2">
+              <InLine>
+                <AdSystem>Test</AdSystem>
+                <AdTitle>Ad 2 - Failed</AdTitle>
+                <Creatives>
+                </Creatives>
+              </InLine>
+            </Ad>
+            <Ad sequence="3">
+              <InLine>
+                <AdSystem>Test</AdSystem>
+                <AdTitle>Ad 3</AdTitle>
+                <Creatives>
+                  <Creative>
+                    <Linear>
+                      <Duration>00:00:15</Duration>
+                      <MediaFiles>
+                        <MediaFile delivery="progressive" type="video/mp4" width="1280" height="720">
+                          <![CDATA[http://example.com/video2.mp4]]>
+                        </MediaFile>
+                      </MediaFiles>
+                    </Linear>
+                  </Creative>
+                </Creatives>
+              </InLine>
+            </Ad>
+          </VAST>`,
+          'text/xml'
+        );
+
+        fetcher.setOptions({ urlHandler: nodeUrlHandler });
+        VastParser = new VASTParser({ fetcher });
+
+        const responseWithKeepFailed = await VastParser.parseVAST(
+          adPodWithFailureXml,
+          { keepFailedAdPod: true }
+        );
+
+        expect(responseWithKeepFailed.ads.length).toBe(3);
+        expect(responseWithKeepFailed.ads[0].sequence).toBe('1');
+        expect(responseWithKeepFailed.ads[1].sequence).toBe('2');
+        expect(responseWithKeepFailed.ads[1].hasFailed).toBe(true);
+        expect(responseWithKeepFailed.ads[2].sequence).toBe('3');
+
+        const responseWithoutKeepFailed = await VastParser.parseVAST(
+          adPodWithFailureXml,
+          { keepFailedAdPod: false }
+        );
+
+        expect(responseWithoutKeepFailed.ads.length).toBe(2);
+      });
+    });
+  });
 });

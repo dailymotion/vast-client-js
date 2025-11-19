@@ -30,6 +30,7 @@ This object represents a single parsed Ad
 - `creatives: Array<Object>` [go to object](#creative)
 - `extensions: Array<Object>` [go to object](#extension)
 - `adVerifications: Array<Object>` [go to object](#ad-verification)
+- `hasFailed: Boolean` Indicates that the parsed node has failed to be unwrapped or parsed. Only available with the option keepFailedAdPod on ads with a sequence.
 
 ## Creative<a name="creative"></a>
 
