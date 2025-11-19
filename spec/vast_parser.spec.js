@@ -781,7 +781,7 @@ describe('VASTParser', () => {
 
         const response = await VastParser.parseVAST(adWithSequence, {
           keepFailedAdPod: false
-        })
+        });
 
         expect(response.ads.length).toBe(0);
       });
