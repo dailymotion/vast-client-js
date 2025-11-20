@@ -7,3 +7,5 @@
 *.md        eol=lf
 *.xml       eol=lf
 *.yml       eol=lf
+*.d.ts      eol=lf
+*.map       eol=lf

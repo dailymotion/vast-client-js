@@ -2088,6 +2088,7 @@ class VASTParser extends EventEmitter {
     this.remainingAds = [];
     this.parsingOptions = {};
     this.fetcher = fetcher || null;
+    this.keepFailedAdPod = false;
   }
 
   /**
@@ -2132,6 +2133,7 @@ class VASTParser extends EventEmitter {
     this.parsingOptions = {
       allowMultipleAds: options.allowMultipleAds
     };
+    this.keepFailedAdPod = options.keepFailedAdPod || false;
     this.rootURL = '';
     this.resetParsingStatus();
     updateEstimatedBitrate(options.byteLength, options.requestDuration);
@@ -2491,7 +2493,15 @@ class VASTParser extends EventEmitter {
           }, {
             system: ad.system
           });
-          vastResponse.ads.splice(index, 1);
+
+          // Only remove failed ads if keepFailedAdPod is not enabled
+          // This is useful for ad pods where failed ads should remain in the response
+          // to maintain sequence structure and enable fallback mechanisms
+          if (this.keepFailedAdPod && ad.sequence) {
+            ad.hasFailed = true;
+          } else {
+            vastResponse.ads.splice(index, 1);
+          }
         }
       }
     }

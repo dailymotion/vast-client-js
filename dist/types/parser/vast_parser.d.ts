@@ -16,6 +16,7 @@ export class VASTParser extends EventEmitter {
     remainingAds: any[];
     parsingOptions: {};
     fetcher: any;
+    keepFailedAdPod: boolean;
     /**
      * Tracks the error provided in the errorCode parameter and emits a VAST-error event for the given error.
      * @param  {Array} urlTemplates - An Array of url templates to use to make the tracking call.
