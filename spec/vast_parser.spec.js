@@ -661,6 +661,9 @@ describe('VASTParser', () => {
             url: wrapperBVastUrl,
             maxWrapperDepth: VastParser.maxWrapperDepth,
             emitter: expect.any(Function),
+            wrapperDepth: 1,
+            previousUrl: wrapperAVastUrl,
+            wrapperAd: expect.any(Object),
           });
           expect(VastParser.parse).toHaveBeenCalledWith(expect.any(Object), {
             url: wrapperBVastUrl,
@@ -690,6 +693,9 @@ describe('VASTParser', () => {
             url: wrapperBVastUrl,
             maxWrapperDepth: VastParser.maxWrapperDepth,
             emitter: expect.any(Function),
+            wrapperDepth: 1,
+            previousUrl: wrapperAVastUrl,
+            wrapperAd: expect.any(Object),
           });
           expect(VastParser.parse).not.toHaveBeenCalled();
           expect(parserUtils.mergeWrapperAdData).not.toBeCalled();
