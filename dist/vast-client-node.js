@@ -2424,7 +2424,10 @@ class VASTParser extends EventEmitter {
       this.fetcher.fetchVAST({
         url: ad.nextWrapperURL,
         emitter: this.emit.bind(this),
-        maxWrapperDepth: this.maxWrapperDepth
+        maxWrapperDepth: this.maxWrapperDepth,
+        wrapperDepth,
+        previousUrl,
+        wrapperAd: ad
       }).then(xml => {
         return this.parse(xml, {
           url: ad.nextWrapperURL,
