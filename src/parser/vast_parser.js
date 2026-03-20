@@ -163,6 +163,7 @@ export class VASTParser extends EventEmitter {
       wrapperDepth = 0,
       allowMultipleAds,
       followAdditionalWrappers,
+      wrapperChainId = 0,
     }
   ) {
     // check if is a valid VAST document
@@ -175,6 +176,7 @@ export class VASTParser extends EventEmitter {
         type: 'ERROR',
         url,
         wrapperDepth,
+        wrapperChainId,
       });
       // VideoAdServingTemplate node is used for VAST 1.0
       const isNonSupportedVast =
@@ -230,6 +232,7 @@ export class VASTParser extends EventEmitter {
             wrapperDepth,
             adIndex: ads.length - 1,
             vastVersion,
+            wrapperChainId,
           });
         } else {
           // VAST version of response not supported.
@@ -263,6 +266,7 @@ export class VASTParser extends EventEmitter {
       isRootVAST = false,
       followAdditionalWrappers,
       allowMultipleAds,
+      wrapperChainId = 0,
     } = {}
   ) {
     let ads = [];
@@ -278,6 +282,7 @@ export class VASTParser extends EventEmitter {
         wrapperDepth,
         allowMultipleAds,
         followAdditionalWrappers,
+        wrapperChainId,
       });
     } catch (e) {
       return Promise.reject(e);
@@ -318,6 +323,7 @@ export class VASTParser extends EventEmitter {
       wrapperDepth,
       previousUrl,
       url,
+      wrapperChainId,
     });
   }
 
@@ -328,17 +334,22 @@ export class VASTParser extends EventEmitter {
    * @param {Object} options - An options Object containing resolving parameters
    * @return {Promise}
    */
-  resolveAds(ads = [], { wrapperDepth, previousUrl, url }) {
+  resolveAds(ads = [], { wrapperDepth, previousUrl, url, wrapperChainId = 0 } = {}) {
     const resolveWrappersPromises = [];
     previousUrl = url;
     ads.forEach((ad) => {
       const resolveWrappersPromise = this.resolveWrappers(
         ad,
         wrapperDepth,
-        previousUrl
+        previousUrl,
+        wrapperChainId
       );
 
       resolveWrappersPromises.push(resolveWrappersPromise);
+
+      if (wrapperDepth === 0) {
+        wrapperChainId++;
+      }
     });
 
     return Promise.all(resolveWrappersPromises).then((unwrappedAds) => {
@@ -354,7 +365,7 @@ export class VASTParser extends EventEmitter {
    * @param {String} previousUrl - The previous vast url.
    * @return {Promise}
    */
-  resolveWrappers(adToUnWrap, wrapperDepth, previousUrl) {
+  resolveWrappers(adToUnWrap, wrapperDepth, previousUrl, wrapperChainId) {
     // Copy ad from parameters to prevent altering given object outside of function scope
     const ad = { ...adToUnWrap };
     return new Promise((resolve) => {
@@ -401,6 +412,7 @@ export class VASTParser extends EventEmitter {
           wrapperDepth,
           previousUrl,
           wrapperAd: ad,
+          wrapperChainId,
         })
         .then((xml) => {
           return this.parse(xml, {
@@ -410,6 +422,7 @@ export class VASTParser extends EventEmitter {
             wrapperDepth,
             followAdditionalWrappers: ad.followAdditionalWrappers,
             allowMultipleAds,
+            wrapperChainId,
           }).then((unwrappedAds) => {
             delete ad.nextWrapperURL;
             if (unwrappedAds.length === 0) {
