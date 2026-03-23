@@ -80,7 +80,7 @@ export class VASTParser extends EventEmitter {
      * @return {Array}
      * @throws {Error} `vastXml` must be a valid VAST XMLDocument
      */
-    parseVastXml(vastXml: any, { isRootVAST, url, wrapperDepth, allowMultipleAds, followAdditionalWrappers, }: any): any[];
+    parseVastXml(vastXml: any, { isRootVAST, url, wrapperDepth, allowMultipleAds, followAdditionalWrappers, wrapperChainId, }: any): any[];
     /**
      * Parses the given xml Object into an array of unwrapped ads.
      * Returns a Promise which resolves with the array or rejects with an error according to the result of the parsing.
@@ -91,7 +91,7 @@ export class VASTParser extends EventEmitter {
      * @emits VASTParser#VAST-warning
      * @return {Promise}
      */
-    parse(vastXml: any, { url, resolveAll, wrapperSequence, previousUrl, wrapperDepth, isRootVAST, followAdditionalWrappers, allowMultipleAds, }?: any): Promise<any>;
+    parse(vastXml: any, { url, resolveAll, wrapperSequence, previousUrl, wrapperDepth, isRootVAST, followAdditionalWrappers, allowMultipleAds, wrapperChainId, }?: any): Promise<any>;
     /**
      * Resolves an Array of ads, recursively calling itself with the remaining ads if a no ad
      * response is returned for the given array.
@@ -99,7 +99,7 @@ export class VASTParser extends EventEmitter {
      * @param {Object} options - An options Object containing resolving parameters
      * @return {Promise}
      */
-    resolveAds(ads: any[], { wrapperDepth, previousUrl, url }: any): Promise<any>;
+    resolveAds(ads?: any[], { wrapperDepth, previousUrl, url, wrapperChainId }?: any): Promise<any>;
     /**
      * Resolves the wrappers for the given ad in a recursive way.
      * Returns a Promise which resolves with the unwrapped ad or rejects with an error.
@@ -108,7 +108,7 @@ export class VASTParser extends EventEmitter {
      * @param {String} previousUrl - The previous vast url.
      * @return {Promise}
      */
-    resolveWrappers(adToUnWrap: any, wrapperDepth: number, previousUrl: string): Promise<any>;
+    resolveWrappers(adToUnWrap: any, wrapperDepth: number, previousUrl: string, wrapperChainId: any): Promise<any>;
     /**
      * Takes care of handling errors when the wrappers are resolved.
      * @param {Object} vastResponse - A resolved VASTResponse.

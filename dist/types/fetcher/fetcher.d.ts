@@ -38,17 +38,19 @@ export class Fetcher {
      * @param {(String | null)} params.previousUrl - Url of the previous VAST.
      * @param {Object} params.wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
      * @param {Number} params.maxWrapperDepth - The maximum number of Wrapper that can be fetch
+     * @param {Number} params.wrapperChainId - The id of the current wrapper chain.
      * @param {Function} params.emitter - The function used to Emit event
      * @emits  VASTParser#VAST-resolving
      * @emits  VASTParser#VAST-resolved
      * @return {Promise}
      */
-    fetchVAST({ url, maxWrapperDepth, emitter, wrapperDepth, previousUrl, wrapperAd, }: {
+    fetchVAST({ url, maxWrapperDepth, emitter, wrapperDepth, previousUrl, wrapperAd, wrapperChainId, }: {
         url: string;
         wrapperDepth: number;
         previousUrl: (string | null);
         wrapperAd: any;
         maxWrapperDepth: number;
+        wrapperChainId: number;
         emitter: Function;
     }): Promise<any>;
 }
