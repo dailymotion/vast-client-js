@@ -2216,7 +2216,8 @@ class VASTParser extends EventEmitter {
       url = null,
       wrapperDepth = 0,
       allowMultipleAds,
-      followAdditionalWrappers
+      followAdditionalWrappers,
+      wrapperChainId = 0
     } = _ref;
     // check if is a valid VAST document
     if (!vastXml || !vastXml.documentElement || vastXml.documentElement.nodeName !== 'VAST') {
@@ -2224,7 +2225,8 @@ class VASTParser extends EventEmitter {
       this.emit('VAST-ad-parsed', {
         type: 'ERROR',
         url,
-        wrapperDepth
+        wrapperDepth,
+        wrapperChainId
       });
       // VideoAdServingTemplate node is used for VAST 1.0
       const isNonSupportedVast = (vastXml === null || vastXml === void 0 || (_vastXml$documentElem = vastXml.documentElement) === null || _vastXml$documentElem === void 0 ? void 0 : _vastXml$documentElem.nodeName) === 'VideoAdServingTemplate';
@@ -2269,7 +2271,8 @@ class VASTParser extends EventEmitter {
             url,
             wrapperDepth,
             adIndex: ads.length - 1,
-            vastVersion
+            vastVersion,
+            wrapperChainId
           });
         } else {
           // VAST version of response not supported.
@@ -2301,7 +2304,8 @@ class VASTParser extends EventEmitter {
       wrapperDepth = 0,
       isRootVAST = false,
       followAdditionalWrappers,
-      allowMultipleAds
+      allowMultipleAds,
+      wrapperChainId = 0
     } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     let ads = [];
     // allowMultipleAds was introduced in VAST 3 as wrapper attribute
@@ -2315,7 +2319,8 @@ class VASTParser extends EventEmitter {
         url,
         wrapperDepth,
         allowMultipleAds,
-        followAdditionalWrappers
+        followAdditionalWrappers,
+        wrapperChainId
       });
     } catch (e) {
       return Promise.reject(e);
@@ -2349,7 +2354,8 @@ class VASTParser extends EventEmitter {
     return this.resolveAds(ads, {
       wrapperDepth,
       previousUrl,
-      url
+      url,
+      wrapperChainId
     });
   }
 
@@ -2365,13 +2371,17 @@ class VASTParser extends EventEmitter {
     let {
       wrapperDepth,
       previousUrl,
-      url
-    } = arguments.length > 1 ? arguments[1] : undefined;
+      url,
+      wrapperChainId = 0
+    } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const resolveWrappersPromises = [];
     previousUrl = url;
     ads.forEach(ad => {
-      const resolveWrappersPromise = this.resolveWrappers(ad, wrapperDepth, previousUrl);
+      const resolveWrappersPromise = this.resolveWrappers(ad, wrapperDepth, previousUrl, wrapperChainId);
       resolveWrappersPromises.push(resolveWrappersPromise);
+      if (wrapperDepth === 0) {
+        wrapperChainId++;
+      }
     });
     return Promise.all(resolveWrappersPromises).then(unwrappedAds => {
       return util.flatten(unwrappedAds);
@@ -2386,7 +2396,7 @@ class VASTParser extends EventEmitter {
    * @param {String} previousUrl - The previous vast url.
    * @return {Promise}
    */
-  resolveWrappers(adToUnWrap, wrapperDepth, previousUrl) {
+  resolveWrappers(adToUnWrap, wrapperDepth, previousUrl, wrapperChainId) {
     // Copy ad from parameters to prevent altering given object outside of function scope
     const ad = {
       ...adToUnWrap
@@ -2427,7 +2437,8 @@ class VASTParser extends EventEmitter {
         maxWrapperDepth: this.maxWrapperDepth,
         wrapperDepth,
         previousUrl,
-        wrapperAd: ad
+        wrapperAd: ad,
+        wrapperChainId
       }).then(xml => {
         return this.parse(xml, {
           url: ad.nextWrapperURL,
@@ -2435,7 +2446,8 @@ class VASTParser extends EventEmitter {
           wrapperSequence,
           wrapperDepth,
           followAdditionalWrappers: ad.followAdditionalWrappers,
-          allowMultipleAds
+          allowMultipleAds,
+          wrapperChainId
         }).then(unwrappedAds => {
           delete ad.nextWrapperURL;
           if (unwrappedAds.length === 0) {
@@ -2773,6 +2785,7 @@ class Fetcher {
    * @param {(String | null)} params.previousUrl - Url of the previous VAST.
    * @param {Object} params.wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @param {Number} params.maxWrapperDepth - The maximum number of Wrapper that can be fetch
+   * @param {Number} params.wrapperChainId - The id of the current wrapper chain.
    * @param {Function} params.emitter - The function used to Emit event
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
@@ -2786,7 +2799,8 @@ class Fetcher {
       emitter,
       wrapperDepth = 0,
       previousUrl = null,
-      wrapperAd = null
+      wrapperAd = null,
+      wrapperChainId = 0
     } = _ref;
     const timeBeforeGet = Date.now();
 
@@ -2800,7 +2814,8 @@ class Fetcher {
       wrapperDepth,
       maxWrapperDepth,
       timeout: this.fetchingOptions.timeout,
-      wrapperAd
+      wrapperAd,
+      wrapperChainId
     });
     const data = await this.urlHandler.get(url, this.fetchingOptions);
     const requestDuration = Math.round(Date.now() - timeBeforeGet);
@@ -2811,6 +2826,7 @@ class Fetcher {
       error: (data === null || data === void 0 ? void 0 : data.error) || null,
       duration: requestDuration,
       statusCode: (data === null || data === void 0 ? void 0 : data.statusCode) || null,
+      wrapperChainId,
       ...(data === null || data === void 0 ? void 0 : data.details)
     });
     updateEstimatedBitrate(data === null || data === void 0 || (_data$details = data.details) === null || _data$details === void 0 ? void 0 : _data$details.byteLength, requestDuration);
