@@ -66,6 +66,7 @@ export class Fetcher {
    * @param {(String | null)} params.previousUrl - Url of the previous VAST.
    * @param {Object} params.wrapperAd - Previously parsed ad node (Wrapper) related to this fetching.
    * @param {Number} params.maxWrapperDepth - The maximum number of Wrapper that can be fetch
+   * @param {Number} params.wrapperChainId - The id of the current wrapper chain.
    * @param {Function} params.emitter - The function used to Emit event
    * @emits  VASTParser#VAST-resolving
    * @emits  VASTParser#VAST-resolved
@@ -78,6 +79,7 @@ export class Fetcher {
     wrapperDepth = 0,
     previousUrl = null,
     wrapperAd = null,
+    wrapperChainId = 0,
   }) {
     const timeBeforeGet = Date.now();
 
@@ -93,6 +95,7 @@ export class Fetcher {
       maxWrapperDepth,
       timeout: this.fetchingOptions.timeout,
       wrapperAd,
+      wrapperChainId,
     });
 
     const data = await this.urlHandler.get(url, this.fetchingOptions);
@@ -105,6 +108,7 @@ export class Fetcher {
       error: data?.error || null,
       duration: requestDuration,
       statusCode: data?.statusCode || null,
+      wrapperChainId,
       ...data?.details,
     });
     updateEstimatedBitrate(data?.details?.byteLength, requestDuration);

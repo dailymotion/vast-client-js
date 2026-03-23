@@ -108,6 +108,7 @@ describe('VASTParser', () => {
           type: 'ERROR',
           url: inlineInvalidVastUrl,
           wrapperDepth: 0,
+          wrapperChainId: 0,
         });
       }
     });
@@ -125,6 +126,7 @@ describe('VASTParser', () => {
           type: 'ERROR',
           url: null,
           wrapperDepth: 0,
+          wrapperChainId: 0,
         });
       }
     });
@@ -171,6 +173,7 @@ describe('VASTParser', () => {
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
         vastVersion: '4.3',
+        wrapperChainId: 0,
       });
       expect(VastParser.emit).toHaveBeenCalledWith('VAST-ad-parsed', {
         adIndex: 1,
@@ -178,6 +181,7 @@ describe('VASTParser', () => {
         url: inlineSampleVastUrl,
         wrapperDepth: 0,
         vastVersion: '4.3',
+        wrapperChainId: 0,
       });
     });
   });
@@ -198,6 +202,9 @@ describe('VASTParser', () => {
           isRootVAST: true,
           url: inlineSampleVastUrl,
           wrapperDepth: 0,
+          allowMultipleAds: undefined,
+          followAdditionalWrappers: undefined,
+          wrapperChainId: 0,
         });
       });
     });
@@ -590,8 +597,8 @@ describe('VASTParser', () => {
       }).then(() => {
         expect(VastParser.resolveWrappers).toHaveBeenCalledTimes(2);
         expect(VastParser.resolveWrappers.mock.calls).toEqual([
-          ['ad1', 1, inlineSampleVastUrl],
-          ['ad2', 1, inlineSampleVastUrl],
+          ['ad1', 1, inlineSampleVastUrl, 0],
+          ['ad2', 1, inlineSampleVastUrl, 0],
         ]);
       });
     });

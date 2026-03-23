@@ -70,6 +70,7 @@ describe('Fetcher', () => {
               maxWrapperDepth: 4,
               timeout: 120000,
               wrapperAd: null,
+              wrapperChainId: 0,
             });
 
             expect(mockEmit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
@@ -80,6 +81,7 @@ describe('Fetcher', () => {
               statusCode: 200,
               previousUrl: null,
               wrapperDepth: 0,
+              wrapperChainId: 0,
             });
           });
       });
@@ -156,6 +158,7 @@ describe('Fetcher', () => {
               maxWrapperDepth: 4,
               timeout: 120000,
               wrapperAd: null,
+              wrapperChainId: 0,
             });
 
             expect(mockEmit).toHaveBeenNthCalledWith(2, 'VAST-resolved', {
@@ -165,6 +168,7 @@ describe('Fetcher', () => {
               statusCode: 500,
               previousUrl: null,
               wrapperDepth: 0,
+              wrapperChainId: 0,
             });
           });
       });
