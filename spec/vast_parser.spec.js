@@ -247,24 +247,50 @@ describe('VASTParser', () => {
 
     it('it replaces the ad sequence with the value of the wrapper sequence if it contains only one ad', () => {
       jest.spyOn(VastParser, 'parseVastXml').mockReturnValue([{ sequence: 2 }]);
-      return VastParser.parse(wrapperXml, { wrapperSequence: 4 }).then(
-        (ads) => {
-          expect(ads[0].sequence).toEqual(4);
-        }
-      );
+      return VastParser.parse(wrapperXml, {
+        wrapperDepth: 1,
+        wrapperSequence: 4,
+      }).then((ads) => {
+        expect(ads[0].sequence).toEqual(4);
+      });
     });
 
     it('does not keep wrapper sequence value when wrapper contain an adpod', () => {
       jest
         .spyOn(VastParser, 'parseVastXml')
         .mockReturnValue([{ sequence: 1 }, { sequence: 2 }, { sequence: 3 }]);
-      return VastParser.parse(wrapperXml, { wrapperSequence: 4 }).then(
-        (ads) => {
-          expect(ads[0].sequence).toEqual(1);
-          expect(ads[1].sequence).toEqual(2);
-          expect(ads[2].sequence).toEqual(3);
-        }
-      );
+      return VastParser.parse(wrapperXml, {
+        wrapperDepth: 1,
+        wrapperSequence: 4,
+      }).then((ads) => {
+        expect(ads[0].sequence).toEqual(1);
+        expect(ads[1].sequence).toEqual(2);
+        expect(ads[2].sequence).toEqual(3);
+      });
+    });
+
+    it('keeps child sequences for adpod when wrapper has no sequence', () => {
+      jest
+        .spyOn(VastParser, 'parseVastXml')
+        .mockReturnValue([{ sequence: 1 }, { sequence: 2 }, { sequence: 3 }]);
+      return VastParser.parse(wrapperXml, {
+        wrapperDepth: 1,
+        wrapperSequence: null,
+      }).then((ads) => {
+        expect(ads[0].sequence).toEqual(1);
+        expect(ads[1].sequence).toEqual(2);
+        expect(ads[2].sequence).toEqual(3);
+      });
+    });
+
+    it('clears child sequence for single-ad wrapper without sequence', () => {
+      jest.spyOn(VastParser, 'parseVastXml').mockReturnValue([{ sequence: 1 }]);
+      return VastParser.parse(wrapperXml, {
+        wrapperDepth: 1,
+        wrapperSequence: null,
+      }).then((ads) => {
+        expect(ads[0].sequence).toBeNull();
+      });
     });
   });
 
