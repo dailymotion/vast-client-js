@@ -2333,7 +2333,7 @@ class VASTParser extends EventEmitter {
     - Inline sequence 3
     */
 
-    if (ads.length === 1 && wrapperSequence !== undefined && wrapperSequence !== null) {
+    if (ads.length === 1 && wrapperDepth > 0 && wrapperSequence !== undefined) {
       ads[0].sequence = wrapperSequence;
     }
     if (resolveAll === false) {

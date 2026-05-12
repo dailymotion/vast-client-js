@@ -1,7 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 function createAd() {
   let adAttributes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   return {
@@ -2337,7 +2333,7 @@ class VASTParser extends EventEmitter {
     - Inline sequence 3
     */
 
-    if (ads.length === 1 && wrapperDepth > 0 && wrapperSequence !== undefined) {
+    if (ads.length === 1 && wrapperSequence !== undefined && wrapperSequence !== null) {
       ads[0].sequence = wrapperSequence;
     }
     if (resolveAll === false) {
@@ -2655,7 +2651,7 @@ async function handleResponse(response) {
   const textXml = await response.text();
   let parser;
   if (!util.isBrowserEnvironment()) {
-    const xmlDom = await Promise.resolve().then(function () { return require('./chunks/xmldom-a624052b.js'); }).then(function (n) { return n.index; });
+    const xmlDom = await import('@xmldom/xmldom');
     parser = new xmlDom.DOMParser();
   } else {
     parser = new DOMParser();
@@ -3985,7 +3981,4 @@ class VASTTracker extends EventEmitter {
   }
 }
 
-exports.VASTClient = VASTClient;
-exports.VASTParser = VASTParser;
-exports.VASTTracker = VASTTracker;
-exports.parseDuration = parseDuration;
+export { VASTClient, VASTParser, VASTTracker, parseDuration };
