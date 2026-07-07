@@ -61,6 +61,17 @@ describe('VASTTracker', function () {
         );
       });
 
+      it('should set default ADTYPE macro to video when adType is not set', () => {
+        const adWithoutType = { ...ad, adType: null };
+        vastTracker = new VASTTracker(vastClient, adWithoutType, ad.creatives[0]);
+        vastTracker.trackURLs([{ id: 'valid-url', url: 'http://example.com' }]);
+        expect(spyTrackUtil).toHaveBeenCalledWith(
+          ['http://example.com'],
+          expect.objectContaining({ ADTYPE: 'video' }),
+          expect.any(Object)
+        );
+      });
+
       it('should call track with the expected macros if progress is defined', () => {
         vastTracker.progress = 12;
         vastTracker.trackURLs([{ id: 'valid-url', url: 'http://example.com' }]);

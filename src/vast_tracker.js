@@ -921,22 +921,20 @@ export class VASTTracker extends EventEmitter {
       if (this.ad.sequence) {
         givenMacros['PODSEQUENCE'] = this.ad.sequence;
       }
-      if (this.ad.adType) {
-        givenMacros['ADTYPE'] = this.ad.adType;
-      }
       if (this.ad.adServingId) {
         givenMacros['ADSERVINGID'] = this.ad.adServingId;
       }
       if (this.ad.categories && this.ad.categories.length) {
         givenMacros['ADCATEGORIES'] = this.ad.categories
-          .map((category) => category.value)
-          .join(',');
+        .map((category) => category.value)
+        .join(',');
       }
       if (this.ad.blockedAdCategories && this.ad.blockedAdCategories.length) {
         givenMacros['BLOCKEDADCATEGORIES'] = this.ad.blockedAdCategories
-          .map((blockedCategorie) => blockedCategorie.value)
-          .join(',');
+        .map((blockedCategorie) => blockedCategorie.value)
+        .join(',');
       }
+      givenMacros['ADTYPE'] = this.ad.adType || 'video';
     }
 
     util.track(validUrls, givenMacros, options);
