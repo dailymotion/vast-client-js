@@ -131,7 +131,7 @@ export class VASTClient {
   /**
    * Gets a parsed VAST document for the given url, applying the skipping rules defined.
    * Returns a Promise which resolves with a fully parsed VASTResponse or rejects with an Error.
-   * @param  {String} url - The url to use to fecth the VAST document.
+   * @param  {String} url - The url to use to fetch the VAST document.
    * @param  {Object} options - An optional Object of parameters to be applied in the process.
    * @return {Promise}
    */
@@ -145,7 +145,7 @@ export class VASTClient {
 
     // Check totalCallsTimeout (first call + 1 hour), if older than now,
     // reset totalCalls number, by this way the client will be eligible again
-    // for freelunch capping
+    // for FreeLunch capping
     if (this.totalCallsTimeout < now) {
       this.totalCalls = 1;
       this.totalCallsTimeout = now + 60 * 60 * 1000;
@@ -171,7 +171,7 @@ export class VASTClient {
       } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
         return reject(
           new Error(
-            `VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval reached`
+            `VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval not reached`
           )
         );
       }

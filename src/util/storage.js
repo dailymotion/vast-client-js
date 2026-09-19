@@ -26,7 +26,7 @@ const DEFAULT_STORAGE = {
 };
 
 /**
- * This class provides an wrapper interface to the a key-value storage.
+ * This class provides a wrapper interface to a key-value storage.
  * It uses localStorage, sessionStorage or a custom storage if none of the two is available.
  * @export
  * @class Storage

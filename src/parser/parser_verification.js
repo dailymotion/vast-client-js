@@ -2,7 +2,7 @@ import { requiredValues } from '../util/requiredValues';
 import { parserUtils } from './parser_utils';
 
 /**
- * Verify node required values and also verify recursively all his child nodes.
+ * Verify node required values and also verify recursively all its child nodes.
  * Trigger warnings if a node required value is missing.
  * @param  {Node} node - The node element.
  * @param  {Function} emit - Emit function used to trigger Warning event.
@@ -61,9 +61,9 @@ function verifyRequiredAttributes(node, emit) {
 }
 
 /**
- * Verify and trigger warnings if node required sub element are not set.
+ * Verify and trigger warnings if node required sub elements are not set.
  * @param  {Node} node - The node element
- * @param  {Boolean} isAdInline - True if node is contained in a inline
+ * @param  {Boolean} isAdInline - True if node is contained in an inline
  * @param  {Function} emit - Emit function used to trigger Warning event.
  * @emits  VASTParser#VAST-warning
  */
@@ -134,7 +134,7 @@ function hasSubElements(node) {
  * @param  {Array} missingElement.subElements - The array of missing sub elements
  * @param  {Array} missingElement.oneOfResources - The array of resources in which at least one must be provided by the element
  * @param  {Function} emit - Emit function used to trigger Warning event.
- * @emits  VastParser#VAST-warning
+ * @emits  VASTParser#VAST-warning
  */
 function emitMissingValueWarning(
   { name, parentName, attributes, subElements, oneOfResources },

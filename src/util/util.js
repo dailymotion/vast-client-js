@@ -125,7 +125,7 @@ function extractURLsFromTemplates(URLTemplates) {
 }
 
 /**
- * Filter URLTemplates elements .
+ * Filter URLTemplates elements.
  *   To be valid, urls should:
  *   - have the same protocol as the client
  *   or
@@ -135,7 +135,7 @@ function extractURLsFromTemplates(URLTemplates) {
  *    - validUrls : An array of valid URLs
  *    - invalidUrls: An array of invalid URLs
  *
- * @param {Array} URLTemplates - A Array of string/object containing urls templates.
+ * @param {Array} URLTemplates - An Array of string/object containing urls templates.
  * @returns {Object}
  *
  */
@@ -160,7 +160,7 @@ function isValidUrl(url) {
  * Returns a boolean after checking if the object exists in the array.
  *   true - if the object exists, false otherwise
  *
- * @param {Object} obj - The object who existence is to be checked.
+ * @param {Object} obj - The object whose existence is to be checked.
  * @param {Array} list - List of objects.
  */
 function containsTemplateObject(obj, list) {
