@@ -77,6 +77,6 @@ function _parseExtension(extNode) {
     ext.children = [];
   }
 
-  // Only return not empty objects to not pollute extentions
+  // Only return not empty objects to not pollute extensions
   return isEmptyExtension(ext) ? null : ext;
 }

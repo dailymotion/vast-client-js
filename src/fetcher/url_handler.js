@@ -30,7 +30,7 @@ async function handleResponse(response) {
 }
 
 /**
- * Return a custom message if an error occured
+ * Return a custom message if an error occurred
  * @param {Object} response The response of fetch request
  * @returns {String | null}
  */
@@ -52,7 +52,7 @@ function handleError(response) {
 async function get(url, options) {
   try {
     // fetch does not have "timeout" option, we are using AbortController
-    // to abort the request if it reach the timeout.
+    // to abort the request if it reaches the timeout.
     const controller = new AbortController();
     const timer = setTimeout(() => {
       controller.abort();
