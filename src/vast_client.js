@@ -171,7 +171,7 @@ export class VASTClient {
       } else if (timeSinceLastCall < this.cappingMinimumTimeInterval) {
         return reject(
           new Error(
-            `VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval not reached`
+            `VAST call canceled – (${this.cappingMinimumTimeInterval})ms minimum interval reached`
           )
         );
       }
