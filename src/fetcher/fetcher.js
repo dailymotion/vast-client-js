@@ -113,7 +113,9 @@ export class Fetcher {
     });
     updateEstimatedBitrate(data?.details?.byteLength, requestDuration);
 
-    if (data.error) {
+    if (data.error instanceof Error) {
+      throw data.error;
+    } else if (data.error) {
       throw new Error(data.error);
     } else {
       return data.xml;

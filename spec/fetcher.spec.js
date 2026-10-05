@@ -184,6 +184,30 @@ describe('Fetcher', () => {
           statusCode: 408,
         });
       });
+
+      it('should reject with custom error from urlHandler', () => {
+        class CustomError extends Error {}
+
+        const customErrorUrlHandler = {
+          get: () => Promise.resolve({
+            error: new CustomError('i am a teapot'),
+            statusCode: 418,
+          })
+        }
+
+        fetcher.setOptions({
+          wrapperLimit: 5,
+          urlHandler: customErrorUrlHandler,
+        });
+
+        const result = fetcher.fetchVAST({
+          url: url,
+          maxWrapperDepth: 5,
+          emitter: () => { },
+        });
+
+        return expect(result).rejects.toBeInstanceOf(CustomError);
+      });
     });
   });
 
