@@ -1,6 +1,144 @@
 import { util } from '../src/util/util';
 
 describe('util', function () {
+  describe('track', function () {
+    let imageSpy;
+
+    beforeEach(() => {
+      imageSpy = jest.spyOn(window, 'Image').mockImplementation(() => ({}));
+    });
+
+    afterEach(() => {
+      imageSpy.mockRestore();
+    });
+
+    it('should send each url with an Image when no trackingHandler is given', () => {
+      util.track(['http://example.com/a', 'http://example.com/b'], {});
+
+      expect(imageSpy).toHaveBeenCalledTimes(2);
+      expect(imageSpy.mock.results.map(({ value }) => value.src)).toEqual([
+        'http://example.com/a',
+        'http://example.com/b',
+      ]);
+    });
+
+    it('should call trackingHandler once per resolved url instead of using Image', () => {
+      const trackingHandler = jest.fn();
+
+      util.track(
+        ['http://example.com/a?code=[ERRORCODE]', 'http://example.com/b'],
+        { ERRORCODE: 405 },
+        { trackingHandler }
+      );
+
+      expect(trackingHandler).toHaveBeenCalledTimes(2);
+      expect(trackingHandler).toHaveBeenNthCalledWith(
+        1,
+        'http://example.com/a?code=405'
+      );
+      expect(trackingHandler).toHaveBeenNthCalledWith(
+        2,
+        'http://example.com/b'
+      );
+      expect(imageSpy).not.toHaveBeenCalled();
+    });
+
+    it('should ignore trackingHandler if it is not a function', () => {
+      util.track(['http://example.com/a'], {}, { trackingHandler: 'foo' });
+
+      expect(imageSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should keep tracking the next urls if onTrackingError throws', () => {
+      const trackingHandler = jest.fn(() => {
+        throw new Error('no network');
+      });
+      const onTrackingError = jest.fn(() => {
+        throw new Error('listener failed');
+      });
+
+      expect(() =>
+        util.track(
+          ['http://example.com/a', 'http://example.com/b'],
+          {},
+          {
+            trackingHandler,
+            onTrackingError,
+          }
+        )
+      ).not.toThrow();
+      expect(trackingHandler).toHaveBeenCalledTimes(2);
+      expect(onTrackingError).toHaveBeenCalledTimes(2);
+    });
+
+    it('should keep tracking the next urls and report the error if trackingHandler throws', () => {
+      const error = new Error('no network');
+      const onTrackingError = jest.fn();
+      const trackingHandler = jest.fn((url) => {
+        if (url === 'http://example.com/a') {
+          throw error;
+        }
+      });
+
+      expect(() =>
+        util.track(
+          ['http://example.com/a', 'http://example.com/b'],
+          {},
+          { trackingHandler, onTrackingError }
+        )
+      ).not.toThrow();
+
+      expect(trackingHandler).toHaveBeenCalledTimes(2);
+      expect(onTrackingError).toHaveBeenCalledTimes(1);
+      expect(onTrackingError).toHaveBeenCalledWith(
+        error,
+        'http://example.com/a'
+      );
+    });
+
+    it('should report the error if trackingHandler returns a rejected promise', async () => {
+      const error = new Error('no network');
+      const onTrackingError = jest.fn();
+      const trackingHandler = () => Promise.reject(error);
+
+      util.track(
+        ['http://example.com/a'],
+        {},
+        { trackingHandler, onTrackingError }
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(onTrackingError).toHaveBeenCalledWith(
+        error,
+        'http://example.com/a'
+      );
+    });
+
+    it('should not report anything if trackingHandler returns a resolved promise', async () => {
+      const onTrackingError = jest.fn();
+      const trackingHandler = () => Promise.resolve();
+
+      util.track(
+        ['http://example.com/a'],
+        {},
+        { trackingHandler, onTrackingError }
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(onTrackingError).not.toHaveBeenCalled();
+    });
+
+    it('should not throw if trackingHandler throws and no onTrackingError is given', () => {
+      const trackingHandler = () => {
+        throw new Error('no network');
+      };
+
+      expect(() =>
+        util.track(['http://example.com/a'], {}, { trackingHandler })
+      ).not.toThrow();
+    });
+  });
+
   describe('resolveURLTemplates', function () {
     const now = new Date().toISOString();
     const playhead = '00:12:30.212';

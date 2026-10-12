@@ -1,14 +1,59 @@
 import { supportedMacros } from './macros';
 
-function track(URLTemplates, macros, options) {
+/**
+ * Resolves the given URLTemplates and sends a request to each resulting url.
+ * By default the requests are sent with an Image, which only works in a browser.
+ *
+ * @param {Array} URLTemplates - An array of tracking url templates.
+ * @param {Object} [macros={}] - An optional Object of parameters to be used in the tracking calls.
+ * @param {Object} [options={}] - An optional Object of options to be used in the tracking calls.
+ * @param {(url: string) => (void|Promise<unknown>)} [options.trackingHandler] - An optional function called with each resolved url,
+ * used instead of an Image to send the request. It can return a Promise.
+ * @param {(error: unknown, url: string) => void} [options.onTrackingError] - An optional function called with the error and the url
+ * when trackingHandler throws or returns a rejected Promise.
+ */
+function track(URLTemplates, macros, options = {}) {
   const URLs = resolveURLTemplates(URLTemplates, macros, options);
+  const { trackingHandler, onTrackingError } = options;
 
   URLs.forEach((URL) => {
-    if (typeof window !== 'undefined' && window !== null) {
+    if (typeof trackingHandler === 'function') {
+      callTrackingHandler(trackingHandler, URL, onTrackingError);
+    } else if (typeof window !== 'undefined' && window !== null) {
       const i = new Image();
       i.src = URL;
     }
   });
+}
+
+/**
+ * Calls the given trackingHandler with the url.
+ * A failing trackingHandler never throws to the caller, so tracking and parsing go on.
+ * Its errors are passed to onTrackingError when provided.
+ *
+ * @param {(url: string) => (void|Promise<unknown>)} trackingHandler - The function sending the request.
+ * @param {String} URL - The url to send.
+ * @param {(error: unknown, url: string) => void} [onTrackingError] - An optional function called with the error and the url.
+ */
+function callTrackingHandler(trackingHandler, URL, onTrackingError) {
+  const reportError = (error) => {
+    if (typeof onTrackingError === 'function') {
+      try {
+        onTrackingError(error, URL);
+      } catch (e) {
+        // A failing error listener must not stop the other urls.
+      }
+    }
+  };
+
+  try {
+    const result = trackingHandler(URL);
+    if (result && typeof result.then === 'function') {
+      result.then(null, reportError);
+    }
+  } catch (error) {
+    reportError(error);
+  }
 }
 
 /**

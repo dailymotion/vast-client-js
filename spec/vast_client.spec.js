@@ -195,5 +195,29 @@ describe('VASTClient', () => {
         expect(VastClient.hasRemainingAds()).toBeFalsy();
       });
     });
+
+    describe('with a trackingHandler', () => {
+      let imageSpy;
+
+      beforeEach(() => {
+        imageSpy = jest.spyOn(window, 'Image').mockImplementation(() => ({}));
+      });
+
+      afterEach(() => {
+        imageSpy.mockRestore();
+      });
+
+      it('sends the parser error urls through the trackingHandler', async () => {
+        const trackingHandler = jest.fn();
+
+        await VastClient.get(emptyVastUrl, { ...options, trackingHandler });
+
+        expect(trackingHandler).toHaveBeenCalledTimes(1);
+        expect(trackingHandler).toHaveBeenCalledWith(
+          'http://example.com/empty-no-ad'
+        );
+        expect(imageSpy).not.toHaveBeenCalled();
+      });
+    });
   });
 });

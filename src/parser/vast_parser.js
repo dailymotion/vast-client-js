@@ -32,6 +32,8 @@ export class VASTParser extends EventEmitter {
     this.parsingOptions = {};
     this.fetcher = fetcher || null;
     this.keepFailedAdPod = false;
+    /** @type {?((url: string) => (void|Promise<unknown>))} */
+    this.trackingHandler = null;
   }
 
   /**
@@ -47,7 +49,9 @@ export class VASTParser extends EventEmitter {
       'VAST-error',
       Object.assign({}, DEFAULT_EVENT_DATA, errorCode, ...data)
     );
-    util.track(urlTemplates, errorCode);
+    util.track(urlTemplates, errorCode, {
+      trackingHandler: this.trackingHandler,
+    });
   }
 
   /**
@@ -74,6 +78,7 @@ export class VASTParser extends EventEmitter {
     this.maxWrapperDepth = options.wrapperLimit || DEFAULT_MAX_WRAPPER_DEPTH;
     this.parsingOptions = { allowMultipleAds: options.allowMultipleAds };
     this.keepFailedAdPod = options.keepFailedAdPod || false;
+    this.trackingHandler = options.trackingHandler || null;
     this.rootURL = '';
     this.resetParsingStatus();
     updateEstimatedBitrate(options.byteLength, options.requestDuration);

@@ -27,10 +27,22 @@ export class VASTTracker extends EventEmitter {
    * @param {Creative} creative - The creative to track.
    * @param {Object} [variation=null] - An optional variation of the creative.
    * @param {Boolean} [muted=false] - The initial muted state of the video.
+   * @param {Object} [options={}] - An optional Object of options for the tracker.
+   * @param {(url: string) => (void|Promise<unknown>)} [options.trackingHandler] - An optional function called with each tracking url
+   * (macros already replaced) instead of sending it with an Image.
    * @constructor
    */
-  constructor(client, ad, creative, variation = null, muted = false) {
+  constructor(
+    client,
+    ad,
+    creative,
+    variation = null,
+    muted = false,
+    options = {}
+  ) {
     super();
+    /** @type {?((url: string) => (void|Promise<unknown>))} */
+    this.trackingHandler = (options && options.trackingHandler) || null;
     this.ad = ad;
     this.creative = creative;
     this.variation = variation;
@@ -937,7 +949,17 @@ export class VASTTracker extends EventEmitter {
       givenMacros['ADTYPE'] = this.ad.adType || 'video';
     }
 
-    util.track(validUrls, givenMacros, options);
+    util.track(validUrls, givenMacros, {
+      ...options,
+      trackingHandler: this.trackingHandler,
+      onTrackingError: (error, url) => {
+        this.emit('TRACKER-error', {
+          message: `trackingHandler failed. url: ${url}, error: ${
+            error && error.message ? error.message : String(error)
+          }`,
+        });
+      },
+    });
   }
 
   /**

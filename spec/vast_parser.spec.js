@@ -9,6 +9,8 @@ import { VASTClient } from '../src/vast_client';
 import { readFile } from 'fs/promises';
 
 const xml = getNodesFromXml(`<VAST>${linearAd}</VAST>`, 'text/xml');
+// Some tests below replace util.track, keep a reference to the real one
+const originalTrack = util.track;
 
 const nodeUrlHandler = {
   get: async (file) => {
@@ -973,6 +975,77 @@ describe('VASTParser', () => {
 
         expect(responseWithoutKeepFailed.ads.length).toBe(2);
       });
+    });
+  });
+
+  describe('trackingHandler', () => {
+    const emptyVast = () =>
+      new DOMParser().parseFromString(
+        `<VAST><Error>http://example.com/empty-no-ad?code=[ERRORCODE]</Error></VAST>`,
+        'text/xml'
+      );
+    let trackingHandler;
+    let imageSpy;
+
+    beforeEach(() => {
+      util.track = originalTrack;
+      trackingHandler = jest.fn();
+      imageSpy = jest.spyOn(window, 'Image').mockImplementation(() => ({}));
+    });
+
+    afterEach(() => {
+      imageSpy.mockRestore();
+    });
+
+    it('sends error urls through the trackingHandler given to parseVAST', async () => {
+      await VastParser.parseVAST(emptyVast(), { trackingHandler });
+
+      expect(trackingHandler).toHaveBeenCalledTimes(1);
+      expect(trackingHandler).toHaveBeenCalledWith(
+        'http://example.com/empty-no-ad?code=303'
+      );
+      expect(imageSpy).not.toHaveBeenCalled();
+    });
+
+    it('keeps the trackingHandler for later trackVastError calls', async () => {
+      await VastParser.parseVAST(emptyVast(), { trackingHandler });
+      trackingHandler.mockClear();
+
+      VastParser.trackVastError(['http://example.com/error?code=[ERRORCODE]'], {
+        ERRORCODE: 200,
+      });
+
+      expect(trackingHandler).toHaveBeenCalledWith(
+        'http://example.com/error?code=200'
+      );
+      expect(imageSpy).not.toHaveBeenCalled();
+    });
+
+    it('uses Image when no trackingHandler is given', async () => {
+      await VastParser.parseVAST(emptyVast(), { trackingHandler });
+      await VastParser.parseVAST(emptyVast());
+
+      expect(trackingHandler).toHaveBeenCalledTimes(1);
+      expect(imageSpy).toHaveBeenCalledTimes(1);
+      expect(imageSpy.mock.results[0].value.src).toBe(
+        'http://example.com/empty-no-ad?code=303'
+      );
+    });
+
+    it('does not interrupt parsing if trackingHandler throws', async () => {
+      const failingHandler = () => {
+        throw new Error('no network');
+      };
+
+      const response = await VastParser.parseVAST(emptyVast(), {
+        trackingHandler: failingHandler,
+      });
+
+      expect(response.ads).toEqual([]);
+      expect(VastParser.emit).toHaveBeenCalledWith(
+        'VAST-error',
+        expect.objectContaining({ ERRORCODE: 303 })
+      );
     });
   });
 });

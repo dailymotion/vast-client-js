@@ -117,6 +117,7 @@ By default the fully parsed `VASTResponse` contains all the Ads contained in the
   - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
   - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
+  - `trackingHandler: Function` - A function called with each `<Error>` tracking url sent during the parsing, instead of sending it with an `Image`. See [VASTTracker](vast-tracker.md#tracking-handler)
   - `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse: only the AdPod, or stand alone ad per stand alone ad (default `true`)
   - `allowMultipleAds: Boolean` - A Boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
   - `followAdditionalWrappers: Boolean` - a Boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
@@ -143,7 +144,8 @@ const options = {
       'User-Agent': 'My Custom User Agent',
       'Cache-Control': 'no-cache'
     }
-  }
+  },
+  trackingHandler: (url) => fetch(url, { mode: 'no-cors', keepalive: true })
 };
 
 vastClient.get('http://example.dailymotion.com/vast.xml', options)
@@ -172,6 +174,7 @@ If you just need to parse an inline VAST or you want to parse the first VAST doc
   - `wrapperLimit: Number` - A number of Wrapper responses that can be received with no InLine response (default `10`)
   - `urlHandler: URLHandler` - Custom urlhandler to be used instead of the default ones [`urlhandlers`](../../src/urlhandlers)
   - `urlhandler: URLHandler` - Fulfills the same purpose as `urlHandler`, which is the preferred parameter to use
+  - `trackingHandler: Function` - A function called with each `<Error>` tracking url sent during the parsing, instead of sending it with an `Image`. See [VASTTracker](vast-tracker.md#tracking-handler)
   - `allowMultipleAds: Boolean` - A boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
   - `followAdditionalWrappers: Boolean` - A boolean value that identifies whether subsequent Wrappers after a requested VAST response is allowed. This will override any value of followAdditionalWrappers attribute set in the VAST
   - `requestDuration: Number` - The fetching time of the XML in ms. Provide it with byteLength to have a more accurate estimated bitrate.

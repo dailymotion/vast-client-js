@@ -6,6 +6,7 @@ At key points during ad playback you will need to call thoses methods to fire co
 - [Constructor](#constructor)
 - [Events](#events)
 - [Fire trackers URI](#trackers)
+  - [Send tracking requests with a custom function](#tracking-handler)
 - [Macros](#macros)
 - [Methods](#methods)
 
@@ -14,7 +15,7 @@ At key points during ad playback you will need to call thoses methods to fire co
 The constructor signature is:
 
 ```Javascript
-constructor(client, ad, creative, variation = null, muted = false)
+constructor(client, ad, creative, variation = null, muted = false, options = {})
 ```
 
 #### Parameters
@@ -24,6 +25,8 @@ constructor(client, ad, creative, variation = null, muted = false)
 - **`creative: Creative`** - The creative to track
 - **`variation: CompanionAd|NonLinearAd`** - An optional variation of the creative, for Companion and NonLinear Ads
 - **`muted: Boolean`** - The initial muted state of the video. (optional, `false` by default)
+- **`options: Object`** - An optional Object of options for the tracker:
+  - `trackingHandler: Function` - A function called with each tracking url instead of sending it with an `Image`. See [Send tracking requests with a custom function](#tracking-handler)
 
 #### Example
 
@@ -45,6 +48,11 @@ const vastTracker = new VASTTracker(vastClient, ad, creative, null, muted);
 
 // Without a client instance
 const vastTracker = new VASTTracker(null, ad, creative);
+
+// With a custom function to send the tracking requests
+const vastTracker = new VASTTracker(vastClient, ad, creative, null, false, {
+  trackingHandler: (url) => fetch(url),
+});
 ```
 
 ## Events<a name="events"></a>
@@ -138,6 +146,33 @@ video events. To trigger a tracker you will need to call the corresponding `VAST
 | [trackViewableImpression](#trackviewableimpression)         | `<Viewable>`                                                                                                                                                                                  |
 | [trackNotViewableImpression](#tracknotviewableimpression)   | `<NotViewable>`                                                                                                                                                                               |
 | [trackUndeterminedImpression](#trackundeterminedimpression) | `<ViewUndetermined>`                                                                                                                                                                          |
+
+### Send tracking requests with a custom function <a name="tracking-handler"></a>
+
+By default, each tracking url is sent with `new Image()`, and only when `window` is defined.
+This does not work in environments without `Image`, like React Native, and nothing is sent in Node.
+
+You can pass a `trackingHandler` function in the constructor `options` to send the requests yourself, for example with `fetch`.
+It is called once per url, with the macros already replaced. It can return a `Promise`.
+
+If `trackingHandler` throws an error or returns a rejected `Promise`, the tracker emits a `TRACKER-error` event whose `message` contains the url which could not be sent. The other urls are still sent.
+
+In a browser, tracking servers usually send no CORS headers, so use `fetch(url, { mode: 'no-cors', keepalive: true })`: a `cors` request would be sent but rejected. `navigator.sendBeacon(url)` also works if your ad server accepts `POST` requests; it reports a failure by returning `false`, not by throwing.
+
+The tracker does not take the handler given to `VASTClient`: pass it to both.
+
+```Javascript
+const vastTracker = new VASTTracker(vastClient, ad, creative, null, false, {
+  // React Native, Node 18+
+  trackingHandler: (url) => fetch(url),
+});
+
+vastTracker.on('TRACKER-error', ({ message }) => {
+  // e.g. "trackingHandler failed. url: http://example.com/error, error: Failed to fetch"
+});
+```
+
+To send the `<Error>` urls tracked during the parsing with the same function, pass `trackingHandler` in the options of [`VASTClient.get`](vast-client.md#geturl-options-promise), [`VASTClient.parseVAST`](vast-client.md#parse) or [`VASTParser.parseVAST`](vast-parser.md#parse).
 
 ## Macros <a name="macros"></a>
 

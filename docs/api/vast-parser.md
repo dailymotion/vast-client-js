@@ -13,7 +13,7 @@ Use an instance of this class directly only if you don't need any control on mul
 
 ## Error tracking
 
-Whenever an error occurs during the VAST parsing, the parser will call automatically all related tracking error URLs. Reported errors are:
+Whenever an error occurs during the VAST parsing, the parser will call automatically all related tracking error URLs. By default they are sent with an `Image`; pass a `trackingHandler` function in the `parseVAST` options to send them yourself. Reported errors are:
 
 - `no_ad`: The VAST document is empty
 - VAST error `101`: VAST schema validation error.
@@ -168,6 +168,7 @@ If you need to parse and follow a wrappers chain, you should use the **parseVAST
   - `allowMultipleAds: Boolean` - A boolean value that identifies whether multiple ads are allowed in the requested VAST response. This will override any value of allowMultipleAds attribute set in the VAST
   - `byteLength: Number`- The size of the request in bytes. Provide it with requestDuration to have a more accurate estimated bitrate.
   - `resolveAll: Boolean` - Allows you to parse all the ads contained in the VAST or to parse them ad by ad or adPod by adPod (default `true`)
+  - `trackingHandler: Function` - A function called with each `<Error>` tracking url sent during the parsing, instead of sending it with an `Image`. It is also used by `trackVastError` until the next parsing. If it throws or returns a rejected `Promise`, the error is ignored and the parsing goes on. See [VASTTracker](vast-tracker.md#tracking-handler)
 
 
 #### Events emitted

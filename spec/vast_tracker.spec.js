@@ -1139,4 +1139,166 @@ describe('VASTTracker', function () {
       });
     });
   });
+
+  describe('#trackingHandler', () => {
+    let trackingHandler;
+    let imageSpy;
+
+    beforeEach(() => {
+      trackingHandler = jest.fn();
+      imageSpy = jest.spyOn(window, 'Image').mockImplementation(() => ({}));
+    });
+
+    afterEach(() => {
+      imageSpy.mockRestore();
+    });
+
+    it('should default to no trackingHandler', () => {
+      vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
+      expect(vastTracker.trackingHandler).toBeNull();
+    });
+
+    it('should treat null options like no options', () => {
+      expect(() => {
+        vastTracker = new VASTTracker(
+          vastClient,
+          ad,
+          ad.creatives[0],
+          null,
+          false,
+          null
+        );
+      }).not.toThrow();
+      expect(vastTracker.trackingHandler).toBeNull();
+
+      vastTracker.error({ ERRORCODE: 405 });
+      expect(imageSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should send impression urls through the given trackingHandler', () => {
+      vastTracker = new VASTTracker(
+        vastClient,
+        ad,
+        ad.creatives[0],
+        null,
+        false,
+        { trackingHandler }
+      );
+      vastTracker.trackImpression();
+
+      const urls = trackingHandler.mock.calls.map(([url]) => url);
+      expect(urls).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(
+            /^http:\/\/example\.com\/impression1_asset:http%3A%2F%2Fexample\.com%2Flinear-asset\.mp4_\d{8}$/
+          ),
+          expect.stringMatching(/^http:\/\/example\.com\/impression2_\d{8}$/),
+          expect.stringMatching(/^\/\/example\.com\/impression3_\d{8}$/),
+        ])
+      );
+      expect(imageSpy).not.toHaveBeenCalled();
+    });
+
+    it('should send error urls through the given trackingHandler', () => {
+      vastTracker = new VASTTracker(
+        vastClient,
+        ad,
+        ad.creatives[0],
+        null,
+        false,
+        { trackingHandler }
+      );
+      vastTracker.error({ ERRORCODE: 405 });
+
+      expect(trackingHandler).toHaveBeenCalledWith(
+        'http://example.com/error_405'
+      );
+      expect(imageSpy).not.toHaveBeenCalled();
+    });
+
+    it('should keep using Image when no trackingHandler is given', () => {
+      vastTracker = new VASTTracker(vastClient, ad, ad.creatives[0]);
+      vastTracker.error({ ERRORCODE: 405 });
+
+      expect(imageSpy).toHaveBeenCalledTimes(1);
+      expect(imageSpy.mock.results[0].value.src).toBe(
+        'http://example.com/error_405'
+      );
+    });
+
+    describe('when trackingHandler fails', () => {
+      let spyEmit;
+
+      const createTracker = (handler) => {
+        vastTracker = new VASTTracker(
+          vastClient,
+          ad,
+          ad.creatives[0],
+          null,
+          false,
+          { trackingHandler: handler }
+        );
+        spyEmit = jest.spyOn(vastTracker, 'emit');
+      };
+
+      it('should emit TRACKER-error if trackingHandler throws something else than an Error', () => {
+        createTracker(() => {
+          throw Symbol('offline');
+        });
+        vastTracker.error({ ERRORCODE: 405 });
+
+        expect(spyEmit).toHaveBeenCalledWith('TRACKER-error', {
+          message:
+            'trackingHandler failed. url: http://example.com/error_405, error: Symbol(offline)',
+        });
+      });
+
+      it('should emit TRACKER-error if trackingHandler throws', () => {
+        createTracker(() => {
+          throw new Error('no network');
+        });
+        vastTracker.error({ ERRORCODE: 405 });
+
+        expect(spyEmit).toHaveBeenCalledWith('TRACKER-error', {
+          message:
+            'trackingHandler failed. url: http://example.com/error_405, error: no network',
+        });
+      });
+
+      it('should emit TRACKER-error if trackingHandler returns a rejected promise', async () => {
+        createTracker(() => Promise.reject(new Error('timeout')));
+        vastTracker.error({ ERRORCODE: 405 });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(spyEmit).toHaveBeenCalledWith('TRACKER-error', {
+          message:
+            'trackingHandler failed. url: http://example.com/error_405, error: timeout',
+        });
+      });
+
+      it('should not emit TRACKER-error if trackingHandler resolves', async () => {
+        createTracker(() => Promise.resolve());
+        vastTracker.error({ ERRORCODE: 405 });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(spyEmit).not.toHaveBeenCalledWith(
+          'TRACKER-error',
+          expect.anything()
+        );
+      });
+
+      it('should still emit the tracked event if trackingHandler throws', () => {
+        createTracker(() => {
+          throw new Error('no network');
+        });
+        vastTracker.trackImpression();
+
+        expect(vastTracker.impressed).toBe(true);
+        expect(spyEmit).toHaveBeenCalledWith(
+          'creativeView',
+          expect.any(Object)
+        );
+      });
+    });
+  });
 });
