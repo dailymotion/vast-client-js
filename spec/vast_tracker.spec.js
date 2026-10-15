@@ -61,6 +61,22 @@ describe('VASTTracker', function () {
         );
       });
 
+      it('should keep the ASSETURI macro given by the player, the media file it plays', () => {
+        vastTracker.trackURLs(
+          [{ id: 'valid-url', url: 'http://example.com' }],
+          {
+            ASSETURI: 'http://example.com/linear-asset-720.mp4',
+          }
+        );
+        expect(spyTrackUtil).toHaveBeenCalledWith(
+          ['http://example.com'],
+          expect.objectContaining({
+            ASSETURI: 'http%3A%2F%2Fexample.com%2Flinear-asset-720.mp4',
+          }),
+          expect.any(Object)
+        );
+      });
+
       it('should set default ADTYPE macro to video when adType is not set', () => {
         const adWithoutType = { ...ad, adType: null };
         vastTracker = new VASTTracker(vastClient, adWithoutType, ad.creatives[0]);
