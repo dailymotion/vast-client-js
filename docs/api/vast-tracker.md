@@ -149,7 +149,7 @@ The following macro value will be set automatically by vast-client if it exists 
 - CACHEBUSTING
 - TIMESTAMP
 - ADPLAYHEAD
-- ASSETURI
+- ASSETURI (the first media file of the creative; pass `ASSETURI` in the macros of a tracking method to name the media file the player actually plays)
 - PODSEQUENCE
 - UNIVERSALADID
 - ADTYPE

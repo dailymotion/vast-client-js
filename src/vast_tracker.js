@@ -896,7 +896,9 @@ export class VASTTracker extends EventEmitter {
     //Avoid mutating the object received in parameters.
     const givenMacros = { ...macros };
     if (this.linear) {
+      // Keep the player's ASSETURI (it knows the played file); otherwise use the first one.
       if (
+        !givenMacros['ASSETURI'] &&
         this.creative &&
         this.creative.mediaFiles &&
         this.creative.mediaFiles[0] &&
