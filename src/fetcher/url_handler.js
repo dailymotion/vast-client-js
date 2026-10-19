@@ -56,11 +56,6 @@ async function get(url, options) {
     const controller = new AbortController();
     const timer = setTimeout(() => {
       controller.abort();
-      throw new Error(
-        `URLHandler: Request timed out after ${
-          options.timeout || DEFAULT_TIMEOUT
-        } ms (408)`
-      );
     }, options.timeout || DEFAULT_TIMEOUT);
 
     const response = await fetch(url, {
