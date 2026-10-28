@@ -50,37 +50,35 @@ function handleError(response) {
 }
 
 async function get(url, options) {
+  let timer;
   try {
     // fetch does not have "timeout" option, we are using AbortController
     // to abort the request if it reach the timeout.
+    // The timer is cleared once the body has been read, so the timeout
+    // also covers a body that stalls after the headers.
     const controller = new AbortController();
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       controller.abort();
-      throw new Error(
-        `URLHandler: Request timed out after ${
-          options.timeout || DEFAULT_TIMEOUT
-        } ms (408)`
-      );
     }, options.timeout || DEFAULT_TIMEOUT);
 
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
       credentials: options.withCredentials ? 'include' : 'omit',
-    }).finally(() => {
-      clearTimeout(timer);
     });
 
     const error = handleError(response);
     if (error) {
       return { error: new Error(error), statusCode: response.status };
     }
-    return handleResponse(response);
+    return await handleResponse(response);
   } catch (error) {
     return {
       error,
       statusCode: error.name === 'AbortError' ? 408 : null,
     };
+  } finally {
+    clearTimeout(timer);
   }
 }
 

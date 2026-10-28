@@ -187,6 +187,143 @@ describe('Fetcher', () => {
     });
   });
 
+  describe('urlHandler.get timeout', () => {
+    const url = 'http://example.com/vast.xml';
+    const timeout = 500;
+    let originalFetch;
+
+    // Rejects like fetch and response.text() do when the signal is aborted.
+    const rejectOnAbort = (signal) =>
+      new Promise((_, reject) => {
+        signal.addEventListener('abort', () => {
+          const error = new Error('The operation was aborted.');
+          error.name = 'AbortError';
+          reject(error);
+        });
+      });
+
+    const flushPromises = async () => {
+      for (let i = 0; i < 10; i++) {
+        await Promise.resolve();
+      }
+    };
+
+    beforeEach(() => {
+      originalFetch = global.fetch;
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      global.fetch = originalFetch;
+    });
+
+    it('should resolve with a 408 error, without throwing, when the response never arrives', async () => {
+      global.fetch = jest.fn((_, options) => rejectOnAbort(options.signal));
+
+      const result = urlHandler.get(url, { timeout });
+      // Before the fix, the timer callback threw: in Node.js that is an
+      // uncaught exception that ends the process.
+      expect(() => jest.advanceTimersByTime(timeout)).not.toThrow();
+
+      expect(global.fetch.mock.calls[0][1].signal.aborted).toBe(true);
+      await expect(result).resolves.toEqual({
+        error: expect.objectContaining({ name: 'AbortError' }),
+        statusCode: 408,
+      });
+    });
+
+    it('should resolve with a 408 error when the body stalls after the headers', async () => {
+      let signal;
+      global.fetch = jest.fn((_, options) => {
+        signal = options.signal;
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          url,
+          text: () => rejectOnAbort(signal),
+        });
+      });
+
+      let settled = false;
+      const result = urlHandler.get(url, { timeout });
+      result.then(() => {
+        settled = true;
+      });
+      await flushPromises(); // headers received, body pending
+
+      expect(() => jest.advanceTimersByTime(timeout)).not.toThrow();
+      await flushPromises();
+
+      expect(signal.aborted).toBe(true);
+      expect(settled).toBe(true);
+      await expect(result).resolves.toEqual({
+        error: expect.objectContaining({ name: 'AbortError' }),
+        statusCode: 408,
+      });
+    });
+
+    it('should not abort a body that completes before the timeout', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        url,
+        text: () =>
+          new Promise((resolve) => setTimeout(resolve, 100, '<VAST/>')),
+      });
+
+      const result = urlHandler.get(url, { timeout });
+      await flushPromises();
+      jest.advanceTimersByTime(100);
+
+      await expect(result).resolves.toMatchObject({
+        details: { statusCode: 200, rawXml: '<VAST/>' },
+      });
+      expect(global.fetch.mock.calls[0][1].signal.aborted).toBe(false);
+      expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('should resolve with the error when reading the body fails', async () => {
+      const bodyError = new TypeError('terminated');
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        url,
+        text: () => Promise.reject(bodyError),
+      });
+
+      await expect(urlHandler.get(url, { timeout })).resolves.toEqual({
+        error: bodyError,
+        statusCode: null,
+      });
+    });
+
+    it('should leave no timer pending after an HTTP error or a network failure', async () => {
+      const networkError = new TypeError('Failed to fetch');
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+          statusText: 'Not Found',
+          url,
+        })
+        .mockRejectedValueOnce(networkError);
+
+      await expect(urlHandler.get(url, { timeout })).resolves.toEqual({
+        error: new Error('URLHandler: Not Found (404)'),
+        statusCode: 404,
+      });
+      expect(jest.getTimerCount()).toBe(0);
+
+      await expect(urlHandler.get(url, { timeout })).resolves.toEqual({
+        error: networkError,
+        statusCode: null,
+      });
+      expect(jest.getTimerCount()).toBe(0);
+    });
+  });
+
   describe('setOptions', () => {
     it('should assign options to properties', () => {
       const customUrlHandler = jest.fn();
