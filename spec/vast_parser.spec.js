@@ -184,6 +184,32 @@ describe('VASTParser', () => {
         wrapperChainId: 0,
       });
     });
+
+    it('keeps only the first stand-alone Ad when allowMultipleAds is false', () => {
+      const inline = (id) =>
+        `<Ad id="${id}"><InLine><AdSystem>AdServer</AdSystem>` +
+        `<Impression>http://example.com/impression-${id}</Impression>` +
+        `<Creatives><Creative><Linear><Duration>00:00:10</Duration><MediaFiles>` +
+        `<MediaFile delivery="progressive" type="video/mp4" width="640" height="360">http://example.com/${id}.mp4</MediaFile>` +
+        `</MediaFiles></Linear></Creative></Creatives></InLine></Ad>`;
+      const xml = new DOMParser().parseFromString(
+        `<VAST version="4.3">${inline('a1')}${inline('a2')}${inline('a3')}</VAST>`,
+        'text/xml'
+      );
+
+      const ads = VastParser.parseVastXml(xml, {
+        isRootVAST: true,
+        url: inlineSampleVastUrl,
+        wrapperDepth: 0,
+        allowMultipleAds: false,
+      });
+
+      expect(ads.map((ad) => ad.id)).toEqual(['a1']);
+      const parsedEvents = VastParser.emit.mock.calls.filter(
+        ([eventName]) => eventName === 'VAST-ad-parsed'
+      );
+      expect(parsedEvents).toHaveLength(1);
+    });
   });
 
   describe('parse', () => {
