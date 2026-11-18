@@ -212,7 +212,7 @@ export class VASTParser extends EventEmitter {
         // for retrocompatibility set it to true
         if (this.vastVersion && parseFloat(this.vastVersion) < 3) {
           allowMultipleAds = true;
-        } else if (allowMultipleAds === false && ads.length > 1) {
+        } else if (allowMultipleAds === false && ads.length >= 1) {
           // if wrapper allowMultipleAds is set to false only the first stand-alone Ad
           // (with no sequence values) in the requested VAST response is allowed
           break;
